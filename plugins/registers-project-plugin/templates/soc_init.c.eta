@@ -1,0 +1,322 @@
+<%
+/**
+ * Copyright (c) 2024-2025 Analog Devices, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+function genCode(indent, seq, ctrlValue = 0) {
+  let code = '';
+
+  if (seq) {
+    let register;
+    let operation;
+    let accumValue = 0;
+    let accumMask = 0;
+
+    for (const idx in seq) {
+      let op = seq[idx];
+
+      if (op.Operation != "WithPrevious")
+        operation = op.Operation;
+      if (op.Register)
+        register = op.Register;
+
+      if (operation === "Read") {
+
+       // Just read the register but do nothing with it.
+       // Cannot be a pending operation.
+       if (code)
+          code += '\n';
+        code += `${indent}${register};`
+
+      } else {
+        const pending = (Number(idx) < (seq.length - 1) && seq[Number(idx) + 1].Operation === "WithPrevious");
+        const reg = it.datamodel.Registers.find(r => r.Name == register);
+        const field = reg.Fields.find(f => f.Name == op.Field);
+        const mask = (1 << field.Length) - 1;
+        let valueString;
+        let maskString;
+        // Work out what the op value is from the step's Value field.
+        let opValue;
+        // TBD: Need to eventually call evaluate expression here.
+        // Let's match e.g. "${Value} 256 = 0 ${Value} ?"
+        let groups = op.Value.match(/\${Value} +([1-9][0-9]*) += +0 +\${Value} +\?/);
+        // And also match "${Value} 1 -"
+        let groups2 = op.Value.match(/\${Value} +([1-9][0-9]*) +-/);
+        if (groups) {
+          opValue = ctrlValue;
+          if (opValue == Number(groups[1]))
+            opValue = 0;
+        } else if (groups2) {
+          opValue = ctrlValue - Number(groups2[1]);
+        } else if (op.Value === "${Value}") {
+          opValue = ctrlValue;
+        } else {
+          opValue = Number(op.Value);
+        }
+
+        if (pending || accumMask != 0) {
+
+          accumValue |= (opValue << field.Position);
+          accumMask |= (((1 << field.Length) - 1) << field.Position);
+        }
+
+        if (!pending) {
+
+          let shift;
+          if (accumMask != 0) {
+            shift = 0;
+          } else {
+            shift = field.Position;
+            accumValue = Number(opValue);
+            accumMask = mask;
+          }
+
+          if (accumValue < 10)
+            valueString = `${accumValue}U`;
+          else
+            valueString = `0x${accumValue.toString(16)}U`;
+          if (accumMask < 10)
+            maskString = `${accumMask}U`;
+          else
+            maskString = `0x${accumMask.toString(16)}U`;
+
+          if (operation === "Write") {
+
+            if (field.Length == 32) {
+              // Replace entire register value
+              if (code)
+                code += '\n';
+              code += `${indent}${register} = ${valueString};`;
+            } else if (accumValue != accumMask && accumValue != 0) {
+              // Neither all zeros nor all ones
+              if (code)
+                code += '\n';
+              if (shift > 0) {
+                code += `${indent}${register} = ((${register} & ~(${maskString} << ${shift})) | (${valueString} << ${shift}));`;
+              } else {
+                code += `${indent}${register} = ((${register} & ~${maskString}) | ${valueString});`;
+              }
+            } else if (accumValue == 0) {
+              // Clear the field to set to all zeros
+              if (code)
+                code += '\n';
+              if (shift > 0) {
+                code += `${indent}${register} &= ~(${maskString} << ${shift});`;
+              } else {
+                code += `${indent}${register} &= ~${maskString};`;
+              }
+            } else {
+              // Set the field to all ones
+              if (code)
+                code += '\n';
+              if (shift > 0) {
+                code += `${indent}${register} |= (${valueString} << ${shift});`;
+              } else {
+                code += `${indent}${register} |= ${valueString};`;
+              }
+            }
+
+          } else if (operation === "Poll") {
+
+            // Loop until field takes desired value
+            if (code)
+              code += '\n';
+            if (field.Length < 32) {
+              if (shift> 0) {
+                code += `${indent}while (((${register} >> ${shift}) & ${maskString}) != ${valueString}) {\n`;
+              } else {
+                code += `${indent}while ((${register} & ${maskString}) != ${valueString}) {\n`;
+              }
+            } else {
+              code += `${indent}while (${register} != ${valueString}) {\n`;
+            }
+            code += `${indent}}`;
+
+          }
+
+          if (op.Wait) {
+            code += '\n';
+            code += `${indent}sleep(${op.Wait});`;
+          }
+
+          accumValue = 0;
+          accumMask = 0;
+        }
+      }
+    }
+  }
+  return code;
+}
+
+function addRegisters(regs, seq) {
+  if (seq) {
+    for (const op of seq) {
+      if (op.Register)
+        regs.add(op.Register);
+    }
+  }
+}
+
+function getRegisters() {
+  const regs = new Set();
+  for (const p of getGpioPortInits()) {
+    addRegisters(regs, p);
+  }
+  for (const pin of it.cfsconfig.Pins) {
+    addRegisters(regs, getSignal(pin).PinMuxConfig);
+    const peri = getAssignedPeripheral(pin.Peripheral);
+    const signal = peri?.Signals?.find(s => s.Name === pin.Signal);
+    if (signal?.Config) {
+      for (const cfg of Object.keys(signal.Config)) {
+        addRegisters(regs, getSignal(pin).PinConfig[cfg][signal.Config[cfg]]);
+      }
+    }
+  }
+  for (const node of it.cfsconfig.ClockNodes) {
+    if (node.Enabled) {
+      addRegisters(regs, it.datamodel.ClockNodes.find(n => n.Name === node.Name)?.Config[node.Control][getClockSetting(node.Name, node.Control)]);
+    }
+  }
+  for (const peri of getProject()?.Peripherals ?? []) {
+    for (const ctrl of getPeripheral(peri.Name)?.ConfigProgrammingOrder ?? []) {
+      addRegisters(regs, getSequence(getPeripheral(peri.Name).Config, peri.Name, ctrl, peri.Config[ctrl]));
+    }
+  }
+  return Array.from(regs).sort();
+}
+
+function getGpioPortInits() {
+  const ports = new Set();
+  for (const pin of it.cfsconfig.Pins) {
+    const p = getPin(pin);
+    ports.add(p.GPIOName);
+  }
+  const inits = new Array();
+  for (const port of Array.from(ports).sort()) {
+    const peri = it.datamodel.Peripherals.find(p => p.Name === port);
+    if (peri?.['Initialization']) {
+      inits.push(peri.Initialization);
+    }
+  }
+  return inits;
+}
+
+// Include common plugin code
+eval(this.render("common/utilities/utilities.js"));
+%>
+<%~ include("../../common/utilities/copyright-header.eta", it) %>
+
+/* WARNING: This implementation is provided for reference purposes only.
+ * The code generated shows the register manipulations that would be
+ * required to configure the part for the selected options. However, this
+ * code may not perform operations in the order required by the hardware
+ * and has not been tested to ensure that all hardware programming
+ * constraints are met.
+ */
+
+#include <stdint.h>
+
+<% if (getRegisters().length) { %>
+/* Macros for register addresses.
+*/
+<%   for (const reg of getRegisters()) { %>
+#define <%= reg.padEnd(20) %> *((volatile uint32_t *)<%= it.datamodel.Registers.find(r => r.Name === reg).Address %>U)
+<%   } %>
+<% } %>
+
+/* Prototypes for functions in this file.
+*/
+int PinInit(void);
+<% if (hasClockConfig()) { %>
+int PeripheralInit(void);
+<% } %>
+
+int PinInit(void) {
+<% if (it.cfsconfig.Pins.length > 0) { %>
+  /* Initialize all the used GPIO Ports.
+  */
+<%   for (const p of getGpioPortInits()) { %>
+<%=    genCode("  ", p) %> 
+<%   } %>
+
+<%   for (const pin of it.cfsconfig.Pins) { %>
+<%     const peri = getAssignedPeripheral(pin.Peripheral); %>
+<%     const signal = peri?.Signals?.find(s => s.Name === pin.Signal); %>
+<%     if (signal || (!getAssignedProjectForPin(pin) && isPrimaryProject())) { %>
+  /* <%= getPin(pin).Label %> (<%= pin.Pin %>): assigned to <%= pin.Peripheral %>_<%= pin.Signal %>.
+<%       if (signal?.Description) { %>
+  ** This pin is used for <%= signal.Description %>.
+<%       } %>
+  */
+<%=      genCode("  ", getSignal(pin).PinMuxConfig) %> 
+<%       if (signal?.Config) { %>
+<%         for (const cfg of Object.keys(signal.Config)) { %>
+  /* Set <%= getControlDesc('PinConfig', cfg) %> to <%= getSignalSettingDesc(signal, cfg) %>.
+  */
+<%=          genCode("  ", getSequence(getSignal(pin).PinConfig, 'PinConfig', cfg, signal.Config[cfg]),
+                             translateValueForSequence('PinConfig', cfg, signal.Config[cfg])) %> 
+<%         } %>
+<%       } %>
+
+<%     } %>
+<%   } %>
+<% } else { %>
+  /* Pin configuration in default state. */
+
+<% } %>
+  return 0;
+}
+
+int PeripheralInit(void) {
+<% for (const peri of getProject()?.Peripherals ?? []) { %>
+<%   if (peri.Config && Object.keys(peri.Config).length > 0) { %>
+  { /* Configure the <%= peri.Name %> peripheral.
+<%     if (getPeripheralDescription(peri.Name)) { %>
+     * This peripheral is used for <%= getPeripheralDescription(peri.Name) %>.
+<%     } %>
+     */
+<%     for (const ctrl of getPeripheral(peri.Name)?.ConfigProgrammingOrder ?? []) { %>
+<%       if (typeof(peri.Config[ctrl]) !== "undefined") { %>
+
+    /* <%= peri.Name %>: <%= getControlDesc(peri.Name, ctrl) %> is set to <%= getSettingDesc(peri.Name, ctrl, peri.Config[ctrl]) %>.
+    */
+<%=        genCode("    ", getSequence(getPeripheral(peri.Name).Config, peri.Name, ctrl, peri.Config[ctrl]),
+                           translateValueForSequence(peri.Name, ctrl,  peri.Config[ctrl])) %> 
+<%       } %>
+<%     } %>
+  }
+
+<%   } %>
+<% } %>
+<% if (isPrimaryProject()) { %>
+<%   if (it.cfsconfig.ClockNodes.length > 0) { %>
+<%     for (const node of it.datamodel.ClockNodes) { %>
+<%       if (node.ConfigProgrammingOrder) { %>
+<%         for (const ctrl of node.ConfigProgrammingOrder) { %>
+<%           if (isClockSet([], node.Name, ctrl) && node.Config[ctrl][getClockSetting(node.Name, ctrl)]) { %>
+  /* <%= node.Name %>: <%= getControlDesc('ClockConfig', ctrl) %> is set to <%= getClockSettingDesc(node.Name, ctrl) %>.
+  */
+<%=            genCode("  ", getSequence(node.Config, 'ClockConfig', ctrl, getClockSetting(node.Name, ctrl)),
+                             translateValueForSequence('ClockConfig', ctrl, getClockSetting(node.Name, ctrl))) %> 
+
+<%           } %>
+<%         } %>
+<%       } %>
+<%     } %>
+<%   } else { %>
+  /* Clock configuration in default state. */
+
+<%   } %>
+<% } %>
+  return 0;
+}

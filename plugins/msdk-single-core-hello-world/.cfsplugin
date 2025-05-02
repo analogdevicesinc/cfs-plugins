@@ -1,0 +1,144 @@
+{
+  "pluginName": "MSDK Single Core Hello World",
+  "pluginDescription": "Single Core MSDK Hello World template for supported MCUs.",
+  "pluginId": "com.analog.singlecore.msdk.helloworld",
+  "pluginVersion": "1.0.0",
+  "author": "Analog Devices, Inc.",
+  "firmwarePlatform": "MSDK",
+  "supportedSocs": [
+    {
+      "name": "MAX32650",
+      "board": "EvKit_V1",
+      "package": "tqfp"
+    },
+    {
+      "name": "MAX32650",
+      "board": "FTHR",
+      "package": "wlp"
+    },
+    {
+      "name": "MAX32655",
+      "dataModel": "max32655-ctbga.json",
+      "board": "EvKit_V1",
+      "package": "ctbga"
+    },
+    {
+      "name": "MAX32655",
+      "dataModel": "max32655-ctbga.json",
+      "board": "FTHR",
+      "package": "ctbga"
+    },
+    {
+      "name": "MAX32660",
+      "board": "EvKit_V1",
+      "package": "tqfn20"
+    },
+    {
+      "name": "MAX32662",
+      "board": "EvKit_V1",
+      "package": "tqfnep"
+    },
+    {
+      "name": "MAX32670",
+      "board": "EvKit_V1",
+      "package": "tqfn"
+    },
+    {
+      "name": "MAX32672",
+      "board": "EvKit_V1",
+      "package": "tqfn40"
+    },
+    {
+      "name": "MAX32675C",
+      "board": "EvKit_V1",
+      "package": "tqfn"
+    },
+    {
+      "name": "MAX32690",
+      "dataModel": "max32690-tqfn.json",
+      "board": "EvKit_V1",
+      "package": "tqfn"
+    },
+    {
+      "name": "MAX32690",
+      "dataModel": "max32690-wlp.json",
+      "board": "AD-APARD32690-SL",
+      "package": "wlp"
+    },
+    {
+      "name": "MAX32690",
+      "dataModel": "max32690-tqfn.json",
+      "board": "FTHR",
+      "package": "tqfn"
+    },
+    {
+      "name": "MAX78000",
+      "board": "EvKit_V1",
+      "package": "ctbga"
+    },
+    {
+      "name": "MAX78000",
+      "board": "FTHR",
+      "package": "ctbga"
+    },
+    {
+      "name": "MAX78002",
+      "board": "EvKit_V1",
+      "package": "csbga"
+    }
+  ],
+  "features": {
+    "workspace": {
+      "files": [
+        {
+          "src": "files/workspace-name.code-workspace",
+          "dst": "${context.workspaceName}.code-workspace"
+        },
+        {
+          "src": "files/m4/.vscode/launch.json",
+          "dst": "m4/.vscode/launch.json"
+        },
+        {
+          "src": "files/m4/.vscode/flash.gdb",
+          "dst": "m4/.vscode/flash.gdb"
+        },
+        {
+          "src": "files/m4/README.md",
+          "dst": "m4/README.md"
+        }
+      ],
+      "templates": [
+        {
+          "src": "templates/.cfsconfig.eta",
+          "dst": ".cfs/${context.soc.toLowerCase()}-${context.package.toLowerCase()}.cfsconfig",
+          "condition": "${context.soc.toLowerCase() === 'max32655'}"
+        },
+        {
+          "src": "templates/.cfsconfig.eta",
+          "dst": ".cfs/${context.soc.toLowerCase()}-${context.package.toLowerCase()}.cfsconfig",
+          "condition": "${context.soc.toLowerCase() === 'max32690'}"
+        },
+        {
+          "src": "templates/settings.json.eta",
+          "dst": "m4/.vscode/settings.json"
+        },
+        {
+          "src": "templates/main.c.eta",
+          "dst": "m4/src/main.c"
+        },
+        {
+          "src": "templates/project.mk.eta",
+          "dst": "m4/project.mk"
+        },
+        {
+          "src": "templates/Makefile.eta",
+          "dst": "m4/Makefile"
+        },
+        {
+          "src": "templates/c_cpp_properties.json.eta",
+          "dst": "m4/.vscode/c_cpp_properties.json"
+        }
+      ]
+    }
+  }
+}

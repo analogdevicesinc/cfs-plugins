@@ -1,0 +1,398 @@
+<%
+/**
+ * Copyright (c) 2024-2025 Analog Devices, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+// Include common plugin code
+eval(this.render("common/utilities/utilities.js"));
+
+let peripheralData;
+let unsupported_in_dts;
+
+// Include processor-specific code
+eval(this.render("zephyr41-project-plugin/codegen/"  + it.cfsconfig.Soc.toLowerCase() +  "/zephyr.js"));
+
+var pull_map = {
+  "STRONG_PU" : "GPIO_PULL_UP",
+  "PU"        : "GPIO_PULL_UP",
+  "WEAK_PU"   : "MAX32_GPIO_WEAK_PULL_UP",
+  "STRONG_PD" : "GPIO_PULL_DOWN",
+  "PD"        : "GPIO_PULL_DOWN",
+  "WEAK_PD"   : "MAX32_GPIO_WEAK_PULL_DOWN"
+}
+
+var pull_map_peripheral = {
+  "STRONG_PU" : "pull-up",
+  "PU"        : "pull-up",
+  "WEAK_PU"   : "pull-up",
+  "STRONG_PD" : "pull-down",
+  "PD"        : "pull-down",
+  "WEAK_PD"   : "pull-down"
+}
+
+function getUnmappedPins() {
+  return it.cfsconfig.Pins.filter(pin => {
+    // Only worry about signals that are assigned to this project, or not
+    // assigned at all and we are the primary project.
+    const peri = getAssignedPeripheral(pin.Peripheral);
+    const signal = peri?.Signals?.find(s => s.Name === pin.Signal);
+    if (signal || (!getAssignedProjectForPin(pin) && isPrimaryProject())) {
+      if (pin.Peripheral.startsWith("GPIO") || (pin.Peripheral === "MISC" && (pin.Signal.includes("CLK") || pin.Signal.includes("SWD")))) {
+        return false;
+      } else {
+        const periData = peripheralData.find(p => p.datamodel === pin.Peripheral);
+        if (periData?.pins) {
+          return !periData.pins.find(s => pin.Signal === s.signal);
+        }
+      }
+      return true;
+    }
+    return false;
+  });
+}
+
+function convertToUnitsMacro(value, macro, k) {
+  return (value % (k * k)) == 0 ? `DT_${macro}_M(` + (value / (k * k)) + ")" : ((value % k == 0) ? `DT_${macro}_K(` + (value / k) + ")" : value);
+}
+
+function getConfigValue(peripheral, cfg) {
+  let value;
+  if (cfg.clocknode) {
+    value = getClockSetting(cfg.clocknode, cfg.control, cfg.cfg_default);
+  } else {
+    value = getAssignedPeripheral(peripheral.datamodel)?.Config?.[cfg.control] ?? cfg.cfg_default;
+  }
+  if (cfg.value) {
+    value = cfg.value(value);
+  }
+  if (cfg.type === "boolean") {
+    return value;
+  } else if (cfg.type === "int") {
+    return `<${value}>`;
+  } else if (cfg.type === "string") {
+    return `"${value}"`;
+  }
+  return value;
+}
+
+// Does this peripheral apply to the security level of the current project?
+function securityMatch(periName) {
+  const peripheral = getPeripheral(periName);
+  if (peripheral.Security && peripheral.Security !== "Any") {
+    const proj = getProject();
+    // If we're not using TrustZone, or we're a Secure project, match with a Secure peripheral.
+    return (typeof proj.Secure === "undefined" || proj.Secure) === (peripheral.Security === "Secure");
+  }
+  return true;
+}
+
+// Get the string representing the offset of the address from the base of the region.
+function getOffsetFromBase(address) {
+  const region = getRegion(address);
+  const base = parseInt(region.AddressStart, 16);
+  const addressI = parseInt(address, 16);
+  const offset = addressI - base;
+  return offset.toString(16);
+}
+
+// Get the start address for this partition, taking into account any secure offset.
+function getStartAddress(partition) {
+  const region = getRegion(partition.StartAddress);
+  let thisAddress = parseInt(partition.StartAddress, 16);
+  if ((typeof getProject().Secure === "undefined" || getProject().Secure) && region?.TrustZone?.SecureAddressOffset) {
+    const secureOffset = parseInt(region.TrustZone.SecureAddressOffset, 16);
+    thisAddress += secureOffset;
+  }
+  return thisAddress.toString(16);
+}
+
+// Get the Zephyr clock name for a clock setting.
+function zephyrClock(clock) {
+  switch (clock) {
+    case "IBRO_DIV_8":
+      return "IBRO_DIV8";
+    case "SYS_CLK":
+      // SYS_CLK isn't really PCLK, but that's how Zephyr treats it.
+      return "PCLK";
+    case "LPTMR0_CLK":
+    case "LPTMR1_CLK":
+      // The external clocks are just tracked as EXTCLK.
+      return "EXTCLK";
+  }
+  return clock;
+}
+
+// Return true if we should show the unsupported warning.
+function showWarning(peripheral) {
+  if (peripheral.value) {
+    return isClockSetTo(peripheral.datamodel, peripheral.clocknode, peripheral.ctrl, peripheral.value);
+  }
+  return isClockSet(peripheral.datamodel, peripheral.clocknode, peripheral.ctrl);
+}
+%>
+<%~ include("../../common/utilities/copyright-header.eta", it) %>
+
+<% if (getProjectPartitions().find(p => p.Config?.CHOSEN || getRegion(p.StartAddress).Type === "RAM")) { %>
+/* Memory Configuration
+*/
+
+/ {
+<%   if (getProjectPartitions().find(p => p.Config?.CHOSEN)) { %>
+	chosen {
+<%     for (const partition of getProjectPartitions()) { %>
+<%       if (partition.Config?.CHOSEN) { %>
+<%         for (chosen of partition.Config.CHOSEN.split(",")) { %>
+		zephyr,<%= chosen.trim() %> = &<%= partition.Name %>;
+<%         } %>
+<%       } %>
+<%       if (partition.Config?.CHOSEN === "code-partition") { %>
+		zephyr,flash = &<%= getRegion(partition.StartAddress).Name %>;
+<%       } %>
+<%     } %>
+	};
+
+<%   } %>
+<%   if (getProjectPartitions().find(p => getRegion(p.StartAddress).Type === "RAM")) { %>
+	reserved-memory {
+		#address-cells = <1>;
+ 		#size-cells = <1>;
+ 		ranges;
+
+<%     for (const partition of getProjectPartitions().filter(p => getRegion(p.StartAddress).Type === "RAM")) { %>
+		<%= partition.Name %>: <%= supportsTrustZone() ? "partition" : "memory" %>@<%= getStartAddress(partition) %> {
+<%       if (partition.Config?.CHOSEN) { %>
+			/* This partition is chosen for <%= partition.Config.CHOSEN %>. */
+<%       } else { %>
+			/* This partition is not chosen. */
+<%       } %>
+<%       if (!supportsTrustZone()) { %>
+			compatible = "mmio-sram";
+<%       } %>
+<%       if (partition.Config?.LABEL?.length > 0) { %>
+			label = "<%= partition.Config?.LABEL %>";
+<%       } %>
+			reg = <0x<%= getStartAddress(partition) %> <%= convertToUnitsMacro(partition.Size, "SIZE", 1024) %>>;
+		};
+<%     } %>
+	};
+<%   } %>
+};
+
+<% } %>
+<% for (const region of it.datamodel.Cores.find(c => c.Id === it.coreId)?.Memory ?? []) { %>
+<%   if (region.Type === "Flash" && getProjectPartitionsStartingInRegion(region).length > 0) { %>
+&<%= region.Name %> {
+	partitions {
+		compatible = "fixed-partitions";
+		#address-cells = <1>;
+		#size-cells = <1>;
+
+<%     for (const partition of getProjectPartitionsStartingInRegion(region)) { %>
+		<%= partition.Name %>: partition@<%= getOffsetFromBase(partition.StartAddress) %> {
+<%       if (partition.Config?.CHOSEN) { %>
+			/* This partition is chosen for <%= partition.Config.CHOSEN %>. */
+<%       } else { %>
+			/* This partition is not chosen. */
+<%       } %>
+<%       if (partition.Config?.LABEL?.length > 0) { %>
+			label = "<%= partition.Config?.LABEL %>";
+<%       } %>
+			reg = <0x<%= getOffsetFromBase(partition.StartAddress) %> <%= convertToUnitsMacro(partition.Size, "SIZE", 1024) %>>;
+		};
+<%     } %>
+	};
+};
+
+<%   } %>
+<% } %>
+
+/* GPIO Configuration
+*/
+
+<% if (it.cfsconfig.Pins.find(p => getAssignedPinSignal(p)?.Config?.MODE)) { %>
+/ {
+<%   if (it.cfsconfig.Pins.find(p => getAssignedPinSignal(p)?.Config?.MODE === "IN")) { %>
+	buttons {
+<%     for (const pin of it.cfsconfig.Pins) { %>
+<%       const config = getAssignedPinSignal(pin)?.Config; %>
+<%       if (config?.MODE === "IN") { %>
+		<%= config.PHANDLE %>: <%= config.DT_NAME %> {
+<%         if (getAssignedPinSignal(pin)?.Description) { %>
+			/* This pin is used for <%= getAssignedPinSignal(pin)?.Description %>. */
+<%         } %>
+			gpios = <&<%=getPin(pin).GPIOName.toLowerCase() %> <%= getPin(pin).GPIOPin %> (GPIO_ACTIVE_<%= config.POLARITY %> | MAX32_GPIO_VSEL_<%= config.PWR ?? "VDDIO" %>
+<%         if (config.PS && config.PS !== "DIS") { %>
+ | <%= pull_map[config.PS] %>
+<%         } %>
+)>;
+			zephyr,code = <<%= config.INPUT_CODE %>>;
+		};
+<%       } %>
+<%     } %>
+	};
+
+<%   } %>
+<%   if (it.cfsconfig.Pins.find(p => getAssignedPinSignal(p)?.Config?.MODE === "OUT")) { %>
+	leds {
+<%     for (const pin of it.cfsconfig.Pins) { %>
+<%       const config = getAssignedPinSignal(pin)?.Config; %>
+<%       if (config?.MODE === "OUT") { %>
+		<%= config.PHANDLE %>: <%= config.DT_NAME %> {
+<%         if (getAssignedPinSignal(pin)?.Description) { %>
+			/* This pin is used for <%= getAssignedPinSignal(pin)?.Description %>. */
+<%         } %>
+			gpios = <&<%=getPin(pin).GPIOName.toLowerCase() %> <%= getPin(pin).GPIOPin %> (GPIO_ACTIVE_<%= config.POLARITY %> | MAX32_GPIO_VSEL_<%= config.PWR ?? "VDDIO" %> | MAX32_GPIO_DRV_STRENGTH_<%= config.DS ?? "0" %>)>;
+		};
+<%       } %>
+<%     } %>
+	};
+<%   } %>
+<%   if (it.cfsconfig.Pins.find(p => getAssignedPinSignal(p)?.Config?.ALIAS)) { %>
+
+	aliases {
+<%     for (pin of it.cfsconfig.Pins.filter(p => getAssignedPinSignal(p)?.Config?.ALIAS)) { %>
+		<%= getAssignedPinSignal(pin).Config.ALIAS %> = &<%= getAssignedPinSignal(pin).Config.PHANDLE %>;
+<%     } %>
+	};
+<%   } %>
+};
+<% } else { %>
+/* No GPIO signals to configure. */
+<% } %>
+
+/* Peripheral Configuration
+*/
+
+<% if (getProjectPeripherals().find(p => p.Config?.CHOSEN)) { %>
+/ {
+	chosen {
+<%   for (const peripheral of getProjectPeripherals()) { %>
+<%     if (peripheral.Config?.CHOSEN) { %>
+<%       for (chosen of peripheral.Config.CHOSEN.split(",")) { %>
+		zephyr,<%= chosen.trim() %> = &<%= peripheralData.find(p => p.datamodel === peripheral.Name).zephyr %>;
+<%       } %>
+<%     } %>
+<%   } %>
+	};
+};
+
+<% } %>
+<% for (const peri of peripheralData) { %>
+<%   if (securityMatch(peri.datamodel)) { %>
+<%     if (peri.pins) { %>
+<%       for (const pin of peri.pins) { %>
+<%         const config = getAssignedSignal(peri.datamodel, pin.signal, pin.pin)?.Config; %>
+<%         if (config) { %>
+&<%= pin.name %> {
+	power-source = <MAX32_VSEL_<%= config.PWR ?? "VDDIO" %>>;
+<%           if (config.PS === "WEAK_PU") { %>
+	/* Weak pull-up is not supported here in Zephyr. Using strong pull-up instead. */
+<%           } else if (config.PS === "WEAK_PD") { %>
+	/* Weak pull-down is not supported here in Zephyr. Using strong pull-down instead. */
+<%           } %>
+<%           if (config.PS && config.PS !== "DIS") { %>
+	bias-<%= pull_map_peripheral[config.PS] %>;
+<%           } %>
+<%           if (config.DS) { %>
+	drive-strength = <<%= config.DS %>>;
+<%           } %>
+};
+
+<%         } %>
+<%       } %>
+<%     } %>
+&<%= peri.zephyr %> {
+<%     if (getAssignedPeripheral(peri.datamodel)) { %>
+<%       if (getPeripheralDescription(peri.datamodel)) { %>
+	/* This peripheral is used for <%= getPeripheralDescription(peri.datamodel) %>.
+	*/
+<%       } %>
+<%       if (peri.pins && (!peri.pins_node || peri.pins_node() === "root")) { %>
+	pinctrl-0 = <<%= peri.pins.filter(p => getAssignedSignal(peri.datamodel, p.signal, p.pin)).map(p => '&' + p.name).join(' ') %>>;
+	pinctrl-names = "default";
+<%       } %>
+<%       if (peri.clock_mux) { %>
+	clock-source = <ADI_MAX32_PRPH_CLK_SRC_<%= zephyrClock(getClockSetting(peri.clocknode, peri.clock_mux, peri.clock_default)) %>>;
+<%       } %>
+<%       for (const cfg of peri.config?.filter(c => !c.subnode) ?? []) { %>
+<%         if (cfg.type === "boolean") { %>
+<%           if (getConfigValue(peri, cfg)) { %>
+	<%= cfg.name %>;
+<%           } %>
+<%         } else { %>
+	<%= cfg.name %> = <%= getConfigValue(peri, cfg) %>;
+<%         } %>
+<%       } %>
+<%       if (!peri.enable || isClockSetTo([peri.datamodel], peri.clocknode, peri.enable, "TRUE")) { %>
+	status = "okay";
+<%       } else { %>
+	/* This peripheral is assigned but not enabled in the clock canvas. */
+	status = "disabled";
+<%       } %>
+<%       if (peri.subnode?.()) { %>
+	<%= peri.subnode() %> {
+<%         if (peri.pins && peri.pins_node?.() === "subnode") { %>
+		pinctrl-0 = <<%= peri.pins.filter(p => getAssignedSignal(peri.datamodel, p.signal, p.pin)).map(p => '&' + p.name).join(' ') %>>;
+		pinctrl-names = "default";
+<%         } %>
+<%         for (const cfg of peri.config?.filter(c => c.subnode) ?? []) { %>
+<%           if (cfg.type === "boolean") { %>
+<%             if (getConfigValue(peri, cfg)) { %>
+		<%= cfg.name %>;
+<%             } %>
+<%           } else { %>
+		<%= cfg.name %> = <%= getConfigValue(peri, cfg) %>;
+<%           } %>
+<%         } %>
+		status = "<%= (!peri.enable || isClockSetTo([peri.datamodel], peri.clocknode, peri.enable, "TRUE")) ? "okay" : "disabled" %>";
+	};
+<%       } %>
+<%     } else { %>
+<%       if (!getAssignedProjectForPeripheral(peri.datamodel) && peri.enable && isClockSetTo([], peri.clocknode, peri.enable, "TRUE")) { %>
+	/* The <%= peri.datamodel %> peripheral is enabled on the clock canvas but is not assigned
+	 * to any core. In order to generate configuration code, please assign the
+	 * peripheral to a core.
+	 */
+<%       } %>
+	status = "disabled";
+<%     } %>
+};
+
+<%   } %>
+<% } %>
+/* Clock Configuration and Initialization
+*/
+
+<%~ include("./" + it.cfsconfig.Soc.toLowerCase() + "/clocks.overlay.eta", it) %>
+<% for (const clock of getClocksUsed()) { %>
+&clk_<%= clock %> {
+	status = "okay";
+};
+
+<% } %>
+<% if (unsupported_in_dts?.find(p => showWarning(p)) || getUnmappedPins().length > 0) { %>
+/* Warnings:
+<%   for (const peri of unsupported_in_dts) { %>
+<%     if (showWarning(peri)) { %>
+** - <%= peri.diag %> 
+<%     } %>
+<%   } %>
+<%   for (const pin of getUnmappedPins()) { %>
+<%     if (!getAssignedProjectForPin(pin)) { %>
+** - <%= getPin(pin).Label %> (<%= pin.Pin %>) not mapped to <%= pin.Peripheral %>_<%= pin.Signal %> as signal is not assigned to a project.
+<%     } else { %>
+** - <%= getPin(pin).Label %> (<%= pin.Pin %>) not mapped to <%= pin.Peripheral %>_<%= pin.Signal %> as peripheral is not currently supported.
+<%     } %>
+<%   } %>
+*/
+<% } %>

@@ -1,0 +1,66 @@
+<%
+/**
+ * Copyright (c) 2025 Analog Devices, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+// Include common plugin code
+eval(this.render("common/utilities/utilities.js"));
+
+// Get the size of the partition with the given name, or the
+// default, in hex.
+function getPartitionSize(name) {
+  let partition = getPartition(name);
+  if (!partition) {
+    // See if we can find it with a name override.
+    for (let proj of it.cfsconfig.Projects) {
+      const partition2 = proj.Partitions.find(p => p.Config?.NAME_OVERRIDE === name);
+      if (partition2) {
+        partition = partition2;
+        break;
+      }
+    }
+  }
+  const size = partition?.Size ?? 0;
+  return "0x" + size.toString(16).toLowerCase();
+}
+%>
+<%~ include("../../common/utilities/copyright-header-hash.eta", it) %>
+
+<%~ include("./" + it.cfsconfig.Soc.toLowerCase() + "/s_ns_access_overlay.cmake.eta", it) %>
+
+# RAM: The secure code section in RAM is located at the end of the last secure RAM block.
+# It should be placed directly after the secure_data_ram partition.
+set(ADI_S_RAM_CODE_SIZE            "<%= getPartitionSize("secure_code_ram") %>")
+
+# Flash: All the flash sections are contiguous in memory. As a result, only
+# the sizes are set.
+
+# Set the size of the "BL2" partition.
+# This must start at the beginning of flash memory.
+set(ADI_FLASH_AREA_BL2_SIZE        "<%= getPartitionSize("BL2") %>")
+
+# Set the size of the "secure_flash" partition.
+# This must be contiguous with the preceding BL2 partition.
+set(ADI_FLASH_S_PARTITION_SIZE     "<%= getPartitionSize("secure_flash") %>")
+
+# Set the size of the "non_secure_flash" partition.
+# This must be contiguous with the preceding secure_flash partition.
+set(ADI_FLASH_NS_PARTITION_SIZE    "<%= getPartitionSize("slot0_ns_partition") %>")
+
+# Set the size of the "PS" partition.
+# This must be contiguous with the preceding non_secure_flash partition.
+set(ADI_FLASH_PS_AREA_SIZE         "<%= getPartitionSize("PS") %>")
+
+# Set the size of the "ITS" partition.
+# This must be contiguous with the preceding PS partition.
+set(ADI_FLASH_ITS_AREA_SIZE        "<%= getPartitionSize("ITS") %>")

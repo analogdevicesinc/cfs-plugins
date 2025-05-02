@@ -1,0 +1,26 @@
+<%
+/**
+ * Copyright (c) 2025 Analog Devices, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+%>
+/* Needs work! */
+    SPIX        (rx)  : ORIGIN = 0x08000000, LENGTH = 128M
+    OTP         (rwx) : ORIGIN = OTP_ADDR, LENGTH = OTP_LEN
+    ARM_SHARED  (rwx) : ORIGIN = SHARED_ADDR, LENGTH = SHARED_LEN_HALF
+    SDMA_SHARED (rwx) : ORIGIN = SHARED_ADDR + SHARED_LEN_HALF, LENGTH = SHARED_LEN_HALF
+    SDMA_DATA   (rwx) : ORIGIN = SDMA_DATA_ADDR, LENGTH = SDMA_DATA_LEN
+    SDMA_CODE   (rwx) : ORIGIN = SDMA_CODE_ADDR, LENGTH = SDMA_CODE_LEN
+
+    SRAM        (rwx) : ORIGIN = SRAM_ADDR, LENGTH = SRAM_LEN
+    SPID        (rw)  : ORIGIN = 0x80000000, LENGTH = 512M
+

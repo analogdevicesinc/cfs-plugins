@@ -1,0 +1,10 @@
+<%
+it.normalizeSoc = function() {
+  switch (it.soc) {
+    case "MAX32675C":
+      return "MAX32675";
+    default:
+      return it.soc;
+  }
+};
+%>

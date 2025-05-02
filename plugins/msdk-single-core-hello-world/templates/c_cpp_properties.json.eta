@@ -1,0 +1,171 @@
+<%~ include("../../common/utilities/msdk-board-name.eta", it) %>
+<%~ include("../../common/utilities/normalize-soc.eta", it) %>
+{
+  "configurations": [
+    {
+      "name": "Win32",
+      "includePath": [
+        "${default}",
+        "${workspaceFolder}",
+        "${workspaceFolder}/**",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/Boards/<%= it.normalizeSoc() %>/<%= it.getMsdkBoardName() %>/Include",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/LED",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/PushButton",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Display",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Display/fonts/",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Include/<%= it.normalizeSoc() %>/",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/ADC",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/AES",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/CAN",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/DMA",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/FLC",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/GPIO",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/I2C",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/I2S",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/ICC",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/LP",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/PT",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/RTC",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/SPI",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/TMR",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/TRNG",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/UART",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/WDT",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/Device/Maxim/<%= it.normalizeSoc() %>/Include",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/5.9.0/Core/Include"
+      ],
+      "defines": [
+        "${config:cfs.project.board}",
+        "TARGET=<%= it.normalizeSoc() %>",
+        "__GNUC__"
+      ],
+      "intelliSenseMode": "gcc-arm",
+      "compilerPath": "${config:cfs.toolchain.armAArch32GCC.path}/bin/arm-none-eabi-gcc.exe",
+      "browse": {
+        "path": [
+          "${default}",
+          "${workspaceFolder}",
+          "${workspaceFolder}/**",
+          "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/Device/Maxim/<%= it.normalizeSoc() %>/Source",
+          "${config:cfs.sdk.path}/SDK/MAX/Libraries/Boards/<%= it.normalizeSoc() %>/<%= it.getMsdkBoardName() %>/Source",
+          "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers",
+          "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/LED",
+          "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/PushButton",
+          "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Display",
+          "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Display/fonts/",
+          "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/Device/Maxim/<%= it.normalizeSoc() %>/Source/GCC"
+        ]
+      }
+    },
+    {
+      "name": "Linux",
+      "includePath": [
+        "${default}",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/Boards/<%= it.normalizeSoc() %>/<%= it.getMsdkBoardName() %>/Include",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/LED",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/PushButton",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Display",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Display/fonts/",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Include/<%= it.normalizeSoc() %>/",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/ADC",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/AES",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/CAN",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/DMA",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/FLC",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/GPIO",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/I2C",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/I2S",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/ICC",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/LP",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/PT",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/RTC",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/SPI",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/TMR",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/TRNG",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/UART",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/WDT",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/Device/Maxim/<%= it.normalizeSoc() %>/Include",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/5.9.0/Core/Include"
+      ],
+      "defines": [
+        "${config:cfs.project.board}",
+        "TARGET=<%= it.normalizeSoc() %>",
+        "__GNUC__"
+      ],
+      "intelliSenseMode": "gcc-arm",
+      "compilerPath": "${config:cfs.toolchain.armAArch32GCC.path}/bin/arm-none-eabi-gcc",
+      "browse": {
+        "path": [
+          "${default}",
+          "${workspaceFolder}",
+          "${workspaceFolder}/**",
+          "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/Device/Maxim/<%= it.normalizeSoc() %>/Source",
+          "${config:cfs.sdk.path}/SDK/MAX/Libraries/Boards/<%= it.normalizeSoc() %>/<%= it.getMsdkBoardName() %>/Source",
+          "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers",
+          "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/LED",
+          "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/PushButton",
+          "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Display",
+          "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Display/fonts/",
+          "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/Device/Maxim/<%= it.normalizeSoc() %>/Source/GCC"
+        ]
+      }
+    },
+    {
+      "name": "Mac",
+      "includePath": [
+        "${default}",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/Boards/<%= it.normalizeSoc() %>/<%= it.getMsdkBoardName() %>/Include",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/LED",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/PushButton",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Display",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Display/fonts/",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Include/<%= it.normalizeSoc() %>/",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/ADC",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/AES",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/CAN",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/DMA",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/FLC",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/GPIO",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/I2C",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/I2S",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/ICC",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/LP",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/PT",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/RTC",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/SPI",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/TMR",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/TRNG",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/UART",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/WDT",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/Device/Maxim/<%= it.normalizeSoc() %>/Include",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/5.9.0/Core/Include"
+      ],
+      "defines": [
+        "${config:cfs.project.board}",
+        "TARGET=<%= it.normalizeSoc() %>",
+        "__GNUC__"
+      ],
+      "intelliSenseMode": "gcc-arm",
+      "compilerPath": "${config:cfs.toolchain.armAArch32GCC.path}/bin/arm-none-eabi-gcc",
+      "browse": {
+        "path": [
+          "${default}",
+          "${workspaceFolder}",
+          "${workspaceFolder}/**",
+          "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/Device/Maxim/<%= it.normalizeSoc() %>/Source",
+          "${config:cfs.sdk.path}/SDK/MAX/Libraries/Boards/<%= it.normalizeSoc() %>/<%= it.getMsdkBoardName() %>/Source",
+          "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers",
+          "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/LED",
+          "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/PushButton",
+          "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Display",
+          "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Display/fonts/",
+          "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/Device/Maxim/<%= it.normalizeSoc() %>/Source/GCC"
+        ]
+      }
+    }
+  ],
+  "version": 4
+}

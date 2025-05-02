@@ -1,0 +1,15 @@
+{
+  "extends": "@tsconfig/node18/tsconfig.json",
+  "references": [
+    {
+      "path": "api"
+    },
+    {
+      "path": "plugins"
+    }
+  ],
+  "ts-node": {
+    "esm": true
+  },
+  "exclude": ["tests"]
+}

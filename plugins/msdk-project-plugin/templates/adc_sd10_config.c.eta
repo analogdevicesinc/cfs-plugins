@@ -1,0 +1,98 @@
+<%
+/**
+ * Copyright (c) 2025 Analog Devices, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+// Include common plugin code
+eval(this.render("common/utilities/utilities.js"));
+
+// Return the integer value from the key.
+function getADCValue(key, defaultValue) {
+  return getAssignedPeripheral(it.instance).Config?.[key] ?? defaultValue;
+}
+
+// Return the channel ID for the given slot.
+function getADCChannel(slot) {
+  const channel = getADCValue("SLOT" + slot + "_ID", "AIN0");
+  switch (channel) {
+    case "AIN0":
+      return "0";
+    case "AIN1":
+      return "1";
+    case "AIN2":
+      return "2";
+    case "AIN3":
+      return "3";
+    case "AIN4":
+      return "4";
+    case "AIN5":
+      return "5";
+    case "AIN6":
+      return "6";
+    case "AIN7":
+      return "7";
+    case "VDDIO_DIV4":
+      return "VDDIO";
+    case "VDDIOH_DIV4":
+      return "VDDIOH";
+    case "VDDB_DIV4":
+      return "VDDB";
+    case "VREGI_DIV4":
+      return "VREGI";
+  }
+  return channel;
+}
+
+// Get the divider for the ADC
+function getADCDiv() {
+  return getClockSetting(it.clocknode, it.div, "8");
+}
+%>
+<% if (clockNodeExists(it.clocknode)) { %>
+<%   if (!getAssignedProjectForPeripheral(it.instance) && isClockSetTo([], it.clocknode, it.enable, "TRUE")) { %>
+  /* The <%= it.instance %> peripheral is enabled on the clock canvas but is
+   * not assigned to any core. In order to generate configuration code, please
+   * assign the peripheral to a core.
+   */
+
+<%   } else if (getAssignedPeripheral(it.instance)) { %>
+  { /* Configure <%= it.instance %>.
+<%     if (getPeripheralDescription(it.instance)) { %>
+     * This peripheral is used for <%= getPeripheralDescription(it.instance) %>.
+<%     } %>
+<%     if (!isClockSetTo([it.instance], it.clocknode, it.enable, "TRUE")) { %>
+     * Note: This peripheral was not enabled on the clock configuration canvas.
+     * Nonetheless, as a result of the following configuration, the peripheral will be
+     * clocked on.
+<%     } %>
+     * Configuraion: The MXC_ADC APIs used at runtime in your application provde the
+     * necessary options to configure the ADC.
+     */
+
+    /* Initialize the peripheral. */
+    result = MXC_ADC_Init();
+    if (result != E_NO_ERROR) {
+      return result;
+    }
+
+    /* Note that the following function expects the frequency to be scaled down
+     * by 1024.
+     */
+    result = MXC_ADC_SetConversionSpeed(<%= it.clock %> / (1024U * <%= getADCDiv() %>U));
+    if (result == E_BAD_PARAM) {
+      return result;
+    }
+  }
+
+<%   } %>
+<% } %>

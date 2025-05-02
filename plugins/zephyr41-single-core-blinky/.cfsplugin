@@ -1,0 +1,175 @@
+{
+  "pluginName": "Zephyr 4.1 Single Core Blinky",
+  "pluginDescription": "Single Core Zephyr 4.1 blinky template for supported MCUs.",
+  "pluginId": "com.analog.zephyr41.workspace.blinky",
+  "pluginVersion": "1.0.0",
+  "author": "Analog Devices, Inc.",
+  "firmwarePlatform": "Zephyr 4.1",
+  "supportedSocs": [
+    {
+      "name": "MAX32650",
+      "board": "EvKit_V1",
+      "package": "tqfp"
+    },
+    {
+      "name": "MAX32650",
+      "board": "FTHR",
+      "package": "wlp"
+    },
+    {
+      "name": "MAX32650",
+      "board": "AD-SWIOT1L-SL",
+      "package": "tqfp"
+    },
+    {
+      "name": "MAX32655",
+      "dataModel": "max32655-ctbga.json",
+      "board": "EvKit_V1",
+      "package": "ctbga"
+    },
+    {
+      "name": "MAX32655",
+      "dataModel": "max32655-ctbga.json",
+      "board": "FTHR",
+      "package": "ctbga"
+    },
+    {
+      "name": "MAX32657",
+      "dataModel": "max32657-wlp.json",
+      "board": "EvKit_V1",
+      "package": "wlp"
+    },
+    {
+      "name": "MAX32660",
+      "board": "EvKit_V1",
+      "package": "tqfn20"
+    },
+    {
+      "name": "MAX32660",
+      "board": "EVSYS",
+      "package": "tqfn20"
+    },
+    {
+      "name": "MAX32662",
+      "board": "EvKit_V1",
+      "package": "tqfnep"
+    },
+    {
+      "name": "MAX32666",
+      "board": "EvKit_V1",
+      "package": "ctbga"
+    },
+    {
+      "name": "MAX32666",
+      "board": "FTHR",
+      "package": "ctbga"
+    },
+    {
+      "name": "MAX32670",
+      "board": "EvKit_V1",
+      "package": "tqfn"
+    },
+    {
+      "name": "MAX32672",
+      "board": "EvKit_V1",
+      "package": "tqfn40"
+    },
+    {
+      "name": "MAX32675C",
+      "board": "EvKit_V1",
+      "package": "tqfn"
+    },
+    {
+      "name": "MAX32690",
+      "dataModel": "max32690-tqfn.json",
+      "board": "EvKit_V1",
+      "package": "tqfn"
+    },
+    {
+      "name": "MAX32690",
+      "dataModel": "max32690-wlp.json",
+      "board": "AD-APARD32690-SL",
+      "package": "wlp"
+    },
+    {
+      "name": "MAX32690",
+      "dataModel": "max32690-tqfn.json",
+      "board": "FTHR",
+      "package": "tqfn"
+    },
+    {
+      "name": "MAX78000",
+      "board": "EvKit_V1",
+      "package": "ctbga"
+    },
+    {
+      "name": "MAX78000",
+      "board": "FTHR",
+      "package": "ctbga"
+    },
+    {
+      "name": "MAX78002",
+      "board": "EvKit_V1",
+      "package": "csbga"
+    }
+  ],
+  "features": {
+    "workspace": {
+      "files": [
+        {
+          "src": "files/.vscode/launch.json",
+          "dst": "${context.soc.toLowerCase() === 'max32657' ? 'm33' : 'm4'}/.vscode/launch.json"
+        },
+        {
+          "src": "files/.vscode/c_cpp_properties.json",
+          "dst": "${context.soc.toLowerCase() === 'max32657' ? 'm33' : 'm4'}/.vscode/c_cpp_properties.json"
+        },
+        {
+          "src": "files/src/main.c",
+          "dst": "${context.soc.toLowerCase() === 'max32657' ? 'm33' : 'm4'}/src/main.c"
+        },
+        {
+          "src": "files/CMakeLists.txt",
+          "dst": "${context.soc.toLowerCase() === 'max32657' ? 'm33' : 'm4'}/CMakeLists.txt"
+        },
+        {
+          "src": "files/prj.conf",
+          "dst": "${context.soc.toLowerCase() === 'max32657' ? 'm33' : 'm4'}/prj.conf"
+        },
+        {
+          "src": "files/README.rst",
+          "dst": "${context.soc.toLowerCase() === 'max32657' ? 'm33' : 'm4'}/README.rst"
+        },
+        {
+          "src": "files/sample.yaml",
+          "dst": "${context.soc.toLowerCase() === 'max32657' ? 'm33' : 'm4'}/sample.yaml"
+        }
+      ],
+      "templates": [
+        {
+          "src": "templates/.cfsconfig.eta",
+          "dst": ".cfs/${context.soc.toLowerCase()}-${context.package.toLowerCase()}.cfsconfig",
+          "condition": "${context.soc.toLowerCase() === 'max32655'}"
+        },
+        {
+          "src": "templates/.cfsconfig.eta",
+          "dst": ".cfs/${context.soc.toLowerCase()}-${context.package.toLowerCase()}.cfsconfig",
+          "condition": "${context.soc.toLowerCase() === 'max32657'}"
+        },
+        {
+          "src": "templates/.cfsconfig.eta",
+          "dst": ".cfs/${context.soc.toLowerCase()}-${context.package.toLowerCase()}.cfsconfig",
+          "condition": "${context.soc.toLowerCase() === 'max32690'}"
+        },
+        {
+          "src": "templates/workspace-name.code-workspace.eta",
+          "dst": "${context.workspaceName}.code-workspace"
+        },
+        {
+          "src": "templates/.vscode/settings.json.eta",
+          "dst": "${context.soc.toLowerCase() === 'max32657' ? 'm33' : 'm4'}/.vscode/settings.json"
+        }
+      ]
+    }
+  }
+}

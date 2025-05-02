@@ -1,0 +1,29 @@
+{
+  "name": "cfs-plugins-api",
+  "publisher": "adi",
+  "description": "Plugin API for CodeFusion Studio",
+  "author": "Analog Devices",
+  "version": "1.1.0-2",
+  "scripts": {
+    "build": "shx rm -rf dist && tsc -b ./tsconfig.json",
+    "lint": "eslint . --ext .ts",
+    "test": "mocha --require ts-node/register --recursive src/**/*.test.ts"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^18.19.8",
+    "@typescript-eslint/eslint-plugin": "^7.8.0",
+    "@typescript-eslint/parser": "^7.8.0",
+    "chai": "^5",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "mocha": "^10",
+    "shx": "^0.3.4",
+    "ts-node": "^10.9.2",
+    "typescript": "5.0.4"
+  },
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "type": "module",
+  "license": "Apache-2.0"
+}

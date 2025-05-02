@@ -1,0 +1,34 @@
+<%~ include("./normalize-soc.eta", it) %>
+<%
+it.getZephyrBoardName = function() {
+  switch (it.board.toLowerCase()) {
+    case "ad-apard32690-sl":
+      return `apard32690/max32690/m4`;
+    case "evkit_v1":
+      return `${it.normalizeSoc().toLowerCase()}evkit/${it.normalizeSoc().toLowerCase()}${
+        it.normalizeSoc() === 'MAX32666' 
+          ? '/cpu0' 
+          : ['MAX78000', 'MAX78002', 'MAX32690', 'MAX32655'].includes(it.normalizeSoc()) 
+            ? '/m4' 
+            : ''
+      }`;
+    case "fthr":
+    case "fthr_reva":
+      return `${it.normalizeSoc().toLowerCase()}fthr/${it.normalizeSoc().toLowerCase()}${
+        it.normalizeSoc() === 'MAX32666' 
+          ? '/cpu0' 
+          : ['MAX32657', 'MAX32672', 'MAX32650'].includes(it.normalizeSoc()) 
+            ? '' 
+            : '/m4'
+      }`;
+    case "fthr_apps_p1":
+      return `${it.normalizeSoc().toLowerCase()}fthr_apps/${it.normalizeSoc().toLowerCase()}${it.normalizeSoc() === 'MAX32657' ? '' : '/m4'}`;
+    case 'ad-swiot1l-sl':
+      return 'ad_swiot1l_sl';
+    case 'evsys':
+      return `${it.normalizeSoc().toLowerCase()}evsys`;
+    default:
+      throw new Error(`Unsupported board: ${it.board}`);
+  }
+};
+%>

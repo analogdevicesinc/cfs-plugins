@@ -1,0 +1,121 @@
+<%
+/**
+ * Copyright (c) 2025 Analog Devices, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+// Include common plugin code
+eval(this.render("common/utilities/utilities.js"));
+
+// Return the integer value from the key.
+function getRTCValue(key) {
+  return getAssignedPeripheral(it.instance).Config?.[key] ?? "0";
+}
+
+// Return the interrupt mask for any enabled interrupts.
+function getRTCIntMask() {
+  const cfg = getAssignedPeripheral(it.instance).Config;
+  let arg = "";
+  if (cfg?.TOD_ALARM_IE === "TRUE") {
+    arg = "MXC_RTC_INT_EN_LONG";
+  }
+  if (cfg?.SSEC_ALARM_IE === "TRUE") {
+    if (arg !== "")
+      arg += " | ";
+    arg += "MXC_RTC_INT_EN_SHORT";
+  }
+  if (cfg?.RDY_IE === "TRUE") {
+    if (arg !== "")
+      arg += " | ";
+    arg += "MXC_RTC_INT_EN_READY";
+  }
+  return arg;
+}
+
+// Get the SQWOUT frequency, if any.
+function getSQWOUTFreq() {
+  if (clockNodeExists(it.output_clocknode) && (!it.enable || isClockSetTo([it.instance], it.enable_clocknode, it.enable, "TRUE"))) {
+    if (getClockSetting(it.output_clocknode, it.output_ctrl) === "RTC_DIV_4096" || (it.enable && !isClockSet([it.instance], it.output_clocknode, it.output_ctrl))) {
+      return "1HZ";
+    } else if (getClockSetting(it.output_clocknode, it.output_ctrl) === "RTC_DIV_8") {
+      return "512HZ";
+    } else if (getClockSetting(it.output_clocknode, it.output_ctrl) === "CLK_4KHZ") {
+      return "4KHZ";
+    } else if (getClockSetting(it.output_clocknode, it.output_ctrl) === "ERTCO") {
+      return "32KHZ";
+    } else if (isClockSet([it.instance], it.output_clocknode, it.output_ctrl) && !isClockSetTo([it.instance], it.output_clocknode, it.output_ctrl, "DIS")) {
+      return getClockSetting(it.output_clocknode, it.output_ctrl, "1HZ");
+    }
+  }
+  return undefined;
+}
+%>
+<% if (!getAssignedProjectForPeripheral(it.instance) && clockNodeExists(it.output_clocknode) && ((isClockSetAnyProject(it.output_clocknode, it.output_ctrl) && !isClockSetToAnyProject(it.output_clocknode, it.output_ctrl, "DIS")) || (it.enable && isClockSetToAnyProject(it.enable_clocknode, it.enable, "TRUE")))) { %>
+  /* The <%= it.output_clocknode %> clock node is enabled on the clock canvas but the RTC
+   * peripheral is not assigned to any core. In order to generate configuration code,
+   * please assign the peripheral to a core.
+   */
+
+<% } else if (getAssignedPeripheral(it.instance)) { %>
+  { /* Configure <%= it.instance %>.
+<%   if (getPeripheralDescription(it.instance)) { %>
+     * This peripheral is used for <%= getPeripheralDescription(it.instance) %>.
+<%   } %>
+<%   if (it.enable && !isClockSetTo([it.instance], it.enable_clocknode, it.enable, "TRUE")) { %>
+     * Note: This peripheral was not enabled on the clock configuration canvas.
+     * Nonetheless, as a result of the following configuration, the peripheral will be
+     * clocked on.
+<%   } %>
+     */
+
+    /* Initialize the peripheral. */
+    result = MXC_RTC_Init(<%= getRTCValue("SEC") %>U,
+                          <%= getRTCValue("SSEC") %>U);
+    if (result != E_NO_ERROR) {
+      return result;
+    }
+
+    result = MXC_RTC_Trim(<%= getRTCValue("TRIM") %>);
+    if (result != E_NO_ERROR) {
+      return result;
+    }
+
+    /* Set the time-of-day alarm value. */
+    result = MXC_RTC_SetTimeofdayAlarm(<%= getRTCValue("TOD_ALARM") %>U);
+    if (result != E_NO_ERROR) {
+      return result;
+    }
+
+    /* Set the sub-second alarm value. */
+    result = MXC_RTC_SetSubsecondAlarm(<%= getRTCValue("SSEC_ALARM") %>U);
+    if (result != E_NO_ERROR) {
+      return result;
+    }
+
+<%   if (getRTCIntMask() !== "") { %>
+    /* Enable interrupts. */
+    result = MXC_RTC_EnableInt(<%= getRTCIntMask() %>);
+    if (result != E_NO_ERROR) {
+      return result;
+    }
+
+<%   } %>
+<%   if (getSQWOUTFreq()) { %>
+    /* Start the Square Wave Output. */
+    result = MXC_RTC_SquareWaveStart(MXC_RTC_F_<%= getSQWOUTFreq() %>);
+    if (result != E_NO_ERROR) {
+      return result;
+    }
+<%   } %>
+  }
+
+<% } %>

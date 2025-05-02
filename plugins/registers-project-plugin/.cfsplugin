@@ -1,0 +1,191 @@
+{
+  "pluginName": "Registers-Only Plugin",
+  "pluginId": "com.analog.project.registers.plugin",
+  "pluginDescription": "Create example baremetal projects which generates configuration code using MMR accesses only",
+  "pluginVersion": "1.0.0",
+  "pluginApiVersion": 1,
+  "author": "Analog Devices, Inc.",
+  "firmwarePlatform": "Baremetal",
+  "supportedSocs": [
+    {
+      "name": "MAX32655",
+      "dataModel": "max32655-ctbga.json",
+      "board": "EvKit_V1",
+      "package": "ctbga"
+    },
+    {
+      "name": "MAX32655",
+      "dataModel": "max32655-ctbga.json",
+      "board": "FTHR",
+      "package": "ctbga"
+    },
+    {
+      "name": "MAX32655",
+      "package": "wlp"
+    },
+    {
+      "name": "MAX32657",
+      "dataModel": "max32657-wlp.json",
+      "board": "EvKit_V1",
+      "package": "wlp"
+    },
+    {
+      "name": "MAX32690",
+      "dataModel": "max32690-tqfn.json",
+      "board": "EvKit_V1",
+      "package": "tqfn"
+    },
+    {
+      "name": "MAX32690",
+      "dataModel": "max32690-wlp.json",
+      "board": "AD-APARD32690-SL",
+      "package": "wlp"
+    },
+    {
+      "name": "MAX32690",
+      "dataModel": "max32690-tqfn.json",
+      "board": "FTHR",
+      "package": "tqfn"
+    }
+  ],
+  "features": {
+    "project": {
+      "templates": [
+        {
+          "src": "templates/settings.json.eta",
+          "dst": ".vscode/settings.json"
+        },
+        {
+          "src": "templates/launch.json.eta",
+          "dst": ".vscode/launch.json"
+        },
+        {
+          "src": "templates/c_cpp_properties.json.eta",
+          "dst": ".vscode/c_cpp_properties.json"
+        },
+        {
+          "src": "templates/CMakeLists.txt.eta",
+          "dst": "CMakeLists.txt"
+        },
+        {
+          "src": "templates/main.c.eta",
+          "dst": "src/main.c"
+        }
+      ],
+      "files": []
+    },
+    "codegen": {
+      "files": [],
+      "templates": [
+        {
+          "src": "templates/memory.ld.eta",
+          "dst": "memory.ld"
+        },
+        {
+          "src": "templates/soc_init.c.eta",
+          "dst": "soc_init.c"
+        }
+      ]
+    }
+  },
+  "properties": {
+    "project": [
+      {
+        "id": "ProjectName",
+        "name": "Project Name",
+        "category": "Project Settings",
+        "default": "${context.coreId}",
+        "type": "string",
+        "required": true,
+        "readonly": false
+      }
+    ],
+    "peripheral": {
+      "CM4 SysTick": {
+        "supportedControls": []
+      },
+      "CM33 SysTick (S)": {
+        "supportedControls": []
+      },
+      "CM33 SysTick (NS)": {
+        "supportedControls": []
+      },
+      "RV mtime": {
+        "supportedControls": []
+      },
+      "ADC": {
+        "removedControls": [
+          {
+            "Id": "REF_TRIM"
+          },
+          {
+            "Id": "EXT_REF_TRIM"
+          },
+          {
+            "Id": "ANALOG_INPUT_MODE"
+          },
+          {
+            "Id": "CH0_DIV_EN"
+          },
+          {
+            "Id": "CH1_DIV_EN"
+          },
+          {
+            "Id": "CH2_DIV_EN"
+          },
+          {
+            "Id": "CH3_DIV_EN"
+          },
+          {
+            "Id": "CH4_DIV_EN"
+          },
+          {
+            "Id": "CH5_DIV_EN"
+          },
+          {
+            "Id": "CH6_DIV_EN"
+          },
+          {
+            "Id": "CH7_DIV_EN"
+          },
+          {
+            "Id": "CH0_DIV_OPTION"
+          },
+          {
+            "Id": "CH1_DIV_OPTION"
+          },
+          {
+            "Id": "CH2_DIV_OPTION"
+          },
+          {
+            "Id": "CH3_DIV_OPTION"
+          },
+          {
+            "Id": "CH4_DIV_OPTION"
+          },
+          {
+            "Id": "CH5_DIV_OPTION"
+          },
+          {
+            "Id": "CH6_DIV_OPTION"
+          },
+          {
+            "Id": "CH7_DIV_OPTION"
+          },
+          {
+            "Id": "CH8_DIV_OPTION"
+          },
+          {
+            "Id": "CH9_DIV_OPTION"
+          },
+          {
+            "Id": "CH10_DIV_OPTION"
+          },
+          {
+            "Id": "CH11_DIV_OPTION"
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "Partitions": [
+    {
+      "Name": "RISCV_FLASH",
+      "StartAddress": "0x10300000",
+      "Size": 262144,
+      "IsOwner": true,
+      "Access": "R",
+      "Config": {
+        "NAME_OVERRIDE": "FLASH"
+      }
+    },
+    {
+      "Name": "RISCV_SRAM",
+      "StartAddress": "0x20100000",
+      "Size": 131072,
+      "IsOwner": true,
+      "Access": "R/W",
+      "Config": {
+        "NAME_OVERRIDE": "SRAM"
+      }
+    }
+  ],
+  "Peripherals": [
+    {
+      "Name": "RV mtime",
+      "Signals": [],
+      "Config": {
+      }
+    }
+  ]
+}

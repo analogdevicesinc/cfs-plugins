@@ -1,0 +1,40 @@
+{
+  "configurations": [
+    {
+      "name": "CFS: Debug with GDB and OpenOCD (RISC-V)",
+      "executable": "${config:cfs.programFile}",
+      "cwd": "${config:cfs.debugPath}",
+      "request": "attach",
+      "type": "cortex-debug",
+      "runToEntryPoint": "main",
+      "servertype": "openocd",
+      "linux": {
+        "gdbPath": "${config:cfs.toolchain.riscVGCC.path}/bin/riscv-none-elf-gdb"
+      },
+      "windows": {
+        "gdbPath": "${config:cfs.toolchain.riscVGCC.path}/bin/riscv-none-elf-gdb.exe"
+      },
+      "osx": {
+        "gdbPath": "${config:cfs.toolchain.riscVGCC.path}/bin/riscv-none-elf-gdb"
+      },
+      "serverpath": "${config:cfs.openocd.path}/bin/openocd",
+      "gdbPath": "${config:cfs.toolchain.riscVGCC.path}/bin/riscv-none-elf-gdb.exe",
+      "svdPath": "${config:cfs.cmsis.svdFile}",
+      "searchDir": ["${config:cfs.openocd.path}/share/openocd/scripts"],
+      "configFiles": [
+        "${config:cfs.openocd.interface}",
+        "${config:cfs.openocd.target}"
+      ],
+      "gdbTarget": "localhost:3334",
+      "preAttachCommands": [
+        "set logging overwrite on",
+        "set logging file debug-riscv.log",
+        "set logging on",
+        "set remotetimeout 60",
+        "tbreak main",
+        "set $pc=Reset_Handler"
+      ],
+      "postAttachCommands": ["continue"]
+    }
+  ]
+}

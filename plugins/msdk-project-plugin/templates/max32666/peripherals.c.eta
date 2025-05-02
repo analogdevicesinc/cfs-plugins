@@ -1,0 +1,60 @@
+<%
+/**
+ * Copyright (c) 2024-2025 Analog Devices, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+// Include common plugin code
+eval(this.render("common/utilities/utilities.js"));
+
+function modifiesSysClk() {
+  return (isClockSet([], "SYS_OSC Mux", "MUX") || isClockSet([], "PRESCALER", "DIV"));
+}
+
+%>
+<% if (isClockSet([], "SYS_OSC Mux", "MUX")) { %>
+/* SYS_OSC Mux: Clock Source is set to <%= getClockSettingDesc("SYS_OSC Mux", "MUX") %>. */
+  result = MXC_SYS_Clock_Select(MXC_SYS_CLOCK_<%= getClockSetting("SYS_OSC Mux", "MUX") %>);
+  if (result != E_NO_ERROR) {
+    return result;
+  }
+
+<% } %>
+<% if (isClockSet([], "PRESCALER", "DIV")) { %>
+  /* PRESCALER: Divider Value is set to <%= getClockSettingDesc("PRESCALER", "DIV") %>. */
+  MXC_SYS_SetClockDiv(MXC_SYS_CLOCK_DIV_<%= getClockSetting("PRESCALER", "DIV") %>);
+
+<% } %>
+<%~ include("../spi_config.c.eta", { ...it, instance: "SPI0", clock: "PeripheralClock", clocknode: "SPI0/1/2", enable: "SPI0_ENABLE" }) %>
+<%~ include("../spi_config.c.eta", { ...it, instance: "SPI1", clock: "PeripheralClock", clocknode: "SPI0/1/2", enable: "SPI1_ENABLE" }) %>
+<%~ include("../spi_config.c.eta", { ...it, instance: "SPI2", clock: "PeripheralClock", clocknode: "SPI0/1/2", enable: "SPI2_ENABLE" }) %>
+<%~ include("../uart_config.c.eta", { ...it, instance: "UART0", clocknode: "UART0/1/2", enable: "UART0_ENABLE", mux: "UART0_MUX", clock_default: "PCLK" }) %>
+<%~ include("../uart_config.c.eta", { ...it, instance: "UART1", clocknode: "UART0/1/2", enable: "UART1_ENABLE", mux: "UART1_MUX", clock_default: "PCLK" }) %>
+<%~ include("../uart_config.c.eta", { ...it, instance: "UART2", clocknode: "UART0/1/2", enable: "UART2_ENABLE", mux: "UART2_MUX", clock_default: "PCLK" }) %>
+<%~ include("../tmr_config.c.eta", { ...it, instance: "TMR0", clocknode: "TMR0/1/2/3/4/5", enable: "TMR0_ENABLE", clock_default: "PCLK" }) %>
+<%~ include("../tmr_config.c.eta", { ...it, instance: "TMR1", clocknode: "TMR0/1/2/3/4/5", enable: "TMR1_ENABLE", clock_default: "PCLK" }) %>
+<%~ include("../tmr_config.c.eta", { ...it, instance: "TMR2", clocknode: "TMR0/1/2/3/4/5", enable: "TMR2_ENABLE", clock_default: "PCLK" }) %>
+<%~ include("../tmr_config.c.eta", { ...it, instance: "TMR3", clocknode: "TMR0/1/2/3/4/5", enable: "TMR3_ENABLE", clock_default: "PCLK" }) %>
+<%~ include("../tmr_config.c.eta", { ...it, instance: "TMR4", clocknode: "TMR0/1/2/3/4/5", enable: "TMR4_ENABLE", clock_default: "PCLK" }) %>
+<%~ include("../tmr_config.c.eta", { ...it, instance: "TMR5", clocknode: "TMR0/1/2/3/4/5", enable: "TMR5_ENABLE", clock_default: "PCLK" }) %>
+<%~ include("../i2c_config.c.eta", { ...it, instance: "I2C0", clock: "PeripheralClock", clocknode: "I2C0/1/2", enable: "I2C0_ENABLE" }) %>
+<%~ include("../i2c_config.c.eta", { ...it, instance: "I2C1", clock: "PeripheralClock", clocknode: "I2C0/1/2", enable: "I2C1_ENABLE" }) %>
+<%~ include("../i2c_config.c.eta", { ...it, instance: "I2C2", clock: "PeripheralClock", clocknode: "I2C0/1/2", enable: "I2C2_ENABLE" }) %>
+<%~ include("../wdt_config.c.eta", { ...it, instance: "WDT0", clocknode: "WDT0/1/2", enable: "WDT0_ENABLE" }) %>
+<%~ include("../wdt_config.c.eta", { ...it, instance: "WDT1", clocknode: "WDT0/1/2", enable: "WDT1_ENABLE" }) %>
+<%~ include("../wdt_config.c.eta", { ...it, instance: "WDT2", clocknode: "WDT0/1/2", enable: "WDT2_ENABLE" }) %>
+<%~ include("../rtc_config.c.eta", { ...it, instance: "RTC", output_clocknode: "SQWOUT", output_ctrl: "SQWOUT" }) %>
+<% if (modifiesSysClk()) { %>
+  /* Update the System Core Clock as core clock settings have changed. */
+  SystemCoreClockUpdate();
+
+<% } %>

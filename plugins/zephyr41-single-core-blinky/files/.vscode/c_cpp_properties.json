@@ -1,0 +1,78 @@
+{
+  "configurations": [
+    {
+      "name": "Win32",
+      "includePath": [
+        "${workspaceFolder}/**",
+        "${workspaceFolder}/build/zephyr/include/generated",
+        "${config:cfs.zephyr.sdk.path}/arm-zephyr-eabi/arm-zephyr-eabi/include",
+        "${config:cfs.zephyr.workspace.path}/include/zephyr",
+        "${config:cfs.zephyr.workspace.path}/include"
+      ],
+      "defines": ["${config:cfs.project.board}", "__GNUC__"],
+      "intelliSenseMode": "gcc-arm",
+      "compilerPath": "${config:cfs.zephyr.sdk.path}/arm-zephyr-eabi/bin/arm-zephyr-eabi-gcc.exe",
+      "browse": {
+        "path": [
+          "${workspaceFolder}/**",
+          "${workspaceFolder}/build/zephyr/include/generated",
+          "${config:cfs.zephyr.sdk.path}/arm-zephyr-eabi/arm-zephyr-eabi/include",
+          "${config:cfs.zephyr.workspace.path}/include/zephyr",
+          "${config:cfs.zephyr.workspace.path}/include"
+        ]
+      },
+      "cStandard": "c17",
+      "cppStandard": "c++17"
+    },
+    {
+      "name": "Linux",
+      "includePath": [
+        "${workspaceFolder}/**",
+        "${workspaceFolder}/build/zephyr/include/generated",
+        "${config:cfs.zephyr.sdk.path}/arm-zephyr-eabi/arm-zephyr-eabi/include",
+        "${config:cfs.zephyr.workspace.path}/include/zephyr",
+        "${config:cfs.zephyr.workspace.path}/include"
+      ],
+      "defines": ["${config:cfs.project.board}", "__GNUC__"],
+      "intelliSenseMode": "gcc-arm",
+      "compilerPath": "${config:cfs.zephyr.sdk.path}/arm-zephyr-eabi/bin/arm-zephyr-eabi-gcc",
+      "browse": {
+        "path": [
+          "${workspaceFolder}/**",
+          "${workspaceFolder}/build/zephyr/include/generated",
+          "${config:cfs.zephyr.sdk.path}/arm-zephyr-eabi/arm-zephyr-eabi/include",
+          "${config:cfs.zephyr.workspace.path}/include/zephyr",
+          "${config:cfs.zephyr.workspace.path}/include"
+        ]
+      },
+      "cStandard": "c17",
+      "cppStandard": "c++17"
+    },
+    {
+      "name": "Mac",
+      "includePath": [
+        "${workspaceFolder}/**",
+        "${workspaceFolder}/build/zephyr/include/generated",
+        "${config:cfs.zephyr.sdk.path}/arm-zephyr-eabi/arm-zephyr-eabi/include",
+        "${config:cfs.zephyr.workspace.path}/include/zephyr",
+        "${config:cfs.zephyr.workspace.path}/include"
+      ],
+      "defines": ["${config:cfs.project.board}", "__GNUC__"],
+      "intelliSenseMode": "gcc-arm",
+      "compilerPath": "${config:cfs.zephyr.sdk.path}/arm-zephyr-eabi/bin/arm-zephyr-eabi-gcc",
+      "browse": {
+        "path": [
+          "${workspaceFolder}/**",
+          "${workspaceFolder}/build/zephyr/include/generated",
+          "${config:cfs.zephyr.sdk.path}/arm-zephyr-eabi/arm-zephyr-eabi/include",
+          "${config:cfs.zephyr.workspace.path}/include/zephyr",
+          "${config:cfs.zephyr.workspace.path}/include"
+        ]
+      },
+      "macFrameworkPath": ["/System/Library/Frameworks", "/Library/Frameworks"],
+      "cStandard": "c17",
+      "cppStandard": "c++17"
+    }
+  ],
+  "version": 4
+}

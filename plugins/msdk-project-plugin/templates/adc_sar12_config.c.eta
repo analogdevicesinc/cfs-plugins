@@ -1,0 +1,180 @@
+<%
+/**
+ * Copyright (c) 2025 Analog Devices, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+// Include common plugin code
+eval(this.render("common/utilities/utilities.js"));
+
+// Return the ADC clock source enum.
+function getADCClock() {
+  const clock = getClockSetting(it.clocknode, it.mux, it.clock_default);
+  let clock_enum = "SYS_OSC";
+  switch (clock) {
+    case "ADC_CLK_EXT":
+      clock_enum = "EXT";
+      break;
+    case "ERFO":
+    case "IBRO":
+      clock_enum = clock;
+      break;
+    case "SYS_CLK":
+      clock_enum = "SYS_OSC";
+      break;
+  }
+  return clock_enum;
+}
+
+// Get the divider for the ADC
+function getADCDiv() {
+  return getClockSetting(it.clocknode, it.div, "16");
+}
+
+// Get the trigger select.
+function getADCTrigSel() {
+  let sel = getAssignedPeripheral(it.instance).Config?.TRIG_SEL ?? "TMR0";
+  switch (sel) {
+    case "AIN_TRIG_A":
+      sel = "P0_10";
+      break;
+    case "AIN_TRIG_B":
+      sel = "P1_0";
+      break;
+    case "ADC_HW_TRIG_C":
+      sel = "P2_15";
+      break;
+    case "THERM_RDY":
+      sel = "TEMP_SENS";
+      break;
+  }
+  return sel;
+}
+
+// Return the integer value from the key.
+function getADCValue(key, defaultValue) {
+  return getAssignedPeripheral(it.instance).Config?.[key] ?? defaultValue;
+}
+
+// Return the channel ID for the given slot.
+function getADCChannel(slot) {
+  const channel = getADCValue("SLOT" + slot + "_ID", "AIN0");
+  switch (channel) {
+    case "AIN0":
+      return "MXC_ADC_CH_0";
+    case "AIN1":
+      return "MXC_ADC_CH_1";
+    case "AIN2":
+      return "MXC_ADC_CH_2";
+    case "AIN3":
+      return "MXC_ADC_CH_3";
+    case "AIN4":
+      return "MXC_ADC_CH_4";
+    case "AIN5":
+      return "MXC_ADC_CH_5";
+    case "AIN6":
+      return "MXC_ADC_CH_6";
+    case "AIN7":
+      return "MXC_ADC_CH_7";
+    case "AIN8":
+      return "MXC_ADC_CH_8";
+    case "AIN9":
+      return "MXC_ADC_CH_9";
+    case "AIN10":
+      return "MXC_ADC_CH_10";
+    case "AIN11":
+      return "MXC_ADC_CH_11";
+    case "VDDA_2":
+      return "MXC_ADC_CH_VDDA_DIV2";
+    case "TEMP":
+      return "MXC_ADC_CH_TEMP_SENS";
+    case "VCORE_A":
+      return "MXC_ADC_CH_VCOREA";
+    case "VDD3A_4":
+      // There is no MSDK enum for this.
+      return "18 /* VDD3A/4 */";
+    case "VDDB_4":
+      // There is no MSDK enum for this.
+      return "19 /* VDDB/4 */";
+    case "VSSA":
+      // There is no MSDK enum for this.
+      return "20 /* VSSA */";
+  }
+  return "MXC_ADC_CH_" + channel;
+}
+%>
+<% if (clockNodeExists(it.clocknode)) { %>
+<%   if (!getAssignedProjectForPeripheral(it.instance) && isClockSetTo([], it.clocknode, it.enable, "TRUE")) { %>
+  /* The <%= it.instance %> peripheral is enabled on the clock canvas but is
+   * not assigned to any core. In order to generate configuration code, please
+   * assign the peripheral to a core.
+   */
+
+<%   } else if (getAssignedPeripheral(it.instance)) { %>
+  { /* Configure <%= it.instance %>.
+<%     if (getPeripheralDescription(it.instance)) { %>
+     * This peripheral is used for <%= getPeripheralDescription(it.instance) %>.
+<%     } %>
+<%     if (!isClockSetTo([it.instance], it.clocknode, it.enable, "TRUE")) { %>
+     * Note: This peripheral was not enabled on the clock configuration canvas.
+     * Nonetheless, as a result of the following configuration, the peripheral will be
+     * clocked on.
+<%     } %>
+     */
+
+    /* Initialize the peripheral. */
+    mxc_adc_req_t <%= it.instance.toLowerCase() %>_config = {
+      MXC_ADC_CLK_<%= getADCClock() %>,
+      MXC_ADC_CLKDIV_<%= getADCDiv() %>,
+      MXC_ADC_<%= getAssignedPeripheral(it.instance).Config?.SKIP_CAL === "TRUE" ? "SKIP_CAL" : "EN_CAL" %>,
+      MXC_ADC_REF_<%= getADCValue("REF_TRIM", "INT_1V25") %>,
+      <%= getADCValue("TRACK_CNT", "0") %>, /* track count */
+      <%= getADCValue("IDLE_CNT", "0") %> /* idle count */
+    };
+    result = MXC_ADC_Init(&<%= it.instance.toLowerCase() %>_config);
+    if (result != E_NO_ERROR) {
+      return result;
+    }
+
+    mxc_adc_conversion_req_t <%= it.instance.toLowerCase() %>_conv_config = {
+      MXC_ADC_<%= getADCValue("CONV_MODE", "ATOMIC") %>_CONV,
+      MXC_ADC_TRIG_<%= getADCValue("TRIG_MODE", "SOFTWARE") %>,
+      MXC_ADC_TRIG_SEL_<%= getADCTrigSel() %>,
+      MXC_ADC_<%= getADCValue("DATA_FORMAT", "DATA_STATUS") %>,
+      <%= getADCValue("THRESH", "0") %>, /* FIFO threshold */
+      MXC_ADC_AVG_<%= getADCValue("AVG", "1") %>,
+      MXC_ADC_DIV_<%= getADCValue("LPMODE_DIV", "2_5K_50K_ENABLE") %>,
+      <%= getADCValue("NUM_SLOTS", "1") %>, /* num slots */
+      <%= getADCValue("DMA_CHAN", "0") %> /* DMA channel number */
+    };
+    result = MXC_ADC_Configuration(&<%= it.instance.toLowerCase() %>_conv_config);
+    if (result != E_NO_ERROR) {
+      return result;
+    }
+
+    mxc_adc_slot_req_t <%= it.instance.toLowerCase() %>_slots_config[<%= getADCValue("NUM_SLOTS", "1") %>] = {
+<%   for (let slot = 0; slot < parseInt(getADCValue("NUM_SLOTS", "1")); slot += 1) { %>
+       { <%= getADCChannel(slot) %> }<% if (slot < parseInt(getADCValue("NUM_SLOTS", "1") - 1)) { %>,<% } %> 
+<%   } %>
+    };
+    result = MXC_ADC_SlotConfiguration(&<%= it.instance.toLowerCase() %>_slots_config[0], <%= getADCValue("NUM_SLOTS", "1") %>U);
+    if (result != E_NO_ERROR) {
+      return result;
+    }
+
+<%     if (getAssignedPeripheral(it.instance).Config?.CONV_MODE === "CONTINUOUS") { %>
+    MXC_ADC_SetConversionDelay(<%= getADCValue("SKIP_CNT", "0") %>);
+<%     } %>
+  }
+
+<%   } %>
+<% } %>

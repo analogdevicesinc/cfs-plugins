@@ -1,0 +1,2006 @@
+{
+  "pluginName": "MSDK Project Plugin",
+  "pluginDescription": "MSDK project and code generation",
+  "pluginId": "com.analog.project.msdk.plugin",
+  "pluginVersion": "1.0.0",
+  "author": "Analog Devices, Inc.",
+  "firmwarePlatform": "MSDK",
+  "supportedSocs": [
+    {
+      "name": "MAX32650",
+      "board": "EvKit_V1",
+      "package": "tqfp"
+    },
+    {
+      "name": "MAX32650",
+      "board": "FTHR",
+      "package": "wlp"
+    },
+    {
+      "name": "MAX32655",
+      "dataModel": "max32655-ctbga.json",
+      "board": "EvKit_V1",
+      "package": "ctbga"
+    },
+    {
+      "name": "MAX32655",
+      "dataModel": "max32655-ctbga.json",
+      "board": "FTHR",
+      "package": "ctbga"
+    },
+    {
+      "name": "MAX32655",
+      "dataModel": "max32655-wlp.json",
+      "package": "wlp"
+    },
+    {
+      "name": "MAX32657",
+      "dataModel": "max32657-wlp.json",
+      "board": "EvKit_V1",
+      "package": "wlp"
+    },
+    {
+      "name": "MAX32660",
+      "board": "EvKit_V1",
+      "package": "tqfn20"
+    },
+    {
+      "name": "MAX32660",
+      "package": "tqfn24"
+    },
+    {
+      "name": "MAX32660",
+      "package": "wlp"
+    },
+    {
+      "name": "MAX32662",
+      "board": "EvKit_V1",
+      "package": "tqfnep"
+    },
+    {
+      "name": "MAX32662",
+      "package": "wlp"
+    },
+    {
+      "name": "MAX32670",
+      "board": "EvKit_V1",
+      "package": "tqfn"
+    },
+    {
+      "name": "MAX32670",
+      "package": "wlp"
+    },
+    {
+      "name": "MAX32672",
+      "board": "EvKit_V1",
+      "package": "tqfn40"
+    },
+    {
+      "name": "MAX32672",
+      "package": "tqfn56"
+    },
+    {
+      "name": "MAX32675C",
+      "board": "EvKit_V1",
+      "package": "tqfn"
+    },
+    {
+      "name": "MAX32690",
+      "dataModel": "max32690-tqfn.json",
+      "board": "EvKit_V1",
+      "package": "tqfn"
+    },
+    {
+      "name": "MAX32690",
+      "dataModel": "max32690-wlp.json",
+      "board": "AD-APARD32690-SL",
+      "package": "wlp"
+    },
+    {
+      "name": "MAX32690",
+      "dataModel": "max32690-tqfn.json",
+      "board": "FTHR",
+      "package": "tqfn"
+    },
+    {
+      "name": "MAX78000",
+      "board": "EvKit_V1",
+      "package": "ctbga"
+    },
+    {
+      "name": "MAX78000",
+      "board": "FTHR",
+      "package": "ctbga"
+    },
+    {
+      "name": "MAX78002",
+      "board": "EvKit_V1",
+      "package": "csbga"
+    }
+  ],
+  "features": {
+    "project": {
+      "templates": [
+        {
+          "src": "templates/project.mk.eta",
+          "dst": "/"
+        },
+        {
+          "src": "templates/settings.json.eta",
+          "dst": ".vscode/"
+        },
+        {
+          "src": "templates/Makefile.eta",
+          "dst": "/"
+        },
+        {
+          "src": "templates/main.c.eta",
+          "dst": "src/"
+        },
+        {
+          "src": "templates/c_cpp_properties.json.eta",
+          "dst": ".vscode/"
+        },
+        {
+          "src": "templates/launch.json.eta",
+          "dst": ".vscode/"
+        }
+      ],
+      "files": [
+        {
+          "src": "files/flash.gdb",
+          "dst": ".vscode/flash.gdb"
+        }
+      ]
+    },
+    "codegen": {
+      "files": [],
+      "templates": [
+        {
+          "src": "templates/soc_init.c.eta",
+          "dst": "${context.cfsconfig.Projects.find(proj => proj.ProjectId === context.projectId)?.Secure ? \"adi_soc_peripheral_init.c\" : \"soc_init.c\"}"
+        },
+        {
+          "src": "templates/memory.ld.eta",
+          "dst": "memory.ld",
+          "condition": "${!context.cfsconfig.Projects.find(proj => proj.ProjectId === context.projectId)?.Secure}"
+        },
+        {
+          "src": "templates/s_ns_access_overlay.cmake.eta",
+          "dst": "s_ns_access_overlay.cmake",
+          "condition": "${context.cfsconfig.Projects.find(proj => proj.ProjectId === context.projectId)?.Secure}"
+        }
+      ]
+    }
+  },
+  "properties": {
+    "project": [
+      {
+        "id": "ProjectName",
+        "name": "Project Name",
+        "category": "Project Settings",
+        "default": "${context.coreId}",
+        "type": "string",
+        "required": true,
+        "readonly": false
+      },
+      {
+        "id": "MsdkBoardName",
+        "name": "MSDK Board Name",
+        "category": "Project Settings",
+        "default": "",
+        "type": "string",
+        "required": true,
+        "readonly": false
+      },
+      {
+        "id": "Cflags",
+        "name": "CFLAGS",
+        "type": "textarea",
+        "default": [
+          "-fdump-rtl-expand",
+          "-fdump-rtl-dfinish",
+          "-fdump-ipa-cgraph",
+          "-fstack-usage",
+          "-gdwarf-4"
+        ],
+        "readonly": "true"
+      }
+    ],
+    "clockConfig": {
+      "SYS_OSC Mux": {
+        "defaultOverrides": [
+          {
+            "Id": "MUX",
+            "Value": "IPO",
+            "partRegexp": "MAX(32655|32657|32662|32670|32672|32690)"
+          },
+          {
+            "Id": "MUX",
+            "Value": "HSCLK",
+            "partRegexp": "MAX32650"
+          },
+          {
+            "Id": "MUX",
+            "Value": "HSO",
+            "partRegexp": "MAX32666"
+          }
+        ]
+      },
+      "TMR0/1/2/3": {
+        "defaultOverrides": [
+          {
+            "Id": "TMR0b_MUX",
+            "Value": "32BIT"
+          },
+          {
+            "Id": "TMR1b_MUX",
+            "Value": "32BIT"
+          },
+          {
+            "Id": "TMR2b_MUX",
+            "Value": "32BIT"
+          },
+          {
+            "Id": "TMR3b_MUX",
+            "Value": "32BIT"
+          }
+        ]
+      }
+    },
+    "memory": {
+      "addedControls": [
+        {
+          "Id": "NAME_OVERRIDE",
+          "Description": "Memory Region Name Override",
+          "Type": "text",
+          "Pattern": "[_a-zA-Z][_a-zA-Z0-9]*"
+        }
+      ]
+    },
+    "peripheral": {
+      "CM4 SysTick": {
+        "removedControls": [
+          {
+            "Id": "TICKS_PER_SEC"
+          }
+        ]
+      },
+      "CM33 SysTick (S)": {
+        "removedControls": [
+          {
+            "Id": "TICKS_PER_SEC"
+          }
+        ]
+      },
+      "CM33 SysTick (NS)": {
+        "removedControls": [
+          {
+            "Id": "TICKS_PER_SEC"
+          }
+        ]
+      },
+      "RV mtime": {
+        "supportedControls": []
+      },
+      "ADC": {
+        "supportedControls": [
+          {
+            "Id": "SKIP_CAL"
+          },
+          {
+            "Id": "REF_TRIM"
+          },
+          {
+            "Id": "TRACK_CNT"
+          },
+          {
+            "Id": "IDLE_CNT"
+          },
+          {
+            "Id": "TRACK_CNT"
+          },
+          {
+            "Id": "CONV_MODE"
+          },
+          {
+            "Id": "TRIG_MODE"
+          },
+          {
+            "Id": "TRIG_SEL"
+          },
+          {
+            "Id": "DATA_FORMAT"
+          },
+          {
+            "Id": "THRESH"
+          },
+          {
+            "Id": "AVG"
+          },
+          {
+            "Id": "LPMODE_DIV"
+          },
+          {
+            "Id": "NUM_SLOTS"
+          },
+          {
+            "Id": "SLOT0_ID"
+          },
+          {
+            "Id": "SLOT1_ID"
+          },
+          {
+            "Id": "SLOT2_ID"
+          },
+          {
+            "Id": "SLOT3_ID"
+          },
+          {
+            "Id": "SLOT4_ID"
+          },
+          {
+            "Id": "SLOT5_ID"
+          },
+          {
+            "Id": "SLOT6_ID"
+          },
+          {
+            "Id": "SLOT7_ID"
+          },
+          {
+            "Id": "SLOT8_ID"
+          },
+          {
+            "Id": "SLOT9_ID"
+          },
+          {
+            "Id": "SLOT10_ID"
+          },
+          {
+            "Id": "SLOT11_ID"
+          },
+          {
+            "Id": "SLOT12_ID"
+          },
+          {
+            "Id": "SLOT13_ID"
+          },
+          {
+            "Id": "SLOT14_ID"
+          },
+          {
+            "Id": "SLOT15_ID"
+          },
+          {
+            "Id": "SLOT16_ID"
+          },
+          {
+            "Id": "SLOT17_ID"
+          },
+          {
+            "Id": "SLOT18_ID"
+          },
+          {
+            "Id": "SLOT19_ID"
+          },
+          {
+            "Id": "SLOT20_ID"
+          },
+          {
+            "Id": "SLOT21_ID"
+          },
+          {
+            "Id": "SLOT22_ID"
+          },
+          {
+            "Id": "SLOT23_ID"
+          },
+          {
+            "Id": "SLOT24_ID"
+          },
+          {
+            "Id": "SLOT25_ID"
+          },
+          {
+            "Id": "SLOT26_ID"
+          },
+          {
+            "Id": "SLOT27_ID"
+          },
+          {
+            "Id": "SLOT28_ID"
+          },
+          {
+            "Id": "SLOT29_ID"
+          },
+          {
+            "Id": "SLOT30_ID"
+          },
+          {
+            "Id": "SLOT31_ID"
+          },
+          {
+            "Id": "SKIP_CNT"
+          },
+          {
+            "Id": "DMA_EN"
+          }
+        ],
+        "addedControls": [
+          {
+            "Id": "DMA_CHAN",
+            "Description": "DMA Channel",
+            "Hint": "0",
+            "Type": "integer",
+            "Condition": "${Control:DMA_EN}"
+          }
+        ]
+      },
+      "I2C0": {
+        "supportedControls": [
+          {
+            "Id": "MODE"
+          },
+          {
+            "Id": "TARGET0_ADDR"
+          },
+          {
+            "Id": "CLKSTR"
+          },
+          {
+            "Id": "SCL_TIMEOUT"
+          },
+          {
+            "Id": "GC_ADDR_EN"
+          },
+          {
+            "Id": "PRELOAD_MODE"
+          },
+          {
+            "Id": "TRANSMIT_DMA_ENABLE"
+          },
+          {
+            "Id": "RECEIVE_DMA_ENABLE"
+          }
+        ],
+        "addedControls": [
+          {
+            "Id": "FREQ",
+            "Description": "Frequency",
+            "Hint": "100000",
+            "Type": "integer"
+          }
+        ],
+        "modifiedControls": [
+          {
+            "Id": "MODE",
+            "Description": "Controller or Target Mode",
+            "EnumValues": [
+              {
+                "Id": "TARGET",
+                "Description": "Target Mode",
+                "Value": 0
+              },
+              {
+                "Id": "CONTROLLER",
+                "Description": "Controller Mode",
+                "Value": 1
+              }
+            ],
+            "Type": "enum"
+          }
+        ]
+      },
+      "I2C1": {
+        "supportedControls": [
+          {
+            "Id": "MODE"
+          },
+          {
+            "Id": "TARGET0_ADDR"
+          },
+          {
+            "Id": "CLKSTR"
+          },
+          {
+            "Id": "SCL_TIMEOUT"
+          },
+          {
+            "Id": "GC_ADDR_EN"
+          },
+          {
+            "Id": "PRELOAD_MODE"
+          },
+          {
+            "Id": "TRANSMIT_DMA_ENABLE"
+          },
+          {
+            "Id": "RECEIVE_DMA_ENABLE"
+          }
+        ],
+        "addedControls": [
+          {
+            "Id": "FREQ",
+            "Description": "Frequency",
+            "Hint": "100000",
+            "Type": "integer"
+          }
+        ],
+        "modifiedControls": [
+          {
+            "Id": "MODE",
+            "Description": "Controller or Target Mode",
+            "EnumValues": [
+              {
+                "Id": "TARGET",
+                "Description": "Target Mode",
+                "Value": 0
+              },
+              {
+                "Id": "CONTROLLER",
+                "Description": "Controller Mode",
+                "Value": 1
+              }
+            ],
+            "Type": "enum"
+          }
+        ]
+      },
+      "I2C2": {
+        "supportedControls": [
+          {
+            "Id": "MODE"
+          },
+          {
+            "Id": "TARGET0_ADDR"
+          },
+          {
+            "Id": "CLKSTR"
+          },
+          {
+            "Id": "SCL_TIMEOUT"
+          },
+          {
+            "Id": "GC_ADDR_EN"
+          },
+          {
+            "Id": "PRELOAD_MODE"
+          },
+          {
+            "Id": "TRANSMIT_DMA_ENABLE"
+          },
+          {
+            "Id": "RECEIVE_DMA_ENABLE"
+          }
+        ],
+        "addedControls": [
+          {
+            "Id": "FREQ",
+            "Description": "Frequency",
+            "Hint": "100000",
+            "Type": "integer"
+          }
+        ],
+        "modifiedControls": [
+          {
+            "Id": "MODE",
+            "Description": "Controller or Target Mode",
+            "EnumValues": [
+              {
+                "Id": "TARGET",
+                "Description": "Target Mode",
+                "Value": 0
+              },
+              {
+                "Id": "CONTROLLER",
+                "Description": "Controller Mode",
+                "Value": 1
+              }
+            ],
+            "Type": "enum"
+          }
+        ]
+      },
+      "RTC": {
+        "supportedControls": [
+          {
+            "Id": "SEC"
+          },
+          {
+            "Id": "SSEC"
+          },
+          {
+            "Id": "TOD_ALARM"
+          },
+          {
+            "Id": "SSEC_ALARM"
+          },
+          {
+            "Id": "TOD_ALARM_IE"
+          },
+          {
+            "Id": "SSEC_ALARM_IE"
+          },
+          {
+            "Id": "RDY_IE"
+          },
+          {
+            "Id": "TRIM"
+          }
+        ]
+      },
+      "SPI0": {
+        "supportedControls": [
+          {
+            "Id": "DIRECTION"
+          },
+          {
+            "Id": "MODE"
+          },
+          {
+            "Id": "WORD_SIZE"
+          },
+          {
+            "Id": "CS0_POLARITY"
+          },
+          {
+            "Id": "CS1_POLARITY"
+          },
+          {
+            "Id": "CS2_POLARITY"
+          },
+          {
+            "Id": "CS3_POLARITY"
+          },
+          {
+            "Id": "PHASE_POL_MODE"
+          }
+        ],
+        "addedControls": [
+          {
+            "Id": "FREQ",
+            "Description": "Frequency",
+            "Hint": "15000000",
+            "Type": "integer"
+          },
+          {
+            "Id": "NUM_TARGETS",
+            "Description": "Number of Targets",
+            "Hint": "1",
+            "Type": "integer",
+            "MinimumValue": 1,
+            "MaximumValue": 4,
+            "Condition": "${Control:DIRECTION} ${String:CONTROLLER} ="
+          }
+        ]
+      },
+      "SPI1": {
+        "supportedControls": [
+          {
+            "Id": "DIRECTION"
+          },
+          {
+            "Id": "MODE"
+          },
+          {
+            "Id": "WORD_SIZE"
+          },
+          {
+            "Id": "CS0_POLARITY"
+          },
+          {
+            "Id": "CS1_POLARITY"
+          },
+          {
+            "Id": "CS2_POLARITY"
+          },
+          {
+            "Id": "CS3_POLARITY"
+          },
+          {
+            "Id": "PHASE_POL_MODE"
+          }
+        ],
+        "addedControls": [
+          {
+            "Id": "FREQ",
+            "Description": "Frequency",
+            "Hint": "15000000",
+            "Type": "integer"
+          },
+          {
+            "Id": "NUM_TARGETS",
+            "Description": "Number of Targets",
+            "Hint": "1",
+            "Type": "integer",
+            "MinimumValue": 1,
+            "MaximumValue": 4,
+            "Condition": "${Control:DIRECTION} ${String:CONTROLLER} ="
+          }
+        ]
+      },
+      "SPI2": {
+        "supportedControls": [
+          {
+            "Id": "DIRECTION"
+          },
+          {
+            "Id": "MODE"
+          },
+          {
+            "Id": "WORD_SIZE"
+          },
+          {
+            "Id": "CS0_POLARITY"
+          },
+          {
+            "Id": "CS1_POLARITY"
+          },
+          {
+            "Id": "CS2_POLARITY"
+          },
+          {
+            "Id": "CS3_POLARITY"
+          },
+          {
+            "Id": "PHASE_POL_MODE"
+          }
+        ],
+        "addedControls": [
+          {
+            "Id": "FREQ",
+            "Description": "Frequency",
+            "Hint": "15000000",
+            "Type": "integer"
+          },
+          {
+            "Id": "NUM_TARGETS",
+            "Description": "Number of Targets",
+            "Hint": "1",
+            "Type": "integer",
+            "MinimumValue": 1,
+            "MaximumValue": 4,
+            "Condition": "${Control:DIRECTION} ${String:CONTROLLER} ="
+          }
+        ]
+      },
+      "SPI3": {
+        "supportedControls": [
+          {
+            "Id": "DIRECTION"
+          },
+          {
+            "Id": "MODE"
+          },
+          {
+            "Id": "WORD_SIZE"
+          },
+          {
+            "Id": "CS0_POLARITY"
+          },
+          {
+            "Id": "CS1_POLARITY"
+          },
+          {
+            "Id": "CS2_POLARITY"
+          },
+          {
+            "Id": "CS3_POLARITY"
+          },
+          {
+            "Id": "PHASE_POL_MODE"
+          }
+        ],
+        "addedControls": [
+          {
+            "Id": "FREQ",
+            "Description": "Frequency",
+            "Hint": "15000000",
+            "Type": "integer"
+          },
+          {
+            "Id": "NUM_TARGETS",
+            "Description": "Number of Targets",
+            "Hint": "1",
+            "Type": "integer",
+            "MinimumValue": 1,
+            "MaximumValue": 4,
+            "Condition": "${Control:DIRECTION} ${String:CONTROLLER} ="
+          }
+        ]
+      },
+      "SPI4": {
+        "supportedControls": [
+          {
+            "Id": "DIRECTION"
+          },
+          {
+            "Id": "MODE"
+          },
+          {
+            "Id": "WORD_SIZE"
+          },
+          {
+            "Id": "CS0_POLARITY"
+          },
+          {
+            "Id": "CS1_POLARITY"
+          },
+          {
+            "Id": "CS2_POLARITY"
+          },
+          {
+            "Id": "CS3_POLARITY"
+          },
+          {
+            "Id": "PHASE_POL_MODE"
+          }
+        ],
+        "addedControls": [
+          {
+            "Id": "FREQ",
+            "Description": "Frequency",
+            "Hint": "15000000",
+            "Type": "integer"
+          },
+          {
+            "Id": "NUM_TARGETS",
+            "Description": "Number of Targets",
+            "Hint": "1",
+            "Type": "integer",
+            "MinimumValue": 1,
+            "MaximumValue": 4,
+            "Condition": "${Control:DIRECTION} ${String:CONTROLLER} ="
+          }
+        ]
+      },
+      "UART0": {
+        "supportedControls": [
+          {
+            "Id": "PARITY"
+          },
+          {
+            "Id": "PARITY_MD"
+          },
+          {
+            "Id": "PARITY_LEVEL"
+          },
+          {
+            "Id": "NULL_MODEM"
+          },
+          {
+            "Id": "CHAR_SIZE"
+          },
+          {
+            "Id": "STOP_BITS"
+          },
+          {
+            "Id": "HW_FLOW_CTRL"
+          },
+          {
+            "Id": "TRANSMIT_DMA_ENABLE"
+          },
+          {
+            "Id": "RECEIVE_DMA_ENABLE"
+          },
+          {
+            "Id": "RTSDC_LP_FDM"
+          }
+        ],
+        "addedControls": [
+          {
+            "Id": "BAUD",
+            "Description": "Baud Rate",
+            "Hint": "115200",
+            "Type": "integer"
+          }
+        ],
+        "modifiedControls": [
+          {
+            "Id": "HW_FLOW_CTRL",
+            "Description": "Hardware Flow Control RTS Mode",
+            "EnumValues": [
+              {
+                "Id": "DEASSERT_ON_FULL",
+                "Description": "Deassert On Full",
+                "Value": 0
+              },
+              {
+                "Id": "DISABLED",
+                "Description": "Disabled",
+                "Value": 2
+              }
+            ],
+            "Type": "enum"
+          }
+        ]
+      },
+      "UART1": {
+        "supportedControls": [
+          {
+            "Id": "PARITY"
+          },
+          {
+            "Id": "PARITY_MD"
+          },
+          {
+            "Id": "PARITY_LEVEL"
+          },
+          {
+            "Id": "NULL_MODEM"
+          },
+          {
+            "Id": "CHAR_SIZE"
+          },
+          {
+            "Id": "STOP_BITS"
+          },
+          {
+            "Id": "HW_FLOW_CTRL"
+          },
+          {
+            "Id": "TRANSMIT_DMA_ENABLE"
+          },
+          {
+            "Id": "RECEIVE_DMA_ENABLE"
+          },
+          {
+            "Id": "RTSDC_LP_FDM"
+          }
+        ],
+        "addedControls": [
+          {
+            "Id": "BAUD",
+            "Description": "Baud Rate",
+            "Hint": "115200",
+            "Type": "integer"
+          }
+        ],
+        "modifiedControls": [
+          {
+            "Id": "HW_FLOW_CTRL",
+            "Description": "Hardware Flow Control RTS Mode",
+            "EnumValues": [
+              {
+                "Id": "DEASSERT_ON_FULL",
+                "Description": "Deassert On Full",
+                "Value": 0
+              },
+              {
+                "Id": "DISABLED",
+                "Description": "Disabled",
+                "Value": 2
+              }
+            ],
+            "Type": "enum"
+          }
+        ]
+      },
+      "UART2": {
+        "supportedControls": [
+          {
+            "Id": "PARITY"
+          },
+          {
+            "Id": "PARITY_MD"
+          },
+          {
+            "Id": "PARITY_LEVEL"
+          },
+          {
+            "Id": "NULL_MODEM"
+          },
+          {
+            "Id": "CHAR_SIZE"
+          },
+          {
+            "Id": "STOP_BITS"
+          },
+          {
+            "Id": "HW_FLOW_CTRL"
+          },
+          {
+            "Id": "TRANSMIT_DMA_ENABLE"
+          },
+          {
+            "Id": "RECEIVE_DMA_ENABLE"
+          },
+          {
+            "Id": "RTSDC_LP_FDM"
+          }
+        ],
+        "addedControls": [
+          {
+            "Id": "BAUD",
+            "Description": "Baud Rate",
+            "Hint": "115200",
+            "Type": "integer"
+          }
+        ],
+        "modifiedControls": [
+          {
+            "Id": "HW_FLOW_CTRL",
+            "Description": "Hardware Flow Control RTS Mode",
+            "EnumValues": [
+              {
+                "Id": "DEASSERT_ON_FULL",
+                "Description": "Deassert On Full",
+                "Value": 0
+              },
+              {
+                "Id": "DISABLED",
+                "Description": "Disabled",
+                "Value": 2
+              }
+            ],
+            "Type": "enum"
+          }
+        ]
+      },
+      "LPUART0": {
+        "supportedControls": [
+          {
+            "Id": "PARITY"
+          },
+          {
+            "Id": "PARITY_MD"
+          },
+          {
+            "Id": "PARITY_LEVEL"
+          },
+          {
+            "Id": "NULL_MODEM"
+          },
+          {
+            "Id": "CHAR_SIZE"
+          },
+          {
+            "Id": "STOP_BITS"
+          },
+          {
+            "Id": "HW_FLOW_CTRL"
+          },
+          {
+            "Id": "TRANSMIT_DMA_ENABLE"
+          },
+          {
+            "Id": "RECEIVE_DMA_ENABLE"
+          },
+          {
+            "Id": "RTSDC_LP_FDM"
+          }
+        ],
+        "addedControls": [
+          {
+            "Id": "BAUD",
+            "Description": "Baud Rate",
+            "Hint": "115200",
+            "Type": "integer"
+          }
+        ],
+        "modifiedControls": [
+          {
+            "Id": "HW_FLOW_CTRL",
+            "Description": "Hardware Flow Control RTS Mode",
+            "EnumValues": [
+              {
+                "Id": "DEASSERT_ON_FULL",
+                "Description": "Deassert On Full",
+                "Value": 0
+              },
+              {
+                "Id": "DISABLED",
+                "Description": "Disabled",
+                "Value": 2
+              }
+            ],
+            "Type": "enum"
+          }
+        ]
+      },
+      "LPTMR0": {
+        "supportedControls": [
+          {
+            "Id": "CONFIGURATION"
+          },
+          {
+            "Id": "MODE_A"
+          },
+          {
+            "Id": "CLKDIV_A"
+          },
+          {
+            "Id": "POL_A"
+          },
+          {
+            "Id": "COMPARE_SINGLE"
+          },
+          {
+            "Id": "COUNT_SINGLE"
+          },
+          {
+            "Id": "PWM_SINGLE"
+          }
+        ],
+        "modifiedControls": [
+          {
+            "Id": "MODE_A",
+            "Description": "Mode for Single Timer or Timer A",
+            "EnumValues": [
+              {
+                "Id": "ONE_SHOT",
+                "Description": "One-Shot Mode",
+                "Value": 0
+              },
+              {
+                "Id": "CONTINUOUS",
+                "Description": "Continuous Mode",
+                "Value": 1
+              },
+              {
+                "Id": "COUNTER",
+                "Description": "Counter Mode",
+                "Value": 2
+              },
+              {
+                "Id": "PWM",
+                "Description": "PWM Mode",
+                "Value": 3
+              },
+              {
+                "Id": "CAPTURE",
+                "Description": "Capture Mode",
+                "Value": 4
+              },
+              {
+                "Id": "COMPARE",
+                "Description": "Compare Mode",
+                "Value": 5
+              },
+              {
+                "Id": "GATED",
+                "Description": "Gated Mode",
+                "Value": 6
+              },
+              {
+                "Id": "CAPCOMP",
+                "Description": "Capture/Compare Mode",
+                "Value": 7
+              },
+              {
+                "Id": "DUAL_EDGE",
+                "Description": "Dual Edge Capture Mode",
+                "Value": 8
+              }
+            ],
+            "Type": "enum"
+          }
+        ],
+        "defaultOverrides": [
+          {
+            "Id": "MODE_A",
+            "Value": "COUNTER"
+          }
+        ]
+      },
+      "LPTMR1": {
+        "supportedControls": [
+          {
+            "Id": "CONFIGURATION"
+          },
+          {
+            "Id": "MODE_A"
+          },
+          {
+            "Id": "CLKDIV_A"
+          },
+          {
+            "Id": "POL_A"
+          },
+          {
+            "Id": "COMPARE_SINGLE"
+          },
+          {
+            "Id": "COUNT_SINGLE"
+          },
+          {
+            "Id": "PWM_SINGLE"
+          }
+        ],
+        "modifiedControls": [
+          {
+            "Id": "MODE_A",
+            "Description": "Mode for Single Timer or Timer A",
+            "EnumValues": [
+              {
+                "Id": "ONE_SHOT",
+                "Description": "One-Shot Mode",
+                "Value": 0
+              },
+              {
+                "Id": "CONTINUOUS",
+                "Description": "Continuous Mode",
+                "Value": 1
+              },
+              {
+                "Id": "COUNTER",
+                "Description": "Counter Mode",
+                "Value": 2
+              },
+              {
+                "Id": "PWM",
+                "Description": "PWM Mode",
+                "Value": 3
+              },
+              {
+                "Id": "CAPTURE",
+                "Description": "Capture Mode",
+                "Value": 4
+              },
+              {
+                "Id": "COMPARE",
+                "Description": "Compare Mode",
+                "Value": 5
+              },
+              {
+                "Id": "GATED",
+                "Description": "Gated Mode",
+                "Value": 6
+              },
+              {
+                "Id": "CAPCOMP",
+                "Description": "Capture/Compare Mode",
+                "Value": 7
+              },
+              {
+                "Id": "DUAL_EDGE",
+                "Description": "Dual Edge Capture Mode",
+                "Value": 8
+              }
+            ],
+            "Type": "enum"
+          }
+        ],
+        "defaultOverrides": [
+          {
+            "Id": "MODE_A",
+            "Value": "COUNTER"
+          }
+        ]
+      },
+      "TMR0": {
+        "supportedControls": [
+          {
+            "Id": "CONFIGURATION"
+          },
+          {
+            "Id": "MODE_A"
+          },
+          {
+            "Id": "MODE_B"
+          },
+          {
+            "Id": "CLKDIV_A"
+          },
+          {
+            "Id": "CLKDIV_B"
+          },
+          {
+            "Id": "POL_A"
+          },
+          {
+            "Id": "POL_B"
+          },
+          {
+            "Id": "COMPARE"
+          },
+          {
+            "Id": "COMPARE_A"
+          },
+          {
+            "Id": "COMPARE_B"
+          },
+          {
+            "Id": "COUNT"
+          },
+          {
+            "Id": "COUNT_A"
+          },
+          {
+            "Id": "PWM"
+          },
+          {
+            "Id": "PWM_A"
+          }
+        ],
+        "modifiedControls": [
+          {
+            "Id": "MODE_A",
+            "Description": "Mode for Single Timer or Timer A",
+            "EnumValues": [
+              {
+                "Id": "ONE_SHOT",
+                "Description": "One-Shot Mode",
+                "Value": 0
+              },
+              {
+                "Id": "CONTINUOUS",
+                "Description": "Continuous Mode",
+                "Value": 1
+              },
+              {
+                "Id": "COUNTER",
+                "Description": "Counter Mode",
+                "Value": 2
+              },
+              {
+                "Id": "PWM",
+                "Description": "PWM Mode",
+                "Value": 3
+              },
+              {
+                "Id": "CAPTURE",
+                "Description": "Capture Mode",
+                "Value": 4
+              },
+              {
+                "Id": "COMPARE",
+                "Description": "Compare Mode",
+                "Value": 5
+              },
+              {
+                "Id": "GATED",
+                "Description": "Gated Mode",
+                "Value": 6
+              },
+              {
+                "Id": "CAPCOMP",
+                "Description": "Capture/Compare Mode",
+                "Value": 7
+              },
+              {
+                "Id": "DUAL_EDGE",
+                "Description": "Dual Edge Capture Mode",
+                "Value": 8
+              }
+            ],
+            "Type": "enum"
+          },
+          {
+            "Id": "MODE_B",
+            "Description": "Mode for Timer B",
+            "EnumValues": [
+              {
+                "Id": "ONE_SHOT",
+                "Description": "One-Shot Mode",
+                "Value": 0
+              },
+              {
+                "Id": "CONTINUOUS",
+                "Description": "Continuous Mode",
+                "Value": 1
+              },
+              {
+                "Id": "COMPARE",
+                "Description": "Compare Mode",
+                "Value": 5
+              }
+            ],
+            "Type": "enum"
+          }
+        ]
+      },
+      "TMR1": {
+        "supportedControls": [
+          {
+            "Id": "CONFIGURATION"
+          },
+          {
+            "Id": "MODE_A"
+          },
+          {
+            "Id": "MODE_B"
+          },
+          {
+            "Id": "CLKDIV_A"
+          },
+          {
+            "Id": "CLKDIV_B"
+          },
+          {
+            "Id": "POL_A"
+          },
+          {
+            "Id": "POL_B"
+          },
+          {
+            "Id": "COMPARE"
+          },
+          {
+            "Id": "COMPARE_A"
+          },
+          {
+            "Id": "COMPARE_B"
+          },
+          {
+            "Id": "COUNT"
+          },
+          {
+            "Id": "COUNT_A"
+          },
+          {
+            "Id": "PWM"
+          },
+          {
+            "Id": "PWM_A"
+          }
+        ],
+        "modifiedControls": [
+          {
+            "Id": "MODE_A",
+            "Description": "Mode for Single Timer or Timer A",
+            "EnumValues": [
+              {
+                "Id": "ONE_SHOT",
+                "Description": "One-Shot Mode",
+                "Value": 0
+              },
+              {
+                "Id": "CONTINUOUS",
+                "Description": "Continuous Mode",
+                "Value": 1
+              },
+              {
+                "Id": "COUNTER",
+                "Description": "Counter Mode",
+                "Value": 2
+              },
+              {
+                "Id": "PWM",
+                "Description": "PWM Mode",
+                "Value": 3
+              },
+              {
+                "Id": "CAPTURE",
+                "Description": "Capture Mode",
+                "Value": 4
+              },
+              {
+                "Id": "COMPARE",
+                "Description": "Compare Mode",
+                "Value": 5
+              },
+              {
+                "Id": "GATED",
+                "Description": "Gated Mode",
+                "Value": 6
+              },
+              {
+                "Id": "CAPCOMP",
+                "Description": "Capture/Compare Mode",
+                "Value": 7
+              },
+              {
+                "Id": "DUAL_EDGE",
+                "Description": "Dual Edge Capture Mode",
+                "Value": 8
+              }
+            ],
+            "Type": "enum"
+          },
+          {
+            "Id": "MODE_B",
+            "Description": "Mode for Timer B",
+            "EnumValues": [
+              {
+                "Id": "ONE_SHOT",
+                "Description": "One-Shot Mode",
+                "Value": 0
+              },
+              {
+                "Id": "CONTINUOUS",
+                "Description": "Continuous Mode",
+                "Value": 1
+              },
+              {
+                "Id": "COMPARE",
+                "Description": "Compare Mode",
+                "Value": 5
+              }
+            ],
+            "Type": "enum"
+          }
+        ]
+      },
+      "TMR2": {
+        "supportedControls": [
+          {
+            "Id": "CONFIGURATION"
+          },
+          {
+            "Id": "MODE_A"
+          },
+          {
+            "Id": "MODE_B"
+          },
+          {
+            "Id": "CLKDIV_A"
+          },
+          {
+            "Id": "CLKDIV_B"
+          },
+          {
+            "Id": "POL_A"
+          },
+          {
+            "Id": "POL_B"
+          },
+          {
+            "Id": "COMPARE"
+          },
+          {
+            "Id": "COMPARE_A"
+          },
+          {
+            "Id": "COMPARE_B"
+          },
+          {
+            "Id": "COUNT"
+          },
+          {
+            "Id": "COUNT_A"
+          },
+          {
+            "Id": "PWM"
+          },
+          {
+            "Id": "PWM_A"
+          }
+        ],
+        "modifiedControls": [
+          {
+            "Id": "MODE_A",
+            "Description": "Mode for Single Timer or Timer A",
+            "EnumValues": [
+              {
+                "Id": "ONE_SHOT",
+                "Description": "One-Shot Mode",
+                "Value": 0
+              },
+              {
+                "Id": "CONTINUOUS",
+                "Description": "Continuous Mode",
+                "Value": 1
+              },
+              {
+                "Id": "COUNTER",
+                "Description": "Counter Mode",
+                "Value": 2
+              },
+              {
+                "Id": "PWM",
+                "Description": "PWM Mode",
+                "Value": 3
+              },
+              {
+                "Id": "CAPTURE",
+                "Description": "Capture Mode",
+                "Value": 4
+              },
+              {
+                "Id": "COMPARE",
+                "Description": "Compare Mode",
+                "Value": 5
+              },
+              {
+                "Id": "GATED",
+                "Description": "Gated Mode",
+                "Value": 6
+              },
+              {
+                "Id": "CAPCOMP",
+                "Description": "Capture/Compare Mode",
+                "Value": 7
+              },
+              {
+                "Id": "DUAL_EDGE",
+                "Description": "Dual Edge Capture Mode",
+                "Value": 8
+              }
+            ],
+            "Type": "enum"
+          },
+          {
+            "Id": "MODE_B",
+            "Description": "Mode for Timer B",
+            "EnumValues": [
+              {
+                "Id": "ONE_SHOT",
+                "Description": "One-Shot Mode",
+                "Value": 0
+              },
+              {
+                "Id": "CONTINUOUS",
+                "Description": "Continuous Mode",
+                "Value": 1
+              },
+              {
+                "Id": "COMPARE",
+                "Description": "Compare Mode",
+                "Value": 5
+              }
+            ],
+            "Type": "enum"
+          }
+        ]
+      },
+      "TMR3": {
+        "supportedControls": [
+          {
+            "Id": "CONFIGURATION"
+          },
+          {
+            "Id": "MODE_A"
+          },
+          {
+            "Id": "MODE_B"
+          },
+          {
+            "Id": "CLKDIV_A"
+          },
+          {
+            "Id": "CLKDIV_B"
+          },
+          {
+            "Id": "POL_A"
+          },
+          {
+            "Id": "POL_B"
+          },
+          {
+            "Id": "COMPARE"
+          },
+          {
+            "Id": "COMPARE_A"
+          },
+          {
+            "Id": "COMPARE_B"
+          },
+          {
+            "Id": "COUNT"
+          },
+          {
+            "Id": "COUNT_A"
+          },
+          {
+            "Id": "PWM"
+          },
+          {
+            "Id": "PWM_A"
+          }
+        ],
+        "modifiedControls": [
+          {
+            "Id": "MODE_A",
+            "Description": "Mode for Single Timer or Timer A",
+            "EnumValues": [
+              {
+                "Id": "ONE_SHOT",
+                "Description": "One-Shot Mode",
+                "Value": 0
+              },
+              {
+                "Id": "CONTINUOUS",
+                "Description": "Continuous Mode",
+                "Value": 1
+              },
+              {
+                "Id": "COUNTER",
+                "Description": "Counter Mode",
+                "Value": 2
+              },
+              {
+                "Id": "PWM",
+                "Description": "PWM Mode",
+                "Value": 3
+              },
+              {
+                "Id": "CAPTURE",
+                "Description": "Capture Mode",
+                "Value": 4
+              },
+              {
+                "Id": "COMPARE",
+                "Description": "Compare Mode",
+                "Value": 5
+              },
+              {
+                "Id": "GATED",
+                "Description": "Gated Mode",
+                "Value": 6
+              },
+              {
+                "Id": "CAPCOMP",
+                "Description": "Capture/Compare Mode",
+                "Value": 7
+              },
+              {
+                "Id": "DUAL_EDGE",
+                "Description": "Dual Edge Capture Mode",
+                "Value": 8
+              }
+            ],
+            "Type": "enum"
+          },
+          {
+            "Id": "MODE_B",
+            "Description": "Mode for Timer B",
+            "EnumValues": [
+              {
+                "Id": "ONE_SHOT",
+                "Description": "One-Shot Mode",
+                "Value": 0
+              },
+              {
+                "Id": "CONTINUOUS",
+                "Description": "Continuous Mode",
+                "Value": 1
+              },
+              {
+                "Id": "COMPARE",
+                "Description": "Compare Mode",
+                "Value": 5
+              }
+            ],
+            "Type": "enum"
+          }
+        ]
+      },
+      "TMR4": {
+        "supportedControls": [
+          {
+            "Id": "CONFIGURATION"
+          },
+          {
+            "Id": "MODE_A"
+          },
+          {
+            "Id": "MODE_B"
+          },
+          {
+            "Id": "CLKDIV_A"
+          },
+          {
+            "Id": "CLKDIV_B"
+          },
+          {
+            "Id": "POL_A"
+          },
+          {
+            "Id": "POL_B"
+          },
+          {
+            "Id": "COMPARE"
+          },
+          {
+            "Id": "COMPARE_A"
+          },
+          {
+            "Id": "COMPARE_B"
+          },
+          {
+            "Id": "COUNT"
+          },
+          {
+            "Id": "COUNT_A"
+          },
+          {
+            "Id": "PWM"
+          },
+          {
+            "Id": "PWM_A"
+          }
+        ],
+        "modifiedControls": [
+          {
+            "Id": "MODE_A",
+            "Description": "Mode for Single Timer or Timer A",
+            "EnumValues": [
+              {
+                "Id": "ONE_SHOT",
+                "Description": "One-Shot Mode",
+                "Value": 0
+              },
+              {
+                "Id": "CONTINUOUS",
+                "Description": "Continuous Mode",
+                "Value": 1
+              },
+              {
+                "Id": "COUNTER",
+                "Description": "Counter Mode",
+                "Value": 2
+              },
+              {
+                "Id": "PWM",
+                "Description": "PWM Mode",
+                "Value": 3
+              },
+              {
+                "Id": "CAPTURE",
+                "Description": "Capture Mode",
+                "Value": 4
+              },
+              {
+                "Id": "COMPARE",
+                "Description": "Compare Mode",
+                "Value": 5
+              },
+              {
+                "Id": "GATED",
+                "Description": "Gated Mode",
+                "Value": 6
+              },
+              {
+                "Id": "CAPCOMP",
+                "Description": "Capture/Compare Mode",
+                "Value": 7
+              },
+              {
+                "Id": "DUAL_EDGE",
+                "Description": "Dual Edge Capture Mode",
+                "Value": 8
+              }
+            ],
+            "Type": "enum"
+          },
+          {
+            "Id": "MODE_B",
+            "Description": "Mode for Timer B",
+            "EnumValues": [
+              {
+                "Id": "ONE_SHOT",
+                "Description": "One-Shot Mode",
+                "Value": 0
+              },
+              {
+                "Id": "CONTINUOUS",
+                "Description": "Continuous Mode",
+                "Value": 1
+              },
+              {
+                "Id": "COMPARE",
+                "Description": "Compare Mode",
+                "Value": 5
+              }
+            ],
+            "Type": "enum"
+          }
+        ]
+      },
+      "TMR5": {
+        "supportedControls": [
+          {
+            "Id": "CONFIGURATION"
+          },
+          {
+            "Id": "MODE_A"
+          },
+          {
+            "Id": "MODE_B"
+          },
+          {
+            "Id": "CLKDIV_A"
+          },
+          {
+            "Id": "CLKDIV_B"
+          },
+          {
+            "Id": "POL_A"
+          },
+          {
+            "Id": "POL_B"
+          },
+          {
+            "Id": "COMPARE"
+          },
+          {
+            "Id": "COMPARE_A"
+          },
+          {
+            "Id": "COMPARE_B"
+          },
+          {
+            "Id": "COUNT"
+          },
+          {
+            "Id": "COUNT_A"
+          },
+          {
+            "Id": "PWM"
+          },
+          {
+            "Id": "PWM_A"
+          }
+        ],
+        "modifiedControls": [
+          {
+            "Id": "MODE_A",
+            "Description": "Mode for Single Timer or Timer A",
+            "EnumValues": [
+              {
+                "Id": "ONE_SHOT",
+                "Description": "One-Shot Mode",
+                "Value": 0
+              },
+              {
+                "Id": "CONTINUOUS",
+                "Description": "Continuous Mode",
+                "Value": 1
+              },
+              {
+                "Id": "COUNTER",
+                "Description": "Counter Mode",
+                "Value": 2
+              },
+              {
+                "Id": "PWM",
+                "Description": "PWM Mode",
+                "Value": 3
+              },
+              {
+                "Id": "CAPTURE",
+                "Description": "Capture Mode",
+                "Value": 4
+              },
+              {
+                "Id": "COMPARE",
+                "Description": "Compare Mode",
+                "Value": 5
+              },
+              {
+                "Id": "GATED",
+                "Description": "Gated Mode",
+                "Value": 6
+              },
+              {
+                "Id": "CAPCOMP",
+                "Description": "Capture/Compare Mode",
+                "Value": 7
+              },
+              {
+                "Id": "DUAL_EDGE",
+                "Description": "Dual Edge Capture Mode",
+                "Value": 8
+              }
+            ],
+            "Type": "enum"
+          },
+          {
+            "Id": "MODE_B",
+            "Description": "Mode for Timer B",
+            "EnumValues": [
+              {
+                "Id": "ONE_SHOT",
+                "Description": "One-Shot Mode",
+                "Value": 0
+              },
+              {
+                "Id": "CONTINUOUS",
+                "Description": "Continuous Mode",
+                "Value": 1
+              },
+              {
+                "Id": "COMPARE",
+                "Description": "Compare Mode",
+                "Value": 5
+              }
+            ],
+            "Type": "enum"
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,79 @@
+/**
+ *
+ * Copyright (c) 2025 Analog Devices, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+import { CfsWorkspace, CfsWorkspaceGenerator } from "cfs-plugins-api";
+import { CfsEtaGenerator } from "./cfs-eta-generator.js";
+import {
+  CfsCopyFilesService,
+  CfsPluginServiceType,
+  CfsTemplateService,
+} from "../../services/cfs-plugin-services.js";
+import { mkdir, writeFile } from "fs/promises";
+import path from "path";
+import { convertToPascalCase } from "../../utilities/cfs-utilities.js";
+
+export class CfsEtaWorkspaceGenerator
+  extends CfsEtaGenerator
+  implements CfsWorkspaceGenerator
+{
+  /**
+   * Generates the workspace by copying files and rendering templates.
+   * @param cfsWorkspace - The workspace information required for code generation.
+   * @returns A promise that resolves when the workspace generation is complete.
+   */
+  async generateWorkspace(cfsWorkspace: CfsWorkspace) {
+    if (!cfsWorkspace.location) {
+      throw new Error("Workspace location is undefined");
+    }
+
+    const workspacePath = path.join(
+      cfsWorkspace.location,
+      cfsWorkspace.workspaceName ?? "",
+    );
+
+    // Create the workspace directory
+    await mkdir(workspacePath, { recursive: true });
+
+    // Create the .cfs directory within the workspace directory
+    const cfsDir = path.join(workspacePath, ".cfs");
+    await mkdir(cfsDir, { recursive: true });
+
+    // Create the .cfsworkspace file inside the .cfs directory
+    const cfsWorkspaceFile = path.join(cfsDir, ".cfsworkspace");
+
+    const titleCasedWorkspace = convertToPascalCase(cfsWorkspace);
+
+    await writeFile(
+      cfsWorkspaceFile,
+      JSON.stringify(titleCasedWorkspace, null, 2),
+    );
+
+    const copyFilesService = this.getService<CfsCopyFilesService>(
+      CfsPluginServiceType.CopyFiles,
+    );
+
+    await copyFilesService.copyFiles(this.cfsFeature.files, workspacePath);
+
+    const templateService = this.getService<CfsTemplateService>(
+      CfsPluginServiceType.Template,
+    );
+
+    await templateService.renderTemplates(
+      this.cfsFeature.templates,
+      this.context,
+      workspacePath,
+    );
+  }
+}

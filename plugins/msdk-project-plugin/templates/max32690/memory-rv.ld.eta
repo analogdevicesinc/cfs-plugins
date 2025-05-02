@@ -1,0 +1,33 @@
+<%
+/**
+ * Copyright (c) 2025 Analog Devices, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+// Include common plugin code
+eval(this.render("common/utilities/utilities.js"));
+%>
+<% if (!getProject()?.Partitions.find(p => getPartitionName(p, "NAME_OVERRIDE") === "FLASH")) { %>
+    FLASH       (rx)  : ORIGIN = 0x00000000, LENGTH = 0x00000000 /* Section not defined. */
+<% } %>
+<% if (!getProject()?.Partitions.find(p => getPartitionName(p, "NAME_OVERRIDE") === "PAL_NVM_DB")) { %>
+    PAL_NVM_DB  (r)   : ORIGIN = 0x00000000, LENGTH = 0x00000000 /* Section not defined. */
+<% } %>
+<% if (!getProject()?.Partitions.find(p => getPartitionName(p, "NAME_OVERRIDE") === "MAILBOX_0")) { %>
+    MAILBOX_0   (rw)  : ORIGIN = 0x00000000, LENGTH = 0x00000000 /* Section not defined. */
+<% } %>
+<% if (!getProject()?.Partitions.find(p => getPartitionName(p, "NAME_OVERRIDE") === "MAILBOX_1")) { %>
+    MAILBOX_1   (rw)  : ORIGIN = 0x00000000, LENGTH = 0x00000000 /* Section not defined. */
+<% } %>
+<% if (!getProject()?.Partitions.find(p => getPartitionName(p, "NAME_OVERRIDE") === "SRAM")) { %>
+    SRAM        (rwx) : ORIGIN = 0x00000000, LENGTH = 0x00000000 /* Section not defined. */
+<% } %>

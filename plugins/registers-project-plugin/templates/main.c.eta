@@ -1,0 +1,5 @@
+<%~ include("../../common/utilities/copyright-header.eta", it) %>
+
+int main(void) {
+  return 0;
+}

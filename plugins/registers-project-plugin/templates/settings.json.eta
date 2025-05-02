@@ -1,0 +1,19 @@
+<%~ include("../../common/utilities/normalize-soc.eta", it) %>
+{
+  "C_Cpp.default.forcedInclude": [
+    "${workspaceFolder}/build/project_defines.h"
+  ],
+  "cfs.programFile": "${workspaceFolder}/build/${workspaceFolderBasename}.elf",
+  "cfs.debugPath": "${workspaceFolder}/build/",
+  "cfs.configureWorkspace": "Yes",
+  "cfs.project.firmwarePlatform": "Baremetal",
+  "cfs.cmsis.svdFile": "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/Device/Maxim/<%= it.normalizeSoc() %>/Include/<%= it.normalizeSoc().toLowerCase() %>.svd",
+
+<% if (it.coreId === "CM4" || it.coreId === "CM33") { %>
+  "cfs.openocd.target": "target/<%= it.normalizeSoc().toLowerCase() %>.cfg",
+  "cfs.openocd.interface": "interface/cmsis-dap.cfg",
+<% } else if (it.coreId === "RV") { %>
+  "cfs.openocd.target": "target/<%= it.normalizeSoc().toLowerCase() %>_riscv.cfg",
+  "cfs.openocd.interface": "interface/ftdi/olimex-arm-usb-ocd-h.cfg",
+<% } %>
+}

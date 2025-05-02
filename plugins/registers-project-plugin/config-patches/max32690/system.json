@@ -1,0 +1,9 @@
+{
+  "ClockFrequencies": {
+    "Cortex-M4": 60000000,
+    "FLC0/1": 60000000,
+    "SYS_OSC": 60000000,
+    "ISO": 60000000,
+    "SYS_CLK": 60000000
+  }
+}

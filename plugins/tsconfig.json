@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "module": "ESNext",
+    "allowJs": true,
+    "outDir": "dist",
+    "rootDir": ".",
+    "strict": true,
+    "target": "es2022",
+    "moduleResolution": "Node",
+    "skipLibCheck": true,
+    "strictPropertyInitialization": false,
+    "resolveJsonModule": true,
+    "esModuleInterop": true
+  },
+  "include": ["./**/*.ts"],
+  "exclude": ["**/*.test.ts", "dist"],
+  "ts-node": {
+    "esm": true
+  }
+}
