@@ -1,0 +1,23 @@
+<%~ include("@normalizeSoc", it) %>
+<%
+function getZephyrBoardName() {
+  let soc = it.soc.toLowerCase() === "max32658" ? "max32657" : it.soc.toLowerCase();
+  switch(it.board.toLowerCase()) {
+    case "evkit_v1":
+      return soc + "evkit/" + soc + "/ns";
+  }
+}
+%>
+{
+  "cfs.configureWorkspace": "Yes",
+  "cfs.project.board": "<%= getZephyrBoardName() %>",
+  "cfs.programFile": "${workspaceFolder}/build/zephyr/tfm_merged.hex",
+  "cfs.debugPath": "${workspaceFolder}/build/zephyr",
+  "cfs.cmsis.svdFile": "${command:cfs.tool.path.zephyr}/modules/hal/adi/MAX/Libraries/CMSIS/Device/Maxim/<%= it.msdkInflectionPoint(it.soc) %>/Include/<%= it.msdkInflectionPoint(it.soc).toLowerCase() %>.svd",
+  "cfs.cmsis.pack": "None",
+  "cfs.openocd.interface": "interface/cmsis-dap.cfg",
+  "cfs.openocd.target": "target/<%= it.openocdInflectionPoint(it.soc).toLowerCase() %>.cfg",
+  "cfs.project.target": "<%= it.projectInflectionPoint(it.soc) %>",
+  "cfs.project.firmwarePlatform": "Zephyr",
+  "cfs.jlink.device": "<%= it.jlinkInflectionPoint(it.soc) %>"
+}

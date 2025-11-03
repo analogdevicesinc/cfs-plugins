@@ -1,0 +1,217 @@
+<%
+/**
+ * Copyright (c) 2025 Analog Devices, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+// Return the I2S channel mode
+function getI2SChannelMode() {
+  return getPeriConfigValue(it.instance, "DIRECTION", "TARGET") === "TARGET" ? "MXC_I2S_EXTERNAL_SCK_EXTERNAL_WS" : "MXC_I2S_INTERNAL_SCK_WS_0";
+}
+
+// Return the alignment of the data in the FIFOs
+function getI2SDataAlignment() {
+  return getPeriConfigValue(it.instance, "ALIGN", "MSB") === "MSB" ? "MXC_I2S_MSB_JUSTIFY" : "MXC_I2S_LSB_JUSTIFY";
+}
+
+// Return the I2S stereo mode
+function getI2SStereoMode() {
+  let mode = "MXC_I2S_STEREO";
+  switch (getPeriConfigValue(it.instance, "AUDIO_MODE", "STEREO")) {
+    case "STEREO":
+      mode = "MXC_I2S_STEREO";
+      break;
+    case "LEFT":
+      mode = "MXC_I2S_MONO_LEFT_CH";
+      break;
+    case "RIGHT":
+      mode = "MXC_I2S_MONO_RIGHT_CH";
+      break;
+  }
+  return mode;
+}
+
+// Return the desired width for data writes and reads from the FIFO
+function getI2SWordSize() {
+  let wsize = "MXC_I2S_WSIZE_BYTE";
+  switch (getPeriConfigValue(it.instance, "WSIZE", "BYTE")) {
+    case "BYTE":
+      wsize = "MXC_I2S_WSIZE_BYTE";
+      break;
+    case "HALF_WORD":
+      wsize = "MXC_I2S_WSIZE_HALFWORD";
+      break;
+    case "WORD":
+      wsize = "MXC_I2S_WSIZE_WORD";
+      break;
+  }
+  return wsize;
+}
+
+// Return whether the TX mode is enabled
+function getI2STxEnable() {
+  return getPeriConfigValue(it.instance, "TX_RX_MODE", "TX_RX") !== "RX_ONLY";
+}
+
+// Return whether the RX mode is enabled
+function getI2SRxEnable() {
+  return getPeriConfigValue(it.instance, "TX_RX_MODE", "TX_RX") !== "TX_ONLY";
+}
+
+// Return the FIFO interrupt threshold value for transmission
+function getI2SRxThreshold() {
+  return getPeriConfigValue(it.instance, "RX_THD_VAL", "0");
+}
+
+// Return the data bits per left and right channel
+function getI2SBitsWord() {
+  return getPeriConfigValue(it.instance, "BITS_WORD", "1");
+}
+
+// Return the desired sample size of the data received or transmitted with respect to the Bits per Word field
+function getI2SSampleSize() {
+  return getPeriConfigValue(it.instance, "SMP_SIZE", "0");
+}
+
+// Return which bits are used if the sample size is less than the bits per word
+function getI2SAdjust() {
+  let adjust = getPeriConfigValue(it.instance, "ADJUST", "LEFT");
+  return adjust === "LEFT" ? "MXC_I2S_ADJUST_LEFT" : "MXC_I2S_ADJUST_RIGHT";
+}
+
+// Return the sample rate
+function getI2SSampleRate() {
+  return getPeriConfigValue(it.instance, "SMPL_RATE", "0");
+}
+
+// Return the I2S external clock frequency
+function getI2SExtClkFreq() {
+  if (!it.cfsconfig.ClockFrequencies || !it.cfsconfig.ClockFrequencies["I2S-CONTROLLER"]) {
+    return "0"; // Default value
+  }
+  return it.cfsconfig.ClockFrequencies["I2S-CONTROLLER"];
+}
+
+// Return the length of the buffer
+function getI2SBufferLength() {
+  return getPeriConfigValue(it.instance, "LENGTH", "256");
+}
+
+// Return whether DMA is enabled for transmission
+function getI2SDmaTx() {
+  return getPeriConfigValue(it.instance, "TRANSMIT_DMA_ENABLE", "FALSE") === "TRUE";
+}
+
+// Return whether DMA is enabled for reception
+function getI2SDmaRx() {
+  return getPeriConfigValue(it.instance, "RECEIVE_DMA_ENABLE", "FALSE") === "TRUE";
+}
+
+// Return the interrupt mask for any enabled interrupts.
+function getI2SIntMask() {
+  const ie_table = [
+    { ctrl: "RX_OV_CH0_IE",   value: "MXC_F_I2S_INTEN_RX_OV_CH0" },
+    { ctrl: "RX_THD_CH0_IE",  value: "MXC_F_I2S_INTEN_RX_THD_CH0" },
+    { ctrl: "TX_OB_CH0_IE",   value: "MXC_F_I2S_INTEN_TX_OB_CH0" },
+    { ctrl: "TX_HE_CH0_IE",   value: "MXC_F_I2S_INTEN_TX_HE_CH0" }
+  ];
+  let arg = "";
+  for (ie of ie_table) {
+    if (getPeriConfigValue(it.instance, ie.ctrl, "FALSE") === "TRUE") {
+      if (arg !== "")
+        arg += " | ";
+      arg += ie.value;
+    }
+  }
+  return arg;
+}
+%>
+<% if (isUnassignedPeripheralClockSetTo(it.instance, it.enable, "TRUE")) { %>
+  /* The <%= it.instance %> peripheral is enabled on the clock canvas but is
+   * not assigned to any core. In order to generate configuration code, please
+   * assign the peripheral to a core.
+   */
+
+<% } else if (getAssignedPeripheral(it.instance)) { %>
+  { /* Configure <%= it.instance %>.
+<%   if (getPeripheralDescription(it.instance)) { %>
+     * This peripheral is used for <%= getPeripheralDescription(it.instance) %>.
+<%   } %>
+<%   if (it.enable && !isPeripheralClockSetTo(it.instance, it.enable, "TRUE")) { %>
+     * Note: This peripheral was not enabled on the clock configuration canvas.
+     * Nonetheless, as a result of the following configuration, the peripheral will be
+     * clocked on.
+<%   } %>
+     */
+
+    mxc_i2s_req_t <%= it.instance.toLowerCase() %>_config = {
+      .channelMode = <%= getI2SChannelMode() %>,
+      .stereoMode = <%= getI2SStereoMode() %>,
+      .wordSize = <%= getI2SWordSize() %>,
+      .justify = <%= getI2SDataAlignment() %>,
+      .sampleSize = <%= getI2SSampleSize() %>,
+<%   if (it.datamodel.Name === "MAX32690" || it.datamodel.Name === "MAX78000" || it.datamodel.Name === "MAX78002") { %>
+      .clkdiv = MXC_I2S_CalculateClockDiv(<%= getI2SSampleRate() %>, <%= getI2SWordSize() %>, <%= getI2SExtClkFreq() %>),
+<%   } else { %>
+      .clkdiv = MXC_I2S_CalculateClockDiv(<%= getI2SSampleRate() %>, <%= getI2SWordSize() %>),
+<%   } %>
+      .adjust = <%= getI2SAdjust() %>,
+      .bitsWord = <%= getI2SBitsWord() %>,
+      .rawData = <%= getI2STxEnable() ? getPeriConfigValue(it.instance, "RAW_DATA_BUFFER_NAME", it.instance.toLowerCase() + "_raw_data_buffer") : "NULL" %>,
+      .txData = <%= getI2STxEnable() ? getPeriConfigValue(it.instance, "TX_BUFFER_NAME", it.instance.toLowerCase() + "_tx_buffer") : "NULL" %>,
+      .rxData = <%= getI2SRxEnable() ? getPeriConfigValue(it.instance, "RX_BUFFER_NAME", it.instance.toLowerCase() + "_rx_buffer") : "NULL" %>,
+      .length = <%= (getI2STxEnable() || getI2SRxEnable())? getI2SBufferLength() : "0" %> 
+    };
+
+    /* Initialize the I2S peripheral. */
+    result = MXC_I2S_Init(&<%= it.instance.toLowerCase() %>_config);
+    if (result != E_NO_ERROR) {
+      return result;
+    }
+
+<%   if (getI2SRxThreshold() !== "0") { %>
+    /* Set RX FIFO threshold. */
+    MXC_I2S_SetRXThreshold(<%= getI2SRxThreshold() %>U);
+
+<%   } %>
+<%   if (getI2SIntMask() !== "") { %>
+    /* Enable interrupts. */
+    MXC_I2S_EnableInt(<%= getI2SIntMask() %>);
+
+<%   } %>
+<%   if (getI2SDmaTx()) { %>
+    /* Setup TX DMA. */
+    result = MXC_I2S_TXDMAConfig(<%= getI2STxEnable() ? it.instance.toLowerCase() + "_tx_buffer" : "NULL" %>, <%= (getI2STxEnable() || getI2SRxEnable())? getI2SBufferLength() : "0" %>);
+    if (result != E_NO_ERROR) {
+      return result;
+    }
+
+<%   } else if (getI2STxEnable()) { %>
+    /* Enable transmit mode. */
+    MXC_I2S_TXEnable();
+
+<%   } %>
+<%   if (getI2SDmaRx()) { %>
+    /* Setup RX DMA. */
+    result = MXC_I2S_RXDMAConfig(<%= getI2SRxEnable() ? it.instance.toLowerCase() + "_rx_buffer" : "NULL" %>, <%= (getI2STxEnable() || getI2SRxEnable())? getI2SBufferLength() : "0" %>);
+    if (result != E_NO_ERROR) {
+      return result;
+    }
+
+<%   } else if (getI2SRxEnable()) { %>
+    /* Enable receive mode. */
+    MXC_I2S_RXEnable();
+
+<%   } %>
+  }
+
+<% } %>

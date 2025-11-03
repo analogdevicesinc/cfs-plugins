@@ -13,13 +13,14 @@
  *
  */
 import * as fs from "fs";
-import { CfsEtaTemplateService } from "../../../plugins/common/services/cfs-eta-template-service.js";
+import { renderTemplates } from "../../../api/src/generic/utilities/eta-utils.js";
 import { expect } from "chai";
 import path from "path";
+import { fileURLToPath } from "url";
 import { isDebug } from "../utilities/test-utilities.js";
 import { CfsConfig } from "cfs-plugins-api";
 
-describe("Unit test for CfsEtaTemplateService", () => {
+describe("Unit test for renderTemplate util", () => {
   let data: { templates: { src: string; dst: string }[] } = { templates: [] };
 
   const cfsConfig: CfsConfig = {
@@ -53,15 +54,11 @@ describe("Unit test for CfsEtaTemplateService", () => {
       templates: [
         {
           src: "templates/m4/**/*.eta",
-          dst: "MAX32xxx/m4/",
-        },
-        {
-          src: "templates/m4/**/*.eta",
-          dst: "MAX32xxx/m4/",
+          dst: "tests/unit-tests/services/data/MAX32xxx/m4/",
         },
         {
           src: "templates/riscv/main.c.eta",
-          dst: "MAX32xxx/riscv/",
+          dst: "tests/unit-tests/services/data/MAX32xxx/riscv/",
         },
       ],
     };
@@ -71,28 +68,19 @@ describe("Unit test for CfsEtaTemplateService", () => {
     if (!isDebug()) {
       const directoryToDelete = "tests/unit-tests/services/data";
       if (fs.existsSync(directoryToDelete)) {
+        console.log(`Deleting directory: ${directoryToDelete}`);
         fs.rmSync(directoryToDelete, { recursive: true, force: true });
       }
     }
   });
 
   it("Should render templates per .cfsplugin", async () => {
-    const context = {
-      location: path.resolve("tests/unit-tests/services/data"),
-    };
-
-    const renderEtaTemplates = new CfsEtaTemplateService(
-      path.resolve("tests/unit-tests/services"),
-      context,
-    );
-
     const templates = data.templates;
 
-    await renderEtaTemplates.renderTemplates(
-      templates,
-      cfsConfig,
-      context.location,
-    );
+    const testFilePath = fileURLToPath(import.meta.url);
+    const templatesSearchPath = path.dirname(testFilePath);
+
+    await renderTemplates(templates, cfsConfig, templatesSearchPath);
 
     const directoriesToCheck = [
       "tests/unit-tests/services/data/MAX32xxx/m4",
@@ -111,9 +99,10 @@ int main(void) {
     return 0;
 }`;
       const dstContent = fs.readFileSync(filePath, "utf8");
-      expect(expectedContent, `${expectedContent} does not exist.`).to.equal(
-        dstContent,
-      );
+      expect(
+        expectedContent,
+        `${expectedContent} does not match the destination file.`,
+      ).to.equal(dstContent);
     });
   });
 });

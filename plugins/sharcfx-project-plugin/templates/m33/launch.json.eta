@@ -1,0 +1,35 @@
+<%~ include("@sharcfxUtils", it) %>
+{
+  "configurations": [
+    {
+      "name": "Debug with GDB and OpenOCD (ARM Embedded)",
+      "executable": "${config:cfs.programFile}",
+      "cwd": "${config:cfs.debugPath}",
+      "request": "attach",
+      "type": "cortex-debug",
+      "device": "ARM",
+      "runToEntryPoint": "main",
+      "servertype": "external",
+      "serverpath": "${config:cfs.openocd.path}/bin/openocd",
+      "gdbPath": "${config:cfs.toolchain.armAArch32GCC.path}/bin/arm-none-eabi-gdb.exe",
+      "searchDir": [
+        "${config:cfs.openocd.path}/share/openocd/scripts"
+      ],
+      "configFiles": [
+        "${config:cfs.openocd.interface}",
+        "${config:cfs.openocd.target}"
+      ],
+      "gdbTarget": "localhost:50001",
+      "showDevDebugOutput": "none",
+      "postAttachCommands": [
+        "set logging overwrite on",
+        "set logging file debug-arm.log",
+        "set logging on",
+        "set remotetimeout 60",
+        "load",
+        "break main"
+      ],
+      "preLaunchTask": "CFS: build"
+    }
+  ]
+}

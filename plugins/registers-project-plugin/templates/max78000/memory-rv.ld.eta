@@ -13,3 +13,4 @@
  *
  */
 %>
+    FLASH (r)   : ORIGIN = __FlashStart, LENGTH = __FlashLength /* RV_FLASH */

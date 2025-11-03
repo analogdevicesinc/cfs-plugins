@@ -23,10 +23,11 @@ export interface CfsConfig extends Record<string, unknown> {
   Soc: string;
   Package: string;
   Pins: ConfiguredPin[];
-  ClockNodes: [];
+  ClockNodes: ConfiguredClockNode[];
   Timestamp: string;
   BoardName: string;
   Projects: ConfiguredProject[];
+  DFG?: DFG;
 }
 
 export interface ConfiguredPin {
@@ -56,6 +57,8 @@ export interface ConfiguredProject {
   PlatformConfig: Record<string, string>;
   Secure?: boolean;
   ZephyrId?: string;
+  AIModels?: AIModel[];
+  Profiling?: Profiling;
 }
 
 export interface ConfiguredPeripheral {
@@ -74,9 +77,36 @@ export interface ConfiguredPartition {
   Name: string;
   StartAddress: string;
   Size: number;
+  DisplayUnit?: string;
   IsOwner: boolean;
   Config: PluginConfig;
   Access: string;
+}
+
+export interface AIModel {
+  Name: string;
+  Enabled: boolean;
+  Files: Record<string, string>;
+  Target: {
+    Core: string;
+    Accelerator?: string;
+  };
+  Backend: {
+    Name: string;
+    Extensions?: Record<string, string | number | boolean>;
+  };
+}
+
+export interface Profiling {
+  Zephelin?: Zephelin;
+}
+
+export interface Zephelin {
+  Enabled: boolean;
+  AIEnabled: boolean;
+  Interface: string;
+  Port: number;
+  Format: string;
 }
 
 export type PluginConfig = Record<string, string | number | boolean>;
@@ -86,3 +116,29 @@ export type ControlErrorTypes =
   | "INVALID_TEXT"
   | "INVALID_MIN_VAL"
   | "INVALID_MAX_VAL";
+
+export interface DFG {
+  Streams: DFGStream[];
+  Gaskets: GasketConfig[];
+}
+
+export interface DFGStream {
+  StreamId: number;
+  Description: string;
+  Source: DFGEndpoint;
+  Destinations: DFGEndpoint[];
+  Group: string;
+}
+
+export interface DFGEndpoint {
+  Gasket: string;
+  Index: number; // Position in the gaskets input/output wires. We have to ask again how exctly this sould be determined
+  BufferSize: number;
+  BufferAddress: number;
+  Config?: PluginConfig;
+}
+
+export interface GasketConfig {
+  Name: string;
+  Config: PluginConfig;
+}

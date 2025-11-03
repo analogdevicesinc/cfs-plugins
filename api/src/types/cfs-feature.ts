@@ -49,7 +49,12 @@ export enum CfsFeatureScope {
   /**
    * Feature scope relating to clock configuration
    */
-  ClockConfig = "clockConfig"
+  ClockConfig = "clockConfig",
+
+  /**
+   * Feature scope relating to data flow gasket configuration
+   */
+  DFG = "dfg",
 }
 
 export interface CfsFeature {

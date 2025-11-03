@@ -14,6 +14,7 @@
  */
 
 import path from "node:path";
+import sinon from "sinon";
 import fs, { promises as fsp } from "node:fs";
 import {
   CfsFeatureScope,
@@ -22,8 +23,11 @@ import {
   CfsWorkspace,
   CfsConfig,
   CfsCodeGenerationContext,
+  CfsSocDataModel,
+  SocControl,
+  evalNestedTemplateLiterals,
+  GenericPlugin,
 } from "cfs-plugins-api";
-import WorkspacePlugin from "../../../../plugins/default-workspace-plugin/index.js";
 import MsdkProjectPlugin from "../../../../plugins/msdk-project-plugin/index.js";
 import {
   directoryExists,
@@ -31,16 +35,15 @@ import {
   isDebug,
 } from "../../utilities/test-utilities.js";
 import { expect } from "chai";
+import { joinPath } from "../../utilities/path-utilities.js";
 import {
-  CfsEtaProjectGenerator,
-  CfsEtaWorkspaceGenerator,
-  CfsEtaCodeGenerator,
-} from "../../../../plugins/common/generators/index.js";
-import { evalNestedTemplateLiterals } from "../../../../plugins/common/utilities/cfs-utilities.js";
+  validateJsonFile,
+  findJsonFiles,
+} from "../../utilities/validate-json.js";
 
 describe("Unit tests for MSDK Project Plugin", () => {
   let projectPlugin: MsdkProjectPlugin;
-  let workspacePlugin: WorkspacePlugin;
+  let workspacePlugin: GenericPlugin;
   let workspacePluginInfo: CfsPluginInfo;
   let projectPluginInfo: CfsPluginInfo;
 
@@ -69,6 +72,7 @@ describe("Unit tests for MSDK Project Plugin", () => {
   const cfsProject = {
     id: "test-project-id",
     package: "test-package",
+    coreId: "RV",
     board: "test-board",
     soc: "project-soc",
     name: "test-project",
@@ -78,13 +82,8 @@ describe("Unit tests for MSDK Project Plugin", () => {
     pluginConfig: {},
     platformConfig: {
       ProjectName: "riscv",
-      Cflags: [
-        "-fdump-rtl-expand",
-        "-fdump-rtl-dfinish",
-        "-fdump-ipa-cgraph",
-        "-fstack-usage",
-        "-gdwarf-4",
-      ],
+      Cflags:
+        "-fdump-rtl-expand\n-fdump-rtl-dfinish\n-fdump-ipa-cgraph\n-fstack-usage\n-gdwarf-4",
     },
   } as CfsProject;
 
@@ -107,7 +106,14 @@ describe("Unit tests for MSDK Project Plugin", () => {
         PluginVersion: "string",
         FirmwarePlatform: "msdk",
         ExternallyManaged: true,
-        Partitions: [{ Name: "Name", Access: "R/W", StartAddress: "0x10000000", Size: 1024 } as any],
+        Partitions: [
+          {
+            Name: "Name",
+            Access: "R/W",
+            StartAddress: "0x10000000",
+            Size: 1024,
+          } as any,
+        ],
         PlatformConfig: { ProjectName: "riscv", Cflags: "" },
         Peripherals: [{ Name: "Name" } as any],
       },
@@ -138,8 +144,8 @@ describe("Unit tests for MSDK Project Plugin", () => {
   });
 
   beforeEach(() => {
-    workspacePlugin = new WorkspacePlugin(workspacePluginInfo, cfsWorkspace);
-    projectPlugin = new MsdkProjectPlugin(projectPluginInfo, cfsProject);
+    workspacePlugin = new GenericPlugin(workspacePluginInfo);
+    projectPlugin = new MsdkProjectPlugin(projectPluginInfo);
   });
 
   afterEach(async () => {
@@ -152,22 +158,13 @@ describe("Unit tests for MSDK Project Plugin", () => {
   });
 
   it("Should generate a RISC-V MSDK project", async () => {
-    const workspaceGenerator =
-      workspacePlugin.getGenerator<CfsEtaWorkspaceGenerator>(
-        CfsFeatureScope.Workspace
-      );
-
-    const projectGenerator = projectPlugin.getGenerator<CfsEtaProjectGenerator>(
-      CfsFeatureScope.Project
-    );
-
     // Generate workspace and project
     const projectPath =
       cfsProject.path +
       "/" +
       (cfsProject.platformConfig as { ProjectName: string }).ProjectName;
-    await workspaceGenerator.generateWorkspace(cfsWorkspace);
-    await projectGenerator.generateProject(projectPath);
+    await workspacePlugin.generateWorkspace(cfsWorkspace);
+    await projectPlugin.generateProject(projectPath, cfsProject);
 
     // Check if directory exists
     const projectExists = await directoryExists(projectPath);
@@ -175,20 +172,42 @@ describe("Unit tests for MSDK Project Plugin", () => {
       .be.true;
 
     const expectedFiles = [
-      ...projectPluginInfo.features.project.templates.map(
-        (template) => template.dst
-      ),
-      ...projectPluginInfo.features.project.files.map((file) => file.dst),
+      ...projectPluginInfo.features.project.templates
+        .filter((template) => {
+          return template.condition
+            ? evalNestedTemplateLiterals(template.condition, cfsProject) ===
+                "true"
+            : true;
+        })
+        .map((template) =>
+          evalNestedTemplateLiterals(template.dst, cfsProject)
+        ),
+
+      ...projectPluginInfo.features.project.files
+        .filter((file) => {
+          return file.condition
+            ? evalNestedTemplateLiterals(file.condition, cfsProject) === "true"
+            : true;
+        })
+        .map((file) => evalNestedTemplateLiterals(file.dst, cfsProject)),
     ];
 
     for (const file of expectedFiles) {
-      const filePath = path.join(projectPath, file);
+      const filePath = joinPath(projectPath, file);
       const fileExistsInProject = await fileExists(filePath);
 
       expect(
         fileExistsInProject,
         `File ${file} should exist in the project directory`
       ).to.be.true;
+    }
+
+    // Confirm that valid JSON files were generated
+    const jsonFiles = await findJsonFiles(cfsWorkspace.location);
+    expect(jsonFiles.length).to.be.greaterThan(0, "No JSON files found");
+    for (const file of jsonFiles) {
+      const result = await validateJsonFile(file);
+      expect(result, `Error: '${file}' is not a valid JSON file.`).to.be.true;
     }
   });
 
@@ -204,11 +223,7 @@ describe("Unit tests for MSDK Project Plugin", () => {
     const socData = JSON.parse(socFileContent);
     const codeGenerationPath = cfsProject.path;
 
-    projectPlugin = new MsdkProjectPlugin(projectPluginInfo, cfsConfig);
-
-    const codeGenerator = projectPlugin.getGenerator<CfsEtaCodeGenerator>(
-      CfsFeatureScope.CodeGen
-    );
+    projectPlugin = new MsdkProjectPlugin(projectPluginInfo);
 
     const codeGenData: CfsCodeGenerationContext = {
       cfsconfig: cfsConfig,
@@ -216,7 +231,7 @@ describe("Unit tests for MSDK Project Plugin", () => {
       projectId: "RV",
     };
 
-    const filesGenerated = await codeGenerator.generateCode(
+    const filesGenerated = await projectPlugin.generateCode(
       codeGenData,
       codeGenerationPath
     );
@@ -235,7 +250,7 @@ describe("Unit tests for MSDK Project Plugin", () => {
         (project) => project.ProjectId === codeGenData.projectId
       )?.PlatformConfig.ProjectName ?? "";
     for (const file of expectedFiles) {
-      let filePath = path.join(
+      let filePath = joinPath(
         codeGenerationPath,
         projectName,
         evalNestedTemplateLiterals(file, codeGenData)
@@ -257,5 +272,81 @@ describe("Unit tests for MSDK Project Plugin", () => {
         ", "
       )} are not found in generated files: ${filesGenerated.join(", ")}`
     ).to.be.true;
+  });
+
+  it("Should return empty array if scope is not found on properties", () => {
+    const getPropertiesSpy = sinon.spy(projectPlugin, "getProperties");
+    const properties = projectPlugin.getProperties(
+      "fakeScope" as CfsFeatureScope
+    );
+    expect(getPropertiesSpy.called).to.be.true;
+    expect(Array.isArray(properties)).to.be.true;
+    expect(properties.length).to.equal(0);
+    getPropertiesSpy.restore();
+  });
+
+  it("Should return properties with populated board name based on board and soc", () => {
+    const boardId = "evkit_v1";
+    const soc = "max32690";
+
+    const result = projectPlugin.getProperties(CfsFeatureScope.Project, {
+      boardId,
+      soc,
+    });
+
+    const boarnNameProp = result.find((prop) => prop.id === "MsdkBoardName");
+
+    expect(boarnNameProp).to.exist;
+    expect(boarnNameProp?.default).to.exist;
+    expect(boarnNameProp?.default).to.eq("EvKit_V1");
+  });
+
+  describe("overrideControls", () => {
+    const mockSoc = {
+      Name: "MAX32690",
+      Controls: {
+        PinConfig: [
+          {
+            Id: "MODE",
+            Description: "Input or Output Mode",
+            Type: "enum",
+            EnumValues: [
+              { Id: "IN", Description: "Input Mode", Value: 0 },
+              { Id: "OUT", Description: "Output Mode", Value: 1 },
+            ],
+          },
+          {
+            Id: "DS",
+            Description: "Drive Strength",
+            Type: "enum",
+            EnumValues: [
+              { Id: "0", Description: "Drive Strength 0", Value: 0 },
+              { Id: "1", Description: "Drive Strength 1", Value: 1 },
+            ],
+          },
+        ],
+      },
+      ClockNodes: [],
+      Cores: [],
+      Packages: [],
+      Peripherals: [],
+      Registers: [],
+      Schema: "1.0.0",
+      Version: "1.0.0",
+    };
+
+    it("should handle PinConfig scope", () => {
+      const result = projectPlugin.overrideControls(
+        CfsFeatureScope.PinConfig,
+        mockSoc as unknown as CfsSocDataModel
+      ) as Record<string, SocControl[]>;
+
+      expect(result).to.be.an("object");
+      expect(result).to.have.property("PinConfig");
+      expect(result.PinConfig).to.be.an("array");
+      expect(result.PinConfig.length).to.equal(2);
+      expect(result.PinConfig[0]).to.have.property("Id", "MODE");
+      expect(result.PinConfig[1]).to.have.property("Id", "DS");
+    });
   });
 });

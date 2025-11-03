@@ -1,0 +1,10 @@
+{
+  "Peripherals": [
+    {
+      "Name": "CM33 SysTick (S)",
+      "Signals": [],
+      "Config": {
+      }
+    }
+  ]
+}

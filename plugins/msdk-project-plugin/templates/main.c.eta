@@ -1,4 +1,8 @@
-<%~ include("../../common/utilities/copyright-header.eta", it) %>
+<%~ include("@copyrightHeader", it) %>
+
+/* Include global variables and configurations for the SoC.
+*/
+#include "../soc_init.h"
 
 int main(void) {
   return 0;

@@ -1,0 +1,49 @@
+<%~ include("@sharcfxUtils", it) %>
+{
+  "configurations": [
+    {
+      "name": "Debug with GDB and OpenOCD",
+      "request": "launch",
+      "type": "cortex-debug",
+      "device": "SHARC-FX",
+      "runToEntryPoint": "main",
+      "cwd": "${workspaceFolder}",
+      "executable": "${config:cfs.programFile}",
+      "servertype": "openocd",
+      "serverpath": "${config:cfs.openocd.path}/bin/openocd",
+      "gdbPath": "${cfs:tool.path.xtensa-sharcfx}/Xtensa/XtensaTools/bin/xt-gdb.exe",
+      "svdPath": "${cfs:tool.path.xtensa-sharcfx}/System/ArchDef/<%= it.svdFile(it.soc) %>",
+      "searchDir": [
+        "${config:cfs.openocd.path}/share/openocd/scripts"
+      ],
+      "numberOfProcessors": 2,
+      "showDevDebugOutput": "none",
+      "debuggerArgs": ["-l", "50"],
+      "configFiles": [
+        "${config:cfs.openocd.interface}",
+        "${config:cfs.openocd.target}"
+      ],
+      "openOCDLaunchCommands": ["adapter speed 23000"],
+      "preLaunchCommands": [
+        "set logging overwrite on",
+        "set logging file debug-sfx.log",
+        "set logging enabled",
+        "set remotetimeout 60",
+        "monitor reset halt",
+        "load ${cfs:tool.path.xtensa-sharcfx}/Xtensa/SHARC-FX/ldr/ADSPSC835W-EV-SOM_preload_core1.dxe",
+        "continue",
+        "shell ${config:cfs.sdk.path}/Tools/python/python -c \"import time; time.sleep(2)\"",
+        "interrupt"
+      ],
+      "postRestartCommands": [
+        "monitor reset halt",
+        "load ${cfs:tool.path.xtensa-sharcfx}/Xtensa/SHARC-FX/ldr/ADSPSC835W-EV-SOM_preload_core1.dxe",
+        "continue",
+        "shell ${config:cfs.sdk.path}/Tools/python/python -c \"import time; time.sleep(2)\"",
+        "interrupt",
+        "load"
+      ],
+      "preLaunchTask": "CFS: build"
+    }
+  ]
+}

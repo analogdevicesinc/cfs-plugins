@@ -95,4 +95,9 @@ export interface CfsPluginInfo {
    * CfsConfig default overrides
    */
   configOverrides: [];
+
+  /**
+   * List of host platforms supported by the plugin. If not set, it will be assumed all platforms are supported.
+   */
+  supportedHostPlatforms?: string[];
 }

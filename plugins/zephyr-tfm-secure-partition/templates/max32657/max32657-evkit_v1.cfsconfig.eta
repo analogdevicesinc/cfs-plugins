@@ -1,0 +1,191 @@
+  "Pins": [
+    {
+      "Pin": "B2",
+      "Peripheral": "UART0",
+      "Signal": "TX"
+    },
+    {
+      "Pin": "C3",
+      "Peripheral": "UART0",
+      "Signal": "RX"
+    }
+  ],
+  "ClockNodes": [
+    {
+      "Name": "UART0",
+      "Control": "ENABLE",
+      "Value": "TRUE",
+      "Enabled": true
+    }
+  ],
+  "Projects": [
+    {
+      "CoreId": "CM33",
+      "ProjectId": "CM33 Secure",
+      "PluginId": "com.analog.project.msdk.plugin",
+      "PluginVersion": "1.1.0",
+      "Secure": true,
+      "FirmwarePlatform": "msdk",
+      "ExternallyManaged": false,
+      "PlatformConfig": {
+        "ProjectName": "m33"
+      },
+      "Partitions": [
+        {
+          "Name": "secure_data_ram",
+          "StartAddress": "0x20000000",
+          "Size": 63488,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {}
+        },
+        {
+          "Name": "secure_code_ram",
+          "StartAddress": "0x2000f800",
+          "Size": 2048,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {}
+        },
+        {
+          "Name": "boot_partition",
+          "StartAddress": "0x01000000",
+          "Size": 65536,
+          "IsOwner": true,
+          "Access": "R",
+          "Config": {
+            "NAME_OVERRIDE": "BL2"
+          }
+        },
+        {
+          "Name": "slot0_partition",
+          "StartAddress": "0x01010000",
+          "Size": 327680,
+          "IsOwner": true,
+          "Access": "R",
+          "Config": {
+            "NAME_OVERRIDE": "secure_flash"
+          }
+        },
+        {
+          "Name": "PS",
+          "StartAddress": "0x010f0000",
+          "Size": 16384,
+          "IsOwner": true,
+          "Access": "R",
+          "Config": {
+          }
+        },
+        {
+          "Name": "ITS",
+          "StartAddress": "0x010f4000",
+          "Size": 16384,
+          "IsOwner": true,
+          "Access": "R",
+          "Config": {
+          }
+        }
+      ],
+      "Peripherals": [
+        {
+          "Name": "CM33 SysTick (S)",
+          "Signals": [],
+          "Config": {
+            "ENABLE": "FALSE"
+          }
+        }
+      ]
+    },
+    {
+      "CoreId": "CM33",
+      "ProjectId": "CM33 Non-Secure",
+      "PluginId": "com.analog.project.zephyr.plugin",
+      "PluginVersion": "1.0.0",
+      "Secure": false,
+      "FirmwarePlatform": "zephyr",
+      "ExternallyManaged": false,
+      "PlatformConfig": {
+        "ProjectName": "m33",
+        "ZephyrVersion": "4.2.0",
+        "ZephyrBoardName": "max32657evkit/max32657/ns"
+      },
+      "Partitions": [
+        {
+          "Name": "non_secure_ram",
+          "StartAddress": "0x20010000",
+          "Size": 196608,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "LABEL": "non-secure-memory",
+            "CHOSEN": "sram"
+          }
+        },
+        {
+          "Name": "slot0_ns_partition",
+          "StartAddress": "0x01060000",
+          "Size": 589824,
+          "IsOwner": true,
+          "Access": "R",
+          "Config": {
+            "CHOSEN": "code-partition",
+            "LABEL": "image-0-nonsecure"
+          }
+        }
+      ],
+      "Peripherals": [
+        {
+          "Name": "CM33 SysTick (NS)",
+          "Signals": [],
+          "Config": {
+            "ENABLE": "TRUE",
+            "TICKS_PER_SEC": "10000"
+          }
+        },
+        {
+          "Name": "UART0",
+          "Signals": [
+            {
+              "Name": "RX",
+              "Config": {
+                "PWR": "VDDIO",
+                "PS": "WEAK_PU"
+              }
+            },
+            {
+              "Name": "TX",
+              "Config": {
+                "PWR": "VDDIO"
+              }
+            }
+          ],
+          "Config": {
+            "CHOSEN": "console,shell-uart,bt-c2h-uart",
+            "BAUD": "115200",
+            "PARITY": "DISABLED",
+            "HW_FLOW_CTRL": "DISABLED",
+            "CHAR_SIZE": "8",
+            "STOP_BITS": "1"
+          }
+        }
+      ]
+    }
+  ],
+  "ClockFrequencies": {
+    "PCLK": 25000000,
+    "CLK_4KHZ": 4096,
+    "ERTCO_CLK": 32768,
+    "32KOUT": 32768,
+    "Cortex-M4": 50000000,
+    "FLC": 50000000,
+    "WUT": 32768,
+    "RTC": 4096,
+    "IPO": 50000000,
+    "ERTCO_OSC": 32768,
+    "ERTCO_OUT": 32768,
+    "SYS_OSC": 50000000,
+    "SYS_CLK": 50000000,
+    "ERTCO": 32768,
+    "CLK_32KHZ": 32768,
+    "UART0": 25000000
+  }

@@ -2,7 +2,7 @@
   "pluginName": "MSDK Project Plugin",
   "pluginDescription": "MSDK project and code generation",
   "pluginId": "com.analog.project.msdk.plugin",
-  "pluginVersion": "1.0.0",
+  "pluginVersion": "1.1.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "MSDK",
   "supportedSocs": [
@@ -36,6 +36,12 @@
     {
       "name": "MAX32657",
       "dataModel": "max32657-wlp.json",
+      "board": "EvKit_V1",
+      "package": "wlp"
+    },
+    {
+      "name": "MAX32658",
+      "dataModel": "max32658-wlp.json",
       "board": "EvKit_V1",
       "package": "wlp"
     },
@@ -143,7 +149,17 @@
         },
         {
           "src": "templates/launch.json.eta",
-          "dst": ".vscode/"
+          "dst": ".vscode/",
+          "condition": "${!(['RV'].includes(context.coreId) && context.soc.toLowerCase() === 'max32690')}"
+        },
+        {
+          "src": "templates/cfs.tasks.json.eta",
+          "dst": ".vscode/cfs.tasks.json"
+        },
+        {
+          "src": "templates/arm/ozone-project.jdebug.eta",
+          "dst": "${(['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm4')}.jdebug",
+          "condition": "${['CM4', 'CM33', 'CM55'].includes(context.coreId)}"
         }
       ],
       "files": [
@@ -157,8 +173,22 @@
       "files": [],
       "templates": [
         {
+          "src": "templates/aimodels.mk.eta",
+          "dst": "aimodels.mk",
+          "condition": "${(context.cfsconfig.Projects?.find(p => p.ProjectId == context.projectId).AIModels?.length ?? 0) > 0}"
+        },
+        {
           "src": "templates/soc_init.c.eta",
           "dst": "${context.cfsconfig.Projects.find(proj => proj.ProjectId === context.projectId)?.Secure ? \"adi_soc_peripheral_init.c\" : \"soc_init.c\"}"
+        },
+        {
+          "src": "templates/soc_init.h.eta",
+          "dst": "${context.cfsconfig.Projects.find(proj => proj.ProjectId === context.projectId)?.Secure ? \"adi_soc_peripheral_init.h\" : \"soc_init.h\"}"
+        },
+        {
+          "src": "templates/config.mk.eta",
+          "dst": "config.mk",
+          "condition": "${!context.cfsconfig.Projects.find(proj => proj.ProjectId === context.projectId)?.Secure}"
         },
         {
           "src": "templates/memory.ld.eta",
@@ -197,23 +227,26 @@
         "id": "Cflags",
         "name": "CFLAGS",
         "type": "textarea",
-        "default": [
-          "-fdump-rtl-expand",
-          "-fdump-rtl-dfinish",
-          "-fdump-ipa-cgraph",
-          "-fstack-usage",
-          "-gdwarf-4"
-        ],
+        "default": "-fdump-rtl-expand\n-fdump-rtl-dfinish\n-fdump-ipa-cgraph\n-fstack-usage\n-gdwarf-4\n",
         "readonly": "true"
       }
     ],
     "clockConfig": {
+      "ADC": {
+        "defaultOverrides": [
+          {
+            "Id": "DIV",
+            "Value": "8",
+            "partRegexp": "MAX(32650|32655|32666|78000)"
+          }
+        ]
+      },
       "SYS_OSC Mux": {
         "defaultOverrides": [
           {
             "Id": "MUX",
             "Value": "IPO",
-            "partRegexp": "MAX(32655|32657|32662|32670|32672|32690)"
+            "partRegexp": "MAX(32655|32657|32658|32662|32672|32690)"
           },
           {
             "Id": "MUX",
@@ -224,6 +257,39 @@
             "Id": "MUX",
             "Value": "HSO",
             "partRegexp": "MAX32666"
+          }
+        ]
+      },
+      "IPO": {
+        "removedControls": [
+          {
+            "Id": "CALIBRATE",
+            "partRegexp": "MAX(32650|32655|32657|32658|32660|32666|32670|32672|32675C|78000|78002)"
+          }
+        ]
+      },
+      "IPO PRESCALER": {
+        "modifiedControls": [
+          {
+            "Id": "DIV",
+            "Description": "Divider Value",
+            "EnumValues": [
+              {
+                "Id": "1",
+                "Description": "Divide by 1",
+                "Value": 0
+              }
+            ],
+            "Type": "enum",
+            "partRegexp": "MAX(32662|32670|32675C)"
+          }
+        ]
+      },
+      "INRO": {
+        "removedControls": [
+          {
+            "Id": "INRO_FREQ",
+            "partRegexp": "MAX(32655|78000|78002)"
           }
         ]
       },
@@ -244,6 +310,76 @@
           {
             "Id": "TMR3b_MUX",
             "Value": "32BIT"
+          }
+        ]
+      },
+      "LPTMR0": {
+        "modifiedControls": [
+          {
+            "Id": "MUX",
+            "Description": "Clock Source",
+            "Type": "enum",
+            "Condition": "${Control:ENABLE}",
+            "partRegexp": "MAX32670",
+            "EnumValues": [
+              {
+                "Id": "ERTCO",
+                "Description": "ERTCO (External RTC Osc.)",
+                "Value": 1
+              },
+              {
+                "Id": "INRO",
+                "Description": "INRO (Internal Nano-Ring Osc.)",
+                "Value": 3
+              },
+              {
+                "Id": "EXT_CLK2",
+                "Description": "EXT_CLK2 (External Clock Two)",
+                "Value": 4
+              }
+            ]
+          }
+        ],
+        "defaultOverrides": [
+          {
+            "Id": "MUX",
+            "Value": "ERTCO",
+            "partRegexp": "MAX32670"
+          }
+        ]
+      },
+      "LPTMR1": {
+        "modifiedControls": [
+          {
+            "Id": "MUX",
+            "Description": "Clock Source",
+            "Type": "enum",
+            "Condition": "${Control:ENABLE}",
+            "partRegexp": "MAX32670",
+            "EnumValues": [
+              {
+                "Id": "ERTCO",
+                "Description": "ERTCO (External RTC Osc.)",
+                "Value": 1
+              },
+              {
+                "Id": "INRO",
+                "Description": "INRO (Internal Nano-Ring Osc.)",
+                "Value": 3
+              },
+              {
+                "Id": "EXT_CLK2",
+                "Description": "EXT_CLK2 (External Clock Two)",
+                "Value": 4
+              }
+            ]
+          }
+        ],
+        "defaultOverrides": [
+          {
+            "Id": "MUX",
+            "Value": "ERTCO",
+            "partRegexp": "MAX32670"
           }
         ]
       }
@@ -308,9 +444,6 @@
           },
           {
             "Id": "TRIG_SEL"
-          },
-          {
-            "Id": "DATA_FORMAT"
           },
           {
             "Id": "THRESH"
@@ -425,6 +558,114 @@
           },
           {
             "Id": "DMA_EN"
+          },
+          {
+            "Id": "READY_IE"
+          },
+          {
+            "Id": "ABORT_IE"
+          },
+          {
+            "Id": "START_DET_IE"
+          },
+          {
+            "Id": "SEQ_STARTED_IE"
+          },
+          {
+            "Id": "SEQ_DONE_IE"
+          },
+          {
+            "Id": "CONV_DONE_IE"
+          },
+          {
+            "Id": "CLIPPED_IE"
+          },
+          {
+            "Id": "FIFO_LVL_IE"
+          },
+          {
+            "Id": "FIFO_UFL_IE"
+          },
+          {
+            "Id": "FIFO_OFL_IE"
+          },
+          {
+            "Id": "DONE_IE"
+          },
+          {
+            "Id": "REF_READY_IE"
+          },
+          {
+            "Id": "HI_LIMIT_IE"
+          },
+          {
+            "Id": "LO_LIMIT_IE"
+          },
+          {
+            "Id": "OVERFLOW_IE"
+          },
+          {
+            "Id": "SCALE"
+          },
+          {
+            "Id": "CH_LO_LIMIT_EN_IDX0"
+          },
+          {
+            "Id": "CH_LO_LIMIT_EN_IDX1"
+          },
+          {
+            "Id": "CH_LO_LIMIT_EN_IDX2"
+          },
+          {
+            "Id": "CH_LO_LIMIT_EN_IDX3"
+          },
+          {
+            "Id": "CH_HI_LIMIT_EN_IDX0"
+          },
+          {
+            "Id": "CH_HI_LIMIT_EN_IDX1"
+          },
+          {
+            "Id": "CH_HI_LIMIT_EN_IDX2"
+          },
+          {
+            "Id": "CH_HI_LIMIT_EN_IDX3"
+          },
+          {
+            "Id": "CH_SEL_IDX0"
+          },
+          {
+            "Id": "CH_SEL_IDX1"
+          },
+          {
+            "Id": "CH_SEL_IDX2"
+          },
+          {
+            "Id": "CH_SEL_IDX3"
+          },
+          {
+            "Id": "CH_LO_LIMIT_IDX0"
+          },
+          {
+            "Id": "CH_LO_LIMIT_IDX1"
+          },
+          {
+            "Id": "CH_LO_LIMIT_IDX2"
+          },
+          {
+            "Id": "CH_LO_LIMIT_IDX3"
+          },
+          {
+            "Id": "CH_HI_LIMIT_IDX0"
+          },
+          {
+            "Id": "CH_HI_LIMIT_IDX1"
+          },
+          {
+            "Id": "CH_HI_LIMIT_IDX2"
+          },
+          {
+            "Id": "CH_HI_LIMIT_IDX3"
           }
         ],
         "addedControls": [
@@ -433,6 +674,8 @@
             "Description": "DMA Channel",
             "Hint": "0",
             "Type": "integer",
+            "MinimumValue": 0,
+            "MaximumValue": 255,
             "Condition": "${Control:DMA_EN}"
           }
         ]
@@ -441,6 +684,9 @@
         "supportedControls": [
           {
             "Id": "MODE"
+          },
+          {
+            "Id": "ADDR"
           },
           {
             "Id": "TARGET0_ADDR"
@@ -462,6 +708,81 @@
           },
           {
             "Id": "RECEIVE_DMA_ENABLE"
+          },
+          {
+            "Id": "DONE_IE"
+          },
+          {
+            "Id": "IRXM_IE"
+          },
+          {
+            "Id": "GC_ADDR_MATCH_IE"
+          },
+          {
+            "Id": "ADDR_MATCH_IE"
+          },
+          {
+            "Id": "RX_THD_IE"
+          },
+          {
+            "Id": "TX_THD_IE"
+          },
+          {
+            "Id": "STOP_IE"
+          },
+          {
+            "Id": "ADDR_ACK_IE"
+          },
+          {
+            "Id": "ARB_ERR_IE"
+          },
+          {
+            "Id": "TO_ERR_IE"
+          },
+          {
+            "Id": "ADDR_NACK_ERR_IE"
+          },
+          {
+            "Id": "DATA_ERR_IE"
+          },
+          {
+            "Id": "DNR_ERR_IE"
+          },
+          {
+            "Id": "START_ERR_IE"
+          },
+          {
+            "Id": "STOP_ERR_IE"
+          },
+          {
+            "Id": "TX_LOCKOUT_IE"
+          },
+          {
+            "Id": "MAMI0_IE"
+          },
+          {
+            "Id": "MAMI1_IE"
+          },
+          {
+            "Id": "MAMI2_IE"
+          },
+          {
+            "Id": "MAMI3_IE"
+          },
+          {
+            "Id": "RD_ADDR_MATCH_IE"
+          },
+          {
+            "Id": "WR_ADDR_MATCH_IE"
+          },
+          {
+            "Id": "RX_OV_IE"
+          },
+          {
+            "Id": "TX_UN_IE"
+          },
+          {
+            "Id": "START_IE"
           }
         ],
         "addedControls": [
@@ -469,7 +790,9 @@
             "Id": "FREQ",
             "Description": "Frequency",
             "Hint": "100000",
-            "Type": "integer"
+            "Type": "integer",
+            "MinimumValue": 1,
+            "MaximumValue": 3400000
           }
         ],
         "modifiedControls": [
@@ -498,6 +821,9 @@
             "Id": "MODE"
           },
           {
+            "Id": "ADDR"
+          },
+          {
             "Id": "TARGET0_ADDR"
           },
           {
@@ -517,6 +843,81 @@
           },
           {
             "Id": "RECEIVE_DMA_ENABLE"
+          },
+          {
+            "Id": "DONE_IE"
+          },
+          {
+            "Id": "IRXM_IE"
+          },
+          {
+            "Id": "GC_ADDR_MATCH_IE"
+          },
+          {
+            "Id": "ADDR_MATCH_IE"
+          },
+          {
+            "Id": "RX_THD_IE"
+          },
+          {
+            "Id": "TX_THD_IE"
+          },
+          {
+            "Id": "STOP_IE"
+          },
+          {
+            "Id": "ADDR_ACK_IE"
+          },
+          {
+            "Id": "ARB_ERR_IE"
+          },
+          {
+            "Id": "TO_ERR_IE"
+          },
+          {
+            "Id": "ADDR_NACK_ERR_IE"
+          },
+          {
+            "Id": "DATA_ERR_IE"
+          },
+          {
+            "Id": "DNR_ERR_IE"
+          },
+          {
+            "Id": "START_ERR_IE"
+          },
+          {
+            "Id": "STOP_ERR_IE"
+          },
+          {
+            "Id": "TX_LOCKOUT_IE"
+          },
+          {
+            "Id": "MAMI0_IE"
+          },
+          {
+            "Id": "MAMI1_IE"
+          },
+          {
+            "Id": "MAMI2_IE"
+          },
+          {
+            "Id": "MAMI3_IE"
+          },
+          {
+            "Id": "RD_ADDR_MATCH_IE"
+          },
+          {
+            "Id": "WR_ADDR_MATCH_IE"
+          },
+          {
+            "Id": "RX_OV_IE"
+          },
+          {
+            "Id": "TX_UN_IE"
+          },
+          {
+            "Id": "START_IE"
           }
         ],
         "addedControls": [
@@ -524,7 +925,9 @@
             "Id": "FREQ",
             "Description": "Frequency",
             "Hint": "100000",
-            "Type": "integer"
+            "Type": "integer",
+            "MinimumValue": 1,
+            "MaximumValue": 3400000
           }
         ],
         "modifiedControls": [
@@ -553,6 +956,9 @@
             "Id": "MODE"
           },
           {
+            "Id": "ADDR"
+          },
+          {
             "Id": "TARGET0_ADDR"
           },
           {
@@ -572,6 +978,81 @@
           },
           {
             "Id": "RECEIVE_DMA_ENABLE"
+          },
+          {
+            "Id": "DONE_IE"
+          },
+          {
+            "Id": "IRXM_IE"
+          },
+          {
+            "Id": "GC_ADDR_MATCH_IE"
+          },
+          {
+            "Id": "ADDR_MATCH_IE"
+          },
+          {
+            "Id": "RX_THD_IE"
+          },
+          {
+            "Id": "TX_THD_IE"
+          },
+          {
+            "Id": "STOP_IE"
+          },
+          {
+            "Id": "ADDR_ACK_IE"
+          },
+          {
+            "Id": "ARB_ERR_IE"
+          },
+          {
+            "Id": "TO_ERR_IE"
+          },
+          {
+            "Id": "ADDR_NACK_ERR_IE"
+          },
+          {
+            "Id": "DATA_ERR_IE"
+          },
+          {
+            "Id": "DNR_ERR_IE"
+          },
+          {
+            "Id": "START_ERR_IE"
+          },
+          {
+            "Id": "STOP_ERR_IE"
+          },
+          {
+            "Id": "TX_LOCKOUT_IE"
+          },
+          {
+            "Id": "MAMI0_IE"
+          },
+          {
+            "Id": "MAMI1_IE"
+          },
+          {
+            "Id": "MAMI2_IE"
+          },
+          {
+            "Id": "MAMI3_IE"
+          },
+          {
+            "Id": "RD_ADDR_MATCH_IE"
+          },
+          {
+            "Id": "WR_ADDR_MATCH_IE"
+          },
+          {
+            "Id": "RX_OV_IE"
+          },
+          {
+            "Id": "TX_UN_IE"
+          },
+          {
+            "Id": "START_IE"
           }
         ],
         "addedControls": [
@@ -579,7 +1060,9 @@
             "Id": "FREQ",
             "Description": "Frequency",
             "Hint": "100000",
-            "Type": "integer"
+            "Type": "integer",
+            "MinimumValue": 1,
+            "MaximumValue": 3400000
           }
         ],
         "modifiedControls": [
@@ -655,6 +1138,45 @@
           },
           {
             "Id": "PHASE_POL_MODE"
+          },
+          {
+            "Id": "TX_THD_IE"
+          },
+          {
+            "Id": "TX_EM_IE"
+          },
+          {
+            "Id": "RX_THD_IE"
+          },
+          {
+            "Id": "RX_FULL_IE"
+          },
+          {
+            "Id": "CSA_IE"
+          },
+          {
+            "Id": "CSD_IE"
+          },
+          {
+            "Id": "FAULT_IE"
+          },
+          {
+            "Id": "ABORT_IE"
+          },
+          {
+            "Id": "CTRL_DONE_IE"
+          },
+          {
+            "Id": "TX_OV_IE"
+          },
+          {
+            "Id": "TX_UN_IE"
+          },
+          {
+            "Id": "RX_OV_IE"
+          },
+          {
+            "Id": "RX_UN_IE"
           }
         ],
         "addedControls": [
@@ -662,7 +1184,9 @@
             "Id": "FREQ",
             "Description": "Frequency",
             "Hint": "15000000",
-            "Type": "integer"
+            "Type": "integer",
+            "MinimumValue": 1,
+            "MaximumValue": 4294967295
           },
           {
             "Id": "NUM_TARGETS",
@@ -700,6 +1224,45 @@
           },
           {
             "Id": "PHASE_POL_MODE"
+          },
+          {
+            "Id": "TX_THD_IE"
+          },
+          {
+            "Id": "TX_EM_IE"
+          },
+          {
+            "Id": "RX_THD_IE"
+          },
+          {
+            "Id": "RX_FULL_IE"
+          },
+          {
+            "Id": "CSA_IE"
+          },
+          {
+            "Id": "CSD_IE"
+          },
+          {
+            "Id": "FAULT_IE"
+          },
+          {
+            "Id": "ABORT_IE"
+          },
+          {
+            "Id": "CTRL_DONE_IE"
+          },
+          {
+            "Id": "TX_OV_IE"
+          },
+          {
+            "Id": "TX_UN_IE"
+          },
+          {
+            "Id": "RX_OV_IE"
+          },
+          {
+            "Id": "RX_UN_IE"
           }
         ],
         "addedControls": [
@@ -707,7 +1270,9 @@
             "Id": "FREQ",
             "Description": "Frequency",
             "Hint": "15000000",
-            "Type": "integer"
+            "Type": "integer",
+            "MinimumValue": 1,
+            "MaximumValue": 4294967295
           },
           {
             "Id": "NUM_TARGETS",
@@ -745,6 +1310,45 @@
           },
           {
             "Id": "PHASE_POL_MODE"
+          },
+          {
+            "Id": "TX_THD_IE"
+          },
+          {
+            "Id": "TX_EM_IE"
+          },
+          {
+            "Id": "RX_THD_IE"
+          },
+          {
+            "Id": "RX_FULL_IE"
+          },
+          {
+            "Id": "CSA_IE"
+          },
+          {
+            "Id": "CSD_IE"
+          },
+          {
+            "Id": "FAULT_IE"
+          },
+          {
+            "Id": "ABORT_IE"
+          },
+          {
+            "Id": "CTRL_DONE_IE"
+          },
+          {
+            "Id": "TX_OV_IE"
+          },
+          {
+            "Id": "TX_UN_IE"
+          },
+          {
+            "Id": "RX_OV_IE"
+          },
+          {
+            "Id": "RX_UN_IE"
           }
         ],
         "addedControls": [
@@ -752,7 +1356,9 @@
             "Id": "FREQ",
             "Description": "Frequency",
             "Hint": "15000000",
-            "Type": "integer"
+            "Type": "integer",
+            "MinimumValue": 1,
+            "MaximumValue": 4294967295
           },
           {
             "Id": "NUM_TARGETS",
@@ -790,6 +1396,45 @@
           },
           {
             "Id": "PHASE_POL_MODE"
+          },
+          {
+            "Id": "TX_THD_IE"
+          },
+          {
+            "Id": "TX_EM_IE"
+          },
+          {
+            "Id": "RX_THD_IE"
+          },
+          {
+            "Id": "RX_FULL_IE"
+          },
+          {
+            "Id": "CSA_IE"
+          },
+          {
+            "Id": "CSD_IE"
+          },
+          {
+            "Id": "FAULT_IE"
+          },
+          {
+            "Id": "ABORT_IE"
+          },
+          {
+            "Id": "CTRL_DONE_IE"
+          },
+          {
+            "Id": "TX_OV_IE"
+          },
+          {
+            "Id": "TX_UN_IE"
+          },
+          {
+            "Id": "RX_OV_IE"
+          },
+          {
+            "Id": "RX_UN_IE"
           }
         ],
         "addedControls": [
@@ -797,7 +1442,9 @@
             "Id": "FREQ",
             "Description": "Frequency",
             "Hint": "15000000",
-            "Type": "integer"
+            "Type": "integer",
+            "MinimumValue": 1,
+            "MaximumValue": 4294967295
           },
           {
             "Id": "NUM_TARGETS",
@@ -835,6 +1482,45 @@
           },
           {
             "Id": "PHASE_POL_MODE"
+          },
+          {
+            "Id": "TX_THD_IE"
+          },
+          {
+            "Id": "TX_EM_IE"
+          },
+          {
+            "Id": "RX_THD_IE"
+          },
+          {
+            "Id": "RX_FULL_IE"
+          },
+          {
+            "Id": "CSA_IE"
+          },
+          {
+            "Id": "CSD_IE"
+          },
+          {
+            "Id": "FAULT_IE"
+          },
+          {
+            "Id": "ABORT_IE"
+          },
+          {
+            "Id": "CTRL_DONE_IE"
+          },
+          {
+            "Id": "TX_OV_IE"
+          },
+          {
+            "Id": "TX_UN_IE"
+          },
+          {
+            "Id": "RX_OV_IE"
+          },
+          {
+            "Id": "RX_UN_IE"
           }
         ],
         "addedControls": [
@@ -842,7 +1528,9 @@
             "Id": "FREQ",
             "Description": "Frequency",
             "Hint": "15000000",
-            "Type": "integer"
+            "Type": "integer",
+            "MinimumValue": 1,
+            "MaximumValue": 4294967295
           },
           {
             "Id": "NUM_TARGETS",
@@ -886,6 +1574,42 @@
           },
           {
             "Id": "RTSDC_LP_FDM"
+          },
+          {
+            "Id": "RX_FRAME_ERROR_IE"
+          },
+          {
+            "Id": "RX_PARTY_ERROR_IE"
+          },
+          {
+            "Id": "CTS_IE"
+          },
+          {
+            "Id": "RX_OVERRUN_IE"
+          },
+          {
+            "Id": "RX_THD_IE"
+          },
+          {
+            "Id": "TX_ONE_BYTE_IE"
+          },
+          {
+            "Id": "TX_HALF_EMPTY_IE"
+          },
+          {
+            "Id": "RX_FULL_IE"
+          },
+          {
+            "Id": "TX_THD_IE"
+          },
+          {
+            "Id": "BREAK_IE"
+          },
+          {
+            "Id": "RX_TO_IE"
+          },
+          {
+            "Id": "LAST_BREAK_IE"
           }
         ],
         "addedControls": [
@@ -893,7 +1617,9 @@
             "Id": "BAUD",
             "Description": "Baud Rate",
             "Hint": "115200",
-            "Type": "integer"
+            "Type": "integer",
+            "MinimumValue": 1,
+            "MaximumValue": 4294967295
           }
         ],
         "modifiedControls": [
@@ -912,7 +1638,8 @@
                 "Value": 2
               }
             ],
-            "Type": "enum"
+            "Type": "enum",
+            "partRegexp": "MAX(32655|32657|32658|32662|32670|32672|32675C|32690|78000|78002)"
           }
         ]
       },
@@ -947,6 +1674,42 @@
           },
           {
             "Id": "RTSDC_LP_FDM"
+          },
+          {
+            "Id": "RX_FRAME_ERROR_IE"
+          },
+          {
+            "Id": "RX_PARTY_ERROR_IE"
+          },
+          {
+            "Id": "CTS_IE"
+          },
+          {
+            "Id": "RX_OVERRUN_IE"
+          },
+          {
+            "Id": "RX_THD_IE"
+          },
+          {
+            "Id": "TX_ONE_BYTE_IE"
+          },
+          {
+            "Id": "TX_HALF_EMPTY_IE"
+          },
+          {
+            "Id": "RX_FULL_IE"
+          },
+          {
+            "Id": "TX_THD_IE"
+          },
+          {
+            "Id": "BREAK_IE"
+          },
+          {
+            "Id": "RX_TO_IE"
+          },
+          {
+            "Id": "LAST_BREAK_IE"
           }
         ],
         "addedControls": [
@@ -954,7 +1717,9 @@
             "Id": "BAUD",
             "Description": "Baud Rate",
             "Hint": "115200",
-            "Type": "integer"
+            "Type": "integer",
+            "MinimumValue": 1,
+            "MaximumValue": 4294967295
           }
         ],
         "modifiedControls": [
@@ -973,7 +1738,8 @@
                 "Value": 2
               }
             ],
-            "Type": "enum"
+            "Type": "enum",
+            "partRegexp": "MAX(32655|32657|32658|32662|32670|32672|32675C|32690|78000|78002)"
           }
         ]
       },
@@ -1008,6 +1774,42 @@
           },
           {
             "Id": "RTSDC_LP_FDM"
+          },
+          {
+            "Id": "RX_FRAME_ERROR_IE"
+          },
+          {
+            "Id": "RX_PARTY_ERROR_IE"
+          },
+          {
+            "Id": "CTS_IE"
+          },
+          {
+            "Id": "RX_OVERRUN_IE"
+          },
+          {
+            "Id": "RX_THD_IE"
+          },
+          {
+            "Id": "TX_ONE_BYTE_IE"
+          },
+          {
+            "Id": "TX_HALF_EMPTY_IE"
+          },
+          {
+            "Id": "RX_FULL_IE"
+          },
+          {
+            "Id": "TX_THD_IE"
+          },
+          {
+            "Id": "BREAK_IE"
+          },
+          {
+            "Id": "RX_TO_IE"
+          },
+          {
+            "Id": "LAST_BREAK_IE"
           }
         ],
         "addedControls": [
@@ -1015,7 +1817,9 @@
             "Id": "BAUD",
             "Description": "Baud Rate",
             "Hint": "115200",
-            "Type": "integer"
+            "Type": "integer",
+            "MinimumValue": 1,
+            "MaximumValue": 4294967295
           }
         ],
         "modifiedControls": [
@@ -1034,7 +1838,8 @@
                 "Value": 2
               }
             ],
-            "Type": "enum"
+            "Type": "enum",
+            "partRegexp": "MAX(32655|32657|32658|32662|32670|32672|32675C|32690|78000|78002)"
           }
         ]
       },
@@ -1069,6 +1874,42 @@
           },
           {
             "Id": "RTSDC_LP_FDM"
+          },
+          {
+            "Id": "RX_FRAME_ERROR_IE"
+          },
+          {
+            "Id": "RX_PARTY_ERROR_IE"
+          },
+          {
+            "Id": "CTS_IE"
+          },
+          {
+            "Id": "RX_OVERRUN_IE"
+          },
+          {
+            "Id": "RX_THD_IE"
+          },
+          {
+            "Id": "TX_ONE_BYTE_IE"
+          },
+          {
+            "Id": "TX_HALF_EMPTY_IE"
+          },
+          {
+            "Id": "RX_FULL_IE"
+          },
+          {
+            "Id": "TX_THD_IE"
+          },
+          {
+            "Id": "BREAK_IE"
+          },
+          {
+            "Id": "RX_TO_IE"
+          },
+          {
+            "Id": "LAST_BREAK_IE"
           }
         ],
         "addedControls": [
@@ -1076,7 +1917,9 @@
             "Id": "BAUD",
             "Description": "Baud Rate",
             "Hint": "115200",
-            "Type": "integer"
+            "Type": "integer",
+            "MinimumValue": 1,
+            "MaximumValue": 4294967295
           }
         ],
         "modifiedControls": [
@@ -1114,6 +1957,15 @@
             "Id": "POL_A"
           },
           {
+            "Id": "COMPARE"
+          },
+          {
+            "Id": "COUNT"
+          },
+          {
+            "Id": "PWM"
+          },
+          {
             "Id": "COMPARE_SINGLE"
           },
           {
@@ -1121,6 +1973,12 @@
           },
           {
             "Id": "PWM_SINGLE"
+          },
+          {
+            "Id": "TMRA_IE"
+          },
+          {
+            "Id": "TMRA_WE"
           }
         ],
         "modifiedControls": [
@@ -1199,6 +2057,15 @@
             "Id": "POL_A"
           },
           {
+            "Id": "COMPARE"
+          },
+          {
+            "Id": "COUNT"
+          },
+          {
+            "Id": "PWM"
+          },
+          {
             "Id": "COMPARE_SINGLE"
           },
           {
@@ -1206,6 +2073,12 @@
           },
           {
             "Id": "PWM_SINGLE"
+          },
+          {
+            "Id": "TMRA_IE"
+          },
+          {
+            "Id": "TMRA_WE"
           }
         ],
         "modifiedControls": [
@@ -1281,16 +2154,25 @@
             "Id": "MODE_B"
           },
           {
+            "Id": "MODE"
+          },
+          {
             "Id": "CLKDIV_A"
           },
           {
             "Id": "CLKDIV_B"
           },
           {
+            "Id": "CLKDIV"
+          },
+          {
             "Id": "POL_A"
           },
           {
             "Id": "POL_B"
+          },
+          {
+            "Id": "POL"
           },
           {
             "Id": "COMPARE"
@@ -1312,6 +2194,12 @@
           },
           {
             "Id": "PWM_A"
+          },
+          {
+            "Id": "TMRA_WE"
+          },
+          {
+            "Id": "TMRB_WE"
           }
         ],
         "modifiedControls": [
@@ -1365,7 +2253,8 @@
                 "Value": 8
               }
             ],
-            "Type": "enum"
+            "Type": "enum",
+            "partRegexp": "MAX(32655|32657|32658|32662|32670|32672|32675C|32690|78000|78002)"
           },
           {
             "Id": "MODE_B",
@@ -1388,6 +2277,15 @@
               }
             ],
             "Type": "enum"
+          }
+        ],
+        "addedControls": [
+          {
+            "Id": "TMR_AB_IE",
+            "Description": "Enable Timer A and B Interrupts",
+            "Type": "boolean",
+            "Hint": "FALSE",
+            "partRegexp": "MAX(32655|32657|32658|32662|32670|32672|32675C|32690|78000|78002)"
           }
         ]
       },
@@ -1403,16 +2301,25 @@
             "Id": "MODE_B"
           },
           {
+            "Id": "MODE"
+          },
+          {
             "Id": "CLKDIV_A"
           },
           {
             "Id": "CLKDIV_B"
           },
           {
+            "Id": "CLKDIV"
+          },
+          {
             "Id": "POL_A"
           },
           {
             "Id": "POL_B"
+          },
+          {
+            "Id": "POL"
           },
           {
             "Id": "COMPARE"
@@ -1434,6 +2341,12 @@
           },
           {
             "Id": "PWM_A"
+          },
+          {
+            "Id": "TMRA_WE"
+          },
+          {
+            "Id": "TMRB_WE"
           }
         ],
         "modifiedControls": [
@@ -1487,7 +2400,8 @@
                 "Value": 8
               }
             ],
-            "Type": "enum"
+            "Type": "enum",
+            "partRegexp": "MAX(32655|32657|32658|32662|32670|32672|32675C|32690|78000|78002)"
           },
           {
             "Id": "MODE_B",
@@ -1510,6 +2424,15 @@
               }
             ],
             "Type": "enum"
+          }
+        ],
+        "addedControls": [
+          {
+            "Id": "TMR_AB_IE",
+            "Description": "Enable Timer A and B Interrupts",
+            "Type": "boolean",
+            "Hint": "FALSE",
+            "partRegexp": "MAX(32655|32657|32658|32662|32670|32672|32675C|32690|78000|78002)"
           }
         ]
       },
@@ -1525,16 +2448,25 @@
             "Id": "MODE_B"
           },
           {
+            "Id": "MODE"
+          },
+          {
             "Id": "CLKDIV_A"
           },
           {
             "Id": "CLKDIV_B"
           },
           {
+            "Id": "CLKDIV"
+          },
+          {
             "Id": "POL_A"
           },
           {
             "Id": "POL_B"
+          },
+          {
+            "Id": "POL"
           },
           {
             "Id": "COMPARE"
@@ -1556,6 +2488,12 @@
           },
           {
             "Id": "PWM_A"
+          },
+          {
+            "Id": "TMRA_WE"
+          },
+          {
+            "Id": "TMRB_WE"
           }
         ],
         "modifiedControls": [
@@ -1609,7 +2547,8 @@
                 "Value": 8
               }
             ],
-            "Type": "enum"
+            "Type": "enum",
+            "partRegexp": "MAX(32655|32657|32658|32662|32670|32672|32675C|32690|78000|78002)"
           },
           {
             "Id": "MODE_B",
@@ -1632,6 +2571,15 @@
               }
             ],
             "Type": "enum"
+          }
+        ],
+        "addedControls": [
+          {
+            "Id": "TMR_AB_IE",
+            "Description": "Enable Timer A and B Interrupts",
+            "Type": "boolean",
+            "Hint": "FALSE",
+            "partRegexp": "MAX(32655|32657|32658|32662|32670|32672|32675C|32690|78000|78002)"
           }
         ]
       },
@@ -1647,16 +2595,25 @@
             "Id": "MODE_B"
           },
           {
+            "Id": "MODE"
+          },
+          {
             "Id": "CLKDIV_A"
           },
           {
             "Id": "CLKDIV_B"
           },
           {
+            "Id": "CLKDIV"
+          },
+          {
             "Id": "POL_A"
           },
           {
             "Id": "POL_B"
+          },
+          {
+            "Id": "POL"
           },
           {
             "Id": "COMPARE"
@@ -1678,6 +2635,12 @@
           },
           {
             "Id": "PWM_A"
+          },
+          {
+            "Id": "TMRA_WE"
+          },
+          {
+            "Id": "TMRB_WE"
           }
         ],
         "modifiedControls": [
@@ -1731,7 +2694,8 @@
                 "Value": 8
               }
             ],
-            "Type": "enum"
+            "Type": "enum",
+            "partRegexp": "MAX(32655|32657|32658|32662|32670|32672|32675C|32690|78000|78002)"
           },
           {
             "Id": "MODE_B",
@@ -1754,6 +2718,15 @@
               }
             ],
             "Type": "enum"
+          }
+        ],
+        "addedControls": [
+          {
+            "Id": "TMR_AB_IE",
+            "Description": "Enable Timer A and B Interrupts",
+            "Type": "boolean",
+            "Hint": "FALSE",
+            "partRegexp": "MAX(32655|32657|32658|32662|32670|32672|32675C|32690|78000|78002)"
           }
         ]
       },
@@ -1769,16 +2742,25 @@
             "Id": "MODE_B"
           },
           {
+            "Id": "MODE"
+          },
+          {
             "Id": "CLKDIV_A"
           },
           {
             "Id": "CLKDIV_B"
           },
           {
+            "Id": "CLKDIV"
+          },
+          {
             "Id": "POL_A"
           },
           {
             "Id": "POL_B"
+          },
+          {
+            "Id": "POL"
           },
           {
             "Id": "COMPARE"
@@ -1800,6 +2782,12 @@
           },
           {
             "Id": "PWM_A"
+          },
+          {
+            "Id": "TMRA_WE"
+          },
+          {
+            "Id": "TMRB_WE"
           }
         ],
         "modifiedControls": [
@@ -1853,7 +2841,8 @@
                 "Value": 8
               }
             ],
-            "Type": "enum"
+            "Type": "enum",
+            "partRegexp": "MAX(32655|32657|32658|32662|32670|32672|32675C|32690|78000|78002)"
           },
           {
             "Id": "MODE_B",
@@ -1876,6 +2865,15 @@
               }
             ],
             "Type": "enum"
+          }
+        ],
+        "addedControls": [
+          {
+            "Id": "TMR_AB_IE",
+            "Description": "Enable Timer A and B Interrupts",
+            "Type": "boolean",
+            "Hint": "FALSE",
+            "partRegexp": "MAX(32655|32657|32658|32662|32670|32672|32675C|32690|78000|78002)"
           }
         ]
       },
@@ -1891,16 +2889,25 @@
             "Id": "MODE_B"
           },
           {
+            "Id": "MODE"
+          },
+          {
             "Id": "CLKDIV_A"
           },
           {
             "Id": "CLKDIV_B"
           },
           {
+            "Id": "CLKDIV"
+          },
+          {
             "Id": "POL_A"
           },
           {
             "Id": "POL_B"
+          },
+          {
+            "Id": "POL"
           },
           {
             "Id": "COMPARE"
@@ -1922,6 +2929,12 @@
           },
           {
             "Id": "PWM_A"
+          },
+          {
+            "Id": "TMRA_WE"
+          },
+          {
+            "Id": "TMRB_WE"
           }
         ],
         "modifiedControls": [
@@ -1975,7 +2988,8 @@
                 "Value": 8
               }
             ],
-            "Type": "enum"
+            "Type": "enum",
+            "partRegexp": "MAX(32655|32657|32658|32662|32670|32672|32675C|32690|78000|78002)"
           },
           {
             "Id": "MODE_B",
@@ -1999,7 +3013,461 @@
             ],
             "Type": "enum"
           }
+        ],
+        "addedControls": [
+          {
+            "Id": "TMR_AB_IE",
+            "Description": "Enable Timer A and B Interrupts",
+            "Type": "boolean",
+            "Hint": "FALSE",
+            "partRegexp": "MAX(32655|32657|32658|32662|32670|32672|32675C|32690|78000|78002)"
+          }
         ]
+      },
+      "I2S": {
+        "supportedControls": [
+          {
+            "Id": "DIRECTION"
+          },
+          {
+            "Id": "TX_RX_MODE"
+          },
+          {
+            "Id": "ALIGN"
+          },
+          {
+            "Id": "AUDIO_MODE"
+          },
+          {
+            "Id": "WSIZE"
+          },
+          {
+            "Id": "RX_THD_VAL"
+          },
+          {
+            "Id": "BITS_WORD"
+          },
+          {
+            "Id": "SMP_SIZE"
+          },
+          {
+            "Id": "ADJUST"
+          },
+          {
+            "Id": "TRANSMIT_DMA_ENABLE"
+          },
+          {
+            "Id": "RECEIVE_DMA_ENABLE"
+          },
+          {
+            "Id": "RX_OV_CH0_IE"
+          },
+          {
+            "Id": "RX_THD_CH0_IE"
+          },
+          {
+            "Id": "TX_OB_CH0_IE"
+          },
+          {
+            "Id": "TX_HE_CH0_IE"
+          }
+        ],
+        "addedControls": [
+          {
+            "Id": "SMPL_RATE",
+            "Description": "Sample Rate",
+            "Hint": "44100",
+            "Type": "integer",
+            "MinimumValue": 1,
+            "MaximumValue": 4294967295
+          },
+          {
+            "Id": "RAW_DATA_BUFFER_NAME",
+            "Description": "Raw Data Buffer Name",
+            "Hint": "i2s_raw_data_buffer",
+            "Type": "text",
+            "Pattern": "[_a-zA-Z][_a-zA-Z0-9]*",
+            "Condition": "${Control:TX_RX_MODE} ${String:RX_ONLY} !="
+          },
+          {
+            "Id": "TX_BUFFER_NAME",
+            "Description": "Transmit Buffer Name",
+            "Hint": "i2s_tx_buffer",
+            "Type": "text",
+            "Pattern": "[_a-zA-Z][_a-zA-Z0-9]*",
+            "Condition": "${Control:TX_RX_MODE} ${String:RX_ONLY} !="
+          },
+          {
+            "Id": "RX_BUFFER_NAME",
+            "Description": "Receive Buffer Name",
+            "Hint": "i2s_rx_buffer",
+            "Type": "text",
+            "Pattern": "[_a-zA-Z][_a-zA-Z0-9]*",
+            "Condition": "${Control:TX_RX_MODE} ${String:TX_ONLY} !="
+          },
+          {
+            "Id": "LENGTH",
+            "Description": "Buffer Length",
+            "Hint": "256",
+            "Type": "integer",
+            "MinimumValue": 1,
+            "MaximumValue": 4294967295
+          }
+        ]
+      },
+      "I2S0": {
+        "supportedControls": [
+          {
+            "Id": "DIRECTION"
+          },
+          {
+            "Id": "TX_RX_MODE"
+          },
+          {
+            "Id": "ALIGN"
+          },
+          {
+            "Id": "AUDIO_MODE"
+          },
+          {
+            "Id": "WSIZE"
+          },
+          {
+            "Id": "RX_THD_VAL"
+          },
+          {
+            "Id": "BITS_WORD"
+          },
+          {
+            "Id": "SMP_SIZE"
+          },
+          {
+            "Id": "ADJUST"
+          },
+          {
+            "Id": "TRANSMIT_DMA_ENABLE"
+          },
+          {
+            "Id": "RECEIVE_DMA_ENABLE"
+          },
+          {
+            "Id": "RX_OV_CH0_IE"
+          },
+          {
+            "Id": "RX_THD_CH0_IE"
+          },
+          {
+            "Id": "TX_OB_CH0_IE"
+          },
+          {
+            "Id": "TX_HE_CH0_IE"
+          }
+        ],
+        "addedControls": [
+          {
+            "Id": "SMPL_RATE",
+            "Description": "Sample Rate",
+            "Hint": "44100",
+            "Type": "integer",
+            "MinimumValue": 1,
+            "MaximumValue": 4294967295
+          },
+          {
+            "Id": "RAW_DATA_BUFFER_NAME",
+            "Description": "Raw Data Buffer Name",
+            "Hint": "i2s0_raw_data_buffer",
+            "Type": "text",
+            "Pattern": "[_a-zA-Z][_a-zA-Z0-9]*",
+            "Condition": "${Control:TX_RX_MODE} ${String:RX_ONLY} !="
+          },
+          {
+            "Id": "TX_BUFFER_NAME",
+            "Description": "Transmit Buffer Name",
+            "Hint": "i2s0_tx_buffer",
+            "Type": "text",
+            "Pattern": "[_a-zA-Z][_a-zA-Z0-9]*",
+            "Condition": "${Control:TX_RX_MODE} ${String:RX_ONLY} !="
+          },
+          {
+            "Id": "RX_BUFFER_NAME",
+            "Description": "Receive Buffer Name",
+            "Hint": "i2s0_rx_buffer",
+            "Type": "text",
+            "Pattern": "[_a-zA-Z][_a-zA-Z0-9]*",
+            "Condition": "${Control:TX_RX_MODE} ${String:TX_ONLY} !="
+          },
+          {
+            "Id": "LENGTH",
+            "Description": "Buffer Length",
+            "Hint": "256",
+            "Type": "integer",
+            "MinimumValue": 1,
+            "MaximumValue": 4294967295
+          }
+        ]
+      },
+      "TRNG": {
+        "supportedControls": [
+          {
+            "Id": "RND_IE"
+          }
+        ]
+      },
+      "OWM": {
+        "supportedControls": [
+          {
+            "Id": "INTERNAL_PULL_UP"
+          },
+          {
+            "Id": "EXTERNAL_PULL_UP"
+          },
+          {
+            "Id": "EXT_PULL_UP_MODE"
+          },
+          {
+            "Id": "LONG_LINE_MODE"
+          },
+          {
+            "Id": "OVERDRIVE"
+          },
+          {
+            "Id": "FORCE_PRES_DET"
+          },
+          {
+            "Id": "SRA_MODE"
+          },
+          {
+            "Id": "RESET_DONE_IE"
+          },
+          {
+            "Id": "TX_DATA_EMPTY_IE"
+          },
+          {
+            "Id": "RX_DATA_READY_IE"
+          },
+          {
+            "Id": "LINE_SHORT_IE"
+          },
+          {
+            "Id": "LINE_LOW_IE"
+          }
+        ]
+      },
+      "AES": {
+        "supportedControls": []
+      },
+      "AESKEYS": {
+        "supportedControls": []
+      },
+      "BLE": {
+        "supportedControls": []
+      },
+      "BOOST": {
+        "supportedControls": []
+      },
+      "CAN0": {
+        "supportedControls": []
+      },
+      "CAN1": {
+        "supportedControls": []
+      },
+      "CLCD": {
+        "supportedControls": []
+      },
+      "CNN": {
+        "supportedControls": []
+      },
+      "CRC": {
+        "supportedControls": []
+      },
+      "CSI2": {
+        "supportedControls": []
+      },
+      "CSS": {
+        "supportedControls": []
+      },
+      "CTB": {
+        "supportedControls": []
+      },
+      "DDE": {
+        "supportedControls": []
+      },
+      "DMA": {
+        "supportedControls": []
+      },
+      "DMA0": {
+        "supportedControls": []
+      },
+      "DMA1": {
+        "supportedControls": []
+      },
+      "DSS": {
+        "supportedControls": []
+      },
+      "DVS": {
+        "supportedControls": []
+      },
+      "EMCC": {
+        "supportedControls": []
+      },
+      "FFT": {
+        "supportedControls": []
+      },
+      "FLC": {
+        "supportedControls": []
+      },
+      "FLC0": {
+        "supportedControls": []
+      },
+      "FLC1": {
+        "supportedControls": []
+      },
+      "HBMC": {
+        "supportedControls": []
+      },
+      "HYP": {
+        "supportedControls": []
+      },
+      "I3C0": {
+        "supportedControls": []
+      },
+      "ICC": {
+        "supportedControls": []
+      },
+      "ICC0": {
+        "supportedControls": []
+      },
+      "ICC1": {
+        "supportedControls": []
+      },
+      "LPCMP": {
+        "supportedControls": []
+      },
+      "LPCMP0": {
+        "supportedControls": []
+      },
+      "MPC": {
+        "supportedControls": []
+      },
+      "NSPC": {
+        "supportedControls": []
+      },
+      "NSS": {
+        "supportedControls": []
+      },
+      "PCIF": {
+        "supportedControls": []
+      },
+      "PT0": {
+        "supportedControls": []
+      },
+      "PT1": {
+        "supportedControls": []
+      },
+      "PT10": {
+        "supportedControls": []
+      },
+      "PT11": {
+        "supportedControls": []
+      },
+      "PT12": {
+        "supportedControls": []
+      },
+      "PT13": {
+        "supportedControls": []
+      },
+      "PT14": {
+        "supportedControls": []
+      },
+      "PT15": {
+        "supportedControls": []
+      },
+      "PT2": {
+        "supportedControls": []
+      },
+      "PT3": {
+        "supportedControls": []
+      },
+      "PT4": {
+        "supportedControls": []
+      },
+      "PT5": {
+        "supportedControls": []
+      },
+      "PT6": {
+        "supportedControls": []
+      },
+      "PT7": {
+        "supportedControls": []
+      },
+      "PT8": {
+        "supportedControls": []
+      },
+      "PT9": {
+        "supportedControls": []
+      },
+      "PTG": {
+        "supportedControls": []
+      },
+      "PUF": {
+        "supportedControls": []
+      },
+      "PWRSEQ": {
+        "supportedControls": []
+      },
+      "RSS": {
+        "supportedControls": []
+      },
+      "RSTZ": {
+        "supportedControls": []
+      },
+      "SDHC": {
+        "supportedControls": []
+      },
+      "SEMA": {
+        "supportedControls": []
+      },
+      "SIMO": {
+        "supportedControls": []
+      },
+      "SIR": {
+        "supportedControls": []
+      },
+      "SMON": {
+        "supportedControls": []
+      },
+      "SPC": {
+        "supportedControls": []
+      },
+      "SPIMSS": {
+        "supportedControls": []
+      },
+      "SPIXF": {
+        "supportedControls": []
+      },
+      "SPIXFC": {
+        "supportedControls": []
+      },
+      "SPIXFC_FIFO": {
+        "supportedControls": []
+      },
+      "SPIXR": {
+        "supportedControls": []
+      },
+      "TRIMSIR": {
+        "supportedControls": []
+      },
+      "USBHS": {
+        "supportedControls": []
+      },
+      "WUT": {
+        "supportedControls": []
+      },
+      "WUT0": {
+        "supportedControls": []
+      },
+      "WUT1": {
+        "supportedControls": []
       }
     }
   }

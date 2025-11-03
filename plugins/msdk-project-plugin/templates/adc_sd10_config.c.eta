@@ -13,17 +13,9 @@
  *
  */
 
-// Include common plugin code
-eval(this.render("common/utilities/utilities.js"));
-
-// Return the integer value from the key.
-function getADCValue(key, defaultValue) {
-  return getAssignedPeripheral(it.instance).Config?.[key] ?? defaultValue;
-}
-
 // Return the channel ID for the given slot.
 function getADCChannel(slot) {
-  const channel = getADCValue("SLOT" + slot + "_ID", "AIN0");
+  const channel = getPeriConfigValue(it.instance, "SLOT" + slot + "_ID", "AIN0");
   switch (channel) {
     case "AIN0":
       return "0";
@@ -55,28 +47,51 @@ function getADCChannel(slot) {
 
 // Get the divider for the ADC
 function getADCDiv() {
-  return getClockSetting(it.clocknode, it.div, "8");
+  return getPeripheralClockSetting(it.instance, it.div, "8");
+}
+
+// Return the interrupt mask for any enabled interrupts.
+function getADCIntMask() {
+  const ie_table = [
+    { ctrl: "DONE_IE",      value: "MXC_F_ADC_INTR_DONE_IE" },
+    { ctrl: "REF_READY_IE", value: "MXC_F_ADC_INTR_REF_READY_IE" },
+    { ctrl: "HI_LIMIT_IE",  value: "MXC_F_ADC_INTR_HI_LIMIT_IE" },
+    { ctrl: "LO_LIMIT_IE",  value: "MXC_F_ADC_INTR_LO_LIMIT_IE" },
+    { ctrl: "OVERFLOW_IE",  value: "MXC_F_ADC_INTR_OVERFLOW_IE" }
+  ];
+  let arg = "";
+  for (ie of ie_table) {
+    if (getPeriConfigValue(it.instance, ie.ctrl, "FALSE") === "TRUE") {
+      if (arg !== "")
+        arg += " | ";
+      arg += ie.value;
+    }
+  }
+  return arg;
 }
 %>
-<% if (clockNodeExists(it.clocknode)) { %>
-<%   if (!getAssignedProjectForPeripheral(it.instance) && isClockSetTo([], it.clocknode, it.enable, "TRUE")) { %>
+<% if (isUnassignedPeripheralClockSetTo(it.instance, it.enable, "TRUE")) { %>
   /* The <%= it.instance %> peripheral is enabled on the clock canvas but is
    * not assigned to any core. In order to generate configuration code, please
    * assign the peripheral to a core.
    */
 
-<%   } else if (getAssignedPeripheral(it.instance)) { %>
+<% } else if (getAssignedPeripheral(it.instance)) { %>
   { /* Configure <%= it.instance %>.
-<%     if (getPeripheralDescription(it.instance)) { %>
+<%   if (getPeripheralDescription(it.instance)) { %>
      * This peripheral is used for <%= getPeripheralDescription(it.instance) %>.
-<%     } %>
-<%     if (!isClockSetTo([it.instance], it.clocknode, it.enable, "TRUE")) { %>
+<%   } %>
+<%   if (it.enable && !isPeripheralClockSetTo(it.instance, it.enable, "TRUE")) { %>
      * Note: This peripheral was not enabled on the clock configuration canvas.
      * Nonetheless, as a result of the following configuration, the peripheral will be
      * clocked on.
-<%     } %>
-     * Configuraion: The MXC_ADC APIs used at runtime in your application provde the
+<%   } %>
+     * Configuration: The MXC_ADC APIs used at runtime in your application provide the
      * necessary options to configure the ADC.
+     *
+     * For configuration of monitors, adc_monitor_N_cfg structures defined in
+     * this file may be used at runtime with the MXC_ADC_Monitor and
+     * MXC_ADC_MonitorAsync APIs.
      */
 
     /* Initialize the peripheral. */
@@ -92,7 +107,11 @@ function getADCDiv() {
     if (result == E_BAD_PARAM) {
       return result;
     }
+<%   if (getADCIntMask() !== "") { %>
+
+    /* Enable interrupts. */
+    MXC_ADC_EnableInt(<%= getADCIntMask() %>);
+<%   } %>
   }
 
-<%   } %>
 <% } %>

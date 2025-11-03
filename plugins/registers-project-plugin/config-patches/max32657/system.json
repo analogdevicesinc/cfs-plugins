@@ -1,0 +1,18 @@
+{
+  "ClockFrequencies": {
+    "CLK_4KHZ": 4096,
+    "ERTCO_CLK": 32768,
+    "32KOUT": 32768,
+    "Cortex-M4": 50000000,
+    "FLC": 50000000,
+    "WUT": 32768,
+    "RTC": 4096,
+    "IPO": 50000000,
+    "ERTCO_OSC": 32768,
+    "ERTCO_OUT": 32768,
+    "SYS_OSC": 50000000,
+    "SYS_CLK": 50000000,
+    "ERTCO": 32768,
+    "CLK_32KHZ": 32768
+  }
+}

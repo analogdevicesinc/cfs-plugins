@@ -1,4 +1,3 @@
-
 # CodeFusion Studio Plugins
 
 The CodeFusion Studio (CFS) Plugin API enables users to extend key features of [CodeFusion Studio](https://www.analog.com/en/resources/evaluation-hardware-and-software/embedded-development-software/codefusion-studio.html), such as workspace setup, project configuration, and source code generation — without modifying the base application.
@@ -7,47 +6,55 @@ With the Plugin API, you can develop custom plugins tailored to your project’s
 
 This repository includes:
 
-- 📦 The CFS Plugin API: [`./api`](./api/README.md)
-- 🧩 A library of default and reference plugins: [`./plugins`](./plugins/README.md)
-
-To learn how to create your own plugin, see:  
-📄 [`DEVELOPMENT.md`](DEVELOPMENT.md)
+- 📦 Plugin API reference: [`./api`](./api/README.md)
+- 🧩 Reference plugins: [`./plugins`](./plugins/README.md)
+- 📄 Development guide: [`DEVELOPMENT.md`](DEVELOPMENT.md)
 
 ---
 
-## 🔌 Plugin Types
+## 🔌 Plugin Architecture
 
-| Type        | Purpose                                                                                   |
-|-------------|-------------------------------------------------------------------------------------------|
-| Workspace   | Sets up a complete workspace with pre-configured structure and settings                  |
-| Project     | Defines how a single core/project is structured and configured                                |
-| Codegen     | Generates source files based on hardware configuration and user selections               |
+Plugins are defined in their `.cfsplugin` file. Each plugin can implement one or more of the following services:
 
+- **`workspace`** – Defines the folder structure and configuration of a generated workspace.
+- **`project`** – Configures individual project cores within the workspace.
+- **`codegen`** – Generates dynamic files such as `board.conf` or `.overlay` based on hardware selections.
+- **`properties`** – Declares user-configurable fields in the System Planner UI.
+
+See `cfs-services.ts` in the Plugin API for a full interface list.
 
 > 💡 Codegen plugins are often **included inside** project plugins using the `codegen` section of `.cfsplugin`.
 
-For information on using CFS Plugins in CFS, refer to the [CFS User Guide](https://developer.analog.com/docs/codefusion-studio/latest/user-guide/plugins). 
+For information on using CFS Plugins in CFS, refer to the [CFS User Guide](https://developer.analog.com/docs/codefusion-studio/latest/user-guide/plugins).
 
 ---
 
 ## 🧠 How Plugins Work
 
-1. The **`.cfsplugin`** file describes the plugin's metadata, supported SoCs, and specifies which files and templates should be generated. CodeFusion Studio reads this file to determine when and how the plugin is used.
-1. The `index.ts` file exports a class that extends `CfsPlugin`. This class defines the plugin's behavior by implementing `getGenerator()` and optionally `getService()`.
-1. Files are either copied as-is from the `files/` directory or rendered using a templating engine from the `templates/` directory.
-1. Reusable logic can be placed in a `services/` directory and made available via the `getService()` method.
+1. **Plugin Discovery**  
+   CodeFusion Studio reads your `.cfsplugin` to identify the offered services and supported SoCs/boards.
+
+2. **Default Behavior (Generic Plugin)**  
+   If there’s no `index.ts`/`index.cjs`, the default generic plugin implementation (`cfs-generic-plugin.ts`) in the Plugin API uses [Eta](https://eta.js.org/) to render anything under `templates/`.
+
+3. **Custom Logic (Optional)**  
+   Add an `index.ts` exporting a class that implements one or more service interfaces (see `cfs-services.ts`).  
+   You can:
+   - **Reuse** the built-in components in `src/generic/components` in the Plugin API, or  
+   - **Use your own** from scratch (for example: swap out Eta a different engine).
+
+4. **Static and Template Files**  
+Each plugin can include:
+   - **`files/`** → copied verbatim into the workspace  
+   - **`templates/`** → rendered by [Eta](https://eta.js.org/) (unless you override it in your `index.ts`)
+   _All entries must be declared in your `.cfsplugin` under the appropriate service block._
 
 ---
 
 ## 🧩 Example Plugins
 
-- **Workspace plugin:** [`zephyr41-single-core-blinky`](./plugins/zephyr41-single-core-blinky/)
-- **Project plugin (with codegen):** [`zephyr41-project-plugin`](./plugins/zephyr41-project-plugin/)
-
-You can also reuse helpers in the [`common/`](./plugins/common/) directory, including:
-- [Eta](https://eta.js.org/)-based generators (`CfsEtaWorkspaceGenerator`)
-- File handling utilities
-- Reusable service classes
+- **[`zephyr-single-core-blinky`](./plugins/zephyr-single-core-blinky/)** –  Only implements the `workspace` service. No `index.ts` needed—uses generic behavior.
+- **[`zephyr-project-plugin`](./plugins/zephyr-project-plugin/)** – Combines `project`, `codegen`, and `properties` services and ships an `index.ts` that implements all the required service interfaces.
 
 ---
 
@@ -55,11 +62,11 @@ You can also reuse helpers in the [`common/`](./plugins/common/) directory, incl
 
 ```
 my-plugin/
-├── .cfsplugin         # Describes plugin features and file/template outputs
-├── index.ts           # Main logic file (compiled to index.cjs)
-├── files/             # Static files to be copied into generated workspaces
-├── templates/         # Eta templates rendered based on user context
-└── services/          # Optional: helper logic exposed via getService()
+├── .cfsplugin         # Required: Declares plugin metadata, services, and output files/templates
+├── index.ts           # Optional: Overrides default behavior 
+├── files/             # Optional: Static files (must be listed)
+├── templates/         # Optional: Eta templates (must be listed)
+└── services/          # Optional: helper classes for your `index.ts`
 ```
 
 For a full step-by-step guide to creating a plugin, see [`DEVELOPMENT.md`](./DEVELOPMENT.md)

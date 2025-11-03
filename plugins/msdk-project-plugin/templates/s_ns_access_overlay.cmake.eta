@@ -13,9 +13,6 @@
  *
  */
 
-// Include common plugin code
-eval(this.render("common/utilities/utilities.js"));
-
 // Get the size of the partition with the given name, or the
 // default, in hex.
 function getPartitionSize(name) {
@@ -34,9 +31,10 @@ function getPartitionSize(name) {
   return "0x" + size.toString(16).toLowerCase();
 }
 %>
-<%~ include("../../common/utilities/copyright-header-hash.eta", it) %>
+<%~ include("@copyrightHeaderHash", it) %>
+<%~ include("@normalizeSoc", it) %>
 
-<%~ include("./" + it.cfsconfig.Soc.toLowerCase() + "/s_ns_access_overlay.cmake.eta", it) %>
+<%~ include("./" + it.tfmInflectionPoint(it.cfsconfig.Soc).toLowerCase() + "/s_ns_access_overlay.cmake.eta", it) %>
 
 # RAM: The secure code section in RAM is located at the end of the last secure RAM block.
 # It should be placed directly after the secure_data_ram partition.

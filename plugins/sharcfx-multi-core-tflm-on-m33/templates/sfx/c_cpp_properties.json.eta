@@ -1,0 +1,41 @@
+<%~ include("@msdkBoardName", it) %>
+<%~ include("@normalizeSoc", it) %>
+<%~ include("@sharcfxUtils", it) %>
+{
+  "env": {
+    "cfs.project.toolchain.path": ""
+  },
+  "configurations": [
+    {
+      "name": "Win32",
+      "includePath": [
+        "${default}",
+        "${workspaceFolder}",
+        "${workspaceFolder}/**",
+        "${env:cfs.project.toolchain.path}/Xtensa/SHARC-FX/include/**",
+        "${env:cfs.project.toolchain.path}/Xtensa/SHARC-FX/SHARC_FX0/xtensa-elf/include/**",
+        "${env:cfs.project.toolchain.path}/Xtensa/SHARC-FX/SHARC_FX0/xtensa-elf/arch/include/**",
+        "${env:cfs.project.toolchain.path}/Xtensa/SHARC-FX/SHARC_FX0/xtensa-elf/include/dsp/**",
+        "${env:cfs.project.toolchain.path}/Xtensa/SHARC-FX/SHARC_FX0/xtensa-elf/include/xcc/c++/**",
+        "${env:cfs.project.toolchain.path}/Xtensa/SHARC-FX/SHARC_FX0/xtensa-elf/include/xcc/c++/xtensa-elf/**",
+        "${env:cfs.project.toolchain.path}/Xtensa/XtensaTools/llvm/lib/clang/15.0.7/include/**",
+        "${env:cfs.project.toolchain.path}/Xtensa/XtensaTools/xtensa-elf/include/**"
+      ],
+      "defines": [
+        "${config:cfs.project.board}",
+        "TARGET=<%= it.processorMacro(it.soc) %>",
+        "CORE1"
+      ],
+      "intelliSenseMode": "clang-arm64",
+      "compilerPath": "${env:cfs.project.toolchain.path}/ccfx++",
+      "browse": {
+        "path": [
+          "${default}",
+          "${workspaceFolder}",
+          "${workspaceFolder}/**"
+        ]
+      }
+    }
+  ],
+  "version": 4
+}

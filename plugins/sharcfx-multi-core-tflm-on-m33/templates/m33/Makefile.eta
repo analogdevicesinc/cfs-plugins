@@ -1,0 +1,359 @@
+<%~ include("@sharcfxUtils", it) %>
+# Top-level Makefile
+
+# Build type (default to Debug)
+DEBUG ?= 1
+
+# Compiler and linker settings
+CC = arm-none-eabi-gcc
+CPP = arm-none-eabi-cpp
+LD = arm-none-eabi-g++
+CXX = arm-none-eabi-gcc
+
+CFLAGS = -ffunction-sections -fdata-sections -mcpu=cortex-m33 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard \
+		 -Wall -c -DCORE2 -DOTHERCORE -D<%= it.processorMacro(it.soc) %> -D__SILICON_REVISION__=0x0
+CXXFLAGS = -ffunction-sections -fdata-sections -mcpu=cortex-m33 -mthumb -mfpu=fpv4-sp-d16 -mfloat-abi=hard \
+		   -Wall -c -DCORE2 -DOTHERCORE -D<%= it.processorMacro(it.soc) %> -D__SILICON_REVISION__=0x0
+LDFLAGS = -Wl,--gc-sections -mcpu=cortex-m33 -mthumb -specs=rdimon.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard \
+		  -Wl,--no-warn-rwx-segments
+
+#=============================================================================
+# SOURCE DIRECTORIES CONFIGURATION
+#=============================================================================
+
+# Workspace directories (relative paths from project root)
+WS_DIRS = src src/system
+
+# External source directories (absolute paths)
+# FIXME: This Makefile needs to know where to find the files 
+EXTERNAL_SRC_DIRS = $(SDK_PATH)/SDK/SHARC-FX/ARM/packs/AnalogDevices/ADSP-SC83x_DFP/2.0.0/Source
+
+# External include directories (absolute paths)
+EXTERNAL_INCLUDE_DIRS = 
+
+# Fixed include directories (absolute paths that don't contain source files)
+# FIXME: This Makefile needs to know where to find the files 
+FIXED_INCLUDES = \
+	-I"$(SDK_PATH)/SDK/MAX/Libraries/CMSIS/5.9.0/Core/Include" \
+	-I"$(SDK_PATH)/SDK/SHARC-FX/ARM/packs/AnalogDevices/ADSP-SC83x_DFP/2.0.0/Include"
+#=============================================================================
+# BUILD CONFIGURATION
+#=============================================================================
+
+# Build configuration
+ifeq ($(DEBUG), 1)
+    BUILD_TYPE = Debug
+    CFLAGS += -g -D_DEBUG -DADI_DEBUG -DDEBUG
+    CXXFLAGS += -g -D_DEBUG -DADI_DEBUG -DDEBUG
+    $(info Building in DEBUG mode)
+else
+    BUILD_TYPE = Release
+    CFLAGS += -O2 -DNDEBUG
+    CXXFLAGS += -O2 -DNDEBUG
+    $(info Building in RELEASE mode)
+endif
+
+BUILD_DIR = build
+OBJ_DIR = $(BUILD_DIR)/obj
+
+# Project name
+PROJECT ?= m33
+
+#=============================================================================
+# DYNAMIC SOURCE DISCOVERY
+#=============================================================================
+
+# Function to normalize path for variable names (replace / and : with _)
+normalize_path = $(subst :,_,$(subst /,_,$(subst \,_,$(1))))
+
+# Discover workspace source files
+define discover_ws_sources
+$(foreach dir,$(WS_DIRS),$(wildcard $(dir)/*.c $(dir)/*.cc $(dir)/*.cpp))
+endef
+
+# Get all workspace source files
+WS_C_SRCS = $(filter %.c,$(call discover_ws_sources))
+WS_CXX_SRCS = $(filter %.cc %.cpp,$(call discover_ws_sources))
+
+# Discover external source files from specified directories
+define discover_ext_sources
+$(foreach dir,$(EXTERNAL_SRC_DIRS),$(wildcard $(dir)/*.c $(dir)/*.cc $(dir)/*.cpp))
+endef
+
+# Get all external source files
+EXT_C_SRCS = $(filter %.c,$(call discover_ext_sources))
+EXT_CXX_SRCS = $(filter %.cc %.cpp,$(call discover_ext_sources))
+
+# Combined source files
+C_SRCS = $(WS_C_SRCS) $(EXT_C_SRCS)
+CXX_SRCS = $(WS_CXX_SRCS) $(EXT_CXX_SRCS)
+ALL_SRCS = $(C_SRCS) $(CXX_SRCS)
+
+#=============================================================================
+# INCLUDE PATHS
+#=============================================================================
+
+# Base includes
+BASE_INCLUDES = $(foreach dir,$(WS_DIRS),-I ./$(dir))
+
+# External includes from user-defined directories
+EXTERNAL_INCLUDES = $(foreach dir,$(EXTERNAL_INCLUDE_DIRS),-I "$(dir)")
+
+# All includes
+INCLUDES = $(BASE_INCLUDES) $(EXTERNAL_INCLUDES) $(FIXED_INCLUDES)
+
+
+#=============================================================================
+# DEFAULT TARGET
+#=============================================================================
+.DEFAULT_GOAL := all
+
+.PHONY: all
+all: $(TARGET)
+
+#=============================================================================
+# OBJECT FILE GENERATION
+#=============================================================================
+
+# Generate workspace object file paths
+# src/file.c -> build/Debug/obj/ws/src/file.o
+WS_C_OBJS = $(patsubst %.c,$(OBJ_DIR)/%.o,$(filter %.c,$(WS_C_SRCS)))
+WS_CXX_OBJS = $(patsubst %.cc,$(OBJ_DIR)/%.o,$(filter %.cc,$(WS_CXX_SRCS)))
+WS_CXX_OBJS += $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(filter %.cpp,$(WS_CXX_SRCS)))
+
+# Generate external object file paths
+# Extract directory from each external source file and normalize it
+EXT_C_OBJS = $(foreach src,$(EXT_C_SRCS),$(OBJ_DIR)/ext/$(call normalize_path,$(dir $(src)))$(notdir $(patsubst %.c,%.o,$(src))))
+EXT_CXX_OBJS = $(foreach src,$(EXT_CXX_SRCS),$(OBJ_DIR)/ext/$(call normalize_path,$(dir $(src)))$(notdir $(patsubst %.cc,%.o,$(patsubst %.cpp,%.o,$(src)))))
+
+# All object files
+ALL_OBJS = $(WS_C_OBJS) $(WS_CXX_OBJS) $(EXT_C_OBJS) $(EXT_CXX_OBJS)
+
+# Target executable
+TARGET = $(BUILD_DIR)/$(PROJECT).elf
+
+# Linker script handling
+<% if (["adsp-sc834", "adsp-sc834w"].includes(it.soc.toLowerCase())) { %>
+LD_SCRIPT_IN = ADSP-SC83x-1MB.ld
+<% } else { %>
+LD_SCRIPT_IN = ADSP-SC83x-2MB.ld
+<% } %>
+LD_SCRIPT = $(BUILD_DIR)/$(PROJECT).ld
+
+#=============================================================================
+# DIRECTORY CREATION
+#=============================================================================
+
+# Note: Directories are created on-demand by compilation rules
+# This ensures only folders with actual object files are created
+
+#=============================================================================
+# COMPILATION RULES
+#=============================================================================
+
+# Workspace C files
+$(OBJ_DIR)/%.o: %.c
+	@echo "Invoking: CodeFusion GCC ARM Embedded C Compiler"
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+# Workspace C++ files
+$(OBJ_DIR)/%.o: %.cc
+	@echo "Invoking: CodeFusion GCC ARM Embedded C++ Compiler"
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+
+$(OBJ_DIR)/%.o: %.cpp
+	@echo "Invoking: CodeFusion GCC ARM Embedded C++ Compiler"
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+
+
+
+# External C files - more explicit rule with proper prerequisites
+define ext_c_rule
+$(OBJ_DIR)/ext/$(call normalize_path,$(dir $(1)))$(notdir $(patsubst %.c,%.o,$(1))): $(1)
+	@echo "Invoking: CodeFusion GCC ARM Embedded C Compiler"
+	@mkdir -p $$(dir $$@)
+	$$(CC) $$(CFLAGS) $$(INCLUDES) -c $$< -o $$@
+endef
+
+# External C++ files - more explicit rule with proper prerequisites
+define ext_cxx_rule
+	$(OBJ_DIR)/ext/$(call normalize_path,$(dir $(1)))$(notdir $(patsubst $(suffix $(1)),%.o,$(1))): $(1)
+	@echo "Invoking: CodeFusion GCC ARM Embedded C++ Compiler"
+	@mkdir -p $$(dir $$@)
+	$$(CXX) $$(CXXFLAGS) $$(INCLUDES) -c $$< -o $$@
+endef
+
+# Generate rules for each external source file
+$(foreach src,$(EXT_C_SRCS),$(eval $(call ext_c_rule,$(src))))
+$(foreach src,$(EXT_CXX_SRCS),$(eval $(call ext_cxx_rule,$(src)))) 
+
+
+#=============================================================================
+# LINKER SCRIPT PREPROCESSING
+#=============================================================================
+
+# Preprocess linker script
+$(LD_SCRIPT): $(LD_SCRIPT_IN)
+	@echo ""
+	@echo "Preprocessing linker script: $(notdir $@)"
+	@mkdir -p $(BUILD_DIR)
+	$(CPP) -E -P -DCORE2 -DOTHERCORE -DDEBUG -D<%= it.processorMacro(it.soc) %> -D__SILICON_REVISION__=0x0 \
+	$(INCLUDES) $< -o $@
+
+# Include the makefile for model source files, if present. This is done after
+# the other configurations
+sinclude aimodels.mk
+
+#=============================================================================
+# BUILD TARGETS
+#=============================================================================
+
+# Default target
+.PHONY: all
+all: link
+
+# Linking step
+link: $(TARGET)
+
+$(TARGET): $(ALL_OBJS) $(LD_SCRIPT)
+	@echo "Invoking: CodeFusion GCC ARM Embedded C Linker"
+	$(LD) $(ALL_OBJS) $(LDFLAGS)  -T$(LD_SCRIPT) -o $(BUILD_DIR)/$(PROJECT) -lm
+
+# Build type targets
+.PHONY: debug release
+debug:
+	@$(MAKE) DEBUG=1
+
+release:
+	@$(MAKE) DEBUG=0
+
+#=============================================================================
+# INFORMATION AND DEBUGGING TARGETS
+#=============================================================================
+
+# Detailed build information
+.PHONY: info
+info:
+	@echo "=================================="
+	@echo "BUILD CONFIGURATION"
+	@echo "=================================="
+	@echo "Project: $(PROJECT)"
+	@echo "Build Type: $(BUILD_TYPE)"
+	@echo "Target: $(TARGET)"
+	@echo "Build Dir: $(BUILD_DIR)"
+	@echo "Object Dir: $(OBJ_DIR)"
+	@echo "DEBUG flag: $(DEBUG)"
+	@echo "Linker Script: $(LD_SCRIPT)"
+	@echo
+	@echo "=================================="
+	@echo "DIRECTORIES"
+	@echo "=================================="
+	@echo "Workspace:"
+	@$(foreach dir,$(WS_DIRS),echo "  $(dir)";)
+	@echo
+	@echo "External Source Directories:"
+	@$(foreach dir,$(EXTERNAL_SRC_DIRS),echo "  $(dir)";)
+	@echo
+	@echo "Discovered External Sources:"
+	@$(foreach src,$(EXT_C_SRCS),echo "  C: $(src)";)
+	@$(foreach src,$(EXT_CXX_SRCS),echo "  C++: $(src)";)
+	@echo
+	@echo "External Include Directories:"
+	@$(foreach dir,$(EXTERNAL_INCLUDE_DIRS),echo "  $(dir)";)
+	@echo
+	@echo "Fixed Include Directories:"
+	@echo "$(FIXED_INCLUDES)" | tr ' ' '\n' | grep "^-I" | sed 's/^-I/  /'
+	@echo
+	@echo "=================================="
+	@echo "SOURCE FILES"
+	@echo "=================================="
+	@echo "Workspace C: $(words $(WS_C_SRCS)) files"
+	@$(foreach src,$(WS_C_SRCS),echo "  $(src)";)
+		@echo
+		@echo "Workspace C++: $(words $(WS_CXX_SRCS)) files"
+	@$(foreach src,$(WS_CXX_SRCS),echo "  $(src)";)
+		@echo
+		@echo "External C: $(words $(EXT_C_SRCS)) files"
+	@$(foreach src,$(EXT_C_SRCS),echo "  $(src)";)
+		@echo
+		@echo "External C++: $(words $(EXT_CXX_SRCS)) files"
+	@$(foreach src,$(EXT_CXX_SRCS),echo "  $(src)";)
+		@echo
+		@echo "Total: $(words $(ALL_SRCS)) source files"
+
+# Show external source files
+.PHONY: show-external
+show-external:
+	@echo "External Source Directories ($(words $(EXTERNAL_SRC_DIRS))):"
+	@$(foreach dir,$(EXTERNAL_SRC_DIRS),echo "  $(dir)";)
+		@echo
+		@echo "Discovered Source Files:"
+		@echo "C Sources ($(words $(EXT_C_SRCS))):"
+	@$(foreach src,$(EXT_C_SRCS),echo "  $(src)";)
+		@echo
+		@echo "C++ Sources ($(words $(EXT_CXX_SRCS))):"
+	@$(foreach src,$(EXT_CXX_SRCS),echo "  $(src)";)
+		@echo
+		@echo "Include Directories ($(words $(EXTERNAL_INCLUDE_DIRS))):"
+	@$(foreach dir,$(EXTERNAL_INCLUDE_DIRS),echo "  $(dir)";)
+
+# List all object files
+.PHONY: list-objs
+list-objs:
+	@echo "Object files ($(words $(ALL_OBJS)) total):"
+	@echo
+	@echo "Workspace Objects ($(words $(WS_C_OBJS) $(WS_CXX_OBJS))):"
+	@$(foreach obj,$(WS_C_OBJS) $(WS_CXX_OBJS),echo "  $(obj)";)
+		@echo
+		@echo "External Objects ($(words $(EXT_C_OBJS) $(EXT_CXX_OBJS))):"
+	@$(foreach obj,$(EXT_C_OBJS) $(EXT_CXX_OBJS),echo "  $(obj)";)
+
+#=============================================================================
+# CLEAN TARGETS
+#=============================================================================
+
+# Clean current build type
+.PHONY: clean
+clean:
+	@echo "Cleaning $(BUILD_TYPE) build..."
+	@rm -rf $(BUILD_DIR)
+	@echo "$(BUILD_TYPE) build cleaned"
+
+# Clean all build types
+.PHONY: clean-all
+clean-all:
+	@echo "Cleaning all builds..."
+	@rm -rf build
+	@echo "All builds cleaned"
+
+# Rebuild (clean + build)
+.PHONY: rebuild
+rebuild: clean all
+
+#=============================================================================
+# HELP TARGET
+#=============================================================================
+
+.PHONY: help
+help:
+	@echo "Available targets:"
+	@echo "  all (default) - Build the project"
+	@echo "  debug         - Build in debug mode"
+	@echo "  release       - Build in release mode"
+	@echo "  clean         - Clean current build type"
+	@echo "  clean-all     - Clean all build types"
+	@echo "  clean-legacy  - Clean old files from previous makefile"
+	@echo "  rebuild       - Clean and rebuild current build type"
+	@echo "  info          - Show detailed build configuration"
+	@echo "  show-external - Show external source directories and files"
+	@echo "  list-objs     - List all object files"
+	@echo "  help          - Show this help"
+	@echo
+	@echo "Configuration:"
+	@echo "  RTE_DIR has been ported to: c:/source"
+	@echo "  To add more external source directories:"
+	@echo "    Edit EXTERNAL_SRC_DIRS and EXTERNAL_INCLUDE_DIRS at the top"
+	@echo "    Example: EXTERNAL_SRC_DIRS += c:/path/to/source/directory" 

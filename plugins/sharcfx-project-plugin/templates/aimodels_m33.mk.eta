@@ -1,0 +1,12 @@
+TFLM_SRC_ROOT=$(CFSAI_PATH)/lib/cortex-m/tflite-micro
+
+#=============================================================================
+#  ADD ADDITIONAL LIB AND INCLUDE PATHS TO THE MAIN PROJECT MAKEFILE
+#=============================================================================
+
+WS_DIRS += src/adi_tflm
+
+LDFLAGS += -L$(CFSAI_PATH)/lib/cortex-m/m33 -ltensorflow-microlite
+
+TFLM_INCLUDES = -I $(TFLM_SRC_ROOT) -I $(TFLM_SRC_ROOT)/third_party/flatbuffers/include -I $(TFLM_SRC_ROOT)/third_party/gemmlowp -I src/adi_tflm
+INCLUDES += $(TFLM_INCLUDES)

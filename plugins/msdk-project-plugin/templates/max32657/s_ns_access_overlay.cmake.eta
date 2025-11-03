@@ -1,0 +1,52 @@
+<%
+/**
+ * Copyright (c) 2025 Analog Devices, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+%>
+# Peripherals
+set(ADI_NS_PRPH_GCR         <%= peripheralIsSecure("GCR") ? "OFF" : "ON" %>)
+set(ADI_NS_PRPH_SIR         <%= peripheralIsSecure("SIR") ? "OFF" : "ON" %>)
+set(ADI_NS_PRPH_FCR         <%= peripheralIsSecure("FCR") ? "OFF" : "ON" %>)
+set(ADI_NS_PRPH_WDT         <%= peripheralIsSecure("WDT") ? "OFF" : "ON" %>)
+set(ADI_NS_PRPH_AES         <%= peripheralIsSecure("AES") ? "OFF" : "ON" %>)
+set(ADI_NS_PRPH_AESKEY      <%= peripheralIsSecure("AESKEYS") ? "OFF" : "ON" %>)
+set(ADI_NS_PRPH_CRC         <%= peripheralIsSecure("CRC") ? "OFF" : "ON" %>)
+set(ADI_NS_PRPH_GPIO0       <%= peripheralIsSecure("GPIO0") ? "OFF" : "ON" %>)
+set(ADI_NS_PRPH_TIMER0      <%= peripheralIsSecure("TMR0") ? "OFF" : "ON" %>)
+set(ADI_NS_PRPH_TIMER1      <%= peripheralIsSecure("TMR1") ? "OFF" : "ON" %>)
+set(ADI_NS_PRPH_TIMER2      <%= peripheralIsSecure("TMR2") ? "OFF" : "ON" %>)
+set(ADI_NS_PRPH_TIMER3      <%= peripheralIsSecure("TMR3") ? "OFF" : "ON" %>)
+set(ADI_NS_PRPH_TIMER4      <%= peripheralIsSecure("TMR4") ? "OFF" : "ON" %>)
+set(ADI_NS_PRPH_TIMER5      <%= peripheralIsSecure("TMR5") ? "OFF" : "ON" %>)
+set(ADI_NS_PRPH_I3C         <%= peripheralIsSecure("I3C0") ? "OFF" : "ON" %>)
+set(ADI_NS_PRPH_UART        <%= peripheralIsSecure("UART0") ? "OFF" : "ON" %>)
+set(ADI_NS_PRPH_SPI         <%= peripheralIsSecure("SPI0") ? "OFF" : "ON" %>)
+set(ADI_NS_PRPH_TRNG        <%= peripheralIsSecure("TRNG") ? "OFF" : "ON" %>)
+set(ADI_NS_PRPH_BTLE_DBB    <%= peripheralIsSecure("BLE") ? "OFF" : "ON" %>)
+set(ADI_NS_PRPH_BTLE_RFFE   <%= peripheralIsSecure("BLE") ? "OFF" : "ON" %>)
+set(ADI_NS_PRPH_RSTZ        <%= peripheralIsSecure("RSTZ") ? "OFF" : "ON" %>)
+set(ADI_NS_PRPH_BOOST       <%= peripheralIsSecure("BOOST") ? "OFF" : "ON" %>)
+set(ADI_NS_PRPH_BBSIR       <%= peripheralIsSecure("TRIMSIR") ? "OFF" : "ON" %>)
+set(ADI_NS_PRPH_RTC         <%= peripheralIsSecure("RTC") ? "OFF" : "ON" %>)
+set(ADI_NS_PRPH_WUT0        <%= peripheralIsSecure("WUT0") ? "OFF" : "ON" %>)
+set(ADI_NS_PRPH_WUT1        <%= peripheralIsSecure("WUT1") ? "OFF" : "ON" %>)
+set(ADI_NS_PRPH_PWR         <%= peripheralIsSecure("PWRSEQ") ? "OFF" : "ON" %>)
+set(ADI_NS_PRPH_MCR         <%= peripheralIsSecure("MCR") ? "OFF" : "ON" %>)
+
+# SRAMs
+set(ADI_NS_SRAM_0           <%= memoryRegionIsSecure("sysram0") ? "OFF" : "ON" %>)
+set(ADI_NS_SRAM_1           <%= memoryRegionIsSecure("sysram1") ? "OFF" : "ON" %>)
+set(ADI_NS_SRAM_2           <%= memoryRegionIsSecure("sysram2") ? "OFF" : "ON" %>)
+set(ADI_NS_SRAM_3           <%= memoryRegionIsSecure("sysram3") ? "OFF" : "ON" %>)
+set(ADI_NS_SRAM_4           <%= memoryRegionIsSecure("sysram4") ? "OFF" : "ON" %>)

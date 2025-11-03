@@ -12,6 +12,18 @@ function ledValue() {
   }
 }
 %>
+<%
+function timeOut() {
+  switch(it.soc.toLowerCase()) {
+    case "max78000":
+      return "300000";
+    case "max78002":
+      return "600000";
+    default:
+      return "500000";
+  }
+}
+%>
 /**
  *
  * Copyright (c) <%= new Date().getFullYear() %> Analog Devices, Inc.
@@ -42,9 +54,9 @@ int main(void) {
 
     while (1) {
         LED_On(<%= ledValue() %>);
-        MXC_Delay(500000);
+        MXC_Delay(<%= timeOut() %>);
         LED_Off(<%= ledValue() %>);
-        MXC_Delay(500000);
+        MXC_Delay(<%= timeOut() %>);
         printf("count = %d\n", count++);
     }
 }

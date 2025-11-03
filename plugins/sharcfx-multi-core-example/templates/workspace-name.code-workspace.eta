@@ -1,0 +1,20 @@
+{
+  "folders": [
+    {
+      "path": ".cfs"
+    },
+    {
+      "path": "m33"
+    },
+    {
+      "path": "sfx"
+    },
+  ],
+  "settings": {
+    "cfs.configureWorkspace": "Yes",
+    "cfs.project.target": "<%= it.soc %>",
+    "terminal.integrated.defaultProfile.windows": "CFS Terminal",
+    "terminal.integrated.defaultProfile.osx": "CFS Terminal",
+    "terminal.integrated.defaultProfile.linux": "CFS Terminal"
+  },
+}

@@ -13,9 +13,6 @@
  *
  */
 
-// Include common plugin code
-eval(this.render("common/utilities/utilities.js"));
-
 var pull_map = {
   "STRONG_PU" : "PULL_UP",
   "PU"        : "PULL_UP",
@@ -33,6 +30,20 @@ function getGpioPorts() {
     ports.add(p.GPIOPort);
   }
   return Array.from(ports).sort()
+}
+
+function getVssel(pin, signal) {
+  // Hardware constraint: GPIO ports controlled by MCR registers on devices 
+  // with VDDIOH pin can only use VDDIOH as their I/O voltage supply
+  const gpioName = getPin(pin).GPIOName.toString();
+  const hasVddioh = getPackage()?.Pins.some((p) => p.Label === "VDDIOH");
+  const hasMcrCtrl = it.datamodel.Registers.some((r) => r.Name === `MCR_${gpioName}_CTRL`);
+
+  if (hasVddioh && hasMcrCtrl) {
+    return "VDDIOH";
+  }
+
+  return signal?.Config?.PWR ?? "VDDIO";
 }
 
 function sanitize_identifier(iden) {
@@ -69,8 +80,17 @@ function getHeaders() {
   if (anyInstanceAssigned("ICC")) {
     hdrs.add("icc.h")
   }
-  if (isClockAnySet([], "LPM Mux")) {
+  if (isSystemClockAnySet("LPM Mux")) {
     hdrs.add("lp.h")
+  }
+  if (anyInstanceAssigned("I2S")) {
+    hdrs.add("i2s.h")
+  }
+  if (anyInstanceAssigned("TRNG")) {
+    hdrs.add("trng.h")
+  }
+  if (anyInstanceAssigned("OWM")) {
+    hdrs.add("owm.h")
   }
   hdrs.add("mxc_device.h")
   hdrs.add("mxc_sys.h")
@@ -78,19 +98,15 @@ function getHeaders() {
   return Array.from(hdrs).sort();
 }
 %>
-<%~ include("../../common/utilities/copyright-header.eta", it) %>
+<%~ include("@normalizeSoc", it) %>
+<%~ include("@copyrightHeader", it) %>
 
 <% for (const header of getHeaders()) { %>
 #include <<%= header %>>
 <% } %>
+#include "<%= getProject().Secure ? "adi_soc_peripheral_init.h" : "soc_init.h" %>"
 
-/* Prototypes for functions in this file.
-*/
-int PinInit(void);
-<% if (hasClockConfig()) { %>
-int PeripheralInit(void);
-<% } %>
-
+<%~ include("./" + it.cfsconfig.Soc.toLowerCase() + "/globals.c.eta", it); %>
 int PinInit(void) {
 <% if (it.cfsconfig.Pins.length > 0) { %>
   int result;
@@ -114,16 +130,16 @@ int PinInit(void) {
 <%       } %>
   */
   const mxc_gpio_cfg_t cfg_<%= sanitize_identifier(getPin(pin).Label.toLowerCase()) %> = {
-    MXC_<%=getPin(pin).GPIOName %>,
-    MXC_GPIO_PIN_<%= getPin(pin).GPIOPin %>,
+    .port = MXC_<%=getPin(pin).GPIOName %>,
+    .mask = MXC_GPIO_PIN_<%= getPin(pin).GPIOPin %>,
 <%     if (getSignal(pin).PinMuxSlot) { %>
-    MXC_GPIO_FUNC_ALT<%= getSignal(pin).PinMuxSlot %>,
+    .func = MXC_GPIO_FUNC_ALT<%= getSignal(pin).PinMuxSlot %>,
 <%     } else { %>
-    MXC_GPIO_FUNC_<%= signal?.Config.MODE ?? "IN"%>,
+    .func = MXC_GPIO_FUNC_<%= signal?.Config.MODE ?? "IN"%>,
 <%     } %>
-    MXC_GPIO_PAD_<%= signal?.Config.PS ? pull_map[signal.Config.PS] : "NONE"%>,
-    MXC_GPIO_VSSEL_<%= signal?.Config.PWR ?? "VDDIO" %>,
-    MXC_GPIO_DRVSTR_<%= signal?.Config.DS ?? "0" %> 
+    .pad = MXC_GPIO_PAD_<%= signal?.Config.PS ? pull_map[signal.Config.PS] : "NONE"%>,
+    .vssel = MXC_GPIO_VSSEL_<%= getVssel(pin, signal) %>,
+    .drvstr = MXC_GPIO_DRVSTR_<%= signal?.Config.DS?.replace("SPEC", "") ?? "0" %> 
   };
   result = MXC_GPIO_Config(&cfg_<%= sanitize_identifier(getPin(pin).Label.toLowerCase()) %>);
   if (result != E_NO_ERROR) {
@@ -150,7 +166,7 @@ int PeripheralInit(void) {
   }
 
 <% } %>
-<%~ include("./" + it.cfsconfig.Soc.toLowerCase() + "/peripherals.c.eta", it) %>
+<%~ include("./" + it.msdkInflectionPoint(it.cfsconfig.Soc).toLowerCase() + "/peripherals.c.eta", it) %>
 <% if (getAssignedPeripheral("CM4 SysTick")?.Config?.ENABLE == "TRUE") { %>
   result = SysTick_Config(<%= getAssignedPeripheral("CM4 SysTick").Config.TICKS_BETWEEN_INTS %>U);
   if (result != 0U) {

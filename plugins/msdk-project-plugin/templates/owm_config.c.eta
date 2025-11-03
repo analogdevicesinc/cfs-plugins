@@ -1,0 +1,116 @@
+<%
+/**
+ * Copyright (c) 2025 Analog Devices, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// Return the OWM internal pullup setting
+function getOWMInternalPullupEnable() {
+  return getPeriConfigValue(it.instance, "INTERNAL_PULL_UP", "FALSE") === "TRUE" ? "1" : "0";
+}
+
+// Return the OWM external pullup mode
+function getOWMExternalPullupMode() {
+  let externalPullUpEnable = getPeriConfigValue(it.instance, "EXTERNAL_PULL_UP", "FALSE");
+  if (externalPullUpEnable === "TRUE") {
+    return getPeriConfigValue(it.instance, "EXT_PULL_UP_MODE", "ACTIVE_LOW") === "ACTIVE_LOW" ? "1" : "0";
+  } else {
+    return "2";
+  }
+}
+
+// Return the OWM long line mode
+function getOWMLongLineMode() {
+  return getPeriConfigValue(it.instance, "LONG_LINE_MODE", "SHORT") === "LONG" ? "1" : "0";
+}
+
+// Return the OWM overdrive setting
+function getOWMOverdriveEnable() {
+  return getPeriConfigValue(it.instance, "OVERDRIVE", "FALSE") === "TRUE" ? "1" : "0";
+}
+
+// Return the OWM presense detection force setting
+function getOWMForcePresenceDetectEnable() {
+  return getPeriConfigValue(it.instance, "FORCE_PRES_DET", "FLOAT") === "FLOAT" ? "0" : "1";
+}
+
+// Return search ROM accelerator mode
+function getOWMSRAMode() {
+  return getPeriConfigValue(it.instance, "SRA_MODE", "FALSE") === "TRUE" ? "1" : "0";
+}
+
+// Return the interrupt mask for any enabled interrupts.
+function getOWMIntMask() {
+  const ie_table = [
+    { ctrl: "RESET_DONE_IE",      value: "MXC_F_OWM_INTEN_OW_RESET_DONE" },
+    { ctrl: "TX_DATA_EMPTY_IE",   value: "MXC_F_OWM_INTEN_TX_DATA_EMPTY" },
+    { ctrl: "RX_DATA_READY_IE",   value: "MXC_F_OWM_INTEN_RX_DATA_READY" },
+    { ctrl: "LINE_SHORT_IE",      value: "MXC_F_OWM_INTEN_LINE_SHORT" },
+    { ctrl: "LINE_LOW_IE",        value: "MXC_F_OWM_INTEN_LINE_LOW" }
+  ];
+  let arg = "";
+  for (ie of ie_table) {
+    if (getPeriConfigValue(it.instance, ie.ctrl, "FALSE") === "TRUE") {
+      if (arg !== "")
+        arg += " | ";
+      arg += ie.value;
+    }
+  }
+  return arg;
+}
+%>
+<% if (isUnassignedPeripheralClockSetTo(it.instance, it.enable, "TRUE")) { %>
+  /* The <%= it.instance %> peripheral is enabled on the clock canvas but is
+   * not assigned to any core. In order to generate configuration code, please
+   * assign the peripheral to a core.
+   */
+
+<% } else if (getAssignedPeripheral(it.instance)) { %>
+  { /* Configure <%= it.instance %>.
+<%   if (getPeripheralDescription(it.instance)) { %>
+     * This peripheral is used for <%= getPeripheralDescription(it.instance) %>.
+<%   } %>
+<%   if (it.enable && !isPeripheralClockSetTo(it.instance, it.enable, "TRUE")) { %>
+     * Note: This peripheral was not enabled on the clock configuration canvas.
+     * Nonetheless, as a result of the following configuration, the peripheral will be
+     * clocked on.
+<%   } %>
+     */
+
+    mxc_owm_cfg_t <%= it.instance.toLowerCase() %>_config = {
+      .int_pu_en = <%= getOWMInternalPullupEnable() %>,
+      .ext_pu_mode = <%= getOWMExternalPullupMode() %>,
+      .long_line_mode = <%= getOWMLongLineMode() %> 
+    };
+
+    /* Initialize the peripheral. */
+    result = MXC_OWM_Init(&<%= it.instance.toLowerCase() %>_config);
+    if (result != E_NO_ERROR) {
+      return result;
+    }
+
+    /* Set OWM_IO behavior during presence detection. */
+    MXC_OWM_SetForcePresenceDetect(<%= getOWMForcePresenceDetectEnable() %>);
+
+    /* Set overdrive mode. */
+    MXC_OWM_SetOverdrive(<%= getOWMOverdriveEnable() %>);
+
+    /* Set Search ROM Accelerator mode. */
+    MXC_OWM_SetSearchROMAccelerator(<%= getOWMSRAMode() %>);
+
+<%   if (getOWMIntMask() !== "") { %>
+    /* Enable interrupts. */
+    MXC_OWM_EnableInt(<%= getOWMIntMask() %>);
+
+<%   } %>
+  }
+
+<% } %>

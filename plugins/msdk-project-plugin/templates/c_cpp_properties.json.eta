@@ -1,4 +1,4 @@
-<%~ include("../../common/utilities/normalize-soc.eta", it) %>
+<%~ include("@normalizeSoc", it) %>
 {
   "configurations": [
     {
@@ -10,7 +10,7 @@
       ],
       "defines": [
         "${config:cfs.project.board}",
-        "TARGET=<%= it.normalizeSoc() %>",
+        "TARGET=<%= it.msdkInflectionPoint(it.soc) %>",
         "__GNUC__"
       ],
       "intelliSenseMode": "gcc-arm",
@@ -24,7 +24,7 @@
       "includePath": ["${default}"],
       "defines": [
         "${config:cfs.project.board}",
-        "TARGET=<%= it.normalizeSoc() %>",
+        "TARGET=<%= it.msdkInflectionPoint(it.soc) %>",
         "__GNUC__"
       ],
       "intelliSenseMode": "gcc-arm",
@@ -38,7 +38,7 @@
       "includePath": ["${default}"],
       "defines": [
         "${config:cfs.project.board}",
-        "TARGET=<%= it.normalizeSoc() %>",
+        "TARGET=<%= it.msdkInflectionPoint(it.soc) %>",
         "__GNUC__"
       ],
       "intelliSenseMode": "gcc-arm",

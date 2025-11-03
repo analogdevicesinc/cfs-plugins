@@ -1,6 +1,6 @@
 /**
  *
- * Copyright (c) 2024 Analog Devices, Inc.
+ * Copyright (c) 2024-2025 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,8 +12,8 @@
  * limitations under the License.
  *
  */
-type SocAddress = string;
-type SocValue = string;
+
+import type { SocDiagramData } from "./cfs-soc-diagram-data.js";
 
 export interface CfsSocDataModel {
   Copyright: string;
@@ -30,6 +30,10 @@ export interface CfsSocDataModel {
   Packages: SocPackage[];
   Registers: SocRegister[];
   Schema: string;
+  Gaskets: SocGasket[];
+  MemoryTypes: SocCoreMemoryType[];
+  MemoryAliasTypes: SocCoreMemoryAliasType[];
+  SystemMemory: SocCoreMemory[];
 }
 
 export interface SocPart {
@@ -38,32 +42,15 @@ export interface SocPart {
   MemoryDescription: string;
 }
 
-export interface SocCore {
-  Name: string;
-  Description: string;
-  ID: string;
-  Memory: SocCoreMemory[];
-}
-
-export interface SocCoreMemory {
-  Name: string;
-  Description: string;
-  AddressStart: string;
-  AddressEnd: string;
-  Width: number;
-  Access: string;
-  Location: string;
-  Type: string;
-}
-
 export interface SocControl {
   Id: string;
   Description: string;
   Type: string;
   EnumValues?: SocControlValue[];
   Condition?: string;
-  MinimumValue?: number;
-  MaximumValue?: number;
+  MinimumValue?: string | number;
+  MaximumValue?: string | number;
+  NumericBase?: string;
   Units?: string;
   Default?: string | number;
   PluginOption?: boolean;
@@ -77,11 +64,30 @@ export interface SocControlValue {
   Value: number;
 }
 
-interface SocPackage {
+export interface SocPackage {
   Name: string;
   Description: string;
   NumPins: number;
   Pins: SocPin[];
+  PinCanvas: SocPinCanvas;
+  ClockCanvas: SocDiagramData;
+  CoprogrammedSignals?: {
+    Pin: string;
+    Peripheral: string;
+    Signal: string;
+  }[][];
+}
+
+export interface SocPinCanvas {
+  Width: number;
+  Height: number;
+  Labels: SocPinCanvasLabel[];
+}
+
+export interface SocPinCanvasLabel {
+  Text: string;
+  X: number;
+  Y: number;
 }
 
 export interface SocPin {
@@ -92,34 +98,33 @@ export interface SocPin {
     X: number;
     Y: number;
   };
-  Shape: string;
-  GPIOPort: string;
-  GPIOPin: number;
-  GPIOName: string;
+  Shape?: string;
+  GPIOPort?: string;
+  GPIOPin?: number;
+  GPIOName?: string;
   Signals: SocPinSignal[];
 }
 
 export interface SocPinConfig {
   Register: string;
   Field: string;
-  Value: number;
+  Value: string;
   Operation?: string;
+  Wait?: number;
 }
 
 export interface SocPinSignal {
-  Peripheral: string;
+  Peripheral?: string;
   Name: string;
-  PinMuxSlot: number;
-  PinMuxConfig: SocPinSignalConfig[];
-  PinConfig: Record<string, Record<string, SocPinConfig[]>>;
-  PinMuxNameZephyr?: string;
-}
-
-interface SocPinSignalConfig {
-  Register: string;
-  Field: string;
-  Value: number;
-  Operation?: string;
+  PinMuxSlot?: number;
+  PinMuxConfig?: SocConfigField[];
+  PinConfig?: SocConfigFields;
+  IsInputTap?: boolean;
+  coprogrammedSignals?: {
+    Pin: string;
+    Peripheral: string;
+    Signal: string;
+  }[];
 }
 
 export interface SocClockNode {
@@ -139,7 +144,7 @@ export interface SocConfigZephyr {
 export interface SocRegister {
   Name: string;
   Description: string;
-  Address: SocAddress;
+  Address: string;
   Size: number;
   Fields: SocRegisterField[];
 }
@@ -147,43 +152,97 @@ export interface SocRegister {
 export interface SocRegisterField {
   Name: string;
   Description: string;
+  Documentation?: string;
   Position: number;
   Length: number;
-  Reset: SocValue;
-}
-
-interface SocPeripheralZephyr {
-  Name?: string;
-  Header?: string;
-  ConfigMacros?: string[];
-  Diagnostic?: string;
-  ClocksSection?: boolean;
-  AlwaysEmitPinctrl0?: boolean;
-  Pinctrl0Sub?: string;
+  Reset: string | number;
+  Access: "R" | "R/W";
+  Enum?: {
+    Name: string;
+    Description: string;
+    Documentation: string;
+    Value: number | string;
+  }[];
 }
 
 export interface SocPeripheral {
   Name: string;
-  Zephyr?: SocPeripheralZephyr;
   Description: string;
+  Cores: string[];
   Signals: SocPeripheralSignalConfig[];
-  Initialization?: SocPeripheralInitializationConfig[];
+  Group?: string;
+  Assignable?: boolean;
+  Required?: string[];
+  ClockNode: string;
+  Preassigned?: boolean;
+  Config?: SocConfigFields;
+  Security?: "Any" | "Secure" | "Non-Secure";
+  Initialization?: SocConfigField[];
+  Ai?: object;
 }
 
 interface SocPeripheralSignalConfig {
   Name: string;
   Description: string;
+  Required?: string; // Requires evaluating a condition using the expression parser
+  Group?: string;
 }
 
-type SocPeripheralInitializationConfig = SocPinSignalConfig;
+export interface SocCoreMemoryType {
+  Name: string;
+  Description: string;
+  IsVolatile: boolean;
+}
+
+export interface SocCoreMemoryAliasType {
+  Name: string;
+  Description: string;
+}
+
+export interface SocCoreMemory {
+  Name: string;
+  Description: string;
+  AddressStart: string;
+  AddressEnd: string;
+  Width: number;
+  MinimumAlignment?: number;
+  Access: string;
+  Type: string;
+  Location: string;
+}
+
+export interface SocCoreMemoryRef {
+  Name: string;
+  AddressStart?: string;
+  AddressEnd?: string;
+  Access: string;
+  AliasType?: string;
+  AliasBaseAddress?: string;
+}
+
+export type SocCoreMemoryRange = SocCoreMemory | SocCoreMemoryRef;
+
+export interface SocCore {
+  Id: string;
+  Name: string;
+  Description: string;
+  CoreNum?: number;
+  IsPrimary?: boolean;
+  TrustZone?: Record<string, never>;
+  Family: string;
+  Memory: SocCoreMemoryRange[];
+  Ai?: object;
+}
 
 export interface SocClock {
   Name: string;
   Description: string;
   Type: string;
   Inputs: ClockInput[];
-  Outputs: ClockOutput[];
-  Config?: ClockConfig;
+  Outputs: SocClockOutput[];
+  Signpost: string;
+  Config?: SocConfigFields;
+  Initialization?: SocConfigField[];
   ConfigUIOrder?: string[];
   ConfigProgrammingOrder?: string[];
   ConfigMSDK?: ConfigMSDK;
@@ -194,23 +253,13 @@ interface ClockInput {
   Name: string;
 }
 
-interface ClockOutput {
+export interface SocClockOutput {
   Name: string;
   Description: string;
   Value: string;
-}
-
-interface NestedConfig {
-  [key: string]: [] | ClockRegister[] | NestedConfig;
-}
-
-type ClockConfig = Record<string, NestedConfig>;
-
-interface ClockRegister {
-  Register?: string;
-  Field: string;
-  Value: number;
-  Operation?: string;
+  MinimumValue?: number;
+  MaximumValue?: number;
+  Condition?: string;
 }
 
 interface ConfigCode {
@@ -227,3 +276,44 @@ type ConfigMSDK = Record<
   string,
   NestedConfigMSDK | Record<string, never>
 >;
+
+export interface SocGasketInputStream {
+  Config: SocConfigFields;
+  BuiltInConfig: SocConfigFields;
+  BufferAddress?: number;
+  BufferSize?: number;
+}
+
+export interface SocGasketOutputStream extends SocGasketInputStream {
+  Index: number;
+}
+
+export interface SocGasket {
+  Name: string;
+  Id: number;
+  Description: string;
+  InputBufferSize: number;
+  InputStreams: SocGasketInputStream[];
+  MinInputStreamBufferSize: number | undefined;
+  OutputBufferSize: number;
+  OutputStreams: SocGasketOutputStream[];
+  MinOutputStreamBufferSize: number | undefined;
+  InputAndOutputBuffersTied?: boolean;
+  AssociatedCore?: string;
+  Config?: SocConfigFields;
+}
+
+export type SocConfigFields = Record<
+  string,
+  Record<string, SocConfigField[]>
+>;
+
+export interface SocConfigField {
+  Register?: string;
+  Field: string;
+  Value?: Expression;
+  InverseValue?: Expression;
+  Operation: string;
+}
+
+export type Expression = string;

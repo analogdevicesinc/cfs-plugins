@@ -5,8 +5,18 @@
   "pluginVersion": "1.0.0",
   "pluginApiVersion": 1,
   "author": "Analog Devices, Inc.",
-  "firmwarePlatform": "Baremetal",
+  "firmwarePlatform": "RegistersOnly",
   "supportedSocs": [
+    {
+      "name": "MAX32650",
+      "board": "EvKit_V1",
+      "package": "tqfp"
+    },
+    {
+      "name": "MAX32650",
+      "board": "FTHR",
+      "package": "wlp"
+    },
     {
       "name": "MAX32655",
       "dataModel": "max32655-ctbga.json",
@@ -30,6 +40,21 @@
       "package": "wlp"
     },
     {
+      "name": "MAX32658",
+      "dataModel": "max32658-wlp.json",
+      "board": "EvKit_V1",
+      "package": "wlp"
+    },
+    {
+      "name": "MAX32670",
+      "board": "EvKit_V1",
+      "package": "tqfn"
+    },
+    {
+      "name": "MAX32670",
+      "package": "wlp"
+    },
+    {
       "name": "MAX32690",
       "dataModel": "max32690-tqfn.json",
       "board": "EvKit_V1",
@@ -46,6 +71,21 @@
       "dataModel": "max32690-tqfn.json",
       "board": "FTHR",
       "package": "tqfn"
+    },
+    {
+      "name": "MAX78000",
+      "board": "EvKit_V1",
+      "package": "ctbga"
+    },
+    {
+      "name": "MAX78000",
+      "board": "FTHR",
+      "package": "ctbga"
+    },
+    {
+      "name": "MAX78002",
+      "board": "EvKit_V1",
+      "package": "csbga"
     }
   ],
   "features": {
@@ -64,12 +104,38 @@
           "dst": ".vscode/c_cpp_properties.json"
         },
         {
-          "src": "templates/CMakeLists.txt.eta",
-          "dst": "CMakeLists.txt"
-        },
-        {
           "src": "templates/main.c.eta",
           "dst": "src/main.c"
+        },
+        {
+          "src": "templates/CMakeLists.txt.eta",
+          "dst": "CMakeLists.txt",
+          "condition": "${!context.soc.toLowerCase().includes('adsp')}"
+        },
+        {
+          "src": "templates/sharc-fx/sfx/Makefile.eta",
+          "dst": "Makefile",
+          "condition": "${context.coreId.toLowerCase().includes('fx')}"
+        },
+        {
+          "src": "templates/sharc-fx/sfx/system/adi_initialize.c.eta",
+          "dst": "src/system/adi_initialize.c",
+          "condition": "${context.coreId.toLowerCase().includes('fx')}"
+        },
+        {
+          "src": "templates/sharc-fx/sfx/system/adi_initialize.h.eta",
+          "dst": "src/system/adi_initialize.h",
+          "condition": "${context.coreId.toLowerCase().includes('fx')}"
+        },
+        {
+          "src": "templates/sharc-fx/sfx/tasks.json.eta",
+          "dst": ".vscode/tasks.json",
+          "condition": "${context.coreId.toLowerCase().includes('fx')}"
+        },
+        {
+          "src": "templates/sharc-fx/sfx/project.mk.eta",
+          "dst": "project.mk",
+          "condition": "${context.coreId.toLowerCase().includes('fx')}"
         }
       ],
       "files": []
@@ -79,11 +145,23 @@
       "templates": [
         {
           "src": "templates/memory.ld.eta",
-          "dst": "memory.ld"
+          "dst": "memory.ld",
+          "condition": "${!context.cfsconfig.Soc.toLowerCase().includes('adsp')}"
         },
         {
           "src": "templates/soc_init.c.eta",
-          "dst": "soc_init.c"
+          "dst": "soc_init.c",
+          "condition": "${!context.cfsconfig.Soc.toLowerCase().includes('adsp')}"
+        },
+        {
+          "src": "templates/soc_init.c.eta",
+          "dst": "src/system/soc_init.c",
+          "condition": "${context.cfsconfig.Soc.toLowerCase().includes('adsp')}"
+        },
+        {
+          "src": "templates/tflm_lib.mk.eta",
+          "dst": "sfx/tflm_lib.mk",
+          "condition": "${(context.cfsconfig.Projects?.find(p => p.ProjectId == context.projectId).AIModels?.length ?? 0) > 0}"
         }
       ]
     }

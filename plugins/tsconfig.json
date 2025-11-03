@@ -18,5 +18,10 @@
   "exclude": ["**/*.test.ts", "dist"],
   "ts-node": {
     "esm": true
-  }
+  },
+  "references": [
+    {
+      "path": "../api"
+    }
+  ]
 }

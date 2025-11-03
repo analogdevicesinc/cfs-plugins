@@ -1,0 +1,54 @@
+<%
+/**
+ * Copyright (c) 2024-2025 Analog Devices, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+%>
+<%~ include("@copyrightHeader", it) %>
+
+#include <sys/platform.h>
+#include <stdint.h>
+
+/* Prototypes for functions in this file.
+*/
+int32_t adi_initpinmux(void);
+
+int32_t adi_initpinmux(void) {
+<% if (it.cfsconfig.Pins.length > 0) { %>
+<%   for (const pin of it.cfsconfig.Pins) { %>
+<%     const peri = getAssignedPeripheral(pin.Peripheral); %>
+<%     const signal = peri?.Signals?.find(s => s.Name === pin.Signal); %>
+<%     if (signal || (!getAssignedProjectForPin(pin) && isPrimaryProject())) { %>
+  /* <%= getPin(pin).Label %> (<%= pin.Pin %>): assigned to <%= pin.Peripheral %> <%= pin.Signal %>.
+<%       if (signal?.Description) { %>
+  ** This pin is used for <%= signal.Description %>.
+<%       } %>
+  */
+<%=      genCode("  ", getSignal(pin).PinMuxConfig) %> 
+<%       if (signal?.Config) { %>
+<%         for (const cfg of Object.keys(signal.Config)) { %>
+  /* Set <%= getControlDesc('PinConfig', cfg) %> to <%= getSignalSettingDesc(signal, cfg) %>.
+  */
+<%=          genCode("  ", getSequence(getSignal(pin).PinConfig, 'PinConfig', cfg, signal.Config[cfg]),
+                           translateValueForSequence('PinConfig', cfg, signal.Config[cfg])) %> 
+<%         } %>
+<%       } %>
+
+<%     } %>
+<%   } %>
+<% } else { %>
+  /* Pin configuration in default state. */
+
+<% } %>
+  return 0;
+}

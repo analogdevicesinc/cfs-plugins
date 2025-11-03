@@ -1,0 +1,39 @@
+<%
+/**
+ * Copyright (c) 2025 Analog Devices, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+%>
+/* System clock configuration */
+&gcr {
+<% if (isSystemClockSetTo("SYS_OSC Mux", "MUX", "P0.3")) { %>
+	clocks = <&clk_extclk>;
+<% } else if (isSystemClockSetTo("SYS_OSC Mux", "MUX", "IPLL_SYS")) { %>
+	clocks = <&clk_ipll>;
+<% } else if (isSystemClockSetTo("SYS_OSC Mux", "MUX", "ERFO")) { %>
+	clocks = <&clk_ebo>;
+<% } else { %>
+	clocks = <&clk_<%= getClockSetting("SYS_OSC Mux", "MUX", "IPO").toLowerCase() %>>;
+<% } %>
+	sysclk-prescaler = <<%= getClockSetting("PRESCALER", "DIV", "1") %>>;
+};
+
+<% if (isSystemClockSet("P0.3", "P0_3_FREQ")) { %>
+/ {
+	clk_extclk: clk_extclk {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <<%= getClockSetting("P0.3", "P0_3_FREQ") %>>;
+	};
+};
+
+<% } %>

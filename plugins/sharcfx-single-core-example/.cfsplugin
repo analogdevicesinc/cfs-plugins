@@ -1,0 +1,262 @@
+{
+  "pluginName": "SHARC-FX Single Core Hello World",
+  "pluginDescription": "SHARC-FX (core 1) Hello World template.",
+  "pluginId": "com.analog.sharcfx.example",
+  "pluginVersion": "1.0.1",
+  "author": "Analog Devices, Inc.",
+  "firmwarePlatform": "SHARC-FX",
+  "supportedHostPlatforms": [
+    "windows",
+    "linux"
+  ],
+  "supportedSocs": [
+    {
+      "name": "ADSP-21834",
+      "board": "ADSP21834-EV-SOM",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-21834",
+      "board": "EV-SOMCRR-EZKIT",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-21834",
+      "board": "",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-21834W",
+      "board": "ADSP21834W-EV-SOM",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-21834W",
+      "board": "EV-SOMCRR-EZKIT",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-21834W",
+      "board": "",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-21835",
+      "board": "ADSP21835-EV-SOM",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-21835",
+      "board": "EV-SOMCRR-EZKIT",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-21835",
+      "board": "",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-21835W",
+      "board": "ADSP21835W-EV-SOM",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-21835W",
+      "board": "EV-SOMCRR-EZKIT",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-21835W",
+      "board": "",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-21836",
+      "board": "ADSP21836-EV-SOM",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-21836",
+      "board": "EV-SOMCRR-EZKIT",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-21836",
+      "board": "",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-21836W",
+      "board": "ADSP21836W-EV-SOM",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-21836W",
+      "board": "EV-SOMCRR-EZKIT",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-21836W",
+      "board": "",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-21837",
+      "board": "ADSP21837-EV-SOM",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-21837",
+      "board": "EV-SOMCRR-EZKIT",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-21837",
+      "board": "",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-21837W",
+      "board": "ADSP21837W-EV-SOM",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-21837W",
+      "board": "EV-SOMCRR-EZKIT",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-21837W",
+      "board": "",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-SC834",
+      "board": "ADSPSC834-EV-SOM",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-SC834",
+      "board": "EV-SOMCRR-EZKIT",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-SC834",
+      "board": "",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-SC834W",
+      "board": "ADSPSC834W-EV-SOM",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-SC834W",
+      "board": "EV-SOMCRR-EZKIT",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-SC834W",
+      "board": "",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-SC835",
+      "board": "ADSPSC835-EV-SOM",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-SC835",
+      "board": "EV-SOMCRR-EZKIT",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-SC835",
+      "board": "",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-SC835W",
+      "board": "ADSPSC835W-EV-SOM",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-SC835W",
+      "board": "EV-SOMCRR-EZKIT",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-SC835W",
+      "board": "",
+      "package": "bga_ed"
+    }
+  ],
+  "features": {
+    "workspace": {
+      "files": [
+        {
+          "src": "files/sfx/README.md",
+          "dst": "sfx/README.md"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/memory-dump.json",
+          "dst": ".cfs/gdb_toolbox/configs/memory-dump.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/register-dump.json",
+          "dst": ".cfs/gdb_toolbox/configs/register-dump.json"
+        },
+        {
+          "src": "files/.cfsdependencies",
+          "dst": ".cfs"
+        }
+      ],
+      "templates": [
+        {
+          "src": "templates/workspace-name.code-workspace.eta",
+          "dst": "${context.workspaceName}.code-workspace"
+        },
+        {
+          "src": "templates/sfx.cfsconfig.eta",
+          "dst": ".cfs/${context.soc.toLowerCase()}-${context.package.toLowerCase()}.cfsconfig"
+        },
+        {
+          "src": "templates/launch.json.eta",
+          "dst": "sfx/.vscode/launch.json"
+        },
+        {
+          "src": "templates/settings.json.eta",
+          "dst": "sfx/.vscode/settings.json"
+        },
+        {
+          "src": "templates/cfs.tasks.json.eta",
+          "dst": "sfx/.vscode/cfs.tasks.json"
+        },
+        {
+          "src": "templates/main.c.eta",
+          "dst": "sfx/src/main.c"
+        },
+        {
+          "src": "templates/system/adi_initialize.c.eta",
+          "dst": "sfx/src/system/adi_initialize.c"
+        },
+        {
+          "src": "templates/system/adi_initialize.h.eta",
+          "dst": "sfx/src/system/adi_initialize.h"
+        },
+        {
+          "src": "templates/project.mk.eta",
+          "dst": "sfx/project.mk"
+        },
+        {
+          "src": "templates/Makefile.eta",
+          "dst": "sfx/Makefile"
+        },
+        {
+          "src": "templates/c_cpp_properties.json.eta",
+          "dst": "sfx/.vscode/c_cpp_properties.json"
+        }
+      ]
+    }
+  }
+}

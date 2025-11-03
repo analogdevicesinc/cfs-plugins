@@ -1,0 +1,148 @@
+<% 
+/**
+ * Copyright (c) 2024-2025 Analog Devices, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+%>
+<%~ include("@copyrightHeaderHash", it) %>
+
+<% if (it.coreId.startsWith("CM") && it.cfsconfig.ClockFrequencies?.SYS_CLK) { %>
+# Set the clock frequency
+CONFIG_SYS_CLOCK_HW_CYCLES_PER_SEC=<%= it.cfsconfig.ClockFrequencies.SYS_CLK %> 
+<% } %>
+<% if (it.coreId.startsWith("RV") && it.cfsconfig.ClockFrequencies?.PCLK) { %>
+# Set the clock frequency
+CONFIG_SYS_CLOCK_HW_CYCLES_PER_SEC=<%= it.cfsconfig.ClockFrequencies.PCLK %> 
+<% } %>
+
+<% if (getAssignedPeripheral("CM4 SysTick")?.Config?.ENABLE === "TRUE") { %>
+# Set up the SysTick timer
+CONFIG_CORTEX_M_SYSTICK=y
+CONFIG_SYS_CLOCK_TICKS_PER_SEC=<%= getAssignedPeripheral("CM4 SysTick").Config.TICKS_PER_SEC %> 
+<% } else if (getAssignedPeripheral("CM4 SysTick")) { %>
+# Disable the SysTick timer
+CONFIG_CORTEX_M_SYSTICK=n
+<% } %>
+<% if (getAssignedPeripheral("CM33 SysTick (S)")?.Config?.ENABLE === "TRUE") { %>
+# Set up the SysTick timer
+CONFIG_CORTEX_M_SYSTICK=y
+CONFIG_SYS_CLOCK_TICKS_PER_SEC=<%= getAssignedPeripheral("CM33 SysTick (S)").Config.TICKS_PER_SEC %> 
+<% } else if (getAssignedPeripheral("CM33 SysTick (S)")) { %>
+# Disable the SysTick timer
+CONFIG_CORTEX_M_SYSTICK=n
+<% } %>
+<% if (getAssignedPeripheral("CM33 SysTick (NS)")?.Config?.ENABLE === "TRUE") { %>
+# Set up the SysTick timer
+CONFIG_CORTEX_M_SYSTICK=y
+CONFIG_SYS_CLOCK_TICKS_PER_SEC=<%= getAssignedPeripheral("CM33 SysTick (NS)").Config.TICKS_PER_SEC %> 
+<% } else if (getAssignedPeripheral("CM33 SysTick (NS)")) { %>
+# Disable the SysTick timer
+CONFIG_CORTEX_M_SYSTICK=n
+<% } %>
+<% if (getAssignedPeripheral("RV mtime")?.Config?.ENABLE === "TRUE") { %>
+# Set up the machine timer
+CONFIG_RISCV_MACHINE_TIMER=y
+CONFIG_SYS_CLOCK_TICKS_PER_SEC=<%= getAssignedPeripheral("RV mtime").Config.TICKS_PER_SEC %> 
+<% } else if (getAssignedPeripheral("RV mtime")) { %>
+# Disable the machine timer
+CONFIG_RISCV_MACHINE_TIMER=n
+<% } %>
+
+<% if (anyInstanceAssigned("ADC")) { %>
+# Using ADC
+CONFIG_ADC=y
+<% } %>
+<% if (anyInstanceAssigned("CAN")) { %>
+# Using CAN
+CONFIG_CAN=y
+<% } %>
+<% if (anyInstanceAssignedSetTo("TMR", "MODE", "COMPARE") || anyInstanceAssignedSetTo("LPTMR", "MODE", "COMPARE") || anyInstanceAssignedSetTo("TMR", "MODE_A", "COMPARE") || anyInstanceAssignedSetTo("LPTMR", "MODE_A", "COMPARE") || anyInstanceAssigned("RTC") || anyInstanceAssigned("WUT")) { %>
+# Using counter
+CONFIG_COUNTER=y
+<% } %>
+<% if (anyInstanceAssigned("DMA")) { %>
+# Using DMA
+CONFIG_DMA=y
+<% } %>
+<% if (anyInstanceAssigned("TRNG")) { %>
+# Using TRNG
+CONFIG_ENTROPY_GENERATOR=y
+<% } %>
+<% if (it.cfsconfig.Pins.find(p => getAssignedPinSignal(p)?.Config?.MODE)) { %>
+# Using GPIO
+CONFIG_GPIO=y
+<% } %>
+<% if (anyInstanceAssigned("I2C")) { %>
+# Using I2C
+CONFIG_I2C=y
+<% } %>
+<% if (anyInstanceAssigned("I3C")) { %>
+# Using I3C
+CONFIG_I3C=y
+<% } %>
+<% if (anyInstanceAssignedSetTo("TMR", "MODE", "PWM") || anyInstanceAssignedSetTo("LPTMR", "MODE", "PWM") || anyInstanceAssignedSetTo("TMR", "MODE_A", "PWM") || anyInstanceAssignedSetTo("LPTMR", "MODE_A", "PWM")) { %>
+# Using PWM Timer
+CONFIG_PWM=y
+<% } %>
+<% if (anyInstanceAssigned("SDHC")) { %>
+# Using SHDC
+CONFIG_SDHC=y
+<% } %>
+<% if (anyInstanceAssigned("UART") || anyInstanceAssigned("LPUART")) { %>
+# Using UART
+CONFIG_SERIAL=y
+<% } %>
+<% if (anyInstanceAssigned("SPI")) { %>
+# Using SPI
+CONFIG_SPI=y
+<% } %>
+<% if (anyInstanceAssigned("OWM")) { %>
+# Using OWM (1-Wire)
+CONFIG_W1=y
+<% } %>
+<% if (anyInstanceAssigned("WDT") || anyInstanceAssigned("LPWDT")) { %>
+# Using WDT
+CONFIG_WATCHDOG=y
+<% } %>
+
+<% if (getProjectPartitions().find(p => p.Config?.CHOSEN === "code-partition")) { %>
+# Use defined partition of flash memory for code.
+CONFIG_USE_DT_CODE_PARTITION=y
+
+<% } %>
+<% var numStreams = it.cfsconfig.DFG?.Streams?.length ?? 0 %>
+<% if (numStreams > 0) { %>
+CONFIG_DFG=y
+CONFIG_DFG_STREAM_COUNT=<%= Math.max(16, numStreams) %>
+
+<% } %>
+<% if (usesAIBackend("tflm")) { %>
+# Settings required for TFLM
+CONFIG_CPP=y
+CONFIG_STD_CPP17=y
+CONFIG_TENSORFLOW_LITE_MICRO=y
+CONFIG_MAIN_STACK_SIZE=2048
+CONFIG_REQUIRES_FLOAT_PRINTF=y
+
+<% } %>
+<% if (isZephelinEnabled()) { %>
+# Settings for Zephyr profiler
+CONFIG_ZPL=y
+CONFIG_ZPL_TRACE=y
+CONFIG_ZPL_TRACE_BACKEND_UART=y
+
+<% if (isZephelinAIEnabled()) { %>
+CONFIG_ZPL_INFERENCE_PROFILING=y
+CONFIG_ZPL_TFLM_PROFILER=y
+<% } %>
+<% } %>

@@ -19,13 +19,13 @@ import {
   CfsFeatureScope,
   CfsPluginInfo,
   CfsProject,
-  CfsPluginProperty,
+  CfsSocDataModel,
 } from "cfs-plugins-api";
-import RegistersProjectPlugin from "../../../../plugins/registers-project-plugin/index.js";
+import { GenericPlugin } from "../../../../api/src/generic/cfs-generic-plugin.js";
 import { expect } from "chai";
 
-describe("getProperties method for baremetal project plugin", () => {
-  let projectPlugin: RegistersProjectPlugin;
+describe("getProperties method for registers-only project plugin", () => {
+  let projectPlugin: GenericPlugin;
   let projectPluginInfo: CfsPluginInfo;
 
   const cfsProject: CfsProject = {
@@ -35,7 +35,7 @@ describe("getProperties method for baremetal project plugin", () => {
     board: "test-board",
     soc: "test-soc",
     name: "test-project",
-    path: "tests/unit-tests/plugins/zephyr41-project-plugin/data/test-workspace",
+    path: "tests/unit-tests/plugins/registers-project-plugin/data/test-workspace",
     pluginId: "test-plugin-id",
     pluginVersion: "1.0.0",
     platformConfig: {
@@ -58,16 +58,15 @@ describe("getProperties method for baremetal project plugin", () => {
   });
 
   beforeEach(() => {
-    projectPlugin = new RegistersProjectPlugin(projectPluginInfo, cfsProject);
+    projectPlugin = new GenericPlugin(projectPluginInfo);
   });
 
-  /* Temporarily disabling this test until the feature is fully implemented */
-  /*
   describe("getProperties", () => {
-    it("should replace dynamic values with values from this.context when getting properties", () => {
+    it("should replace dynamic values with values from context when getting properties", () => {
       const properties = projectPlugin.getProperties(
         CfsFeatureScope.Project,
-      ) as CfsPluginProperty[];
+        cfsProject,
+      );
 
       if (
         Array.isArray(projectPluginInfo.properties?.[CfsFeatureScope.Project])
@@ -80,5 +79,54 @@ describe("getProperties method for baremetal project plugin", () => {
       }
     });
   });
-  */
+
+  describe("overrideControls", () => {
+    const mockSoc = {
+      Name: "MAX32690",
+      Controls: {
+        PinConfig: [
+          {
+            Id: "MODE",
+            Description: "Input or Output Mode",
+            Type: "enum",
+            EnumValues: [
+              { Id: "IN", Description: "Input Mode", Value: 0 },
+              { Id: "OUT", Description: "Output Mode", Value: 1 },
+            ],
+          },
+          {
+            Id: "DS",
+            Description: "Drive Strength",
+            Type: "enum",
+            EnumValues: [
+              { Id: "0", Description: "Drive Strength 0", Value: 0 },
+              { Id: "1", Description: "Drive Strength 1", Value: 1 },
+            ],
+          },
+        ],
+      },
+      ClockNodes: [],
+      Cores: [],
+
+      Packages: [],
+      Peripherals: [],
+      Registers: [],
+      Schema: "1.0.0",
+      Version: "1.0.0",
+    };
+
+    it("should handle PinConfig scope", () => {
+      const result = projectPlugin.overrideControls(
+        CfsFeatureScope.PinConfig,
+        mockSoc as unknown as CfsSocDataModel,
+      );
+
+      expect(result).to.be.an("object");
+      expect(result).to.have.property("PinConfig");
+      expect(result.PinConfig).to.be.an("array");
+      expect(result.PinConfig.length).to.equal(2);
+      expect(result.PinConfig[0]).to.have.property("Id", "MODE");
+      expect(result.PinConfig[1]).to.have.property("Id", "DS");
+    });
+  });
 });

@@ -1,0 +1,22 @@
+{
+  "Partitions": [
+    {
+      "Name": "RV_SRAM",
+      "StartAddress": "0x20040000",
+      "Size": 65536,
+      "IsOwner": true,
+      "Access": "R/W",
+      "Config": {
+        "NAME_OVERRIDE": "SRAM5"
+      }
+    }
+  ],
+  "Peripherals": [
+    {
+      "Name": "RV mtime",
+      "Signals": [],
+      "Config": {
+      }
+    }
+  ]
+}

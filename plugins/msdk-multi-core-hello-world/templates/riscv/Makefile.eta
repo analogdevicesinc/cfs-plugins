@@ -1,4 +1,4 @@
-<%~ include("../../../common/utilities/normalize-soc.eta", it) %>
+<%~ include("@normalizeSoc", it) %>
 ###############################################################################
  #
  # Copyright (C) 2022-2023 Maxim Integrated Products, Inc. (now owned by
@@ -48,11 +48,11 @@
 
 ifeq "$(TARGET)" ""
 # Default target microcontroller
-TARGET := <%= it.normalizeSoc() %>
+TARGET := <%= it.msdkInflectionPoint(it.soc) %>
 
-TARGET_UC := <%= it.normalizeSoc() %>
+TARGET_UC := <%= it.msdkInflectionPoint(it.soc) %>
 
-TARGET_LC := <%= it.normalizeSoc() %>
+TARGET_LC := <%= it.msdkInflectionPoint(it.soc).toLowerCase() %>
 
 else
 # "TARGET" has been overridden in the environment or on the command-line.

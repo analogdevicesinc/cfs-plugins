@@ -20,9 +20,9 @@ export interface CfsProject extends Record<string, unknown> {
   name: string;
 
   /**
-   * The core architecture used in the project
+   * The core Id in the project
    */
-  coreArchitecture?: string;
+  coreId?: string;
 
   /**
    * This is the path to the project folder relative to the workspace root
@@ -59,4 +59,9 @@ export interface CfsProject extends Record<string, unknown> {
    * Plugin specific configuration set during workspace creation flow.
    */
   platformConfig: Record<string, unknown>;
+
+  /**
+   * The operating system of the host machine
+   */
+  hostPlatform?: string;
 }

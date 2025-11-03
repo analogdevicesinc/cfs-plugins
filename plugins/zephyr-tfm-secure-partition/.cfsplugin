@@ -1,0 +1,176 @@
+{
+  "pluginName": "TF-M Secure Partition",
+  "pluginDescription": "Zephyr TF-M secure partition template for supported MCUs.",
+  "pluginId": "com.analog.zephyr.tfmsecurepartition",
+  "pluginVersion": "1.0.1",
+  "author": "Analog Devices, Inc.",
+  "firmwarePlatform": "zephyr",
+  "supportedSocs": [
+    {
+      "name": "MAX32657",
+      "dataModel": "max32657-wlp.json",
+      "board": "EvKit_V1",
+      "package": "wlp"
+    },
+    {
+      "name": "MAX32658",
+      "dataModel": "max32658-wlp.json",
+      "board": "EvKit_V1",
+      "package": "wlp"
+    }
+  ],
+  "features": {
+    "workspace": {
+      "files": [
+        {
+          "src": "files/.vscode/launch.json",
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm55'}/.vscode/launch.json"
+        },
+        {
+          "src": "files/.vscode/c_cpp_properties.json",
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm55'}/.vscode/c_cpp_properties.json"
+        },
+        {
+          "src": "files/src/main.c",
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm55'}/src/main.c"
+        },
+        {
+          "src": "files/src/dummy_partition.c",
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm55'}/src/dummy_partition.c"
+        },
+        {
+          "src": "files/dummy_partition/CMakeLists.txt",
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm55'}/dummy_partition/CMakeLists.txt"
+        },
+        {
+          "src": "files/dummy_partition/dummy_partition.c",
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm55'}/dummy_partition/dummy_partition.c"
+        },
+        {
+          "src": "files/dummy_partition/tfm_dummy_partition.yaml",
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm55'}/dummy_partition/tfm_dummy_partition.yaml"
+        },
+        {
+          "src": "files/dummy_partition/tfm_manifest_list.yaml.in",
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm55'}/dummy_partition/tfm_manifest_list.yaml.in"
+        },
+        {
+          "src": "files/src/dummy_partition.h",
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm55'}/src/dummy_partition.h"
+        },
+        {
+          "src": "files/CMakeLists.txt",
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm55'}/CMakeLists.txt"
+        },
+        {
+          "src": "files/prj.conf",
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm55'}/prj.conf"
+        },
+        {
+          "src": "files/README.rst",
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm55'}/README.rst"
+        },
+        {
+          "src": "files/sample.yaml",
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm55'}/sample.yaml"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/fault-analyzer.json",
+          "dst": ".cfs/gdb_toolbox/configs/fault-analyzer.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/memory-dump.json",
+          "dst": ".cfs/gdb_toolbox/configs/memory-dump.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/register-dump.json",
+          "dst": ".cfs/gdb_toolbox/configs/register-dump.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/thread-analyzer.json",
+          "dst": ".cfs/gdb_toolbox/configs/thread-analyzer.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/crash-cause-zephyr.json",
+          "dst": ".cfs/gdb_toolbox/configs/crash-cause-zephyr.json"
+        },
+        {
+          "src": "files/gdb_toolbox/gdb/fault-analyzer-arm.gdb",
+          "dst": ".cfs/gdb_toolbox/gdb/fault-analyzer-arm.gdb"
+        },
+        {
+          "src": "files/gdb_toolbox/gdb/thread-analyzer.gdb",
+          "dst": ".cfs/gdb_toolbox/gdb/thread-analyzer.gdb"
+        },
+        {
+          "src": "files/gdb_toolbox/gdb/crash-cause-zephyr.gdb",
+          "dst": ".cfs/gdb_toolbox/gdb/crash-cause-zephyr.gdb"
+        },
+        {
+          "src": "files/.cfsdependencies",
+          "dst": ".cfs"
+        }
+      ],
+      "templates": [
+        {
+          "src": "templates/.cfsconfig.eta",
+          "dst": ".cfs/${context.soc.toLowerCase()}-${context.package.toLowerCase()}.cfsconfig"
+        },
+        {
+          "src": "templates/.vscode/settings.json.eta",
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm55'}/.vscode/settings.json"
+        },
+        {
+          "src": "templates/.vscode/tasks.json.eta",
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm55'}/.vscode/tasks.json"
+        },
+        {
+          "src": "templates/ozone-project.jdebug.eta",
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm55'}/${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm55'}.jdebug"
+        },
+        {
+          "src": "templates/workspace-name.code-workspace.eta",
+          "dst": "${context.workspaceName}.code-workspace"
+        }
+      ]
+    }
+  },
+  "properties": {
+    "workspace": [
+      {
+        "id": "MCUbootImgtoolPath",
+        "name": "MCUboot Imgtool Path",
+        "default": "${config:cfs.sdk.path}/SDK/zephyr/bootloader/mcuboot/scripts",
+        "placeholder": "",
+        "type": "string",
+        "required": true
+      },
+      {
+        "id": "MCUbootKeyType",
+        "name": "MCUboot Key Type",
+        "default": "rsa-3072",
+        "placeholder": "",
+        "type": "array",
+        "enum": [
+          {
+            "value": "rsa-2048",
+            "label": "RSA-2048"
+          },
+          {
+            "value": "rsa-3072",
+            "label": "RSA-3072"
+          },
+          {
+            "value": "ecdsa-p256",
+            "label": "ECDSA-P256"
+          },
+          {
+            "value": "ed25519",
+            "label": "ED25519"
+          }
+        ],
+        "required": true
+      }
+    ]
+  }
+}

@@ -1,9 +1,9 @@
-<%~ include("../../common/utilities/normalize-soc.eta", it) %>
+<%~ include("@normalizeSoc", it) %>
 {
   "settings": {
     "cfs.configureWorkspace": "Yes",
     "cfs.project.board": "<%= it.board %>",
-    "cfs.project.target": "<%= it.normalizeSoc() %>",
+    "cfs.project.target": "<%= it.projectInflectionPoint(it.soc) %>",
     "terminal.integrated.defaultProfile.windows": "CFS Terminal",
     "terminal.integrated.defaultProfile.osx": "CFS Terminal",
     "terminal.integrated.defaultProfile.linux": "CFS Terminal",

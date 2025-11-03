@@ -1,0 +1,48 @@
+{
+  "configurations": [
+    {
+      "name": "CFS: Debug with GDB and OpenOCD",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${config:cfs.programFile}",
+      "args": [],
+      "stopAtEntry": true,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "miDebuggerPath": "${cfs:tool.path.xtensa-sharcfx}/Xtensa/XtensaTools/bin/xt-gdb.exe",
+      "debugServerPath": "${config:cfs.openocd.path}/bin/openocd.exe",
+      "logging": {
+        "exceptions": true,
+        "traceResponse": true,
+        "engineLogging": true,
+        "trace": true
+      },
+      "miDebuggerServerAddress": "localhost:3333",
+      "debugServerArgs": " -s ${config:cfs.openocd.path}/share/openocd/scripts -f ${config:cfs.openocd.interface} -f ${config:cfs.openocd.target} -c \"adapter speed 23000\" ",
+      "serverStarted": "Info : Listening on port 3334 for gdb connections",
+      "filterStderr": true,
+      "customLaunchSetupCommands": [
+        {
+          "text": "-list-features"
+        }
+      ],
+      "targetArchitecture": "arm",
+      "miDebuggerArgs": "-l 50",
+      "setupCommands": [
+        { "text": "set confirm off" },
+        { "text": "set logging overwrite on" },
+        { "text": "set logging file debug-sfx.log" },
+        { "text": "set logging on" },
+        { "text": "cd ${workspaceFolder}" },
+        { "text": "exec-file build/${workspaceFolderBasename}.dxe" },
+        { "text": "symbol-file build/${workspaceFolderBasename}.dxe" },
+        { "text": "target extended-remote :3333" },
+        { "text": "load" },
+        { "text": "tbreak main" }
+      ],
+      "preLaunchTask": "CFS: build"
+    }
+  ]
+}

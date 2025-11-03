@@ -16,15 +16,29 @@
       "PluginVersion": "<%= project.pluginVersion %>",
       "FirmwarePlatform": "<%= project.firmwarePlatform %>",
       "ExternallyManaged": <%= !project.isEnabled %>,
+      <% if ('Secure' in project) { %>
+      "Secure": <%= project.Secure %>,
+      <% } %>
       "PlatformConfig": {
 
 <% if (project.platformConfig && Object.keys(project.platformConfig).length > 0) { %>
         <%= Object.keys(project.platformConfig)
             .map(key => `"${key}": ${JSON.stringify(project.platformConfig[key])}`)
             .join(',\n        ') %> 
-<% } %>
-      },
-      "Partitions": [],
+<% } %>      },
+      "Partitions": [<% if (['MAX32690', 'MAX32657', 'MAX32658'].includes(it.soc.toUpperCase())) { %>
+        {
+          "Name": "coredump_partition",
+          "StartAddress": "0x102F0000",
+          "Size": 65536,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "CHOSEN": "coredump-partition",
+            "LABEL": "coredump"
+          }
+        }<% } %>
+      ],
       "Peripherals": []
     }<% if (index < it.projects.length - 1) { %>,
 <% } %>

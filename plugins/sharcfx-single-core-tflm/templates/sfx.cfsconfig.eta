@@ -1,0 +1,56 @@
+{
+  "Copyright": "Copyright (c) <%= new Date().getFullYear() %> Analog Devices, Inc.  All rights reserved. This software is proprietary to Analog Devices, Inc. and its licensors.",
+  "DataModelVersion": "1.1.0",
+  "DataModelSchemaVersion": "1.1.0",
+  "Timestamp": "<%= new Date().toISOString() %>",
+  "Soc": "<%= it.soc %>",
+  "Package": "<%= it.package %>",
+  "Pins": [],
+  "ClockNodes": [],
+  "BoardName": "ev_som",
+  "Projects": [
+    {
+      "CoreId": "FX",
+      "ProjectId": "FX",
+      "PluginId": "com.analog.project.sharcfx.plugin",
+      "PluginVersion": "1.0.0",
+      "ExternallyManaged": false,
+      "Partitions": [],
+      "Peripherals": [],
+      "PlatformConfig": {
+        "ProjectName": "sfx"
+      },
+      "AIModels" : [
+        {
+          "Name": "hello_world_model_f32",
+          "Files" : {
+            "Model" : "sfx/hello_world_f32.tflite"
+          },
+          "Target": {
+            "Core": "FX"
+          },
+          "Backend" : {
+            "Name" : "tflm",
+            "Extensions" : {
+              "Symbol" : "hello_world_model_f32",
+              "Section" : ".data"
+            }
+          },
+          "Enabled": true
+        }
+      ]
+    },
+    {
+      "CoreId": "CM33",
+      "ProjectId": "CM33",
+      "PluginId": "com.analog.project.sharcfx.plugin",
+      "PluginVersion": "1.0.0",
+      "ExternallyManaged": true,
+      "Partitions": [],
+      "Peripherals": [],
+      "PlatformConfig": {
+        "ProjectName": "m33"
+      }
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "name": "Analyze Threads",
+  "description": "Analyzes threads in the target application.",
+  "version": "1.0.0",
+  "commands": [
+    {
+      "command": "source {defaultScriptsDirectory}/thread-analyzer.gdb",
+      "actions": [
+        {
+          "type": "appendFile",
+          "filePath": "gdb_toolbox/reports/thread_analyzer.txt",
+          "content": "${gdbOutput}"
+        }
+      ]
+    }
+  ]
+}

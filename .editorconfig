@@ -16,3 +16,11 @@ trim_trailing_whitespace = true
 [*.yml]
 indent_style = space
 indent_size = 2
+
+[*.eta]
+trim_trailing_whitespace = false
+insert_final_newline = false
+
+[**/eta/*]
+trim_trailing_whitespace = false
+insert_final_newline = false

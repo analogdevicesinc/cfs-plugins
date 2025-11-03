@@ -1,0 +1,30 @@
+{
+  "Partitions": [
+    {
+      "Name": "FLASH",
+      "StartAddress": "0x10000000",
+      "Size": 393216,
+      "IsOwner": true,
+      "Access": "R/W",
+      "Config": {}
+    },
+    {
+      "Name": "SRAM",
+      "StartAddress": "0x20000000",
+      "Size": 163840,
+      "DisplayUnit": "KB",
+      "IsOwner": true,
+      "Access": "R/W",
+      "Config": {}
+    }
+  ],
+  "Peripherals": [
+    {
+      "Name": "CM4 SysTick",
+      "Signals": [],
+      "Config": {
+        "ENABLE": "FALSE"
+      }
+    }
+  ]
+}

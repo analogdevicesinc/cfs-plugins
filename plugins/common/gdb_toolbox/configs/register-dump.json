@@ -1,0 +1,27 @@
+{
+  "name": "Dump Registers",
+  "description": "Dumps the current state of the registers into a log file.",
+  "version": "1.0.0",
+  "core": ["arm", "riscv", "xtensa"],
+  "commands": [
+    {
+      "command": "info registers",
+      "actions": [
+        {
+          "type": "writeFile",
+          "filePath": "gdb_toolbox/reports/register_dump.md",
+          "content": "${markdownReport}"
+        },
+        {
+          "type": "log",
+          "message": "Register dump written to gdb_toolbox/reports/register_dump.md"
+        },
+        {
+          "type": "showMessage",
+          "level": "info",
+          "message": "Register dump completed successfully. File saved to gdb_toolbox/reports/register_dump.md."
+        }
+      ]
+    }
+  ]
+}

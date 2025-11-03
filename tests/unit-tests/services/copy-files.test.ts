@@ -15,27 +15,26 @@
 import * as fs from "fs";
 
 import { expect } from "chai";
-import { CfsFsCopyFilesService } from "../../../plugins/common/services/cfs-fs-copy-files-service.js";
-import path from "path";
+import { copyFiles } from "../../../api/src/generic/utilities/fs-utils.js";
 import { isDebug } from "../utilities/test-utilities.js";
 
-describe("Unit test for CfsFsCopyFilesService", () => {
+describe("Unit test for copyFiles util", () => {
   let data: { files: { src: string; dst: string }[] } = { files: [] };
 
   beforeEach(() => {
     data = {
       files: [
         {
-          src: "files/src/**/*.c",
-          dst: "src/",
+          src: "tests/unit-tests/services/files/src/**/*.c",
+          dst: "tests/unit-tests/services/data/copy-files/src",
         },
         {
-          src: "files/**/*.md",
-          dst: "/",
+          src: "tests/unit-tests/services/files/**/*.md",
+          dst: "tests/unit-tests/services/data/copy-files",
         },
         {
-          src: "files/prj.conf",
-          dst: "/",
+          src: "tests/unit-tests/services/files/prj.conf",
+          dst: "tests/unit-tests/services/data/copy-files",
         },
       ],
     };
@@ -52,16 +51,7 @@ describe("Unit test for CfsFsCopyFilesService", () => {
   });
 
   it("Should copy files from src to dst per .cfsplugin", async () => {
-    const context = {
-      location: path.resolve("tests/unit-tests/services/data/copy-files"),
-    };
-
-    const copyService = new CfsFsCopyFilesService(
-      path.resolve("tests/unit-tests/services"),
-      context
-    );
-
-    await copyService.copyFiles(data.files, context.location);
+    await copyFiles(data.files, {});
 
     const directoriesToCheck = [
       "tests/unit-tests/services/data/copy-files/src",

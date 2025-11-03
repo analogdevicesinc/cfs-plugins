@@ -1,0 +1,13 @@
+{
+  "ClockFrequencies": {
+    "HSCLK": 120000000,
+    "INRO": 8000,
+    "APBCLK": 60000000,
+    "WDT0": 60000000,
+    "WDT1": 60000000,
+    "Cortex-M4": 120000000,
+    "SYS_OSC": 120000000,
+    "SYS_CLK": 120000000,
+    "POWER SEQ": 8000
+  }
+}

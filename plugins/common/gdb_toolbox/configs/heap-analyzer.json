@@ -1,0 +1,17 @@
+{
+  "name": "Analyze Global Heap",
+  "description": "Analyzes the global heap in the target application.",
+  "version": "1.0.0",
+  "commands": [
+    {
+      "command": "source {defaultScriptsDirectory}/heap-analyzer.gdb",
+      "actions": [
+        {
+          "type": "appendFile",
+          "filePath": "gdb_toolbox/reports/heap_analyzer.txt",
+          "content": "${gdbOutput}"
+        }
+      ]
+    }
+  ]
+}

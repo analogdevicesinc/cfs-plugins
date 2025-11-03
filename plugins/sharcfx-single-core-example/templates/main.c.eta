@@ -1,0 +1,43 @@
+/**
+ *
+ * Copyright (c) <%= new Date().getFullYear() %> Analog Devices, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+#include "adi_initialize.h"
+#include <sys/platform.h>
+#include <sys/adi_core.h>
+#include <stdio.h>
+
+int main(void)
+{
+  /**
+   * Initialize managed drivers and/or services that have been added to 
+   * the project.
+   */
+  adi_initComponents();
+
+<% if (["adsp-sc834", "adsp-sc834w", "adsp-sc835", "adsp-sc835w"].includes(it.soc.toLowerCase())) { %>
+  /**
+   * The default startup code does not include any functionality to allow
+   * core 1 to enable core 2. A convenient way to enable
+   * core 2 is to use the adi_core_enable function. 
+   */
+  adi_core_enable(ADI_CORE_ARM);
+
+<% } %>
+  /* Begin adding your custom code here */
+
+  printf("Hello World!\n");
+
+  return 0;
+}

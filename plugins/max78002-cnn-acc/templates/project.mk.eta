@@ -1,0 +1,55 @@
+###############################################################################
+#
+# Copyright (C) <%= new Date().getFullYear() %> Analog Devices, Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+##############################################################################
+
+# This file can be used to set build configuration
+# variables.  These variables are defined in a file called
+# "Makefile" that is located next to this one.
+
+# For instructions on how to use this system, see
+# https://analogdevicesinc.github.io/msdk/USERGUIDE/#build-system
+
+# **********************************************************
+
+# Add your config here!
+
+# Add search paths for the ADI CNN component.
+# The VPATH variable tells 'make' where to find source files. The AUTOSEARCH
+# feature will then automatically add all .c files in this path to the build.
+VPATH += src/adi_cnn
+
+# The IPATH variable tells the compiler where to find header files. Adding 'src'
+# allows #include "adi_cnn/cnn-main.h" to be resolved correctly from main.c.
+IPATH += src
+
+# Add library dependencies
+include config.mk
+
+# Touch project.mk if config.mk changes, so that we rebuild all sources and libraries
+CONFIGMK ?= $(abspath ./config.mk)
+$(PROJECTMK): $(CONFIGMK)
+	@touch $(PROJECTMK)
+
+# Add compiler flags to enable source navigation in ELF File Explorer
+PROJ_CFLAGS += -fdump-rtl-expand
+PROJ_CFLAGS += -fdump-rtl-dfinish
+PROJ_CFLAGS += -fdump-ipa-cgraph
+PROJ_CFLAGS += -fstack-usage
+PROJ_CFLAGS += -gdwarf-4
+
+# Use the generated linker file from the project
+LINKERFILE = memory.ld

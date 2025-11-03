@@ -1,0 +1,9 @@
+{
+  "ClockFrequencies": {
+    "Cortex-M4": 100000000,
+    "IPO": 100000000,
+    "PRESCALED IPO": 100000000,
+    "SYS_OSC": 100000000,
+    "SYS_CLK": 100000000
+  }
+}

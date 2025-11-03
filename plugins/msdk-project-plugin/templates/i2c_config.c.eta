@@ -13,67 +13,153 @@
  *
  */
 
-// Include common plugin code
-eval(this.render("common/utilities/utilities.js"));
-
 // Return the I2C mode value for this instance.
 function getI2CType() {
-  return getAssignedPeripheral(it.instance).Config?.MODE === "TARGET" ? "0" : "1";
+  return getPeriConfigValue(it.instance, "MODE", "TARGET") === "TARGET" ? "0" : "1";
 }
 
 // Return the I2C clock stretching value for this instance.
 function getI2CClockStretching() {
-  return getAssignedPeripheral(it.instance).Config?.CLKSTR !== "TRUE" ? "0" : "1";
+  return getPeriConfigValue(it.instance, "CLKSTR", "FALSE") === "TRUE" ? "1" : "0";
 }
 
 // Return the I2C target address for this instance.
 function getI2CTargAddr() {
-  return getAssignedPeripheral(it.instance).Config?.TARGET0_ADDR ?? "0";
+  const target0Addr = getPeriConfigValue(it.instance, "TARGET0_ADDR", null);
+  if (target0Addr !== null) {
+    return target0Addr;
+  }
+  return getPeriConfigValue(it.instance, "ADDR", "0");
 }
 
 // Return the I2C timeout period for this instance.
 function getI2CTimeout() {
-  return getAssignedPeripheral(it.instance).Config?.SCL_TIMEOUT ?? "0";
+  return getPeriConfigValue(it.instance, "SCL_TIMEOUT", "0");
 }
 
 // Return the I2C frequency value string.
 function getI2CFreq() {
-  const freq = getAssignedPeripheral(it.instance).Config?.FREQ;
-  return freq ? freq + "U" : "100000U";
+  return getPeriConfigValue(it.instance, "FREQ", "100000");
 }
 
 // Return the DMA TX setting.
 function getI2CDmaTx() {
-  return getAssignedPeripheral(it.instance).Config?.TRANSMIT_DMA_ENABLE !== "TRUE" ? false : true;
+  return getPeriConfigValue(it.instance, "TRANSMIT_DMA_ENABLE", "FALSE") === "TRUE";
 }
 
 // Return the DMA RX setting.
 function getI2CDmaRx() {
-  return getAssignedPeripheral(it.instance).Config?.RECEIVE_DMA_ENABLE !== "TRUE" ? false : true;
+  return getPeriConfigValue(it.instance, "RECEIVE_DMA_ENABLE", "FALSE") === "TRUE";
 }
 
 // Return the DMA structure.
 function getI2CDma() {
   return "MXC_DMA";
 }
+
+// Return the interrupt mask for any enabled interrupts.
+function getI2CIntMask0() {
+  let ie_table;
+  if (it.datamodel.Name === "MAX32650") {
+    ie_table = [
+      { ctrl: "DONE_IE",          value: "MXC_F_I2C_INT_EN0_DONEIE" },
+      { ctrl: "IRXM_IE",          value: "MXC_F_I2C_INT_EN0_IRXMIE" },
+      { ctrl: "GC_ADDR_MATCH_IE", value: "MXC_F_I2C_INT_EN0_GCIE" },
+      { ctrl: "ADDR_MATCH_IE",    value: "MXC_F_I2C_INT_EN0_AMIE" },
+      { ctrl: "RX_THD_IE",        value: "MXC_F_I2C_INT_EN0_RXTHIE" },
+      { ctrl: "TX_THD_IE",        value: "MXC_F_I2C_INT_EN0_TXTHIE" },
+      { ctrl: "STOP_IE",          value: "MXC_F_I2C_INT_EN0_STOPIE" },
+      { ctrl: "ADDR_ACK_IE",      value: "MXC_F_I2C_INT_EN0_ADRACKIE" },
+      { ctrl: "ARB_ERR_IE",       value: "MXC_F_I2C_INT_EN0_ARBERIE" },
+      { ctrl: "TO_ERR_IE",        value: "MXC_F_I2C_INT_EN0_TOERIE" },
+      { ctrl: "ADDR_NACK_ERR_IE", value: "MXC_F_I2C_INT_EN0_ADRERIE" },
+      { ctrl: "DATA_ERR_IE",      value: "MXC_F_I2C_INT_EN0_DATAERIE" },
+      { ctrl: "DNR_ERR_IE",       value: "MXC_F_I2C_INT_EN0_DNRERIE" },
+      { ctrl: "START_ERR_IE",     value: "MXC_F_I2C_INT_EN0_STRTERIE" },
+      { ctrl: "STOP_ERR_IE",      value: "MXC_F_I2C_INT_EN0_STOPERIE" },
+      { ctrl: "TX_LOCKOUT_IE",    value: "MXC_F_I2C_INT_EN0_TXLOIE" }
+    ];
+  } else {
+    ie_table = [
+      { ctrl: "DONE_IE",          value: "MXC_F_I2C_INTEN0_DONE" },
+      { ctrl: "IRXM_IE",          value: "MXC_F_I2C_INTEN0_IRXM" },
+      { ctrl: "GC_ADDR_MATCH_IE", value: "MXC_F_I2C_INTEN0_GC_ADDR_MATCH" },
+      { ctrl: "ADDR_MATCH_IE",    value: "MXC_F_I2C_INTEN0_ADDR_MATCH" },
+      { ctrl: "RX_THD_IE",        value: "MXC_F_I2C_INTEN0_RX_THD" },
+      { ctrl: "TX_THD_IE",        value: "MXC_F_I2C_INTEN0_TX_THD" },
+      { ctrl: "STOP_IE",          value: "MXC_F_I2C_INTEN0_STOP" },
+      { ctrl: "ADDR_ACK_IE",      value: "MXC_F_I2C_INTEN0_ADDR_ACK" },
+      { ctrl: "ARB_ERR_IE",       value: "MXC_F_I2C_INTEN0_ARB_ERR" },
+      { ctrl: "TO_ERR_IE",        value: "MXC_F_I2C_INTEN0_TO_ERR" },
+      { ctrl: "ADDR_NACK_ERR_IE", value: "MXC_F_I2C_INTEN0_ADDR_NACK_ERR" },
+      { ctrl: "DATA_ERR_IE",      value: "MXC_F_I2C_INTEN0_DATA_ERR" },
+      { ctrl: "DNR_ERR_IE",       value: "MXC_F_I2C_INTEN0_DNR_ERR" },
+      { ctrl: "START_ERR_IE",     value: "MXC_F_I2C_INTEN0_START_ERR" },
+      { ctrl: "STOP_ERR_IE",      value: "MXC_F_I2C_INTEN0_STOP_ERR" },
+      { ctrl: "TX_LOCKOUT_IE",    value: "MXC_F_I2C_INTEN0_TX_LOCKOUT" },
+      { ctrl: "MAMI0_IE",         value: "MXC_F_I2C_INTEN0_MAMI" },
+      { ctrl: "MAMI1_IE",         value: "(MXC_F_I2C_INTEN0_MAMI+1)" },
+      { ctrl: "MAMI2_IE",         value: "(MXC_F_I2C_INTEN0_MAMI+2)" },
+      { ctrl: "MAMI3_IE",         value: "(MXC_F_I2C_INTEN0_MAMI+3)" },
+      { ctrl: "RD_ADDR_MATCH_IE", value: "MXC_F_I2C_INTEN0_RD_ADDR_MATCH" },
+      { ctrl: "WR_ADDR_MATCH_IE", value: "MXC_F_I2C_INTEN0_WR_ADDR_MATCH" }
+    ];
+  }
+  let arg = "0U";
+  for (ie of ie_table) {
+    if (getPeriConfigValue(it.instance, ie.ctrl, "FALSE") === "TRUE") {
+      if (arg !== "0U")
+        arg += " | " + ie.value;
+      else
+        arg = ie.value;
+    }
+  }
+  return arg;
+}
+
+// Return the interrupt mask for any enabled interrupts.
+function getI2CIntMask1() {
+  let ie_table;
+  if (it.datamodel.Name === "MAX32650") {
+    ie_table = [
+      { ctrl: "RX_OV_IE",         value: "MXC_F_I2C_INT_EN1_RXOFIE" },
+      { ctrl: "TX_UN_IE",         value: "MXC_F_I2C_INT_EN1_TXUFIE" }
+    ];
+  } else {
+    ie_table = [
+      { ctrl: "RX_OV_IE",         value: "MXC_F_I2C_INTEN1_RX_OV" },
+      { ctrl: "TX_UN_IE",         value: "MXC_F_I2C_INTEN1_TX_UN" },
+      { ctrl: "START_IE",         value: "MXC_F_I2C_INTEN1_START" }
+    ];
+  }
+  let arg = "0U";
+  for (ie of ie_table) {
+    if (getPeriConfigValue(it.instance, ie.ctrl, "FALSE") === "TRUE") {
+      if (arg !== "0U")
+        arg += " | " + ie.value;
+      else
+        arg = ie.value;
+    }
+  }
+  return arg;
+}
 %>
-<% if (clockNodeExists(it.clocknode)) { %>
-<%   if (!getAssignedProjectForPeripheral(it.instance) && isClockSetTo([], it.clocknode, it.enable, "TRUE")) { %>
+<% if (isUnassignedPeripheralClockSetTo(it.instance, it.enable, "TRUE")) { %>
   /* The <%= it.instance %> peripheral is enabled on the clock canvas but is
    * not assigned to any core. In order to generate configuration code, please
    * assign the peripheral to a core.
    */
 
-<%   } else if (getAssignedPeripheral(it.instance)) { %>
+<% } else if (getAssignedPeripheral(it.instance)) { %>
   { /* Configure <%= it.instance %>.
-<%     if (getPeripheralDescription(it.instance)) { %>
+<%   if (getPeripheralDescription(it.instance)) { %>
      * This peripheral is used for <%= getPeripheralDescription(it.instance) %>.
-<%     } %>
-<%     if (!isClockSetTo([it.instance], it.clocknode, it.enable, "TRUE")) { %>
+<%   } %>
+<%   if (it.enable && !isPeripheralClockSetTo(it.instance, it.enable, "TRUE")) { %>
      * Note: This peripheral was not enabled on the clock configuration canvas.
      * Nonetheless, as a result of the following configuration, the peripheral will be
      * clocked on.
-<%     } %>
+<%   } %>
      */
 
     /* Initialize the peripheral. */
@@ -85,7 +171,7 @@ function getI2CDma() {
     }
 
     /* Set the frequency. */
-    result = MXC_I2C_SetFrequency(MXC_<%= it.instance %>, <%= getI2CFreq() %>);
+    result = MXC_I2C_SetFrequency(MXC_<%= it.instance %>, <%= getI2CFreq() %>U);
     if (result < 0) {
       return result;
     }
@@ -99,28 +185,28 @@ function getI2CDma() {
     /* Set the timeout. */
     MXC_I2C_SetTimeout(MXC_<%= it.instance %>, <%= getI2CTimeout() %>U);
 
-<%     if (getAssignedPeripheral(it.instance).Config?.PRELOAD_MODE === "PRELOAD") { %>
+<%   if (getPeriConfigValue(it.instance, "PRELOAD_MODE", "NORMAL") === "PRELOAD") { %>
     /* Enable preload mode. */
     MXC_I2C_EnablePreload(MXC_<%= it.instance %>);
 
-<%     } %>
-<%     if (getAssignedPeripheral(it.instance).Config?.PRELOAD_MODE === "NORMAL") { %>
+<%   } %>
+<%   if (getPeriConfigValue(it.instance, "PRELOAD_MODE", "NORMAL") === "NORMAL") { %>
     /* Disable preload mode. */
     MXC_I2C_DisablePreload(MXC_<%= it.instance %>);
 
-<%     } %>
-<%     if (getAssignedPeripheral(it.instance).Config?.MODE === "TARGET") { %>
-<%       if (getAssignedPeripheral(it.instance).Config?.GC_ADDR_EN === "ACK") { %>
+<%   } %>
+<%   if (getPeriConfigValue(it.instance, "MODE", "TARGET") === "TARGET") { %>
+<%     if (getPeriConfigValue(it.instance, "GC_ADDR_EN", "IGNORE") === "ACK") { %>
     /* Enable general call acknowledgement. */
     MXC_I2C_EnableGeneralCall(MXC_<%= it.instance %>);
 
-<%       } else if (getAssignedPeripheral(it.instance).Config?.GC_ADDR_EN === "IGNORE") { %>
+<%     } else if (getPeriConfigValue(it.instance, "GC_ADDR_EN", "IGNORE") === "IGNORE") { %>
     /* Disable general call acknowledgement. */
     MXC_I2C_DisableGeneralCall(MXC_<%= it.instance %>);
 
-<%       } %>
 <%     } %>
-<%     if (getI2CDmaTx() || getI2CDmaRx()) { %>
+<%   } %>
+<%   if (getI2CDmaTx() || getI2CDmaRx()) { %>
     /* Set up DMA. */
     result = MXC_I2C_DMA_Init(MXC_<%= it.instance %>,
                               <%= getI2CDma() %>,
@@ -130,8 +216,14 @@ function getI2CDma() {
       return result;
     }
 
-<%     } %>
+<%   } %>
+<%   if (getI2CIntMask0() !== "0U" || getI2CIntMask1() !== "0U") { %>
+
+    /* Enable interrupts. */
+    MXC_I2C_EnableInt(MXC_<%= it.msdk_instance ?? it.instance %>,
+                      <%= getI2CIntMask0() %>,
+                      <%= getI2CIntMask1() %>);
+<%   } %>
   }
 
-<%   } %>
 <% } %>

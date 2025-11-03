@@ -14,32 +14,33 @@
  */
 
 import path from "node:path";
+import sinon from "sinon";
 import fs, { promises as fsp } from "node:fs";
 import {
-  CfsFeatureScope,
-  CfsPluginInfo,
-  CfsProject,
-  CfsWorkspace,
-  CfsConfig,
-  CfsCodeGenerationContext,
+  type CfsPluginInfo,
+  type CfsProject,
+  type CfsWorkspace,
+  type CfsConfig,
+  type CfsCodeGenerationContext,
+  type CfsFeatureScope,
+  evalNestedTemplateLiterals,
+  GenericPlugin,
 } from "cfs-plugins-api";
-import WorkspacePlugin from "../../../../plugins/default-workspace-plugin/index.js";
-import RegistersProjectPlugin from "../../../../plugins/registers-project-plugin/index.js";
 import {
   directoryExists,
   fileExists,
   isDebug,
 } from "../../utilities/test-utilities.js";
 import { expect } from "chai";
+import { joinPath } from "../../utilities/path-utilities.js";
 import {
-  CfsEtaProjectGenerator,
-  CfsEtaWorkspaceGenerator,
-  CfsEtaCodeGenerator,
-} from "../../../../plugins/common/generators/index.js";
+  validateJsonFile,
+  findJsonFiles,
+} from "../../utilities/validate-json.js";
 
 describe("Unit tests for the Registers Project Plugin", () => {
-  let projectPlugin: RegistersProjectPlugin;
-  let workspacePlugin: WorkspacePlugin;
+  let projectPlugin: GenericPlugin;
+  let workspacePlugin: GenericPlugin;
   let workspacePluginInfo: CfsPluginInfo;
   let projectPluginInfo: CfsPluginInfo;
 
@@ -76,7 +77,7 @@ describe("Unit tests for the Registers Project Plugin", () => {
     pluginId: "test-plugin-id",
     pluginVersion: "1.0.0",
     pluginConfig: {},
-    coreArchitecture: "riscv",
+    coreId: "riscv",
     platformConfig: { ProjectName: "riscv" },
   } as CfsProject;
 
@@ -118,7 +119,6 @@ describe("Unit tests for the Registers Project Plugin", () => {
       workspacePluginInfo.pluginPath = absoluteWorkspacePath;
       const projectPluginPath = "plugins/registers-project-plugin/.cfsplugin";
       const absoluteProjectPath = path.resolve(projectPluginPath);
-      console.log(`absolute project path: ${absoluteProjectPath}`);
       const projectFileContent = await fs.promises.readFile(
         absoluteProjectPath,
         "utf-8",
@@ -131,8 +131,8 @@ describe("Unit tests for the Registers Project Plugin", () => {
   });
 
   beforeEach(() => {
-    workspacePlugin = new WorkspacePlugin(workspacePluginInfo, cfsWorkspace);
-    projectPlugin = new RegistersProjectPlugin(projectPluginInfo, cfsProject);
+    workspacePlugin = new GenericPlugin(workspacePluginInfo);
+    projectPlugin = new GenericPlugin(projectPluginInfo);
   });
 
   afterEach(async () => {
@@ -145,43 +145,60 @@ describe("Unit tests for the Registers Project Plugin", () => {
   });
 
   it("Should generate a RISC-V registers-only project", async () => {
-    const workspaceGenerator =
-      workspacePlugin.getGenerator<CfsEtaWorkspaceGenerator>(
-        CfsFeatureScope.Workspace,
-      );
-
-    const projectGenerator = projectPlugin.getGenerator<CfsEtaProjectGenerator>(
-      CfsFeatureScope.Project,
-    );
-
     // Generate workspace and project
     const projectPath =
       cfsProject.path +
       "/" +
       (cfsProject.platformConfig as { ProjectName: string }).ProjectName;
-    await workspaceGenerator.generateWorkspace(cfsWorkspace);
-    await projectGenerator.generateProject(projectPath);
+    await workspacePlugin.generateWorkspace(cfsWorkspace);
+    await projectPlugin.generateProject(projectPath, cfsProject);
 
     // Check if directory exists
     const projectExists = await directoryExists(projectPath);
     expect(projectExists, "Project directory should exist after generation").to
       .be.true;
 
+    const filteredTemplates =
+      projectPluginInfo.features.project.templates.filter(
+        (template) =>
+          evalNestedTemplateLiterals(template.condition ?? "", cfsProject) ===
+          "true",
+      );
+
     const expectedFiles = [
-      ...projectPluginInfo.features.project.templates.map(
-        (template) => template.dst,
-      ),
-      ...projectPluginInfo.features.project.files.map((file) => file.dst),
+      ...projectPluginInfo.features.project.templates
+        .filter((template) => {
+          return template.condition
+            ? evalNestedTemplateLiterals(template.condition, cfsProject) === "true"
+            : true;
+        })
+        .map((template) => evalNestedTemplateLiterals(template.dst, cfsProject)),
+
+      ...projectPluginInfo.features.project.files
+        .filter((file) => {
+          return file.condition
+            ? evalNestedTemplateLiterals(file.condition, cfsProject) === "true"
+            : true;
+        })
+        .map((file) => evalNestedTemplateLiterals(file.dst, cfsProject)),
     ];
 
     for (const file of expectedFiles) {
-      const filePath = path.join(projectPath, file);
+      const filePath = joinPath(projectPath, file);
       const fileExistsInProject = await fileExists(filePath);
 
       expect(
         fileExistsInProject,
         `File ${file} should exist in the project directory`,
       ).to.be.true;
+    }
+
+    // Confirm that valid JSON files were generated
+    const jsonFiles = await findJsonFiles(cfsWorkspace.location);
+    expect(jsonFiles.length).to.be.greaterThan(0, "No JSON files found");
+    for (const file of jsonFiles) {
+      const result = await validateJsonFile(file);
+      expect(result, `Error: '${file}' is not a valid JSON file.`).to.be.true;
     }
   });
 
@@ -197,11 +214,7 @@ describe("Unit tests for the Registers Project Plugin", () => {
     const socData = JSON.parse(socFileContent);
     const codeGenerationPath = cfsProject.path;
 
-    projectPlugin = new RegistersProjectPlugin(projectPluginInfo, cfsConfig);
-
-    const codeGenerator = projectPlugin.getGenerator<CfsEtaCodeGenerator>(
-      CfsFeatureScope.CodeGen,
-    );
+    projectPlugin = new GenericPlugin(projectPluginInfo);
 
     const codeGenData: CfsCodeGenerationContext = {
       cfsconfig: cfsConfig,
@@ -209,21 +222,26 @@ describe("Unit tests for the Registers Project Plugin", () => {
       projectId: "RV",
     };
 
-    const filesGenerated = await codeGenerator.generateCode(
+    const filesGenerated = await projectPlugin.generateCode(
       codeGenData,
       codeGenerationPath,
     );
 
-    const expectedFiles = projectPluginInfo.features.codegen.templates.map(
-      (template) => template.dst,
-    );
+    const expectedFiles = projectPluginInfo.features.codegen.templates
+      .filter((template) => {
+        return template.condition
+          ? evalNestedTemplateLiterals(template.condition, codeGenData) ===
+              "true"
+          : true;
+      })
+      .map((template) => evalNestedTemplateLiterals(template.dst, codeGenData));
 
     const projectName =
       cfsConfig.Projects.find(
         (project) => project.ProjectId === codeGenData.projectId,
       )?.PlatformConfig.ProjectName ?? "";
     for (const file of expectedFiles) {
-      const filePath = path.join(codeGenerationPath, projectName, file);
+      const filePath = joinPath(codeGenerationPath, projectName, file);
       const fileExistsInProject = await fileExists(filePath);
       expect(
         fileExistsInProject,
@@ -241,5 +259,16 @@ describe("Unit tests for the Registers Project Plugin", () => {
         ", ",
       )} are not found in generated files: ${filesGenerated.join(", ")}`,
     ).to.be.true;
+  });
+
+  it("Should return empty array if scope is not found on properties", () => {
+    const getPropertiesSpy = sinon.spy(projectPlugin, "getProperties");
+    const properties = projectPlugin.getProperties(
+      "fakeScope" as CfsFeatureScope,
+    );
+    expect(getPropertiesSpy.called).to.be.true;
+    expect(Array.isArray(properties)).to.be.true;
+    expect(properties.length).to.equal(0);
+    getPropertiesSpy.restore();
   });
 });

@@ -1,0 +1,41 @@
+{
+  "name": "Dump Memory",
+  "description": "Dumps the current state of the memory into a log file.",
+  "version": "1.0.0",
+  "core": ["arm", "riscv", "xtensa"],
+  "commands": [
+    {
+      "command": "x/${input:count}xb ${input:memoryRegion}",
+      "actions": [
+        {
+          "type": "appendFile",
+          "filePath": "gdb_toolbox/reports/memory_dump.md",
+          "content": "${markdownReport}"
+        },
+        {
+          "type": "log",
+          "message": "Memory dump written to gdb_toolbox/reports/memory_dump.md"
+        },
+        {
+          "type": "showMessage",
+          "level": "info",
+          "message": "Memory dump completed successfully. File saved to gdb_toolbox/reports/memory_dump.md."
+        }
+      ]
+    }
+  ],
+  "inputs": [
+    {
+      "id": "count",
+      "type": "inputBox",
+      "title": "Byte Count",
+      "prompt": "Enter the number of bytes to be retrieved."
+    },
+    {
+      "id": "memoryRegion",
+      "type": "inputBox",
+      "title": "Start Address",
+      "prompt": "Enter the address to start the retrieval from."
+    }
+  ]
+}

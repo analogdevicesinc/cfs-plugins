@@ -13,151 +13,6 @@
  *
  */
 
-function genCode(indent, seq, ctrlValue = 0) {
-  let code = '';
-
-  if (seq) {
-    let register;
-    let operation;
-    let accumValue = 0;
-    let accumMask = 0;
-
-    for (const idx in seq) {
-      let op = seq[idx];
-
-      if (op.Operation != "WithPrevious")
-        operation = op.Operation;
-      if (op.Register)
-        register = op.Register;
-
-      if (operation === "Read") {
-
-       // Just read the register but do nothing with it.
-       // Cannot be a pending operation.
-       if (code)
-          code += '\n';
-        code += `${indent}${register};`
-
-      } else {
-        const pending = (Number(idx) < (seq.length - 1) && seq[Number(idx) + 1].Operation === "WithPrevious");
-        const reg = it.datamodel.Registers.find(r => r.Name == register);
-        const field = reg.Fields.find(f => f.Name == op.Field);
-        const mask = (1 << field.Length) - 1;
-        let valueString;
-        let maskString;
-        // Work out what the op value is from the step's Value field.
-        let opValue;
-        // TBD: Need to eventually call evaluate expression here.
-        // Let's match e.g. "${Value} 256 = 0 ${Value} ?"
-        let groups = op.Value.match(/\${Value} +([1-9][0-9]*) += +0 +\${Value} +\?/);
-        // And also match "${Value} 1 -"
-        let groups2 = op.Value.match(/\${Value} +([1-9][0-9]*) +-/);
-        if (groups) {
-          opValue = ctrlValue;
-          if (opValue == Number(groups[1]))
-            opValue = 0;
-        } else if (groups2) {
-          opValue = ctrlValue - Number(groups2[1]);
-        } else if (op.Value === "${Value}") {
-          opValue = ctrlValue;
-        } else {
-          opValue = Number(op.Value);
-        }
-
-        if (pending || accumMask != 0) {
-
-          accumValue |= (opValue << field.Position);
-          accumMask |= (((1 << field.Length) - 1) << field.Position);
-        }
-
-        if (!pending) {
-
-          let shift;
-          if (accumMask != 0) {
-            shift = 0;
-          } else {
-            shift = field.Position;
-            accumValue = Number(opValue);
-            accumMask = mask;
-          }
-
-          if (accumValue < 10)
-            valueString = `${accumValue}U`;
-          else
-            valueString = `0x${accumValue.toString(16)}U`;
-          if (accumMask < 10)
-            maskString = `${accumMask}U`;
-          else
-            maskString = `0x${accumMask.toString(16)}U`;
-
-          if (operation === "Write") {
-
-            if (field.Length == 32) {
-              // Replace entire register value
-              if (code)
-                code += '\n';
-              code += `${indent}${register} = ${valueString};`;
-            } else if (accumValue != accumMask && accumValue != 0) {
-              // Neither all zeros nor all ones
-              if (code)
-                code += '\n';
-              if (shift > 0) {
-                code += `${indent}${register} = ((${register} & ~(${maskString} << ${shift})) | (${valueString} << ${shift}));`;
-              } else {
-                code += `${indent}${register} = ((${register} & ~${maskString}) | ${valueString});`;
-              }
-            } else if (accumValue == 0) {
-              // Clear the field to set to all zeros
-              if (code)
-                code += '\n';
-              if (shift > 0) {
-                code += `${indent}${register} &= ~(${maskString} << ${shift});`;
-              } else {
-                code += `${indent}${register} &= ~${maskString};`;
-              }
-            } else {
-              // Set the field to all ones
-              if (code)
-                code += '\n';
-              if (shift > 0) {
-                code += `${indent}${register} |= (${valueString} << ${shift});`;
-              } else {
-                code += `${indent}${register} |= ${valueString};`;
-              }
-            }
-
-          } else if (operation === "Poll") {
-
-            // Loop until field takes desired value
-            if (code)
-              code += '\n';
-            if (field.Length < 32) {
-              if (shift> 0) {
-                code += `${indent}while (((${register} >> ${shift}) & ${maskString}) != ${valueString}) {\n`;
-              } else {
-                code += `${indent}while ((${register} & ${maskString}) != ${valueString}) {\n`;
-              }
-            } else {
-              code += `${indent}while (${register} != ${valueString}) {\n`;
-            }
-            code += `${indent}}`;
-
-          }
-
-          if (op.Wait) {
-            code += '\n';
-            code += `${indent}sleep(${op.Wait});`;
-          }
-
-          accumValue = 0;
-          accumMask = 0;
-        }
-      }
-    }
-  }
-  return code;
-}
-
 function addRegisters(regs, seq) {
   if (seq) {
     for (const op of seq) {
@@ -171,6 +26,13 @@ function getRegisters() {
   const regs = new Set();
   for (const p of getGpioPortInits()) {
     addRegisters(regs, p);
+  }
+  for (const node of it.datamodel.ClockNodes) {
+    if (clockNodeEmittedHere(node)) {
+      if (clockNodeEnabled(node) && node.Initialization) {
+        addRegisters(regs, node.Initialization);
+      }
+    }
   }
   for (const pin of it.cfsconfig.Pins) {
     addRegisters(regs, getSignal(pin).PinMuxConfig);
@@ -192,6 +54,33 @@ function getRegisters() {
       addRegisters(regs, getSequence(getPeripheral(peri.Name).Config, peri.Name, ctrl, peri.Config[ctrl]));
     }
   }
+  if (it.cfsconfig.DFG) {
+    for (const gasket of it.cfsconfig.DFG.Gaskets) {
+      for (const ctrl of Object.keys(gasket.Config ?? {})) {
+        addRegisters(regs, getSequence(getGasket(gasket.Name).Config, gasket.Name + ' DFGGasketConfig', ctrl, gasket.Config[ctrl]));
+      }
+    }
+    for (const stream of it.cfsconfig.DFG.Streams) {
+      addRegisters(regs, getStreamSequence(stream.Source, 'STREAM_ID', true));
+      addRegisters(regs, getStreamSequence(stream.Source, 'START_ADDR', true));
+      addRegisters(regs, getStreamSequence(stream.Source, 'END_ADDR', true));
+      addRegisters(regs, getStreamSequence(stream.Source, 'DEST_ID', true));
+      if (stream.Destinations.length > 1) {
+        addRegisters(regs, getStreamSequence(stream.Source, 'MCAST', true));
+      }
+      for (const ctrl of Object.keys(stream.Source.Config ?? {})) {
+        addRegisters(regs, getStreamConfigSequence(stream.Source, ctrl, stream.Source.Config[ctrl], true));
+      }
+      for (const dest of stream.Destinations) {
+        addRegisters(regs, getStreamSequence(dest, 'STREAM_ID', false));
+        addRegisters(regs, getStreamSequence(dest, 'START_ADDR', false));
+        addRegisters(regs, getStreamSequence(dest, 'END_ADDR', false));
+        for (const ctrl of Object.keys(dest.Config ?? {})) {
+          addRegisters(regs, getStreamConfigSequence(dest, ctrl, dest.Config[ctrl], false));
+        }
+      }
+    }
+  }
   return Array.from(regs).sort();
 }
 
@@ -211,10 +100,72 @@ function getGpioPortInits() {
   return inits;
 }
 
-// Include common plugin code
-eval(this.render("common/utilities/utilities.js"));
+// Should we emit the code for this clocknode in this project?
+// Where multiple peripherals are used in a single clock node, this is
+// conservative. We emit if any of the peripherals are assigned to this
+// project. If no peripheral is assigned to a project, emit on the
+// primary project.
+function clockNodeEmittedHere(clocknode) {
+  const peripherals = it.datamodel.Peripherals.filter(p => p.ClockNode === clocknode.Name);
+  if (peripherals.length == 0) {
+    // If the clocknode is not associated with a peripheral, then emit only
+    // on the primary project.
+    return isPrimaryProject();
+  }
+  if (peripherals.find(p => getAssignedPeripheral(p.Name))) {
+    return true;
+  }
+  if (!peripherals.find(p => getAssignedProjectForPeripheral(p.Name))) {
+    // If no peripheral is assigned, emit on the primary project.
+    return isPrimaryProject();
+  }
+  return false;
+}
+
+// Find out if the clock node is enabled in the canvas.
+function clockNodeEnabled(clocknode) {
+  return clocknode.Outputs.find(o => it.cfsconfig.ClockFrequencies?.[o.Name]);
+}
+
+// Get the gasket in the data model.
+function getGasket(name) {
+  return it.datamodel.Gaskets.find(g => g.Name === name);
+}
+
+// Return the controls group for the gasket controls
+function gasketNamespace(gasket) {
+  return gasket.Name + ' DFGGasketConfig';
+}
+
+// Return the controls group for the stream controls
+function streamNamespace(endpoint) {
+  return endpoint.Gasket + ' DFGStreamConfig';
+}
+
+// Return the sequence that sets the stream built-in config for the endpoint.
+function getStreamSequence(endpoint, key, isSource) {
+  const gasket = getGasket(endpoint.Gasket);
+  const streamDef = isSource ? gasket?.OutputStreams[endpoint.Index] : gasket?.InputStreams[endpoint.Index];
+  return streamDef?.BuiltInConfig[key]?.VALUE;
+}
+
+// Return the sequence that sets the stream config for the endpoint.
+function getStreamConfigSequence(endpoint, key, cfg, isSource) {
+  const gasket = getGasket(endpoint.Gasket);
+  const streamDef = isSource ? gasket?.OutputStreams[endpoint.Index] : gasket?.InputStreams[endpoint.Index];
+  return getSequence(streamDef?.Config, streamNamespace(endpoint), key, cfg);
+}
+
+// Get the mask of gasket IDs of stream destinations.
+function getGasketMask(dests) {
+  let mask = 0;
+  for (dest of dests) {
+    mask |= (1 << (getGasket(dest.Gasket).Id - 1));
+  }
+  return mask;
+}
 %>
-<%~ include("../../common/utilities/copyright-header.eta", it) %>
+<%~ include("@copyrightHeader", it) %>
 
 /* WARNING: This implementation is provided for reference purposes only.
  * The code generated shows the register manipulations that would be
@@ -224,9 +175,12 @@ eval(this.render("common/utilities/utilities.js"));
  * constraints are met.
  */
 
+<% if (it.cfsconfig.Soc.toLowerCase().includes("adsp")) { %>
+#include <sys/platform.h>
+<% } %>
 #include <stdint.h>
 
-<% if (getRegisters().length) { %>
+<% if (!it.cfsconfig.Soc.toLowerCase().includes("adsp") && getRegisters().length) { %>
 /* Macros for register addresses.
 */
 <%   for (const reg of getRegisters()) { %>
@@ -236,12 +190,20 @@ eval(this.render("common/utilities/utilities.js"));
 
 /* Prototypes for functions in this file.
 */
+<% if (it.cfsconfig.Soc.toLowerCase().includes("adsp")) { %>
+int32_t adi_initpinmux(void);
+<% } else { %>
 int PinInit(void);
-<% if (hasClockConfig()) { %>
+<%  } %>
+<% if (!it.cfsconfig.Soc.toLowerCase().includes("adsp")) { %>
 int PeripheralInit(void);
 <% } %>
 
+<% if (it.cfsconfig.Soc.toLowerCase().includes("adsp")) { %>
+int32_t adi_initpinmux(void) {
+<% } else { %>
 int PinInit(void) {
+<% } %>
 <% if (it.cfsconfig.Pins.length > 0) { %>
   /* Initialize all the used GPIO Ports.
   */
@@ -253,7 +215,7 @@ int PinInit(void) {
 <%     const peri = getAssignedPeripheral(pin.Peripheral); %>
 <%     const signal = peri?.Signals?.find(s => s.Name === pin.Signal); %>
 <%     if (signal || (!getAssignedProjectForPin(pin) && isPrimaryProject())) { %>
-  /* <%= getPin(pin).Label %> (<%= pin.Pin %>): assigned to <%= pin.Peripheral %>_<%= pin.Signal %>.
+  /* <%= getPin(pin).Label %> (<%= pin.Pin %>): assigned to <%= pin.Peripheral %> <%= pin.Signal %>.
 <%       if (signal?.Description) { %>
   ** This pin is used for <%= signal.Description %>.
 <%       } %>
@@ -264,7 +226,7 @@ int PinInit(void) {
   /* Set <%= getControlDesc('PinConfig', cfg) %> to <%= getSignalSettingDesc(signal, cfg) %>.
   */
 <%=          genCode("  ", getSequence(getSignal(pin).PinConfig, 'PinConfig', cfg, signal.Config[cfg]),
-                             translateValueForSequence('PinConfig', cfg, signal.Config[cfg])) %> 
+                           translateValueForSequence('PinConfig', cfg, signal.Config[cfg])) %> 
 <%         } %>
 <%       } %>
 
@@ -276,34 +238,45 @@ int PinInit(void) {
 <% } %>
   return 0;
 }
+<% if (!it.cfsconfig.Soc.toLowerCase().includes("adsp")) { %>
 
 int PeripheralInit(void) {
-<% for (const peri of getProject()?.Peripherals ?? []) { %>
-<%   if (peri.Config && Object.keys(peri.Config).length > 0) { %>
+<%   for (const peri of getProject()?.Peripherals ?? []) { %>
+<%     if (peri.Config && Object.keys(peri.Config).length > 0) { %>
   { /* Configure the <%= peri.Name %> peripheral.
-<%     if (getPeripheralDescription(peri.Name)) { %>
+<%       if (getPeripheralDescription(peri.Name)) { %>
      * This peripheral is used for <%= getPeripheralDescription(peri.Name) %>.
-<%     } %>
+<%       } %>
      */
-<%     for (const ctrl of getPeripheral(peri.Name)?.ConfigProgrammingOrder ?? []) { %>
-<%       if (typeof(peri.Config[ctrl]) !== "undefined") { %>
+<%       for (const ctrl of getPeripheral(peri.Name)?.ConfigProgrammingOrder ?? []) { %>
+<%         if (typeof(peri.Config[ctrl]) !== "undefined") { %>
 
     /* <%= peri.Name %>: <%= getControlDesc(peri.Name, ctrl) %> is set to <%= getSettingDesc(peri.Name, ctrl, peri.Config[ctrl]) %>.
     */
-<%=        genCode("    ", getSequence(getPeripheral(peri.Name).Config, peri.Name, ctrl, peri.Config[ctrl]),
-                           translateValueForSequence(peri.Name, ctrl,  peri.Config[ctrl])) %> 
+<%=          genCode("    ", getSequence(getPeripheral(peri.Name).Config, peri.Name, ctrl, peri.Config[ctrl]),
+                             translateValueForSequence(peri.Name, ctrl,  peri.Config[ctrl])) %> 
+<%         } %>
 <%       } %>
-<%     } %>
   }
 
+<%     } %>
 <%   } %>
-<% } %>
-<% if (isPrimaryProject()) { %>
-<%   if (it.cfsconfig.ClockNodes.length > 0) { %>
-<%     for (const node of it.datamodel.ClockNodes) { %>
+<% if (it.cfsconfig.ClockNodes.length > 0) { %>
+<%   for (const node of it.datamodel.ClockNodes) { %>
+<%     if (clockNodeEmittedHere(node)) { %>
+<%       if (clockNodeEnabled(node) && node.Initialization) { %>
+  /* <%= node.Name %>: Initialization code.
+  */
+<%=        genCode("  ", node.Initialization, 0) %> 
+
+<%       } %>
+<%     } %>
+<%   } %>
+<%   for (const node of it.datamodel.ClockNodes) { %>
+<%     if (clockNodeEmittedHere(node)) { %>
 <%       if (node.ConfigProgrammingOrder) { %>
 <%         for (const ctrl of node.ConfigProgrammingOrder) { %>
-<%           if (isClockSet([], node.Name, ctrl) && node.Config[ctrl][getClockSetting(node.Name, ctrl)]) { %>
+<%           if (isClockSet(node.Name, ctrl) && node.Config[ctrl][getClockSetting(node.Name, ctrl)]) { %>
   /* <%= node.Name %>: <%= getControlDesc('ClockConfig', ctrl) %> is set to <%= getClockSettingDesc(node.Name, ctrl) %>.
   */
 <%=            genCode("  ", getSequence(node.Config, 'ClockConfig', ctrl, getClockSetting(node.Name, ctrl)),
@@ -313,10 +286,71 @@ int PeripheralInit(void) {
 <%         } %>
 <%       } %>
 <%     } %>
-<%   } else { %>
-  /* Clock configuration in default state. */
+<%   } %>
+<% } %>
+<% if (it.datamodel.Gaskets && it.cfsconfig.DFG?.Streams) { %>
+  /* Data Flow Gasket Configuration.
+  */
 
+<%   for (gasket of it.cfsconfig.DFG.Gaskets) { %>
+<%     for (const ctrl of Object.keys(gasket.Config ?? {})) { %>
+  /* <%= gasket.Name %>: <%= getControlDesc(gasketNamespace(gasket), ctrl) %> is set to <%= getSettingDesc(gasketNamespace(gasket), ctrl, gasket.Config[ctrl]) %>. */
+<%=      genCode("  ", getSequence(getGasket(gasket.Name).Config, gasketNamespace(gasket), ctrl, gasket.Config[ctrl]),
+                       translateValueForSequence(gasketNamespace(gasket), ctrl, gasket.Config[ctrl])) %> 
+
+<%     } %>
+<%   } %>
+<%   for (const stream of it.cfsconfig.DFG?.Streams) { %>
+  /* Stream: <%= stream.Source.Gasket %> to <%= stream.Destinations.map(e => e.Gasket).join(', ') %>.
+<%     if (stream.Description) { %>
+  ** <%= stream.Description %>.
+<%     } %>
+  */
+
+  /* Set stream ID to <%= stream.StreamId %>. */
+<%=    genCode("  ", getStreamSequence(stream.Source, 'STREAM_ID', true), `${stream.StreamId}`) %> 
+<%     for (const dest of stream.Destinations) { %>
+<%=      genCode("  ", getStreamSequence(dest, 'STREAM_ID', false), `${stream.StreamId}`) %> 
+<%     } %>
+
+  /* Set destination gasket to <%= stream.Destinations[0].Gasket %> at stream on source gasket. */
+<%=      genCode("  ", getStreamSequence(stream.Source, 'DEST_ID', true), `${getGasket(stream.Destinations[0].Gasket).Id}`) %> 
+
+<%       if (stream.Destinations.length > 1) { %>
+  /* Set up multi-cast for multiple destinations. */
+<%=        genCode("  ", getStreamSequence(stream.Source, 'MCAST', true), `${getGasketMask(stream.Destinations)}`) %> 
+
+<%       } %>
+  /* Set <%= stream.Source.Gasket %> source buffer start address to <%= stream.Source.BufferAddress %>. */
+<%=    genCode("  ", getStreamSequence(stream.Source, 'START_ADDR', true), `${stream.Source.BufferAddress}`) %> 
+
+  /* Set <%= stream.Source.Gasket %> source buffer end address for buffer size of <%= stream.Source.BufferSize %> bytes. */
+<%=    genCode("  ", getStreamSequence(stream.Source, 'END_ADDR', true), `${stream.Source.BufferAddress + stream.Source.BufferSize - 1}`) %> 
+
+<%     for (const dest of stream.Destinations) { %>
+  /* Set <%= dest.Gasket %> destination buffer start address to <%= dest.BufferAddress %>. */
+<%=      genCode("  ", getStreamSequence(dest, 'START_ADDR', false), `${dest.BufferAddress}`) %> 
+
+  /* Set <%= dest.Gasket %> destination buffer end address for buffer size of <%= dest.BufferSize %> bytes. */
+<%=      genCode("  ", getStreamSequence(dest, 'END_ADDR', false), `${dest.BufferAddress + dest.BufferSize - 1}`) %> 
+
+<%     } %>
+<%     for (const ctrl of Object.keys(stream.Source.Config ?? {})) { %>
+  /* Source (<%= stream.Source.Gasket %>): <%= getControlDesc(streamNamespace(stream.Source), ctrl) %> is set to <%= getSettingDesc(streamNamespace(stream.Source), ctrl, stream.Source.Config[ctrl]) %>. */
+<%=      genCode("  ", getStreamConfigSequence(stream.Source, ctrl, stream.Source.Config[ctrl], true),
+                       translateValueForSequence(streamNamespace(stream.Source), ctrl, stream.Source.Config[ctrl])) %> 
+
+<%     } %>
+<%     for (const dest of stream.Destinations) { %>
+<%       for (const ctrl of Object.keys(dest.Config ?? {})) { %>
+  /* Destination (<%= dest.Gasket %>): <%= getControlDesc(streamNamespace(dest), ctrl) %> is set to <%= getSettingDesc(streamNamespace(dest), ctrl, dest.Config[ctrl]) %>. */
+<%=        genCode("  ", getStreamConfigSequence(dest, ctrl, dest.Config[ctrl], false),
+                         translateValueForSequence(streamNamespace(dest), ctrl, dest.Config[ctrl])) %> 
+
+<%       } %>
+<%     } %>
 <%   } %>
 <% } %>
   return 0;
 }
+<% } %>

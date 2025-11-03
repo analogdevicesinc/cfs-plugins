@@ -1,17 +1,17 @@
-<%~ include("../../../common/utilities/msdk-board-name.eta", it) %>
-<%~ include("../../../common/utilities/normalize-soc.eta", it) %>
+<%~ include("@msdkBoardName", it) %>
+<%~ include("@normalizeSoc", it) %>
 {
   "C_Cpp.default.forcedInclude": [
     "${workspaceFolder}/build/project_defines.h"
   ],
-  "cfs.project.target": "<%= it.normalizeSoc() %>",
-  "cfs.jlink.device": "<%= it.normalizeSoc() %>",
+  "cfs.project.target": "<%= it.projectInflectionPoint(it.soc) %>",
+  "cfs.jlink.device": "<%= it.jlinkInflectionPoint(it.soc) %>",
   "cfs.project.board": "<%= it.getMsdkBoardName() %>",
   "cfs.programFile": "${workspaceFolder}/../m4/build/buildrv/${workspaceFolderBasename}.elf",
   "cfs.debugPath": "${workspaceFolder}/../m4/build/buildrv/",
   "cfs.configureWorkspace": "Yes",
   "cfs.project.firmwarePlatform": "MSDK",
-  "cfs.openocd.target": "target/<%= it.normalizeSoc().toLowerCase() %>_riscv.cfg",
+  "cfs.openocd.target": "target/<%= it.openocdInflectionPoint(it.soc).toLowerCase() %>_riscv.cfg",
   "cfs.openocd.interface": "interface/ftdi/olimex-arm-usb-ocd-h.cfg",
-  "cfs.cmsis.svdFile": "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/Device/Maxim/<%= it.normalizeSoc() %>/Include/<%= it.normalizeSoc().toLowerCase() %>.svd"
+  "cfs.cmsis.svdFile": "${command:cfs.tool.path.msdk}/Libraries/CMSIS/Device/Maxim/<%= it.msdkInflectionPoint(it.soc) %>/Include/<%= it.msdkInflectionPoint(it.soc).toLowerCase() %>.svd"
 }

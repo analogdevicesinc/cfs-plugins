@@ -1,0 +1,188 @@
+{
+  "pluginName": "SHARC-FX Multi-Core Hello World",
+  "pluginDescription": "SHARC-FX (core 1) and ARM (core 2) Hello World template with preload.",
+  "pluginId": "com.analog.sharcfx.m33.example",
+  "pluginVersion": "1.0.1",
+  "author": "Analog Devices, Inc.",
+  "firmwarePlatform": "SHARC-FX",
+  "supportedHostPlatforms": [
+    "windows",
+    "linux"
+  ],
+  "supportedSocs": [
+    {
+      "name": "ADSP-SC834",
+      "board": "ADSPSC834-EV-SOM",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-SC834",
+      "board": "EV-SOMCRR-EZKIT",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-SC834",
+      "board": "",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-SC834W",
+      "board": "ADSPSC834W-EV-SOM",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-SC834W",
+      "board": "EV-SOMCRR-EZKIT",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-SC834W",
+      "board": "",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-SC835",
+      "board": "ADSPSC835-EV-SOM",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-SC835",
+      "board": "EV-SOMCRR-EZKIT",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-SC835",
+      "board": "",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-SC835W",
+      "board": "ADSPSC835W-EV-SOM",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-SC835W",
+      "board": "EV-SOMCRR-EZKIT",
+      "package": "bga_ed"
+    },
+    {
+      "name": "ADSP-SC835W",
+      "board": "",
+      "package": "bga_ed"
+    }
+  ],
+  "features": {
+    "workspace": {
+      "files": [
+        {
+          "src": "files/m33/README.md",
+          "dst": "m33/README.md"
+        },
+        {
+          "src": "files/sfx/README.md",
+          "dst": "sfx/README.md"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/memory-dump.json",
+          "dst": ".cfs/gdb_toolbox/configs/memory-dump.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/register-dump.json",
+          "dst": ".cfs/gdb_toolbox/configs/register-dump.json"
+        },
+        {
+          "src": "files/.cfsdependencies",
+          "dst": ".cfs"
+        }
+      ],
+      "templates": [
+        {
+          "src": "templates/workspace-name.code-workspace.eta",
+          "dst": "${context.workspaceName}.code-workspace"
+        },
+        {
+          "src": "templates/m33/c_cpp_properties.json.eta",
+          "dst": "m33/.vscode/c_cpp_properties.json"
+        },
+        {
+          "src": "templates/sfx.cfsconfig.eta",
+          "dst": ".cfs/${context.soc.toLowerCase()}-${context.package.toLowerCase()}.cfsconfig"
+        },
+        {
+          "src": "templates/m33/launch.json.eta",
+          "dst": "m33/.vscode/launch.json"
+        },
+        {
+          "src": "templates/m33/settings.json.eta",
+          "dst": "m33/.vscode/settings.json"
+        },
+        {
+          "src": "templates/m33/cfs.tasks.json.eta",
+          "dst": "m33/.vscode/cfs.tasks.json"
+        },
+        {
+          "src": "templates/sfx/system/adi_initialize.c.eta",
+          "dst": "sfx/src/system/adi_initialize.c"
+        },
+        {
+          "src": "templates/sfx/system/adi_initialize.h.eta",
+          "dst": "sfx/src/system/adi_initialize.h"
+        },
+        {
+          "src": "templates/m33/main.c.eta",
+          "dst": "m33/src/main.c"
+        },
+        {
+          "src": "templates/m33/project.mk.eta",
+          "dst": "m33/project.mk"
+        },
+        {
+          "src": "templates/m33/Makefile.eta",
+          "dst": "m33/Makefile"
+        },
+        {
+          "src": "templates/m33/ADSP-SC83x-1MB.ld.eta",
+          "dst": "m33/ADSP-SC83x-1MB.ld",
+          "condition": "${['adsp-sc834','adsp-sc834w'].includes(context.soc.toLowerCase())}"
+        },
+        {
+          "src": "templates/m33/ADSP-SC83x-2MB.ld.eta",
+          "dst": "m33/ADSP-SC83x-2MB.ld",
+          "condition": "${['adsp-sc835','adsp-sc835w'].includes(context.soc.toLowerCase())}"
+        },
+        {
+          "src": "templates/sfx/c_cpp_properties.json.eta",
+          "dst": "sfx/.vscode/c_cpp_properties.json"
+        },
+        {
+          "src": "templates/sfx/launch.json.eta",
+          "dst": "sfx/.vscode/launch.json"
+        },
+        {
+          "src": "templates/sfx/settings.json.eta",
+          "dst": "sfx/.vscode/settings.json"
+        },
+        {
+          "src": "templates/sfx/cfs.tasks.json.eta",
+          "dst": "sfx/.vscode/cfs.tasks.json"
+        },
+        {
+          "src": "templates/sfx/main.c.eta",
+          "dst": "sfx/src/main.c"
+        },
+        {
+          "src": "templates/sfx/project.mk.eta",
+          "dst": "sfx/project.mk"
+        },
+        {
+          "src": "templates/sfx/Makefile.eta",
+          "dst": "sfx/Makefile"
+        },
+        {
+          "src": "templates/ozone-project.jdebug.eta",
+          "dst": "m33/m33.jdebug"
+        }
+      ]
+    }
+  }
+}

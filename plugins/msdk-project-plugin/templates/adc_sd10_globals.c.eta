@@ -1,0 +1,118 @@
+<%
+/**
+ * Copyright (c) 2025 Analog Devices, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+// Is the monitor being used?
+function adcMonitorEnabled(idx) {
+  let chLoLimitEnable = getPeriConfigValue(it.instance, `CH_LO_LIMIT_EN_IDX${idx.toString()}`, "FALSE");
+  let chHiLimitEnable = getPeriConfigValue(it.instance, `CH_HI_LIMIT_EN_IDX${idx.toString()}`, "FALSE");
+  return chLoLimitEnable === "TRUE" || chHiLimitEnable === "TRUE";
+}
+
+// Get the scale for the monitor.
+function getAdcScale() {
+  return getPeriConfigValue(it.instance, "SCALE", "1");
+}
+
+// Get the channel for the monitor.
+function getAdcMonitorChannel(idx) {
+  let channel = getPeriConfigValue(it.instance, `CH_SEL_IDX${idx.toString()}`, "AIN0");
+  channel = channel.replace("AIN", "");
+  if (it.datamodel.Name === "MAX32650") {
+    switch (channel) {
+      case "0_DIV5":
+        channel = "0_DIV_5";
+        break;
+      case "1_DIV5":
+        channel = "1_DIV_5";
+        break;
+      case "VDDB_DIV4":
+        channel = "VDDB_DIV_4";
+        break;
+      case "VRTC_DIV2":
+        channel = "VRTC_DIV_2";
+        break;
+    }
+  } else {
+    switch (channel) {
+      case "VDDIO_DIV4":
+        channel = "VDDIO";
+        break;
+      case "VDDIOH_DIV4":
+        channel = "VDDIOH";
+        break;
+      case "VREGI_DIV4":
+        channel = "VREGI";
+        break;
+    }
+  }
+  return channel;
+}
+
+// Get the low threshold for the monitor.
+function getAdcMonitorLoThreshold(idx) {
+  return getPeriConfigValue(it.instance, `CH_LO_LIMIT_IDX${idx.toString()}`, "0");
+}
+
+// Get the high threshold for the monitor.
+function getAdcMonitorHiThreshold(idx) {
+  return getPeriConfigValue(it.instance, `CH_HI_LIMIT_IDX${idx.toString()}`, "0");
+}
+%>
+<% if (getAssignedPeripheral(it.instance) && %>
+<%     (adcMonitorEnabled(0) || adcMonitorEnabled(1) || adcMonitorEnabled(2) || adcMonitorEnabled(3))) { %>
+/* Global variables defined for <%= it.instance %>.
+*/
+<%   if (adcMonitorEnabled(0)) { %>
+mxc_adc_monitor_req_t adc_monitor_0_cfg = {
+  .monitor = MXC_ADC_MONITOR_0,
+  .scale = MXC_ADC_SCALE_<%= getAdcScale() %>,
+  .channel = MXC_ADC_CH_<%= getAdcMonitorChannel(0) %>,
+  .lowThreshold = <%= getAdcMonitorLoThreshold(0) %>,
+  .highThreshold = <%= getAdcMonitorHiThreshold(0) %>,
+  .callback = NULL /* Set to callback address when using at runtime. */
+};
+<%   } %>
+<%   if (adcMonitorEnabled(1)) { %>
+mxc_adc_monitor_req_t adc_monitor_1_cfg = {
+  .monitor = MXC_ADC_MONITOR_1,
+  .scale = MXC_ADC_SCALE_<%= getAdcScale() %>,
+  .channel = MXC_ADC_CH_<%= getAdcMonitorChannel(1) %>,
+  .lowThreshold = <%= getAdcMonitorLoThreshold(1) %>,
+  .highThreshold = <%= getAdcMonitorHiThreshold(1) %>,
+  .callback = NULL /* Set to callback address when using at runtime. */
+};
+<%   } %>
+<%   if (adcMonitorEnabled(2)) { %>
+mxc_adc_monitor_req_t adc_monitor_2_cfg = {
+  .monitor = MXC_ADC_MONITOR_2,
+  .scale = MXC_ADC_SCALE_<%= getAdcScale() %>,
+  .channel = MXC_ADC_CH_<%= getAdcMonitorChannel(2) %>,
+  .lowThreshold = <%= getAdcMonitorLoThreshold(2) %>,
+  .highThreshold = <%= getAdcMonitorHiThreshold(2) %>,
+  .callback = NULL /* Set to callback address when using at runtime. */
+};
+<%   } %>
+<%   if (adcMonitorEnabled(3)) { %>
+mxc_adc_monitor_req_t adc_monitor_3_cfg = {
+  .monitor = MXC_ADC_MONITOR_3,
+  .scale = MXC_ADC_SCALE_<%= getAdcScale() %>,
+  .channel = MXC_ADC_CH_<%= getAdcMonitorChannel(3) %>,
+  .lowThreshold = <%= getAdcMonitorLoThreshold(3) %>,
+  .highThreshold = <%= getAdcMonitorHiThreshold(3) %>,
+  .callback = NULL /* Set to callback address when using at runtime. */
+};
+<%   } %>
+
+<% } %>

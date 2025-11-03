@@ -1,0 +1,210 @@
+  "Projects": [
+    {
+      "CoreId": "CM4",
+      "ProjectId": "CM4",
+      "PluginId": "com.analog.project.zephyr.plugin",
+      "PluginVersion": "1.0.0",
+      "FirmwarePlatform": "zephyr",
+      "ExternallyManaged": false,
+      "PlatformConfig": {
+        "ProjectName": "m4",
+        "ZephyrVersion": "4.2.0",
+        "ZephyrBoardName": "max78000evkit/max78000/m4"
+      },
+      "Partitions": [
+        {
+          "Name": "m4_flash",
+          "StartAddress": "0x10000000",
+          "Size": 524288,
+          "IsOwner": true,
+          "Access": "R",
+          "Config": {
+            "CHOSEN": "code-partition"
+          }
+        },
+        {
+          "Name": "m4_sram",
+          "StartAddress": "0x20008000",
+          "Size": 32768,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "CHOSEN": "sram"
+          }
+        }
+      ],
+      "Peripherals": [
+        {
+          "Name": "CM4 SysTick",
+          "Signals": [],
+          "Config": {
+            "ENABLE": "TRUE",
+            "TICKS_PER_SEC": "10000"
+          }
+        },
+        {
+          "Name": "UART0",
+          "Signals": [
+            {
+              "Name": "CTS",
+              "Config": {}
+            },
+            {
+              "Name": "RTS",
+              "Config": {}
+            },
+            {
+              "Name": "RX",
+              "Config": {
+                "PWR": "VDDIO",
+                "PS": "WEAK_PU"
+              }
+            },
+            {
+              "Name": "TX",
+              "Config": {
+                "PWR": "VDDIO"
+              }
+            }
+          ],
+          "Config": {
+            "PARITY": "DISABLED",
+            "CHAR_SIZE": "8",
+            "STOP_BITS": "1",
+            "HW_FLOW_CTRL": "DISABLED",
+            "CHOSEN": "console,shell-uart",
+            "BAUD": "115200"
+          }
+        },
+        {
+          "Name": "GPIO0",
+          "Signals": [
+            {
+              "Name": "P0.2",
+              "Config": {
+                "MODE": "OUT",
+                "PWR": "VDDIO",
+                "POLARITY": "HIGH",
+                "DT_NAME": "led_1",
+                "PHANDLE": "led1",
+                "ALIAS": "led0",
+                "DS": "0"
+              }
+            },
+            {
+              "Name": "P0.3",
+              "Config": {
+                "MODE": "OUT",
+                "PWR": "VDDIO",
+                "POLARITY": "HIGH",
+                "DT_NAME": "led_2",
+                "PHANDLE": "led2",
+                "ALIAS": "led1",
+                "DS": "0"
+              }
+            }],
+          "Config": {}
+        },
+        {
+          "Name": "GPIO2",
+          "Signals": [
+            {
+              "Name": "P2.6",
+              "Config": {
+                "MODE": "IN",
+                "PWR": "VDDIO",
+                "PS": "STRONG_PU",
+                "POLARITY": "LOW",
+                "DT_NAME": "pb1",
+                "PHANDLE": "pb1",
+                "INPUT_CODE": "INPUT_KEY_0",
+                "ALIAS": "sw0"
+              }
+            },
+            {
+              "Name": "P2.7",
+              "Config": {
+                "MODE": "IN",
+                "PWR": "VDDIO",
+                "PS": "STRONG_PU",
+                "POLARITY": "LOW",
+                "DT_NAME": "pb2",
+                "PHANDLE": "pb2",
+                "INPUT_CODE": "INPUT_KEY_1",
+                "ALIAS": "sw1"
+              }
+            }
+          ],
+          "Config": {}
+        }
+      ]
+    },
+    {
+      "CoreId": "RV",
+      "ProjectId": "RV",
+      "PluginId": "",
+      "PluginVersion": "",
+      "FirmwarePlatform": "undefined",
+      "ExternallyManaged": true,
+      "PlatformConfig": {},
+      "Partitions": [],
+      "Peripherals": []
+    }
+  ],
+  "Pins": [
+    {
+      "Pin": "G9",
+      "Peripheral": "GPIO2",
+      "Signal": "P2.7"
+    },
+    {
+      "Pin": "G8",
+      "Peripheral": "GPIO2",
+      "Signal": "P2.6"
+    },
+    {
+      "Pin": "J8",
+      "Peripheral": "GPIO0",
+      "Signal": "P0.2"
+    },
+    {
+      "Pin": "H8",
+      "Peripheral": "GPIO0",
+      "Signal": "P0.3"
+    },
+    {
+      "Pin": "J9",
+      "Peripheral": "UART0",
+      "Signal": "RX"
+    },
+    {
+      "Pin": "H9",
+      "Peripheral": "UART0",
+      "Signal": "TX"
+    }
+  ],
+  "ClockNodes": [
+    {
+      "Name": "UART0/1/2",
+      "Control": "UART0_ENABLE",
+      "Value": "TRUE",
+      "Enabled": true
+    },
+    {
+      "Name": "UART0/1/2",
+      "Control": "UART0_MUX",
+      "Value": "IBRO",
+      "Enabled": true
+    }
+  ],
+  "ClockFrequencies": {
+    "IBRO": 7372800,
+    "IPO": 100000000,
+    "SYS_OSC": 100000000,
+    "SYS_CLK": 100000000,
+    "Cortex-M4": 100000000,
+    "FLC0": 1000000,
+    "UART0": 7372800,
+    "UART1": 60000000,
+    "UART2": 60000000
+  }

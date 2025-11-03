@@ -1,0 +1,149 @@
+{
+  "pluginName": "MSDK Single Core TensorFlow AI Model",
+  "pluginDescription": "Single Core MSDK TensorFlow Lite Micro (TFLM) template..",
+  "pluginId": "com.analog.singlecore.msdk.tflm",
+  "pluginVersion": "1.0.1",
+  "author": "Analog Devices, Inc.",
+  "firmwarePlatform": "MSDK",
+  "supportedSocs": [
+    {
+      "name": "MAX32690",
+      "dataModel": "max32690-tqfn.json",
+      "board": "EvKit_V1",
+      "package": "tqfn"
+    },
+    {
+      "name": "MAX32690",
+      "dataModel": "max32690-wlp.json",
+      "board": "AD-APARD32690-SL",
+      "package": "wlp"
+    },
+    {
+      "name": "MAX32690",
+      "dataModel": "max32690-tqfn.json",
+      "board": "FTHR",
+      "package": "tqfn"
+    },
+    {
+      "name": "MAX78002",
+      "board": "EvKit_V1",
+      "package": "csbga"
+    }
+  ],
+  "features": {
+    "workspace": {
+      "files": [
+        {
+          "src": "files/m4/.vscode/launch.json",
+          "dst": "m4/.vscode/launch.json"
+        },
+        {
+          "src": "files/m4/.vscode/flash.gdb",
+          "dst": "m4/.vscode/flash.gdb"
+        },
+        {
+          "src": "files/m4/hello_world_f32.tflite",
+          "dst": "m4/hello_world_f32.tflite"
+        },
+        {
+          "src": "files/m4/README.md",
+          "dst": "m4/README.md"
+        },
+        {
+          "src": "files/m4/src/adi_tflm/hello_world_model_f32.cpp",
+          "dst": "m4/src/adi_tflm/hello_world_model_f32.cpp"
+        },
+        {
+          "src": "files/m4/src/adi_tflm/hello_world_model_f32.hpp",
+          "dst": "m4/src/adi_tflm/hello_world_model_f32.hpp"
+        },
+        {
+          "src": "files/m4/src/main.cpp",
+          "dst": "m4/src/main.cpp"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/fault-analyzer.json",
+          "dst": ".cfs/gdb_toolbox/configs/fault-analyzer.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/memory-dump.json",
+          "dst": ".cfs/gdb_toolbox/configs/memory-dump.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/register-dump.json",
+          "dst": ".cfs/gdb_toolbox/configs/register-dump.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/interrupt-status-arm.json",
+          "dst": ".cfs/gdb_toolbox/configs/interrupt-status-arm.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/high-water-analyzer.json",
+          "dst": ".cfs/gdb_toolbox/configs/high-water-analyzer.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/stack-analyzer.json",
+          "dst": ".cfs/gdb_toolbox/configs/stack-analyzer.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/stack-painter.json",
+          "dst": ".cfs/gdb_toolbox/configs/stack-painter.json"
+        },
+        {
+          "src": "files/gdb_toolbox/gdb/fault-analyzer-arm.gdb",
+          "dst": ".cfs/gdb_toolbox/gdb/fault-analyzer-arm.gdb"
+        },
+        {
+          "src": "files/gdb_toolbox/gdb/interrupt-status-arm.gdb",
+          "dst": ".cfs/gdb_toolbox/gdb/interrupt-status-arm.gdb"
+        },
+        {
+          "src": "files/gdb_toolbox/gdb/high-water-analyzer.gdb",
+          "dst": ".cfs/gdb_toolbox/gdb/high-water-analyzer.gdb"
+        },
+        {
+          "src": "files/gdb_toolbox/gdb/stack-analyzer.gdb",
+          "dst": ".cfs/gdb_toolbox/gdb/stack-analyzer.gdb"
+        },
+        {
+          "src": "files/gdb_toolbox/gdb/stack-painter.gdb",
+          "dst": ".cfs/gdb_toolbox/gdb/stack-painter.gdb"
+        }
+      ],
+      "templates": [
+        {
+          "src": "templates/workspace-name.code-workspace.eta",
+          "dst": "${context.workspaceName}.code-workspace"
+        },
+        {
+          "src": "templates/.cfsconfig.eta",
+          "dst": ".cfs/${context.soc.toLowerCase()}-${context.package.toLowerCase()}.cfsconfig"
+        },
+        {
+          "src": "templates/settings.json.eta",
+          "dst": "m4/.vscode/settings.json"
+        },
+        {
+          "src": "templates/project.mk.eta",
+          "dst": "m4/project.mk"
+        },
+        {
+          "src": "templates/Makefile.eta",
+          "dst": "m4/Makefile"
+        },
+        {
+          "src": "templates/c_cpp_properties.json.eta",
+          "dst": "m4/.vscode/c_cpp_properties.json"
+        },
+        {
+          "src": "templates/ozone-project.jdebug.eta",
+          "dst": "m4/m4.jdebug"
+        },
+        {
+          "src": "templates/cfs.tasks.json.eta",
+          "dst": "m4/.vscode/cfs.tasks.json"
+        }
+      ]
+    }
+  }
+}

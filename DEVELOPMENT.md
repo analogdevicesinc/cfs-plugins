@@ -17,50 +17,47 @@ To build the plugins API and default plugins:
 
 To build only the plugins API:
 
-`yarn build:api`
+`yarn ws:api build`
 
 To build only the plugins:
 
-`yarn build:plugins`
+`yarn ws:plugins build`
 
 ## Creating Your First Plugin
 
 The default plugins provided by [./plugins](./plugins/README.md) are a useful reference when creating your first plugin.
 
-> 💡 You can also copy and adapt an existing plugin, like `zephyr41-single-core-blinky`, to save time.  
+> 💡 You can also copy and adapt an existing plugin, like `zephyr-single-core-blinky`, to save time.
 > Just remember to update the `pluginVersion` in `.cfsplugin` so CodeFusion Studio detects your changes.
 
 1. **Create a new directory**
 
-    Each plugin must be contained within its own directory. For example: [zephyr41-single-core-blinky](./plugins/zephyr41-single-core-blinky/).
-1. **Create a .cfsplugin file**
+    Each plugin must be contained within its own directory. For example: [zephyr-single-core-blinky](./plugins/zephyr-single-core-blinky/).
 
-   The .cfsplugin file defines details such as the plugin name and version, supported SoCs and boards, configuration properties, and the files and templates to include. CodeFusion Studio reads the .cfsplugin file to determine where it should be used in the workflow.
+2. **Create a .cfsplugin file**
 
-1. **Create `index.ts`**
+   This file is the only required component of a plugin. It defines:
+   * The plugin's metadata (name, version, supported SoCs, etc.)
+   * The services it provides (workspace, project, codegen, properties)
+   * Output files and templates used by each service
 
-   CodeFusion Studio dynamically loads the exported [`CfsPlugin`](./api/src/cfs-plugin.ts) class from `index.ts`.
+   > 💡 If you provide a `.cfsplugin` file only (no `index.ts`), the plugin is automatically handled by the generic plugin implementation (defined in `cfs-generic-plugin.ts` in the Plugin API), which uses the [Eta](https://eta.js.org/docs/) templating engine to render templates.
 
-   Your class should:
-   - Extend `CfsPlugin`
-   - Implement `getGenerator()` for the supported feature scopes
-   - Optionally implement `getService()` to return reusable helper logic
-   - Optionally implement `getEnvironmentVariables()`
+3. **(Optional) Create `index.ts`**
 
-   The CfsPlugin implementation must provide `CfsGenerators` through the `getGenerator` API based on the feature scope supported by the plugin and defined by the `.cfsplugin` file. Plugins can provide multiple generator types.
+   To override or extend the default behavior of any service, create an `index.ts`. It must export a class that implements one or more service interfaces from the Plugin API (`cfs-services.ts`), such as `CfsProjectGenerationService` or `CfsCodeGenerationService`.
 
-1. **Add supporting files and templates**
+   > 💡 You can build your implementation from scratch or reuse helper classes from `generic/components` in the Plugin API, such as `CfsEtaProjectGenerator`.
 
-   - Place static files (copied as-is) under a `files/` directory
-   - Place Eta templates (processed at generation) under a `templates/` directory
-   - List both in the `.cfsplugin` under `files` and `templates`
+4. **Add supporting files and templates**
 
-1. **Update `package.json`**
+   * Place static files (copied as-is) under a `files/` directory
+   * Place Eta templates (processed at generation) under a `templates/` directory
+   * Declare them both in the `.cfsplugin` file under the relevant service (`workspace`, `project`, or `codegen`) using the `files` and `templates` arrays.
 
-   - Add a script to copy your plugin into `plugins/dist`
-   - Append it to the `copy-files` chain to ensure it’s included in builds
+   > **Note**: The generic `cfs-generic-plugin.ts` implementation uses the [Eta](https://eta.js.org/docs/) templating engine, but you can use any templating engine or custom code generation logic by implementing your own generator class.
 
-1. **Build the plugin**
+5. **Build the plugin**
 
    From the repository root, run:
 
@@ -68,20 +65,20 @@ The default plugins provided by [./plugins](./plugins/README.md) are a useful re
    yarn build
    ```
 
-   > 💡 Use `yarn build:plugins` to build only the plugin layer
+   > 💡 Use `yarn ws:plugins build` to build only the plugin layer
 
-1. **Test the plugin**
+6. **Test the plugin**
 
    We recommend testing plugins using [Mocha](https://mochajs.org/).
 
-   - Create tests under `tests/unit-tests/plugins/my-plugin/`
-   - Run all tests with:
+   * Create tests under `tests/unit-tests/plugins/my-plugin/`
+   * Run all tests with:
 
    ```bash
    yarn test
    ```
 
-1. **Use the plugin in CFS**
+7. **Use the plugin in CFS**
 
    After building and testing, add the plugin’s path to your CodeFusion Studio `settings.json`:
 
@@ -92,4 +89,4 @@ The default plugins provided by [./plugins](./plugins/README.md) are a useful re
    ]
    ```
 
-   > For additional information refer to the [CFS User Guide](https://developer.analog.com/docs/codefusion-studio/latest/user-guide/plugins/develop-plugins/).
+For additional information refer to the [CFS User Guide](https://developer.analog.com/docs/codefusion-studio/latest/user-guide/plugins/develop-plugins/).

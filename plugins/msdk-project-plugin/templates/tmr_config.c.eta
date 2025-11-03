@@ -13,12 +13,21 @@
  *
  */
 
-// Include common plugin code
-eval(this.render("common/utilities/utilities.js"));
+// Return whether tmr_old is used.
+function isUsingOldTmr() {
+  return (it.datamodel.Name === "MAX32650" || it.datamodel.Name === "MAX32666" || it.datamodel.Name === "MAX32660");
+}
 
 // Return the TMR mode.
-function getTmrMode(ctrl) {
-  let mode = getAssignedPeripheral(it.instance).Config?.[ctrl] ?? "ONE_SHOT";
+function getTmrMode(unit) {
+  let ctrl;
+  if (isUsingOldTmr()) {
+    ctrl = "MODE";
+  } else {
+    ctrl = unit === "A" ? "MODE_A" : "MODE_B";
+  }
+  
+  let mode = getPeriConfigValue(it.instance, ctrl, "ONE_SHOT");
   // A couple of them use different names to those of the enum.
   switch (mode) {
     case "ONE_SHOT":
@@ -32,28 +41,50 @@ function getTmrMode(ctrl) {
 }
 
 // Return the TMR prescaler.
-function getTmrPrescaler(ctrl) {
-  return getAssignedPeripheral(it.instance).Config?.[ctrl] ?? 1;
+function getTmrPrescaler(unit) {
+  let ctrl;
+  if (isUsingOldTmr()) {
+    ctrl = "CLKDIV";
+  } else {
+    ctrl = unit === "A" ? "CLKDIV_A" : "CLKDIV_B";
+  }
+  return getPeriConfigValue(it.instance, ctrl, "1");
 }
 
 // Return the TMR polarity.
-function getTmrPolarity(ctrl) {
-  return getAssignedPeripheral(it.instance).Config?.[ctrl] === "POLARITY_1" ? 1 : 0;
+function getTmrPolarity(unit) {
+  let ctrl, activeHiValue, activeLowValue;
+  
+  if (isUsingOldTmr()) {
+    ctrl = "POL";
+    activeHiValue = "ACTIVE_HI";
+    activeLowValue = "ACTIVE_LO";
+  } else {
+    ctrl = unit === "A" ? "POL_A" : "POL_B";
+    activeHiValue = "POLARITY_0";
+    activeLowValue = "POLARITY_1";
+  }
+  
+  return getPeriConfigValue(it.instance, ctrl, activeHiValue) === activeLowValue ? "1" : "0";
 }
 
 // Return the TMR compare value.
 function getTmrCompare(unit) {
   let value;
-  if (unit === "A") {
-    value = getAssignedPeripheral(it.instance).Config?.COMPARE;
-    if (typeof value === "undefined") {
-      value = getAssignedPeripheral(it.instance).Config?.COMPARE_SINGLE;
-    }
-    if (typeof value === "undefined") {
-      value = getAssignedPeripheral(it.instance).Config?.COMPARE_A ?? 0;
-    }
+  if (isUsingOldTmr()) {
+    value = getPeriConfigValue(it.instance, "COMPARE", "0");
   } else {
-    value = getAssignedPeripheral(it.instance).Config?.COMPARE_B ?? 0;
+    if (unit === "A") {
+      value = getPeriConfigValue(it.instance, "COMPARE", null);
+      if (value === null) {
+        value = getPeriConfigValue(it.instance, "COMPARE_SINGLE", null);
+      }
+      if (value === null) {
+        value = getPeriConfigValue(it.instance, "COMPARE_A", "0");
+      }
+    } else {
+      value = getPeriConfigValue(it.instance, "COMPARE_B", "0");
+    }
   }
   return value;
 }
@@ -61,16 +92,20 @@ function getTmrCompare(unit) {
 // Return the TMR count value.
 function getTmrCount(unit) {
   let value;
-  if (unit === "A") {
-    value = getAssignedPeripheral(it.instance).Config?.COUNT;
-    if (typeof value === "undefined") {
-      value = getAssignedPeripheral(it.instance).Config?.COUNT_SINGLE;
-    }
-    if (typeof value === "undefined") {
-      value = getAssignedPeripheral(it.instance).Config?.COUNT_A ?? 0;
-    }
+  if (isUsingOldTmr()) {
+    value = getPeriConfigValue(it.instance, "COUNT", "0");
   } else {
-    value = getAssignedPeripheral(it.instance).Config?.COUNT_B ?? 0;
+    if (unit === "A") {
+      value = getPeriConfigValue(it.instance, "COUNT", null);
+      if (value === null) {
+        value = getPeriConfigValue(it.instance, "COUNT_SINGLE", null);
+      }
+      if (value === null) {
+        value = getPeriConfigValue(it.instance, "COUNT_A", "0");
+      }
+    } else {
+      value = getPeriConfigValue(it.instance, "COUNT_B", "0");
+    }
   }
   return value;
 }
@@ -78,26 +113,34 @@ function getTmrCount(unit) {
 // Return the TMR PWM value.
 function getTmrPWM(unit) {
   let value;
-  if (unit === "A") {
-    value = getAssignedPeripheral(it.instance).Config?.PWM;
-    if (typeof value === "undefined") {
-      value = getAssignedPeripheral(it.instance).Config?.PWM_SINGLE;
-    }
-    if (typeof value === "undefined") {
-      value = getAssignedPeripheral(it.instance).Config?.PWM_A ?? 0;
-    }
+  if (isUsingOldTmr()) {
+    value = getPeriConfigValue(it.instance, "PWM", "0");
   } else {
-    value = getAssignedPeripheral(it.instance).Config?.PWM_B ?? 0;
+    if (unit === "A") {
+      value = getPeriConfigValue(it.instance, "PWM", null);
+      if (value === null) {
+        value = getPeriConfigValue(it.instance, "PWM_SINGLE", null);
+      }
+      if (value === null) {
+        value = getPeriConfigValue(it.instance, "PWM_A", "0");
+      }
+    } else {
+      value = getPeriConfigValue(it.instance, "PWM_B", "0");
+    }
   }
   return value;
 }
 
 // Return the clock source for the timer.
 function getTmrClockSource(ctrl) {
-  let src = getClockSetting(it.clocknode, ctrl, it.clock_default);
+  let src = getPeripheralClockSetting(it.instance, ctrl, it.clock_default);
   switch (src) {
     case "APBCLK":
     case "PCLK":
+      src = "APB";
+      break;
+    case "AOD_CLK":
+      // The MSDK does not have a better enum, and just uses APB for AOD.
       src = "APB";
       break;
     case "LPTMR0_CLK":
@@ -107,84 +150,112 @@ function getTmrClockSource(ctrl) {
     case "IBRO_DIV_8":
       src = "IBRO_DIV8";
       break;
+    case "EXT_CLK2":
+      src = "EXT";
+      break;
+    case "EXT_CLK1":
+      src = "EXT";
+      break;
   }
   return src;
 }
+
+// Get the bit mode for the timer.
+function getTmrBitMode(unit) {
+  let mode = getPeriConfigValue(it.instance, "CONFIGURATION", null);
+  if (mode === "SINGLE_32BIT") {
+    return "32";
+  } else if (unit === "A") {
+    return "16A";
+  } else {
+    return "16B";
+  }
+}
 %>
-<% if (clockNodeExists(it.clocknode)) { %>
-<%   if (!getAssignedProjectForPeripheral(it.instance) && isClockSetTo([], it.clocknode, it.enable, "TRUE")) { %>
+<% if (isUnassignedPeripheralClockSetTo(it.instance, it.enable, "TRUE")) { %>
   /* The <%= it.instance %> peripheral is enabled on the clock canvas but is
    * not assigned to any core. In order to generate configuration code, please
    * assign the peripheral to a core.
    */
 
-<%   } else if (getAssignedPeripheral(it.instance)) { %>
+<% } else if (getAssignedPeripheral(it.instance)) { %>
   { /* Configure <%= it.instance %>.
-<%     if (getPeripheralDescription(it.instance)) { %>
+<%   if (getPeripheralDescription(it.instance)) { %>
      * This peripheral is used for <%= getPeripheralDescription(it.instance) %>.
-<%     } %>
-<%     if (!isClockSetTo([it.instance], it.clocknode, it.enable, "TRUE")) { %>
+<%   } %>
+<%   if (it.enable && !isPeripheralClockSetTo(it.instance, it.enable, "TRUE")) { %>
      * Note: This peripheral was not enabled on the clock configuration canvas.
      * Nonetheless, as a result of the following configuration, the peripheral will be
      * clocked on.
-<%     } %>
+<%   } %>
      */
+<%   if (isUsingOldTmr()) { %>
+    mxc_tmr_cfg_t <%= it.instance.toLowerCase() %>_config = {
+<%   } else { %>
     mxc_tmr_cfg_t <%= it.instance.toLowerCase() %>_config_a = {
-      MXC_TMR_PRES_<%= getTmrPrescaler("CLKDIV_A") %>,
-      MXC_TMR_MODE_<%= getTmrMode("MODE_A") %>,
-<%     if (it.datamodel.Name !== "MAX32650" && it.datamodel.Name !== "MAX32660" && it.datamodel.Name !== "MAX32666") { %>
-<%     if (getAssignedPeripheral(it.instance).Config?.CONFIGURATION === "SINGLE_32BIT") { %>
-      MXC_TMR_BIT_MODE_32,
-<%       } else { %>
-      MXC_TMR_BIT_MODE_16A,
-<%       } %>
-      MXC_TMR_<%= getTmrClockSource(it.muxa) %>_CLK,
-<%     } %>
-      <%= getTmrCompare("A") %>U, /* compare value */
-      <%= getTmrPolarity("POL_A") %> /* polarity */
+<%   } %>
+      .pres = MXC_TMR_PRES_<%= getTmrPrescaler("A") %>, /* prescaler */
+      .mode = MXC_TMR_MODE_<%= getTmrMode("A") %>,
+<%   if (!isUsingOldTmr()) { %>
+      .bitMode = MXC_TMR_BIT_MODE_<%= getTmrBitMode("A") %>,
+      .clock = MXC_TMR_<%= getTmrClockSource(it.muxa) %>_CLK,
+<%   } %>
+      .cmp_cnt = <%= getTmrCompare("A") %>U, /* compare value */
+      .pol = <%= getTmrPolarity("A") %> /* polarity */
     };
 
     /* Initialize the peripheral. */
-<%     if (it.datamodel.Name !== "MAX32650" && it.datamodel.Name === "MAX32665") { %>
+<%   if (it.datamodel.Name === "MAX32650" || it.datamodel.Name === "MAX32666") { %>
     MXC_TMR_Init(MXC_<%= it.msdk_instance ?? it.instance %>,
-<%     } else { %>
+<%   } else { %>
     result = MXC_TMR_Init(MXC_<%= it.msdk_instance ?? it.instance %>,
-<%     } %>
-<%     if (it.datamodel.Name === "MAX32662") { %>
+<%   } %>
+<%   if (it.datamodel.Name === "MAX32662") { %>
                           &<%= it.instance.toLowerCase() %>_config_a,
                           false, /*init_pins*/
                           MAP_A  /*dummy*/);
-<%     } else if (it.datamodel.Name === "MAX32650" || it.datamodel.Name === "MAX32660" || it.datamodel.Name === "MAX32665") { %>
-                          &<%= it.instance.toLowerCase() %>_config_a);
-<%     } else { %>
+<%   } else if (it.datamodel.Name === "MAX32650" || it.datamodel.Name === "MAX32660") { %>
+                 &<%= it.instance.toLowerCase() %>_config);
+<%   } else if (it.datamodel.Name === "MAX32666") { %>
+                          &<%= it.instance.toLowerCase() %>_config);
+<%   } else { %>
                           &<%= it.instance.toLowerCase() %>_config_a,
                           false /*init_pins*/);
-<%     } %>
-<%     if (it.datamodel.Name !== "MAX32650" && it.datamodel.Name === "MAX32665") { %>
+<%   } %>
+<%   if (it.datamodel.Name !== "MAX32650" && it.datamodel.Name !== "MAX32666") { %>
     if (result != E_NO_ERROR) {
       return result;
     }
-<%     } %>
+<%   } %>
 
     /* Set the Count. */
     MXC_TMR_SetCount(MXC_<%= it.msdk_instance ?? it.instance %>, <%= getTmrCount("A") %>U);
-<%       if (getTmrMode("MODE_A") === "PWM") { %>
+<%   if (getTmrMode("A") === "PWM") { %>
 
     /* Set the PWM. */
     result = MXC_TMR_SetPWM(MXC_<%= it.msdk_instance ?? it.instance %>, <%= getTmrPWM("A") %>U);
     if (result != E_NO_ERROR) {
       return result;
     }
-<%       } %>
-<%     if (getAssignedPeripheral(it.instance).Config?.CONFIGURATION === "DUAL_16BIT") { %>
+<%   } %>
+<%   if (getPeriConfigValue(it.instance, "TMRA_WE", "FALSE") === "TRUE") { %>
+
+    MXC_TMR_EnableWakeup(MXC_<%= it.msdk_instance ?? it.instance %>,
+                         &<%= it.instance.toLowerCase() %>_config_a);
+<%   } %>
+<%   if (getPeriConfigValue(it.instance, "TMRA_IE", "FALSE") === "TRUE") { %>
+
+    MXC_TMR_EnableInt(MXC_<%= it.msdk_instance ?? it.instance %>);
+<%   } %>
+<%   if (getPeriConfigValue(it.instance, "CONFIGURATION", null) === "DUAL_16BIT") { %>
 
     mxc_tmr_cfg_t <%= it.instance.toLowerCase() %>_config_b = {
-      MXC_TMR_PRES_<%= getTmrPrescaler("CLKDIV_B") %>,
-      MXC_TMR_MODE_<%= getTmrMode("MODE_B") %>,
-      MXC_TMR_BIT_MODE_16B,
-      MXC_TMR_<%= getTmrClockSource(it.muxb) %>_CLK,
-      <%= getTmrCompare("B") %>U, /* compare value */
-      <%= getTmrPolarity("POL_B") %> /* polarity */
+      .pres = MXC_TMR_PRES_<%= getTmrPrescaler("B") %>,
+      .mode = MXC_TMR_MODE_<%= getTmrMode("B") %>,
+      .bitMode = MXC_TMR_BIT_MODE_<%= getTmrBitMode("B") %>,
+      .clock = MXC_TMR_<%= getTmrClockSource(it.muxb) %>_CLK,
+      .cmp_cnt = <%= getTmrCompare("B") %>U, /* compare value */
+      .pol = <%= getTmrPolarity("B") %> /* polarity */
     };
 
     /* Initialize the peripheral. */
@@ -194,8 +265,17 @@ function getTmrClockSource(ctrl) {
     if (result != E_NO_ERROR) {
       return result;
     }
+<%     if (getPeriConfigValue(it.instance, "TMRB_WE", "FALSE") === "TRUE") { %>
+
+    MXC_TMR_EnableWakeup(MXC_<%= it.msdk_instance ?? it.instance %>,
+                         &<%= it.instance.toLowerCase() %>_config_b);
 <%     } %>
+<%   } %>
+<%   if (getPeriConfigValue(it.instance, "TMR_AB_IE", "FALSE") === "TRUE") { %>
+
+    /* Note that both TMRA and TMRB interrupts are enabled. */
+    MXC_TMR_EnableInt(MXC_<%= it.msdk_instance ?? it.instance %>);
+<%   } %>
   }
 
-<%   } %>
 <% } %>

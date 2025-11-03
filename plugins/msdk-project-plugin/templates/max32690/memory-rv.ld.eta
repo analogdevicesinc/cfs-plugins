@@ -13,8 +13,6 @@
  *
  */
 
-// Include common plugin code
-eval(this.render("common/utilities/utilities.js"));
 %>
 <% if (!getProject()?.Partitions.find(p => getPartitionName(p, "NAME_OVERRIDE") === "FLASH")) { %>
     FLASH       (rx)  : ORIGIN = 0x00000000, LENGTH = 0x00000000 /* Section not defined. */

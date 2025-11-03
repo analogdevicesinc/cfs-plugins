@@ -1,0 +1,18 @@
+{
+  "name": "Analyze Faults",
+  "description": "Analyzes faults and exceptions in the target application.",
+  "version": "1.0.0",
+  "core": "arm",
+  "commands": [
+    {
+      "command": "source {defaultScriptsDirectory}/fault-analyzer-arm.gdb",
+      "actions": [
+        {
+          "type": "appendFile",
+          "filePath": "gdb_toolbox/reports/fault_analyzer.md",
+          "content": "${markdownReport}"
+        }
+      ]
+    }
+  ]
+}

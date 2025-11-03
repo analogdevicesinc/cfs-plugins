@@ -1,0 +1,27 @@
+      "AIModels" : [
+        {
+          "Name": "Hello World Float 32",
+          "Files" : {
+<% if (['max32657','max32658'].includes(it.soc.toLowerCase())) { %>
+            "Model" : "./m33/hello_world_f32.tflite"
+<% } else { %>
+            "Model" : "./m4/hello_world_f32.tflite"
+<% } %>
+          },
+          "Target": {
+<% if (['max32657','max32658'].includes(it.soc.toLowerCase())) { %>
+            "Core": "CM33"
+<% } else { %>
+            "Core": "CM4"
+<% } %>
+          },
+          "Backend" : {
+            "Name" : "tflm",
+            "Extensions" : {
+              "Symbol" : "hello_world_model_f32",
+              "Section" : ".data"
+            }
+          },
+          "Enabled": "true"
+        }
+      ]

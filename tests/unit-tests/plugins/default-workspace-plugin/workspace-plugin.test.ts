@@ -15,15 +15,18 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { expect } from "chai";
-import { CfsFeatureScope, CfsPluginInfo } from "cfs-plugins-api";
-import { CfsEtaWorkspaceGenerator } from "../../../../plugins/common/generators/eta/cfs-eta-workspace-generator.js";
-import WorkspacePlugin from "../../../../plugins/default-workspace-plugin/index.js";
+import { CfsPluginInfo } from "cfs-plugins-api";
+import { GenericPlugin } from "../../../../api/src/generic/cfs-generic-plugin.js";
 import { fileExists, isDebug } from "../../utilities/test-utilities.js";
+import { joinPath } from "../../utilities/path-utilities.js";
+import {
+  validateJsonFile,
+  findJsonFiles,
+} from "../../utilities/validate-json.js";
 
 describe("Unit test for WorkspacePlugin", () => {
-  let plugin: WorkspacePlugin;
+  let plugin: GenericPlugin;
   let pluginInfo: CfsPluginInfo;
-  let cfsFeatureScope: CfsFeatureScope;
 
   const cfsWorkspace = {
     location: "tests/unit-tests/plugins/data",
@@ -58,14 +61,13 @@ describe("Unit test for WorkspacePlugin", () => {
       const fileContent = await fs.readFile(absolutePath, "utf-8");
       pluginInfo = JSON.parse(fileContent) as CfsPluginInfo;
       pluginInfo.pluginPath = absolutePath;
-      cfsFeatureScope = CfsFeatureScope.Workspace;
     } catch (error) {
       expect.fail(`${error}`);
     }
   });
 
   beforeEach(() => {
-    plugin = new WorkspacePlugin(pluginInfo, cfsWorkspace);
+    plugin = new GenericPlugin(pluginInfo);
   });
 
   afterEach(async () => {
@@ -74,32 +76,22 @@ describe("Unit test for WorkspacePlugin", () => {
     }
   });
 
-  it("Should return CfsEtaWorkspaceGenerator from getGenerators", () => {
-    const generators = [
-      plugin.getGenerator<CfsEtaWorkspaceGenerator>(cfsFeatureScope),
-    ];
-    expect(generators).to.be.an("array").that.is.not.empty;
-    expect(generators[0]).to.be.instanceOf(CfsEtaWorkspaceGenerator);
-  });
-
   it("Should generate the workspace", async () => {
-    const generator =
-      plugin.getGenerator<CfsEtaWorkspaceGenerator>(cfsFeatureScope);
-    await generator.generateWorkspace(cfsWorkspace);
+    await plugin.generateWorkspace(cfsWorkspace);
 
     // Verify the workspace was generated
     const paths = {
-      cfsWorkspace: path.join(
+      cfsWorkspace: joinPath(
         `${cfsWorkspace.location}/${cfsWorkspace.workspaceName}/.cfs/`,
-        `.cfsworkspace`,
+        `.cfsworkspace`
       ),
-      codeWorkspace: path.join(
+      codeWorkspace: joinPath(
         `${cfsWorkspace.location}/${cfsWorkspace.workspaceName}`,
-        `${cfsWorkspace.workspaceName}.code-workspace`,
+        `${cfsWorkspace.workspaceName}.code-workspace`
       ),
-      cfsConfig: path.join(
+      cfsConfig: joinPath(
         `${cfsWorkspace.location}/${cfsWorkspace.workspaceName}/.cfs/`,
-        `${cfsWorkspace.workspaceName}.cfsconfig`,
+        `${cfsWorkspace.workspaceName}.cfsconfig`
       ),
     };
 
@@ -113,5 +105,15 @@ describe("Unit test for WorkspacePlugin", () => {
 
     const cfsConfigExists = await fileExists(paths.cfsConfig);
     expect(cfsConfigExists, `Expected ${paths.cfsConfig} to exist`).to.be.true;
+
+    // currently broken - gdb toolbox json configs are only accessible via dist which the tests don't have access to
+
+    // Confirm that valid JSON files were generated
+    // const jsonFiles = await findJsonFiles(cfsWorkspace.location);
+    // expect(jsonFiles.length).to.be.greaterThan(0, "No JSON files found");
+    // for (const file of jsonFiles) {
+    //   const result = await validateJsonFile(file);
+    //   expect(result, `Error: '${file}' is not a valid JSON file.`).to.be.true;
+    // }
   });
 });

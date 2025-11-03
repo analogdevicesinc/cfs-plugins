@@ -13,18 +13,14 @@
  *
  */
 
-// Include common plugin code
-eval(this.render("common/utilities/utilities.js"));
-
 // Return the UART Baud rate.
 function getUartBaud() {
-  const baud = getAssignedPeripheral(it.instance).Config?.BAUD ?? 115200;
-  return baud + "U";
+  return getPeriConfigValue(it.instance, "BAUD", "115200");
 }
 
 // Return the UART clock source enum.
-function getUartClock(node, mux, clock_default) {
-  const clock = getClockSetting(node, mux, clock_default);
+function getUartClock() {
+  const clock = getPeripheralClockSetting(it.instance, it.mux, it.clock_default);
   let clock_enum = "MXC_UART_APB_CLK";
   switch (clock) {
     case "AOD_CLK":
@@ -37,12 +33,15 @@ function getUartClock(node, mux, clock_default) {
       clock_enum = "MXC_UART_ERTCO_CLK";
       break;
     case "EXT":
+    case "EXT_CLK1":
+    case "EXT_CLK2":
       clock_enum = "MXC_UART_EXT_CLK";
       break;
     case "INRO":
       clock_enum = "MXC_UART_INRO_CLK";
       break;
     case "IBRO":
+    case "7MCLK":
       clock_enum = "MXC_UART_IBRO_CLK";
       break;
     case "APBCLK":
@@ -55,12 +54,13 @@ function getUartClock(node, mux, clock_default) {
 
 // Return the Data Size setting.
 function getUARTDataSize() {
-  return getAssignedPeripheral(it.instance).Config?.CHAR_SIZE ?? 8;
+  return getPeriConfigValue(it.instance, "CHAR_SIZE", "8");
 }
 
 // Return the Stop Bits setting.
 function getUARTStopBits() {
-  return getAssignedPeripheral(it.instance).Config?.STOP_BITS === "1" ? "MXC_UART_STOP_1" : "MXC_UART_STOP_2";
+  let stopBits = getPeriConfigValue(it.instance, "STOP_BITS", "1");
+  return stopBits === "1" ? "MXC_UART_STOP_1" : "MXC_UART_STOP_2";
 }
 
 // Return the Flow Ctrl setting.
@@ -68,10 +68,9 @@ function getUARTFlowCtrl() {
   // The logic is complicated here to deal with both old- and new-style UART
   // instances.
   let flow_params = "MXC_UART_FLOW_DIS";
-  const config = getAssignedPeripheral(it.instance).Config;
-  let setting = config?.HW_FLOW_CTRL ?? "DISABLED";
-  const rts_thresh = config?.RTS_THRESH ?? "1";
-  setting = config?.RTSDC_LP_FDM ?? setting;
+  let setting = getPeriConfigValue(it.instance, "HW_FLOW_CTRL", "DISABLED");
+  const rts_thresh = getPeriConfigValue(it.instance, "RTS_THRESH", "1");
+  setting = getPeriConfigValue(it.instance, "RTSDC_LP_FDM", setting);
   switch (setting) {
     case "DISABLED":
       break;
@@ -97,10 +96,9 @@ function getUARTParity() {
   // The logic is complicated here to deal with both old- and new-style UART
   // instances.
   let parity = "MXC_UART_PARITY_DISABLE";
-  const config = getAssignedPeripheral(it.instance).Config;
-  const setting = config?.PARITY ?? "DISABLED";
-  const level = config?.PARITY_LEVEL ?? "0s";
-  const md = config?.PARITY_MD;
+  const setting = getPeriConfigValue(it.instance, "PARITY", "DISABLED");
+  const level = getPeriConfigValue(it.instance, "PARITY_LEVEL", "0s");
+  const md = getPeriConfigValue(it.instance, "PARITY_MD", null);
   switch (setting) {
     case "DISABLED":
       break;
@@ -138,64 +136,113 @@ function getUARTParity() {
 
 // Return the Null Modem setting.
 function getUARTNullModem() {
-  return getAssignedPeripheral(it.instance).Config?.NULL_MODEM === "NULL_MODEM" ? "1" : "0";
+  let nullModem = getPeriConfigValue(it.instance, "NULL_MODEM", "NULL_MODEM");
+  return nullModem === "NULL_MODEM" ? "1" : "0";
 }
 
 // Return the DMA TX setting.
 function getUARTDmaTx() {
-  return getAssignedPeripheral(it.instance).Config?.TRANSMIT_DMA_ENABLE ?? false;
+  return getPeriConfigValue(it.instance, "TRANSMIT_DMA_ENABLE", "FALSE") === "TRUE";
 }
 
 // Return the DMA RX setting.
 function getUARTDmaRx() {
-  return getAssignedPeripheral(it.instance).Config?.RECEIVE_DMA_ENABLE ?? false;
+  return getPeriConfigValue(it.instance, "RECEIVE_DMA_ENABLE", "FALSE") === "TRUE";
+}
+
+// Return the interrupt mask for any enabled interrupts.
+function getUartIntMask() {
+  let ie_table;
+  if (it.datamodel.Name === "MAX32657" || it.datamodel.Name === "MAX32658") {
+    ie_table = [
+      { ctrl: "RX_FRAME_ERROR_IE", value: "MXC_F_UART_INTEN_RX_FERR" },
+      { ctrl: "RX_PARTY_ERROR_IE", value: "MXC_F_UART_INTEN_RX_PAR" },
+      { ctrl: "CTS_IE",            value: "MXC_F_UART_INTEN_CTS_EV" },
+      { ctrl: "RX_OVERRUN_IE",     value: "MXC_F_UART_INTEN_RX_OV" },
+      { ctrl: "RX_THD_IE",         value: "MXC_F_UART_INTEN_RX_THD" },
+      { ctrl: "TX_ONE_BYTE_IE",    value: "MXC_F_UART_INTEN_TX_OB" },
+      { ctrl: "TX_HALF_EMPTY_IE",  value: "MXC_F_UART_INTEN_TX_THD" },
+      { ctrl: "RX_FULL_IE",        value: "MXC_F_UART_INTEN_RX_FULL" }
+    ];
+  } else if (it.datamodel.Name === "MAX32650" || it.datamodel.Name === "MAX32660" || it.datamodel.Name === "MAX32666") {
+    ie_table = [
+      { ctrl: "RX_FRAME_ERROR_IE", value: "MXC_F_UART_INT_EN_RX_FRAME_ERROR" },
+      { ctrl: "RX_PARTY_ERROR_IE", value: "MXC_F_UART_INT_EN_RX_PARITY_ERROR" },
+      { ctrl: "CTS_IE",            value: "MXC_F_UART_INT_EN_CTS" },
+      { ctrl: "RX_OVERRUN_IE",     value: "MXC_F_UART_INT_EN_RX_OVERRUN" },
+      { ctrl: "RX_THD_IE",         value: "MXC_F_UART_INT_EN_RX_FIFO_LVL" },
+      { ctrl: "TX_ONE_BYTE_IE",    value: "MXC_F_UART_INT_EN_TX_FIFO_AE" },
+      { ctrl: "TX_THD_IE",         value: "MXC_F_UART_INT_EN_TX_FIFO_LVL" },
+      { ctrl: "BREAK_IE",          value: "MXC_F_UART_INT_EN_BREAK" },
+      { ctrl: "RX_TO_IE",          value: "MXC_F_UART_INT_EN_RX_TO" },
+      { ctrl: "LAST_BREAK_IE",     value: "MXC_F_UART_INT_EN_LAST_BREAK" }
+    ];
+  } else {
+    ie_table = [
+      { ctrl: "RX_FRAME_ERROR_IE", value: "MXC_F_UART_INT_EN_RX_FERR" },
+      { ctrl: "RX_PARTY_ERROR_IE", value: "MXC_F_UART_INT_EN_RX_PAR" },
+      { ctrl: "CTS_IE",            value: "MXC_F_UART_INT_EN_CTS_EV" },
+      { ctrl: "RX_OVERRUN_IE",     value: "MXC_F_UART_INT_EN_RX_OV" },
+      { ctrl: "RX_THD_IE",         value: "MXC_F_UART_INT_EN_RX_THD" },
+      { ctrl: "TX_ONE_BYTE_IE",    value: "MXC_F_UART_INT_EN_TX_OB" },
+      { ctrl: "TX_HALF_EMPTY_IE",  value: "MXC_F_UART_INT_EN_TX_HE" }
+    ];
+  }
+  let arg = "";
+  for (ie of ie_table) {
+    if (getPeriConfigValue(it.instance, ie.ctrl, "FALSE") === "TRUE") {
+      if (arg !== "")
+        arg += " | ";
+      arg += ie.value;
+    }
+  }
+  return arg;
 }
 %>
-<% if (clockNodeExists(it.clocknode)) { %>
-<%   if (!getAssignedProjectForPeripheral(it.instance) && isClockSetTo([], it.clocknode, it.enable, "TRUE")) { %>
+<% if (isUnassignedPeripheralClockSetTo(it.instance, it.enable, "TRUE")) { %>
   /* The <%= it.instance %> peripheral is enabled on the clock canvas but is
    * not assigned to any core. In order to generate configuration code, please
    * assign the peripheral to a core.
    */
 
-<%   } else if (getAssignedPeripheral(it.instance)) { %>
+<% } else if (getAssignedPeripheral(it.instance)) { %>
   { /* Configure <%= it.instance %>.
-<%     if (getPeripheralDescription(it.instance)) { %>
+<%   if (getPeripheralDescription(it.instance)) { %>
      * This peripheral is used for <%= getPeripheralDescription(it.instance) %>.
-<%     } %>
-<%     if (!isClockSetTo([it.instance], it.clocknode, it.enable, "TRUE")) { %>
+<%   } %>
+<%   if (it.enable && !isPeripheralClockSetTo(it.instance, it.enable, "TRUE")) { %>
      * Note: This peripheral was not enabled on the clock configuration canvas.
      * Nonetheless, as a result of the following configuration, the peripheral will be
      * clocked on.
-<%     } %>
+<%   } %>
      */
 
     /* Initialize the peripheral. */
     result = MXC_UART_Init(MXC_<%= it.msdk_instance ?? it.instance %>,
-<%     if (it.datamodel.Name === "MAX32650") { %>
-                           <%= getUartBaud() %>);
-<%     } else if (it.datamodel.Name === "MAX32660" || it.datamodel.Name === "MAX32665") { %>
-                           <%= getUartBaud() %>,
+<%   if (it.datamodel.Name === "MAX32650") { %>
+                           <%= getUartBaud() %>U);
+<%   } else if (it.datamodel.Name === "MAX32660" || it.datamodel.Name === "MAX32666") { %>
+                           <%= getUartBaud() %>U,
                            MAP_A /*dummy*/);
-<%     } else if (it.datamodel.Name === "MAX32662") { %>
-                           <%= getUartBaud() %>,
-                           <%= getUartClock(it.clocknode, it.mux, it.clock_default) %>,
+<%   } else if (it.datamodel.Name === "MAX32662") { %>
+                           <%= getUartBaud() %>U,
+                           <%= getUartClock() %>,
                            MAP_A /*dummy*/);
-<%     } else { %>
-                           <%= getUartBaud() %>,
-                           <%= getUartClock(it.clocknode, it.mux, it.clock_default) %>);
-<%     } %>
+<%   } else { %>
+                           <%= getUartBaud() %>U,
+                           <%= getUartClock() %>);
+<%   } %>
     if (result != E_NO_ERROR) {
       return result;
     }
 
-<%     if (it.datamodel.Name === "MAX32650" || it.datamodel.Name === "MAX32660" || it.datamodel.Name === "MAX32665") { %>
-    result = MXC_UART_SetClockSource(MXC_<%= it.msdk_instance ?? it.instance %>, <%= getUartClock(it.clocknode, it.mux, it.clock_default) === "MXC_UART_APB_CLK" ? 1 : 0 %>);
-    if (result != E_NO_ERROR) {
+<%   if (it.datamodel.Name === "MAX32650" || it.datamodel.Name === "MAX32666") { %>
+    result = MXC_UART_SetClockSource(MXC_<%= it.msdk_instance ?? it.instance %>, <%= getUartClock() === "MXC_UART_APB_CLK" ? 1 : 0 %>);
+    if (result < 0) {
       return result;
     }
 
-<%     } %>
+<%   } %>
     /* Set Data Size. */
     result = MXC_UART_SetDataSize(MXC_<%= it.msdk_instance ?? it.instance %>, <%= getUARTDataSize() %>);
     if (result != E_NO_ERROR) {
@@ -208,31 +255,44 @@ function getUARTDmaRx() {
       return result;
     }
 
+<%   if (getPeriConfigValue(it.instance, "HW_FLOW_CTRL", null) !== null) { %>
     /* Set Flow Control. */
-<%     if (it.datamodel.Name === "MAX32665") { %>
+<%   if (it.datamodel.Name === "MAX32666") { %>
     result = MXC_UART_SetFlowCtrl(MXC_<%= it.msdk_instance ?? it.instance %>, <%= getUARTFlowCtrl() %>, MAP_A /*dummy*/);
-<%     } else { %>
+<%   } else { %>
     result = MXC_UART_SetFlowCtrl(MXC_<%= it.msdk_instance ?? it.instance %>, <%= getUARTFlowCtrl() %>);
-<%     } %>
+<%   } %>
     if (result != E_NO_ERROR) {
       return result;
     }
 
+<%   } %>
     /* Set Parity. */
     result = MXC_UART_SetParity(MXC_<%= it.msdk_instance ?? it.instance %>, <%= getUARTParity() %>);
     if (result != E_NO_ERROR) {
       return result;
     }
 
-<%     if (it.datamodel.Name === "MAX32650" || it.datamodel.Name === "MAX32660" || it.datamodel.Name === "MAX32665") { %>
+<%   if (it.datamodel.Name === "MAX32650" || it.datamodel.Name === "MAX32660" || it.datamodel.Name === "MAX32666") { %>
     /* Set Null Modem. */
     result = MXC_UART_SetNullModem(MXC_<%= it.msdk_instance ?? it.instance %>, <%= getUARTNullModem() %>);
     if (result != E_NO_ERROR) {
       return result;
     }
 
+<%   } %>
+<%   if (getUartIntMask() !== "") { %>
+
+    /* Enable interrupts. */
+<%     if (it.datamodel.Name === "MAX32650" || it.datamodel.Name === "MAX32666") { %>
+    MXC_UART_EnableInt(MXC_<%= it.msdk_instance ?? it.instance %>, <%= getUartIntMask() %>);
+<%     } else { %>
+    result = MXC_UART_EnableInt(MXC_<%= it.msdk_instance ?? it.instance %>, <%= getUartIntMask() %>);
+    if (result != E_NO_ERROR) {
+      return result;
+    }
 <%     } %>
+<%   } %>
   }
 
-<%   } %>
 <% } %>

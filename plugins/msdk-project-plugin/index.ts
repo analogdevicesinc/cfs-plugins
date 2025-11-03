@@ -13,8 +13,96 @@
  *
  */
 
-import { CfsCodeGenerationPlugin } from "../common/classes/cfs-code-generation-plugin.js";
+import path from "path";
+import {
+  CfsCodeGenerationService,
+  CfsConfig,
+  CfsEtaCodeGenerator,
+  CfsEtaProjectGenerator,
+  CfsFeatureScope,
+  CfsJsonProjectConfig,
+  CfsJsonSystemConfig,
+  CfsPluginInfo,
+  CfsPluginProperty,
+  CfsProject,
+  CfsProjectConfigService,
+  CfsProjectGenerationService,
+  CfsPropertyProviderService,
+  CfsSocControlsOverrideService,
+  CfsSocDataModel,
+  CfsSystemConfigService,
+  ConfiguredProject,
+  SocControl
+} from "cfs-plugins-api";
+import { PropertyProvider } from "./services/property-provider.js";
 
-class MsdkProjectPlugin extends CfsCodeGenerationPlugin {}
+class MsdkProjectPlugin
+  implements
+    CfsProjectGenerationService,
+    CfsCodeGenerationService,
+    CfsPropertyProviderService,
+    CfsSocControlsOverrideService,
+    CfsProjectConfigService,
+    CfsSystemConfigService
+{
+  private projectGenerator: CfsEtaProjectGenerator;
+  private codeGenerator: CfsEtaCodeGenerator;
+  private propertyProvider: PropertyProvider;
+  private projectConfig: CfsJsonProjectConfig;
+  private systemConfig: CfsJsonSystemConfig;
+
+  constructor(protected cfsPluginInfo: CfsPluginInfo) {
+    this.projectGenerator = new CfsEtaProjectGenerator(
+      path.dirname(cfsPluginInfo.pluginPath),
+      cfsPluginInfo.features.project
+    );
+    this.codeGenerator = new CfsEtaCodeGenerator(
+      path.dirname(cfsPluginInfo.pluginPath),
+      cfsPluginInfo.features.codegen
+    );
+    this.propertyProvider = new PropertyProvider(cfsPluginInfo);
+    this.projectConfig = new CfsJsonProjectConfig(cfsPluginInfo);
+    this.systemConfig = new CfsJsonSystemConfig(cfsPluginInfo);
+  }
+
+  async generateProject(
+    baseDir: string,
+    context: CfsProject
+  ): Promise<void> {
+    return this.projectGenerator.generateProject(baseDir, context);
+  }
+
+  async generateCode(
+    data: Record<string, unknown>,
+    baseDir: string
+  ): Promise<string[]> {
+    return this.codeGenerator.generateCode(data, baseDir);
+  }
+
+  getProperties(
+    scope: CfsFeatureScope,
+    context?: Record<string, unknown>
+  ): CfsPluginProperty[] {
+    return this.propertyProvider.getProperties(scope, context);
+  }
+
+  overrideControls(
+    scope: CfsFeatureScope,
+    soc: CfsSocDataModel
+  ): Record<string, SocControl[]> {
+    return this.propertyProvider.overrideControls(scope, soc);
+  }
+
+  async configureProject(
+    soc: string,
+    config: ConfiguredProject
+  ): Promise<ConfiguredProject> {
+    return this.projectConfig.configureProject(soc, config);
+  }
+
+  async configureSystem(config: CfsConfig): Promise<CfsConfig> {
+    return this.systemConfig.configureSystem(config);
+  }
+}
 
 export default MsdkProjectPlugin;

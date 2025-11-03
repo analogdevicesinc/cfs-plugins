@@ -1,0 +1,21 @@
+<%~ include("@copyrightHeader", it) %>
+
+#include "adi_initialize.h"
+#include <sys/platform.h>
+#include <sys/adi_core.h>
+
+int main(void)
+{
+  adi_initComponents();
+
+<% if (["adsp-sc834", "adsp-sc834w", "adsp-sc835", "adsp-sc835w"].includes(it.soc.toLowerCase())) { %>
+  /**
+   * The default startup code does not include any functionality to allow
+   * core 1 to enable core 2. A convenient way to enable
+   * core 2 is to use the adi_core_enable function.
+   */
+  adi_core_enable(ADI_CORE_ARM);
+
+<% } %>
+  return 0;
+}

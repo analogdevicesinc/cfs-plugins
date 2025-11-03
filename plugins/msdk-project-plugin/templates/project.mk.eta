@@ -27,19 +27,29 @@
 
 # Add your config here!
 
-<% if (["max32655", "max32690"].includes(it.soc.toLowerCase())) { %>
+<% if (["max32655", "max32690", "max78000", "max78002"].includes(it.soc.toLowerCase())) { %>
 # To load an application on the RISC-V core, uncomment the following
 # lines, and set the RISCV_APP variable to point to the RISC-V application.
 #RISCV_LOAD=1
 #RISCV_APP=riscv
 
 <% } %>
-<% it.platformConfig.Cflags.forEach(function (flag) { %>
+<% if (["max32650", "max32655", "max32657", "max32658", "max32670", "max32690", "max78000", "max78002"].includes(it.soc.toLowerCase())) { %>
+# Add library dependencies
+include config.mk
+
+# Touch project.mk if config.mk changes, so that we rebuild all sources and libraries
+CONFIGMK ?= $(abspath ./config.mk)
+$(PROJECTMK): $(CONFIGMK)
+	@touch $(PROJECTMK)
+
+<% } %>
+<% it.platformConfig.Cflags.split("\n").forEach(function (flag) { %>
 PROJ_CFLAGS += <%= flag %>
 
 <% }) %>
+<% if (["max32650", "max32655", "max32657", "max32658", "max32670", "max32690", "max78000", "max78002"].includes(it.soc.toLowerCase())) { %>
 
-<% if (["max32655", "max32657", "max32690"].includes(it.soc.toLowerCase())) { %>
 # Use the generated linker file from the project
 LINKERFILE = memory.ld
 <% } %>

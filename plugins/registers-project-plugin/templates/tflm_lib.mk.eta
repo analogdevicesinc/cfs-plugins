@@ -1,0 +1,135 @@
+#=============================================================================
+# SOURCE DIRECTORIES CONFIGURATION
+#=============================================================================
+
+# Project source directories
+TFLM_SRC_ROOT=$(CFSAI_PATH)/libs/sharc-fx/tflite-micro/src
+
+TFLM_SRC_DIRS = $(TFLM_SRC_ROOT)/tensorflow/lite/core/api
+TFLM_SRC_DIRS += $(TFLM_SRC_ROOT)/tensorflow/lite/core/c
+TFLM_SRC_DIRS += $(TFLM_SRC_ROOT)/tensorflow/lite/experimental/microfrontend/lib
+TFLM_SRC_DIRS += $(TFLM_SRC_ROOT)/tensorflow/lite/kernels/internal/optimized
+TFLM_SRC_DIRS += $(TFLM_SRC_ROOT)/tensorflow/lite/kernels/internal/reference
+TFLM_SRC_DIRS += $(TFLM_SRC_ROOT)/tensorflow/lite/kernels/internal
+TFLM_SRC_DIRS += $(TFLM_SRC_ROOT)/tensorflow/lite/kernels
+TFLM_SRC_DIRS += $(TFLM_SRC_ROOT)/tensorflow/lite/micro/arena_allocator
+TFLM_SRC_DIRS += $(TFLM_SRC_ROOT)/tensorflow/lite/micro/kernels
+TFLM_SRC_DIRS += $(TFLM_SRC_ROOT)/tensorflow/lite/micro/memory_planner
+TFLM_SRC_DIRS += $(TFLM_SRC_ROOT)/tensorflow/lite/micro/models
+TFLM_SRC_DIRS += $(TFLM_SRC_ROOT)/tensorflow/lite/micro
+TFLM_SRC_DIRS += $(TFLM_SRC_ROOT)/tensorflow/lite/micro/tflite_bridge
+TFLM_SRC_DIRS += $(TFLM_SRC_ROOT)/tensorflow/lite/schema
+TFLM_SRC_DIRS += $(TFLM_SRC_ROOT)/third_party/kissfft
+TFLM_SRC_DIRS += $(TFLM_SRC_ROOT)/third_party/kissfft/tools
+
+#=============================================================================
+# BUILD CONFIGURATION
+#=============================================================================
+
+TFLM_BUILD_DIR = tflm_build
+TFLM_OBJ_DIR = $(TFLM_BUILD_DIR)/obj
+
+# Target executable
+TFLM_TARGET = Lib/libtflm.a
+
+#=============================================================================
+#  ADD ADDITIONAL LIB TO THE MAIN PROJECT MAKEFILE
+#=============================================================================
+
+ADDITIONAL_LIBS += $(TFLM_TARGET)
+LDFLAGS += -LLib -ltflm
+
+#=============================================================================
+# DYNAMIC SOURCE DISCOVERY
+#=============================================================================
+
+# Improved source discovery to avoid duplicates
+define discover_tflm_sources
+$(sort $(foreach base,$(TFLM_SRC_DIRS),\
+    $(wildcard $(base)/*.c $(base)/*.cc $(base)/*.cpp)))
+endef
+
+# Get unique source files with explicit sorting
+TFLM_C_SRCS := $(sort $(filter %.c,$(call discover_tflm_sources)))
+TFLM_CXX_SRCS := $(sort $(filter %.cc %.cpp,$(call discover_tflm_sources)))
+
+# Combined source files
+ALL_TFLM_SRCS = $(TFLM_C_SRCS) $(TFLM_CXX_SRCS)
+
+#=============================================================================
+# INCLUDE PATHS
+#=============================================================================
+
+# Include paths for the TFLM header files
+TFLM_BUILD_INCLUDES =  -I $(TFLM_SRC_ROOT)
+TFLM_BUILD_INCLUDES += -I $(TFLM_SRC_ROOT)/tensorflow/lite/kernels/internal/optimized
+TFLM_BUILD_INCLUDES += -I $(TFLM_SRC_ROOT)/third_party
+TFLM_BUILD_INCLUDES += -I $(TFLM_SRC_ROOT)/third_party/kissfft/tools
+TFLM_BUILD_INCLUDES += -I $(TFLM_SRC_ROOT)/third_party/kissfft
+TFLM_BUILD_INCLUDES += -I $(TFLM_SRC_ROOT)/third_party/flatbuffers/include
+TFLM_BUILD_INCLUDES += -I $(TFLM_SRC_ROOT)/third_party/gemmlowp
+TFLM_BUILD_INCLUDES += -I $(TFLM_SRC_ROOT)/third_party/gemmlowp/internal
+TFLM_BUILD_INCLUDES += -I $(TFLM_SRC_ROOT)/third_party/ruy/ruy/profiler
+TFLM_BUILD_INCLUDES += -I $(TFLM_SRC_ROOT)/third_party/ruy 
+TFLM_BUILD_INCLUDES += -I $(TFLM_SRC_ROOT)/third_party/gemmlowp/fixedpoint
+
+#=============================================================================
+# OBJECT FILE GENERATION
+#=============================================================================
+
+# Clean path handling without double slashes
+define clean_path
+$(patsubst %/,%,$(subst $(TFLM_SRC_ROOT),tflm,$(1)))
+endef
+
+# Improved object path generation
+define make_tflm_obj_path
+$(TFLM_OBJ_DIR)/$(call clean_path,$(dir $(1)))/$(notdir $(patsubst %.c,%.o,$(patsubst %.cc,%.o,$(patsubst %.cpp,%.o,$(1)))))
+endef
+
+# Generate object lists
+TFLM_C_OBJS := $(foreach src,$(TFLM_C_SRCS),$(call make_tflm_obj_path,$(src)))
+TFLM_CXX_OBJS := $(foreach src,$(TFLM_CXX_SRCS),$(call make_tflm_obj_path,$(src)))
+ALL_TFLM_OBJS := $(sort $(TFLM_C_OBJS) $(TFLM_CXX_OBJS))
+
+#=============================================================================
+# COMPILATION RULES
+#=============================================================================
+
+define tflm_compile_rule
+$(TFLM_OBJ_DIR)/$(call clean_path,$(dir $(1)))/$(notdir $(basename $(1))).o: $(1)
+	@echo "Compiling $$<"
+	@mkdir -p $$(dir $$@)
+	$(if $(filter %.c,$(1)),\
+		$(CC) $(CFLAGS) $(INCLUDES) $(TFLM_BUILD_INCLUDES) -c $$< -o $$@,\
+		$(CXX) $(CXXFLAGS) $(INCLUDES) $(TFLM_BUILD_INCLUDES) -c $$< -o $$@)
+endef
+
+# Generate the compilation rules for each TFLM source file
+$(foreach src,$(ALL_TFLM_SRCS),$(eval $(call tflm_compile_rule,$(src))))
+
+
+#=============================================================================
+# BUILD TARGETS
+#=============================================================================
+
+# Build TFLM static library
+$(TFLM_TARGET): $(ALL_TFLM_OBJS)
+	@echo "Creating TFLM library"
+	@mkdir -p $(dir $@)
+	xt-ar -r $@ $^
+
+# Make the library target dependent on object files
+.PHONY: tflm_lib
+tflm_lib: $(TFLM_TARGET)
+
+#=============================================================================
+# CLEAN TARGETS
+#=============================================================================
+
+# Clean current build type
+.PHONY: tflm_clean
+tflm_clean:
+	@echo "Cleaning $(BUILD_TYPE) build..."
+	@rm -rf $(TFLM_BUILD_DIR)
+	@echo " $(BUILD_TYPE) build cleaned"

@@ -13,8 +13,6 @@
  *
  */
 
-// Include common plugin code
-eval(this.render("common/utilities/utilities.js"));
 %>
 <% if (!getProject()?.Partitions.find(p => getPartitionName(p, "NAME_OVERRIDE") === "ROM")) { %>
     ROM         (rx)  : ORIGIN = 0x00000000, LENGTH = 0x00020000 /* 128kB ROM */

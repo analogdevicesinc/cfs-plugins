@@ -1,0 +1,35 @@
+<%~ include("@msdkBoardName", it) %>
+<%~ include("@normalizeSoc", it) %>
+<%~ include("@sharcfxUtils", it) %>
+{
+  "configurations": [
+    {
+      "name": "Win32",
+      "includePath": [
+        "${default}",
+        "${workspaceFolder}",
+        "${workspaceFolder}/**",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/Device/ADSP-SC83x_DFP/2.0.0/Include/**",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/Device/ADSP-SC8xx_SSDD/1.0.1/Include/**",
+        "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/5.9.0/Core/Include"
+      ],
+      "defines": [
+        "${config:cfs.project.board}",
+        "TARGET=<%= it.processorMacro(it.soc) %>",
+        "CORE2",
+        "-D__SILICON_REVISION__=<%= it.siliconRevision(it.soc) %>",
+        "__GNUC__"
+      ],
+      "intelliSenseMode": "gcc-arm",
+      "compilerPath": "${config:cfs.toolchain.armAArch32GCC.path}/bin/arm-none-eabi-gcc.exe",
+      "browse": {
+        "path": [
+          "${default}",
+          "${workspaceFolder}",
+          "${workspaceFolder}/**"
+        ]
+      }
+    }
+  ],
+  "version": 4
+}

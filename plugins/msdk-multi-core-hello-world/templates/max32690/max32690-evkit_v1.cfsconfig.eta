@@ -71,12 +71,11 @@
       "CoreId": "CM4",
       "ProjectId": "CM4",
       "PluginId": "com.analog.project.msdk.plugin",
-      "PluginVersion": "1.0.0",
+      "PluginVersion": "1.1.0",
       "FirmwarePlatform": "msdk",
       "ExternallyManaged": false,
       "PlatformConfig": {
-        "ProjectName": "m4",
-        "Cflags": ["-fdump-rtl-expand","-fdump-rtl-dfinish","-fdump-ipa-cgraph","-fstack-usage","-gdwarf-4"]
+        "ProjectName": "m4"
       },
       "Name": "ARM Cortex-M4",
       "Description": "ARM Cortex-M4",
@@ -170,6 +169,65 @@
             "HW_FLOW_CTRL": "DISABLED",
             "BAUD": "115200"
           }
+        }
+      ]
+    },
+    {
+      "CoreId": "RV",
+      "ProjectId": "RV",
+      "PluginId": "com.analog.project.msdk.plugin",
+      "PluginVersion": "1.1.0",
+      "FirmwarePlatform": "msdk",
+      "ExternallyManaged": false,
+      "Name": "RISC-V (RV32)",
+      "Description": "RISC-V (RV32)",
+      "CoreNum": 1,
+      "Partitions": [
+        {
+          "Name": "RISCV_FLASH",
+          "StartAddress": "0x10300000",
+          "Size": 262144,
+          "IsOwner": true,
+          "Access": "R",
+          "Config": {
+            "NAME_OVERRIDE": "FLASH"
+          }
+        },
+        {
+          "Name": "MAILBOX_0",
+          "StartAddress": "0x20100000",
+          "Size": 64,
+          "IsOwner": false,
+          "Access": "R/W",
+          "Config": {
+          }
+        },
+        {
+          "Name": "MAILBOX_1",
+          "StartAddress": "0x20100040",
+          "Size": 64,
+          "IsOwner": false,
+          "Access": "R/W",
+          "Config": {
+          }
+        },
+        {
+          "Name": "RISCV_SRAM",
+          "StartAddress": "0x20100080",
+          "Size": 130944,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "NAME_OVERRIDE": "SRAM"
+          }
+        }
+      ],
+      "Peripherals": [
+        {
+          "Name": "RV mtime",
+          "Signals": [],
+          "Config": {
+          }
         },
         {
           "Name": "GPIO0",
@@ -236,69 +294,9 @@
           ],
           "Config": {}
         }
-      ]
-    },
-    {
-      "CoreId": "RV",
-      "ProjectId": "RV",
-      "PluginId": "com.analog.project.msdk.plugin",
-      "PluginVersion": "1.0.0",
-      "FirmwarePlatform": "msdk",
-      "ExternallyManaged": false,
-      "Name": "RISC-V (RV32)",
-      "Description": "RISC-V (RV32)",
-      "CoreNum": 1,
-      "Partitions": [
-        {
-          "Name": "RISCV_FLASH",
-          "StartAddress": "0x10300000",
-          "Size": 262144,
-          "IsOwner": true,
-          "Access": "R",
-          "Config": {
-            "NAME_OVERRIDE": "FLASH"
-          }
-        },
-        {
-          "Name": "MAILBOX_0",
-          "StartAddress": "0x20100000",
-          "Size": 64,
-          "IsOwner": false,
-          "Access": "R/W",
-          "Config": {
-          }
-        },
-        {
-          "Name": "MAILBOX_1",
-          "StartAddress": "0x20100040",
-          "Size": 64,
-          "IsOwner": false,
-          "Access": "R/W",
-          "Config": {
-          }
-        },
-        {
-          "Name": "RISCV_SRAM",
-          "StartAddress": "0x20100080",
-          "Size": 130944,
-          "IsOwner": true,
-          "Access": "R/W",
-          "Config": {
-            "NAME_OVERRIDE": "SRAM"
-          }
-        }
-      ],
-      "Peripherals": [
-        {
-          "Name": "RV mtime",
-          "Signals": [],
-          "Config": {
-          }
-        }
       ],
       "PlatformConfig": {
-        "ProjectName": "riscv",
-        "Cflags": ["-fdump-rtl-expand","-fdump-rtl-dfinish","-fdump-ipa-cgraph","-fstack-usage","-gdwarf-4"]
+        "ProjectName": "riscv"
       }
     }
   ],

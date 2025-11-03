@@ -1,0 +1,26 @@
+/*
+** adi_initialize.c 
+**
+** Copyright (C) <%= new Date().getFullYear() %> Analog Devices Inc., All Rights Reserved.
+**
+*/
+
+#include <sys/platform.h>
+#include <services/int/adi_sec.h>
+
+#include "adi_initialize.h"
+
+extern int32_t adi_initpinmux(void);
+
+int32_t adi_initComponents(void)
+{
+  int32_t result = 0;
+
+  result = adi_sec_Init();
+
+  if (result == 0) {
+    result = adi_initpinmux();
+  }
+
+  return result;
+}

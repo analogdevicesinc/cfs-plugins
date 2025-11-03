@@ -4,7 +4,7 @@ The CodeFusion Studio (CFS) Plugin API provides a dynamic interface for generati
 
 The Plugin API uses TypeScript for the plugin definitions and transpiles to CommonJS.
 
-The plugins are dynamically loaded by CodeFusion Studio at runtime. For more information on how the plugins interface with CodeFusion Studio, refer to the [CodeFusion Studio User Guide](https://developer.analog.com/docs/codefusion-studio/1.1.0/user-guide/plugins/plugin-integration-overview/).
+The plugins are dynamically loaded by CodeFusion Studio at runtime. For more information on how the plugins interface with CodeFusion Studio, refer to the [CodeFusion Studio User Guide](https://developer.analog.com/docs/codefusion-studio/latest/user-guide/plugins/plugin-integration-overview/).
 
 ## Get Started
 
@@ -12,18 +12,46 @@ See [DEVELOPMENT.md](../DEVELOPMENT.md)
 
 ## Plugin Structure
 
-Each plugin is expected to live in its own directory with a `.cfsplugin` file that describes the plugin, an `index.cjs` file containing the exported `CfsPlugin`, and optional files and templates to be copied during workspace, project or code generation.
+Each plugin resides in its own directory and includes:
+
+- A `.cfsplugin` file that declares metadata and services.
+- An optional `index.ts` (compiled to `index.cjs`) to override default behavior
+- Optional `files/` and `templates/` directories used during generation
+
+> **Note**
+> If you rely on the default plugin infrastructure [`cfs-services.ts`](./src/types/cfs-services.ts), files in the `templates` directory are processed using [Eta](https://eta.js.org/docs/). If you define your own plugin logic in `index.ts`, you're free to use any templating engine or code generation strategy.
 
 ### .cfsplugin File
 
-The .cfsplugin file describes the plugin's attributes and features, including identifier (ID), name, version, etc. See [cfs-plugin-info.ts](./src/types/cfs-plugin-info.ts).
+This file defines the plugin’s metadata and the services it implements. In many cases, it's the only file you need to create a functioning plugin. Fields include:
+
+- `pluginId`, `pluginName`, `pluginVersion`
+- `supportedSoCs`, `supportedBoards`, etc.
+- A `features` block that declares one or more of:
+  - `workspace`
+  - `project`
+  - `codegen`
+- A `properties` block that defines plugin properties that are displayed in the System Planner.
+
+See [cfs-plugin-info.ts](./src/types/cfs-plugin-info.ts) for the full schema.
+
+A plugin that only includes a `.cfsplugin` file (with no `index.ts`) will be constructed using a generic plugin instance ([`cfs-generic-plugin.ts`](./src/generic/cfs-generic-plugin.ts), which uses [Eta](https://eta.js.org/docs/) as the default templating engine for rendering files during project and code generation.
+
+### Service Implementation
+
+Plugins can override default behavior by exporting a class from `index.ts`. This class must implement one or more service interfaces defined in [`cfs-services.ts`](./src/types/cfs-services.ts), such as `CfsWorkspaceGenerationService` or `CfsProjectGenerationService`. A single plugin can provide multiple services by implementing the corresponding interfaces.
+
+You can construct a custom class using the generic components provided in [`api/src/generic/components`](./src/generic/components/), or define your own service implementations from scratch. For example, you might replace the default Eta-based code generator with a different templating engine, as long as your implementation satisfies the required service interface (`cfs-services.ts`).
 
 ### Plugin Properties
 
-The plugin properties allow flexible options in the CodeFusion Studio UI. The UI queries the plugin for all properties, then displays them to the user based on the option type. All user selections are stored in the `.cfsworkspace` or `.cfsconfig` file, then passed to the code generator plugin during workspace, project and code generation. See [cfs-plugin-property.ts](./src/types/cfs-plugin-property.ts).
+Plugins can define custom configuration fields for the System Planner UI. These properties are shown to the user during workspace or project setup and are saved in `.cfsworkspace` or `.cfsconfig` files.
 
-### CfsPlugin Class
+You can define properties in one of two ways:
 
-CodeFusion Studio dynamically loads the exported [CfsPlugin](./src/cfs-plugin.ts) class from `index.cjs`.
+- Declaratively, by adding a `properties` block under the relevant service in the `.cfsplugin` file.
+- Programmatically, by implementing the `CfsPropertyProviderService` interface in `index.ts`.
 
-The CfsPlugin implementation must provide `CfsGenerators` through the `getGenerator` API based on the feature scope supported by the plugin and defined by the `.cfsplugin` file. Plugins can provide multiple generator types.
+At runtime, all declared properties are collected and passed to the plugin’s code generation logic as part of the context.
+
+See [`CfsPluginProperty`](./src/types/cfs-plugin-property.ts) for supported fields and usage.

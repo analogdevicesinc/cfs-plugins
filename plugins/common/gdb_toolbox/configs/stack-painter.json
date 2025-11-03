@@ -1,0 +1,17 @@
+{
+  "name": "Paint Stack",
+  "description": "Paint the stack with a pattern used to calculate the stack high-water mark. Call this script before calling High-water Analyzer.",
+  "version": "1.0.0",
+  "commands": [
+    {
+      "command": "source {defaultScriptsDirectory}/stack-painter.gdb",
+      "actions": [
+        {
+          "type": "appendFile",
+          "filePath": "gdb_toolbox/reports/fault_analyzer.md",
+          "content": "${markdownReport}"
+        }
+      ]
+    }
+  ]
+}

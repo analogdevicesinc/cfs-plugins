@@ -86,12 +86,11 @@
       "CoreId": "CM4",
       "ProjectId": "CM4",
       "PluginId": "com.analog.project.msdk.plugin",
-      "PluginVersion": "1.0.0",
+      "PluginVersion": "1.1.0",
       "FirmwarePlatform": "msdk",
       "ExternallyManaged": false,
       "PlatformConfig": {
-        "ProjectName": "m4",
-        "Cflags": ["-fdump-rtl-expand","-fdump-rtl-dfinish","-fdump-ipa-cgraph","-fstack-usage","-gdwarf-4"]
+        "ProjectName": "m4"
       },
       "Name": "ARM Cortex-M4",
       "Description": "ARM Cortex-M4",
@@ -215,52 +214,6 @@
             "HW_FLOW_CTRL": "DISABLED",
             "BAUD": "115200"
           }
-        },
-        {
-          "Name": "GPIO0",
-          "Signals": [
-            {
-              "Name": "P0.2",
-              "Config": {
-                "MODE": "IN",
-                "PWR": "VDDIO",
-                "PS": "STRONG_PU"
-              }
-            },
-            {
-              "Name": "P0.3",
-              "Config": {
-                "MODE": "IN",
-                "PWR": "VDDIO",
-                "PS": "STRONG_PU"
-              }
-            },
-            {
-              "Name": "P0.18",
-              "Config": {
-                "MODE": "OUT",
-                "PWR": "VDDIO",
-                "DS": "0"
-              }
-            },
-            {
-              "Name": "P0.19",
-              "Config": {
-                "MODE": "OUT",
-                "PWR": "VDDIO",
-                "DS": "0"
-              }
-            },
-            {
-              "Name": "P0.26",
-              "Config": {
-                "MODE": "OUT",
-                "PWR": "VDDIO",
-                "DS": "0"
-              }
-            }
-          ],
-          "Config": {}
         }
       ]
     },
@@ -268,7 +221,7 @@
       "CoreId": "RV",
       "ProjectId": "RV",
       "PluginId": "com.analog.project.msdk.plugin",
-      "PluginVersion": "1.0.0",
+      "PluginVersion": "1.1.0",
       "FirmwarePlatform": "msdk",
       "ExternallyManaged": false,
       "Name": "RISC-V (RV32)",
@@ -320,11 +273,56 @@
           "Signals": [],
           "Config": {
           }
+        },
+        {
+          "Name": "GPIO0",
+          "Signals": [
+            {
+              "Name": "P0.2",
+              "Config": {
+                "MODE": "IN",
+                "PWR": "VDDIO",
+                "PS": "STRONG_PU"
+              }
+            },
+            {
+              "Name": "P0.3",
+              "Config": {
+                "MODE": "IN",
+                "PWR": "VDDIO",
+                "PS": "STRONG_PU"
+              }
+            },
+            {
+              "Name": "P0.18",
+              "Config": {
+                "MODE": "OUT",
+                "PWR": "VDDIO",
+                "DS": "0"
+              }
+            },
+            {
+              "Name": "P0.19",
+              "Config": {
+                "MODE": "OUT",
+                "PWR": "VDDIO",
+                "DS": "0"
+              }
+            },
+            {
+              "Name": "P0.26",
+              "Config": {
+                "MODE": "OUT",
+                "PWR": "VDDIO",
+                "DS": "0"
+              }
+            }
+          ],
+          "Config": {}
         }
       ],
       "PlatformConfig": {
-        "ProjectName": "riscv",
-        "Cflags": ["-fdump-rtl-expand","-fdump-rtl-dfinish","-fdump-ipa-cgraph","-fstack-usage","-gdwarf-4"]
+        "ProjectName": "riscv"
       }
     }
   ],

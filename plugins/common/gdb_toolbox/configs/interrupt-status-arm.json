@@ -1,0 +1,18 @@
+{
+  "name": "Interrupt Status (ARM)",
+  "description": "Analyzes IRQ and system handlers in the target application.",
+  "version": "1.0.0",
+  "core": "arm",
+  "commands": [
+    {
+      "command": "source {defaultScriptsDirectory}/interrupt-status-arm.gdb",
+      "actions": [
+        {
+          "type": "appendFile",
+          "filePath": "gdb_toolbox/reports/fault_analyzer.md",
+          "content": "${markdownReport}"
+        }
+      ]
+    }
+  ]
+}

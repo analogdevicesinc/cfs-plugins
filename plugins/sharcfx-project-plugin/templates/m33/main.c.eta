@@ -1,0 +1,10 @@
+<%~ include("@copyrightHeader", it) %>
+
+#include <stdint.h>
+
+int32_t adi_initpinmux(void);
+
+int main(void) {
+  adi_initpinmux();
+  return 0;
+}

@@ -26,13 +26,23 @@
 
 # Add your config here!
 
+<% if (["max32655", "max32690", "max78000", "max78002"].includes(it.soc.toLowerCase())) { %>
+# Add library dependencies
+include config.mk
+
+# Touch project.mk if config.mk changes, so that we rebuild all sources and libraries
+CONFIGMK ?= $(abspath ./config.mk)
+$(PROJECTMK): $(CONFIGMK)
+	@touch $(PROJECTMK)
+
+<% } %>
 # Add compiler flags to enable source navigation in ELF File Explorer
 PROJ_CFLAGS += -fdump-rtl-expand
 PROJ_CFLAGS += -fdump-rtl-dfinish
 PROJ_CFLAGS += -fdump-ipa-cgraph
 PROJ_CFLAGS += -fstack-usage
 PROJ_CFLAGS += -gdwarf-4
-<% if (["max32655", "max32657", "max32690"].includes(it.soc.toLowerCase())) { %>
+<% if (["max32655", "max32690", "max78000", "max78002"].includes(it.soc.toLowerCase())) { %>
 
 # Use the generated linker file from the project
 LINKERFILE = memory.ld

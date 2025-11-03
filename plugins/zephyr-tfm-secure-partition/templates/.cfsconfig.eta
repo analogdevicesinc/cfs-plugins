@@ -1,0 +1,10 @@
+{
+  "Copyright": "Copyright (c) <%= new Date().getFullYear() %> Analog Devices, Inc.  All rights reserved. This software is proprietary to Analog Devices, Inc. and its licensors.",
+  "DataModelVersion": "<%= it.dataModelVersion || '1.0.0' %>",
+  "DataModelSchemaVersion": "<%= it.dataModelSchemaVersion || '1.0.0' %>",
+  "Soc": "<%= it.soc %>",
+  "Package": "<%= it.package %>",
+  "BoardName": "<%= it.board || '' %>",
+  "Timestamp": "<%= new Date().toISOString() %>",
+<%~ include("./" + it.soc.toLowerCase() + "/" + it.soc.toLowerCase() + "-" + it.board.toLowerCase() + ".cfsconfig.eta", it) %>
+}

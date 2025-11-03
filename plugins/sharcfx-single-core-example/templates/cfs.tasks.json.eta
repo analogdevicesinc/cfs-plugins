@@ -1,0 +1,82 @@
+<%~ include("@sharcfxBoardName", it) %>
+<%~ include("@normalizeSoc", it) %>
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "shell",
+      "command": "make -j 8 clean --output-sync=target --no-print-directory TARGET=${config:cfs.project.target} BOARD=${config:cfs.project.board} SFX_PATH=${cfs:tool.path.xtensa-sharcfx} MAKE=make PROJECT=${config:cfs.project.name}",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "PATH" : "${config:cfs.sdk.path}/Tools/git/usr/bin;${config:cfs.sdk.path};${cfs:tool.path.xtensa-sharcfx};${cfs:tool.path.xtensa-sharcfx}/Xtensa/XtensaTools/bin;${env:PATH}",
+          "PYTHON_CMD": "none",
+          "CMAKE_PREFIX_PATH": "none",
+          "GIT_EXEC_PATH": "",
+          "ZEPHYR_BASE": "none",
+          "PYTHONHOME": "none",
+          "PYTHONPATH": "",
+          "CFSAI_PATH" : "${config:cfs.sdk.path}/Tools/cfsai"
+        },
+        "shell": {
+          "args": [
+            "/c"
+          ],
+          "executable": "${env:windir}\\System32\\cmd.exe"
+        }
+      },
+      "group": "build",
+      "label": "clean"
+    },
+    {
+      "type": "shell",
+      "command": "make -j 8 tflm_clean --output-sync=target --no-print-directory TARGET=${config:cfs.project.target} BOARD=${config:cfs.project.board} SFX_PATH=${cfs:tool.path.xtensa-sharcfx} MAKE=make PROJECT=${config:cfs.project.name}",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "PATH" : "${config:cfs.sdk.path}/Tools/git/usr/bin;${config:cfs.sdk.path};${cfs:tool.path.xtensa-sharcfx};${cfs:tool.path.xtensa-sharcfx}/Xtensa/XtensaTools/bin;${env:PATH}",
+          "PYTHON_CMD": "none",
+          "CMAKE_PREFIX_PATH": "none",
+          "GIT_EXEC_PATH": "",
+          "ZEPHYR_BASE": "none",
+          "PYTHONHOME": "none",
+          "PYTHONPATH": "",
+          "CFSAI_PATH" : "${config:cfs.sdk.path}/Tools/cfsai"
+        },
+        "shell": {
+          "args": [
+            "/c"
+          ],
+          "executable": "${env:windir}\\System32\\cmd.exe"
+        }
+      },
+      "group": "build",
+      "label": "clean TensorFlow Lite library"
+    },
+    {
+      "type": "shell",
+      "command": "make -r -j 8 --output-sync=target --no-print-directory all TARGET=${config:cfs.project.target} BOARD=${config:cfs.project.board} SFX_PATH=${cfs:tool.path.xtensa-sharcfx} MAKE=make PROJECT=${config:cfs.project.name}",
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "PATH" : "${config:cfs.sdk.path}/Tools/git/usr/bin;${config:cfs.sdk.path};${cfs:tool.path.xtensa-sharcfx};${cfs:tool.path.xtensa-sharcfx}/Xtensa/XtensaTools/bin;${env:PATH}",
+          "PYTHON_CMD": "none",
+          "CMAKE_PREFIX_PATH": "none",
+          "GIT_EXEC_PATH": "",
+          "ZEPHYR_BASE": "none",
+          "PYTHONHOME": "none",
+          "PYTHONPATH": "",
+          "CFSAI_PATH" : "${config:cfs.sdk.path}/Tools/cfsai"
+        },
+        "shell": {
+          "args": [
+            "/c"
+          ],
+          "executable": "${env:windir}\\System32\\cmd.exe"
+        }
+      },
+      "group": "build",
+      "label": "build"
+    }
+  ]
+}

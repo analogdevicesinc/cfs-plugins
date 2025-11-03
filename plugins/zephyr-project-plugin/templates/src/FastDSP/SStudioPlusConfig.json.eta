@@ -1,0 +1,46 @@
+{
+  "Name": "SStudioPlusConfig.json",
+  "Version": "1.0.0.0",
+  "Description": "A sample CodeFusion Studio - SigmaStudio+ integration configuration file",
+  "BoardType": "Standard",
+  "BoardName": "AnalogDevices.Plugins.Platforms.ADZSSC589EZLITE",
+  "BoardRevision": "2.1",
+  "BoardDescription": "Custom board evaluation",
+  "Components": [
+    {
+      "Name": "ADSP-215xx/SC5xx (2x SH+)",
+      "Description": "Griffin processor with two SHARC cores",
+      "Type": "Processor",
+      "Index": 0,
+      "Properties": {
+        "MemoryConfig": [
+          {
+            "Name": "L1 DRAM",
+            "Description": "L1 priority memory",
+            "Attributes": [],
+            "Address": "0x2f780000",
+            "Size": 524287
+          },
+          {
+            "Name": "L2 RAM",
+            "Description": "L2 priority memory",
+            "Attributes": [
+              "Uncached"
+            ],
+            "Address": "0x20000000",
+            "Size": 2088959
+          },
+          {
+            "Name": "L3 RAM",
+            "Description": "L3 RAM priority memory",
+            "Attributes": [
+              "Uncached"
+            ],
+            "Address": "0x80000000",
+            "Size": 536870911
+          }
+        ]
+      }
+    }
+  ]
+}

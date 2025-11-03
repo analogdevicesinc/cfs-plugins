@@ -1,6 +1,9 @@
-<%~ include("../../../common/utilities/msdk-board-name.eta", it) %>
-<%~ include("../../../common/utilities/normalize-soc.eta", it) %>
+<%~ include("@msdkBoardName", it) %>
+<%~ include("@normalizeSoc", it) %>
 {
+    "env": {
+        "cfs.msdk.path": ""
+    },
     "configurations": [
         {
             "name": "Win32",
@@ -8,7 +11,7 @@
                 "${default}",
                 "${workspaceFolder}",
                 "${workspaceFolder}/**",
-                "${config:cfs.sdk.path}/SDK/MAX/Libraries/Boards/<%= it.normalizeSoc() %>/<%= it.getMsdkBoardName() %>/Include",
+                "${config:cfs.sdk.path}/SDK/MAX/Libraries/Boards/<%= it.msdkInflectionPoint(it.soc) %>/<%= it.getMsdkBoardName() %>/Include",
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers",
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Camera",
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Display",
@@ -17,7 +20,7 @@
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Touchscreen",
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/SRAM",
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Display/fonts/",
-                "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Include/<%= it.normalizeSoc() %>/",
+                "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Include/<%= it.msdkInflectionPoint(it.soc) %>/",
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/ADC",
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/AES",
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/CAMERAIF",
@@ -41,12 +44,12 @@
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/UART",
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/WDT",
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/WUT",
-                "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/Device/Maxim/<%= it.normalizeSoc() %>/Include",
+                "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/Device/Maxim/<%= it.msdkInflectionPoint(it.soc) %>/Include",
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/5.9.0/Core/Include"
             ],
             "defines": [
                 "${config:cfs.project.board}",
-                "TARGET=<%= it.normalizeSoc() %>",
+                "TARGET=<%= it.msdkInflectionPoint(it.soc) %>",
                 "__GNUC__"
             ],
             "intelliSenseMode": "gcc-arm",
@@ -56,8 +59,8 @@
                     "${default}",
                     "${workspaceFolder}",
                     "${workspaceFolder}/**",
-                    "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/Device/Maxim/<%= it.normalizeSoc() %>/Source",
-                    "${config:cfs.sdk.path}/SDK/MAX/Libraries/Boards/<%= it.normalizeSoc() %>/<%= it.getMsdkBoardName() %>/Source",
+                    "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/Device/Maxim/<%= it.msdkInflectionPoint(it.soc) %>/Source",
+                    "${config:cfs.sdk.path}/SDK/MAX/Libraries/Boards/<%= it.msdkInflectionPoint(it.soc) %>/<%= it.getMsdkBoardName() %>/Source",
                     "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers",
                     "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Camera",
                     "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Display",
@@ -66,7 +69,7 @@
                     "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Touchscreen",
                     "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/SRAM",
                     "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Display/fonts/",
-                    "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/Device/Maxim/<%= it.normalizeSoc() %>/Source/GCC"
+                    "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/Device/Maxim/<%= it.msdkInflectionPoint(it.soc) %>/Source/GCC"
                 ]
             }
         },
@@ -74,7 +77,7 @@
             "name": "Linux",
             "includePath": [
                 "${default}",
-                "${config:cfs.sdk.path}/SDK/MAX/Libraries/Boards/<%= it.normalizeSoc() %>/<%= it.getMsdkBoardName() %>/Include",
+                "${config:cfs.sdk.path}/SDK/MAX/Libraries/Boards/<%= it.msdkInflectionPoint(it.soc) %>/<%= it.getMsdkBoardName() %>/Include",
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers",
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Camera",
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Display",
@@ -83,7 +86,7 @@
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Touchscreen",
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/SRAM",
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Display/fonts/",
-                "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Include/<%= it.normalizeSoc() %>/",
+                "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Include/<%= it.msdkInflectionPoint(it.soc) %>/",
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/ADC",
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/AES",
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/CAMERAIF",
@@ -107,12 +110,12 @@
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/UART",
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/WDT",
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/WUT",
-                "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/Device/Maxim/<%= it.normalizeSoc() %>/Include",
+                "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/Device/Maxim/<%= it.msdkInflectionPoint(it.soc) %>/Include",
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/5.9.0/Core/Include"
             ],
             "defines": [
                 "${config:cfs.project.board}",
-                "TARGET=<%= it.normalizeSoc() %>",
+                "TARGET=<%= it.msdkInflectionPoint(it.soc) %>",
                 "__GNUC__"
             ],
             "intelliSenseMode": "gcc-arm",
@@ -122,8 +125,8 @@
                     "${default}",
                     "${workspaceFolder}",
                     "${workspaceFolder}/**",
-                    "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/Device/Maxim/<%= it.normalizeSoc() %>/Source",
-                    "${config:cfs.sdk.path}/SDK/MAX/Libraries/Boards/<%= it.normalizeSoc() %>/<%= it.getMsdkBoardName() %>/Source",
+                    "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/Device/Maxim/<%= it.msdkInflectionPoint(it.soc) %>/Source",
+                    "${config:cfs.sdk.path}/SDK/MAX/Libraries/Boards/<%= it.msdkInflectionPoint(it.soc) %>/<%= it.getMsdkBoardName() %>/Source",
                     "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers",
                     "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Camera",
                     "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Display",
@@ -132,7 +135,7 @@
                     "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Touchscreen",
                     "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/SRAM",
                     "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Display/fonts/",
-                    "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/Device/Maxim/<%= it.normalizeSoc() %>/Source/GCC"
+                    "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/Device/Maxim/<%= it.msdkInflectionPoint(it.soc) %>/Source/GCC"
                 ]
             }
         },
@@ -140,7 +143,7 @@
             "name": "Mac",
             "includePath": [
                 "${default}",
-                "${config:cfs.sdk.path}/SDK/MAX/Libraries/Boards/<%= it.normalizeSoc() %>/<%= it.getMsdkBoardName() %>/Include",
+                "${config:cfs.sdk.path}/SDK/MAX/Libraries/Boards/<%= it.msdkInflectionPoint(it.soc) %>/<%= it.getMsdkBoardName() %>/Include",
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers",
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Camera",
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Display",
@@ -149,7 +152,7 @@
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Touchscreen",
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/SRAM",
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Display/fonts/",
-                "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Include/<%= it.normalizeSoc() %>/",
+                "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Include/<%= it.msdkInflectionPoint(it.soc) %>/",
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/ADC",
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/AES",
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/CAMERAIF",
@@ -173,12 +176,12 @@
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/UART",
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/WDT",
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/PeriphDrivers/Source/WUT",
-                "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/Device/Maxim/<%= it.normalizeSoc() %>/Include",
+                "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/Device/Maxim/<%= it.msdkInflectionPoint(it.soc) %>/Include",
                 "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/5.9.0/Core/Include"
             ],
             "defines": [
                 "${config:cfs.project.board}",
-                "TARGET=<%= it.normalizeSoc() %>",
+                "TARGET=<%= it.msdkInflectionPoint(it.soc) %>",
                 "__GNUC__"
             ],
             "intelliSenseMode": "gcc-arm",
@@ -188,8 +191,8 @@
                     "${default}",
                     "${workspaceFolder}",
                     "${workspaceFolder}/**",
-                    "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/Device/Maxim/<%= it.normalizeSoc() %>/Source",
-                    "${config:cfs.sdk.path}/SDK/MAX/Libraries/Boards/<%= it.normalizeSoc() %>/<%= it.getMsdkBoardName() %>/Source",
+                    "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/Device/Maxim/<%= it.msdkInflectionPoint(it.soc) %>/Source",
+                    "${config:cfs.sdk.path}/SDK/MAX/Libraries/Boards/<%= it.msdkInflectionPoint(it.soc) %>/<%= it.getMsdkBoardName() %>/Source",
                     "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers",
                     "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Camera",
                     "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Display",
@@ -198,7 +201,7 @@
                     "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Touchscreen",
                     "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/SRAM",
                     "${config:cfs.sdk.path}/SDK/MAX/Libraries/MiscDrivers/Display/fonts/",
-                    "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/Device/Maxim/<%= it.normalizeSoc() %>/Source/GCC"
+                    "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/Device/Maxim/<%= it.msdkInflectionPoint(it.soc) %>/Source/GCC"
                 ]
             }
         }

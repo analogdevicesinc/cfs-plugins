@@ -19,7 +19,7 @@ import { CfsPluginInfo } from "cfs-plugins-api";
 
 // Helper function to load plugin info from a file
 export const loadPluginInfo = async (
-  filePath: string,
+  filePath: string
 ): Promise<CfsPluginInfo> => {
   const absolutePath = path.resolve(filePath);
   const fileContent = await fs.readFile(absolutePath, "utf-8");

@@ -1,0 +1,17 @@
+{
+  "name": "Analyze Crash",
+  "description": "Postmortem Core Dump Analysis of application.",
+  "version": "1.0.0",
+  "commands": [
+    {
+      "command": "source {defaultScriptsDirectory}/crash-cause-zephyr.gdb",
+      "actions": [
+        {
+          "type": "appendFile",
+          "filePath": "gdb_toolbox/reports/crash-cause.txt",
+          "content": "${gdbOutput}"
+        }
+      ]
+    }
+  ]
+}

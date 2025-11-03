@@ -1,0 +1,17 @@
+{
+  "name": "Analyze Stack High-water Mark",
+  "description": "Analyze the max stack depth reached during runtime. Call the stack painter before running this script.",
+  "version": "1.0.0",
+  "commands": [
+    {
+      "command": "source {defaultScriptsDirectory}/high-water-analyzer.gdb",
+      "actions": [
+        {
+          "type": "appendFile",
+          "filePath": "gdb_toolbox/reports/fault_analyzer.md",
+          "content": "${markdownReport}"
+        }
+      ]
+    }
+  ]
+}

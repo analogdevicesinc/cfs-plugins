@@ -17,6 +17,8 @@ function timeOut() {
   switch(it.soc.toLowerCase()) {
     case "max32672":
       return "MXC_Delay(MXC_DELAY_MSEC(500))";
+    case "max78002":
+      return "600000";
     default:
       return "500000";
   }

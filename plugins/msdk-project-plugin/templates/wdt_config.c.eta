@@ -13,12 +13,9 @@
  *
  */
 
-// Include common plugin code
-eval(this.render("common/utilities/utilities.js"));
-
 // Return the WDT clock source enum.
 function getWDTClock() {
-  const clock = getClockSetting(it.clocknode, it.mux, it.clock_default);
+  const clock = getPeripheralClockSetting(it.instance, it.mux, it.clock_default);
   let clock_enum = "MXC_WDT_PCLK";
   switch (clock) {
     case "ERTCO":
@@ -36,42 +33,51 @@ function getWDTClock() {
     case "APBCLK":
       clock_enum = "MXC_WDT_APB_CLK";
       break;
+    case "ERFO":
+      clock_enum = "MXC_WDT_ERFO_CLK";
+      break;
+    case "EXT_CLK1":
+      clock_enum = "MXC_WDT_EXT_CLK";
+      break;
+    case "PRESCALED IPO":
+      clock_enum = "MXC_WDT_IPO_CLK";
+      break;
   }
   return clock_enum;
 }
 
 // Return the watchdog mode
 function getWDTMode() {
-  return getAssignedPeripheral(it.instance).Config?.EVENTS !== "EARLY_AND_LATE" ? "COMPATIBILITY" : "WINDOWED";
+  let events = getPeriConfigValue(it.instance, "EVENTS", null);
+  return events !== "EARLY_AND_LATE" ? "COMPATIBILITY" : "WINDOWED";
 }
 
 // Return the requested period macro.
 function getWDTPeriod(event, isUsed) {
   let enumval = "2POW31";
   if (isUsed) {
-    enumval = getAssignedPeripheral(it.instance).Config?.[event] ?? "2POW31";
+    enumval = getPeriConfigValue(it.instance, event, "2POW31");
   }
   return enumval.replace("POW", "_");
 }
 
 // Return Enable/Disable string
 function getWDTEnable(ctrl) {
-  return getAssignedPeripheral(it.instance).Config?.[ctrl] !== "TRUE" ? "Disable" : "Enable";
+  return getPeriConfigValue(it.instance, ctrl, "FALSE") !== "TRUE" ? "Disable" : "Enable";
 }
 %>
-<% if (clockNodeExists(it.clocknode)) { %>
-<%   if (!getAssignedProjectForPeripheral(it.instance) && isClockSetTo([], it.clocknode, it.enable, "TRUE")) { %>
+<% if (isUnassignedPeripheralClockSetTo(it.instance, it.enable, "TRUE")) { %>
   /* The <%= it.instance %> peripheral is enabled on the clock canvas but is
    * not assigned to any core. In order to generate configuration code, please
    * assign the peripheral to a core.
    */
 
-<%   } else if (getAssignedPeripheral(it.instance)) { %>
+<% } else if (getAssignedPeripheral(it.instance)) { %>
   { /* Configure <%= it.instance %>.
-<%     if (getPeripheralDescription(it.instance)) { %>
+<%   if (getPeripheralDescription(it.instance)) { %>
      * This peripheral is used for <%= getPeripheralDescription(it.instance) %>.
-<%     } %>
-<%     if (!isClockSetTo([it.instance], it.clocknode, it.enable, "TRUE")) { %>
+<%   } %>
+<%   if (it.enable && !isPeripheralClockSetTo(it.instance, it.enable, "TRUE")) { %>
      * Note: This peripheral was not enabled on the clock configuration canvas.
      * Nonetheless, as a result of the following configuration, the peripheral will be
      * clocked on.
@@ -79,58 +85,57 @@ function getWDTEnable(ctrl) {
      */
 
     /* Initialize the peripheral. */
-<%     if (it.datamodel.Name === "MAX32650" || it.datamodel.Name === "MAX32660" || it.datamodel.Name === "MAX32665") { %>
+<%   if (it.datamodel.Name === "MAX32650" || it.datamodel.Name === "MAX32660" || it.datamodel.Name === "MAX32666") { %>
     result = MXC_WDT_Init(MXC_<%= it.msdk_instance ?? it.instance %>);
-<%     } else { %>
+<%   } else { %>
     mxc_wdt_cfg_t <%= it.instance.toLowerCase() %>_config = {
-      MXC_WDT_<%= getWDTMode() %>,
-      MXC_WDT_PERIOD_<%= getWDTPeriod("RST_LATE_VAL", getAssignedPeripheral(it.instance).Config?.WDT_RST_EN === "TRUE") %>,
-      MXC_WDT_PERIOD_<%= getWDTPeriod("RST_EARLY_VAL", getAssignedPeripheral(it.instance).Config?.EVENTS === "EARLY_AND_LATE" && getAssignedPeripheral(it.instance).Config?.WDT_RST_EN === "TRUE") %>,
-      MXC_WDT_PERIOD_<%= getWDTPeriod("INT_LATE_VAL", getAssignedPeripheral(it.instance).Config?.WDT_INT_EN === "TRUE") %>,
-      MXC_WDT_PERIOD_<%= getWDTPeriod("INT_EARLY_VAL", getAssignedPeripheral(it.instance).Config?.EVENTS === "EARLY_AND_LATE" && getAssignedPeripheral(it.instance).Config?.WDT_INT_EN === "TRUE") %> 
+      .mode = MXC_WDT_<%= getWDTMode() %>,
+      .upperResetPeriod = MXC_WDT_PERIOD_<%= getWDTPeriod("RST_LATE_VAL", getPeriConfigValue(it.instance, "WDT_RST_EN", "FALSE") === "TRUE") %>,
+      .lowerResetPeriod = MXC_WDT_PERIOD_<%= getWDTPeriod("RST_EARLY_VAL", getPeriConfigValue(it.instance, "EVENTS", "ONLY_LATE") === "EARLY_AND_LATE" && getPeriConfigValue(it.instance, "WDT_RST_EN", "FALSE") === "TRUE") %>,
+      .upperIntPeriod = MXC_WDT_PERIOD_<%= getWDTPeriod("INT_LATE_VAL", getPeriConfigValue(it.instance, "WDT_INT_EN", "FALSE") === "TRUE") %>,
+      .lowerIntPeriod = MXC_WDT_PERIOD_<%= getWDTPeriod("INT_EARLY_VAL", getPeriConfigValue(it.instance, "EVENTS", "ONLY_LATE") === "EARLY_AND_LATE" && getPeriConfigValue(it.instance, "WDT_INT_EN", "FALSE") === "TRUE") %>
     };
 
     result = MXC_WDT_Init(MXC_<%= it.msdk_instance ?? it.instance %>,
                           &<%= it.instance.toLowerCase() %>_config);
-<%     } %>
+<%   } %>
     if (result != E_NO_ERROR) {
       return result;
     }
 
-<%     if (it.mux) { %>
+<%   if (it.mux) { %>
     result = MXC_WDT_SetClockSource(MXC_<%= it.msdk_instance ?? it.instance %>,
                                     <%= getWDTClock() %>);
     if (result != E_NO_ERROR) {
       return result;
     }
 
-<%     } %>
+<%   } %>
     /* Set reset enable/disable. */
     MXC_WDT_<%= getWDTEnable("WDT_RST_EN") %>Reset(MXC_<%= it.msdk_instance ?? it.instance %>);
 
-<%     if (getWDTEnable("WDT_RST_EN") === "Enable") { %>
+<%   if (getWDTEnable("WDT_RST_EN") === "Enable") { %>
     /* Set reset period. */
     MXC_WDT_SetResetPeriod(MXC_<%= it.msdk_instance ?? it.instance %>,
-<%       if (it.datamodel.Name === "MAX32650" || it.datamodel.Name === "MAX32660" || it.datamodel.Name === "MAX32665") { %>
-                           <%= getWDTPeriod("RST_LATE_VAL") %>);
-<%       } else { %>
+<%     if (it.datamodel.Name === "MAX32650" || it.datamodel.Name === "MAX32660" || it.datamodel.Name === "MAX32666") { %>
+                           MXC_WDT_PERIOD_<%= getWDTPeriod("RST_LATE_VAL", true) %>);
+<%     } else { %>
                            &<%= it.instance.toLowerCase() %>_config);
-<%       } %>
-
 <%     } %>
+
+<%   } %>
     /* Set interrupt enable/disable. */
     MXC_WDT_<%= getWDTEnable("WDT_INT_EN") %>Int(MXC_<%= it.msdk_instance ?? it.instance %>);
 
-<%     if (getWDTEnable("INT_RST_EN") === "Enable") { %>
+<%   if (getWDTEnable("WDT_INT_EN") === "Enable") { %>
     /* Set interrupt period. */
     MXC_WDT_SetIntPeriod(MXC_<%= it.msdk_instance ?? it.instance %>,
-<%       if (it.datamodel.Name === "MAX32650" || it.datamodel.Name === "MAX32660" || it.datamodel.Name === "MAX32665") { %>
-                         <%= getWDTPeriod("INT_LATE_VAL") %>);
-<%       } else { %>
+<%     if (it.datamodel.Name === "MAX32650" || it.datamodel.Name === "MAX32660" || it.datamodel.Name === "MAX32666") { %>
+                         MXC_WDT_PERIOD_<%= getWDTPeriod("INT_LATE_VAL", true) %>);
+<%     } else { %>
                          &<%= it.instance.toLowerCase() %>_config);
-<%       } %>
 <%     } %>
+<%   } %>
   }
 
-<%   } %>
 <% } %>

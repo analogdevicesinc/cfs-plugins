@@ -1,0 +1,17 @@
+{
+  "name": "Analyze Stack",
+  "description": "Analyzes stack usage in the target application.",
+  "version": "1.0.0",
+  "commands": [
+    {
+      "command": "source {defaultScriptsDirectory}/stack-analyzer.gdb",
+      "actions": [
+        {
+          "type": "appendFile",
+          "filePath": "gdb_toolbox/reports/fault_analyzer.md",
+          "content": "${markdownReport}"
+        }
+      ]
+    }
+  ]
+}

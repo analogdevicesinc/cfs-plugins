@@ -1,0 +1,55 @@
+<%
+/**
+ * Copyright (c) 2025 Analog Devices, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+// Get the macro prefix for a stream.
+function macroPrefix(stream, dest) {
+  return `${stream.Source.Gasket}_${stream.Source.Config.ALIAS?.toUpperCase() ?? "IDX" + stream.Source.Index.toString()}_TO_${dest.Gasket}_${dest.Config.ALIAS?.toUpperCase() ?? "IDX" + dest.Index.toString()}`;
+}
+
+// Get the address that can be used to access the buffer at an endpoint.
+function getEndpointAccessAddress(stream, endpoint, use_fifo) {
+  let addr = stream.StreamId << 15;
+  if (use_fifo)
+    addr |= (1 << 21);
+  return "0x" + addr.toString(16);
+}
+%>
+<%~ include("@copyrightHeader", it) %>
+
+#ifndef DFG_CONFIG_H
+#define DFG_CONFIG_H
+
+<% for (const stream of it.cfsconfig.DFG?.Streams) { %>
+/* Stream: #<%= stream.StreamId %> 
+<%   if (stream.Description) { %>
+ * <%= stream.Description %> 
+<%   } %>
+ * <%= stream.Source.Gasket %> (<%= stream.Source.Config.ALIAS ?? "Index " + stream.Source.Index %>) -> <%= stream.Destinations.map(d => d.Gasket + " (" + (d.Config.ALIAS ?? "Index " + d.Index) + ")" ).join(", ") %> 
+ */
+<%   for (const dest of stream.Destinations) { %>
+#define <%= macroPrefix(stream, dest) %>_STREAM_ID (<%= stream.StreamId %>U) /* The stream ID associated with this stream. */
+#define <%= macroPrefix(stream, dest) %>_SOURCE_IDX (<%= stream.Source.Index %>U) /* The local index of the source endpoint on the gasket. */
+#define <%= macroPrefix(stream, dest) %>_SOURCE_BUFFER_SIZE (<%= stream.Source.BufferSize %>U) /* The size of the circular buffer at the source endpoint. */
+#define <%= macroPrefix(stream, dest) %>_SOURCE_BUFFER_ADDRESS (<%= stream.Source.BufferAddress %>U) /* The offset of the circular buffer start at the source endpoint. */
+#define <%= macroPrefix(stream, dest) %>_SOURCE_ADDRESS (<%= getEndpointAccessAddress(stream, stream.Source, true) %>U) /* The address used to access the circular buffer at the source endpoint. */
+#define <%= macroPrefix(stream, dest) %>_DEST_IDX (<%= dest.Index %>U) /* The local index of the destination endpoint on the gasket. */
+#define <%= macroPrefix(stream, dest) %>_DEST_BUFFER_SIZE (<%= dest.BufferSize %>U) /* The size of the circular buffer at the destination endpoint. */
+#define <%= macroPrefix(stream, dest) %>_DEST_BUFFER_ADDRESS (<%= dest.BufferAddress %>U) /* The offset of the circular buffer start at the destination endpoint. */
+#define <%= macroPrefix(stream, dest) %>_DEST_ADDRESS(offset) (<%= getEndpointAccessAddress(stream, dest, false) %>U | (offset)) /* The address used to access the circular buffer at the destination endpoint. */
+<%   } %>
+
+<% } %>
+
+#endif

@@ -60,12 +60,11 @@
       "CoreId": "CM4",
       "ProjectId": "CM4",
       "PluginId": "com.analog.project.msdk.plugin",
-      "PluginVersion": "1.0.0",
+      "PluginVersion": "1.1.0",
       "FirmwarePlatform": "msdk",
       "ExternallyManaged": false,
       "PlatformConfig": {
-        "ProjectName": "m4",
-        "Cflags": ["-fdump-rtl-expand","-fdump-rtl-dfinish","-fdump-ipa-cgraph","-fstack-usage","-gdwarf-4"]
+        "ProjectName": "m4"
       },
       "Name": "ARM Cortex-M4",
       "Description": "ARM Cortex-M4",

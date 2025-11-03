@@ -17,3 +17,4 @@ plugins/dist
 tests/unit-tests/**/data
 .rollup.cache
 plugins/.rollup.cache
+.DS_Store

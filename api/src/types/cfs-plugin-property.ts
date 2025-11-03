@@ -12,6 +12,7 @@
  * limitations under the License.
  *
  */
+
 export interface CfsPluginProperty {
   id: string;
   /** Property name */
@@ -34,4 +35,5 @@ export interface CfsPluginProperty {
   /** If true, don't show to user */
   readonly?: boolean;
   placeholder?: string;
+  condition?: string;
 }
