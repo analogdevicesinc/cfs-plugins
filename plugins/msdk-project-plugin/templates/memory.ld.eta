@@ -15,7 +15,7 @@
 
 // Get the LD script base name
 function getLdBaseName() {
-  return it.msdkInflectionPoint(it.cfsconfig.Soc).toLowerCase() + (getProject()?.CoreId === "RV" ? "_riscv" : "");
+  return it.msdkInflectionPoint(it.cfsconfig.Soc).toLowerCase() + (getProject()?.CoreId === "RV" ? (["max32655"].includes(it.cfsconfig.Soc.toLowerCase()) ? "_rv" : "_riscv") : "");
 }
 %>
 <%~ include("@normalizeSoc", it) %>

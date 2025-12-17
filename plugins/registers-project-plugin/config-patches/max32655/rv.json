@@ -17,7 +17,7 @@
       "IsOwner": true,
       "Access": "R/W",
       "Config": {
-        "NAME_OVERRIDE": "SRAM2"
+        "NAME_OVERRIDE": "SRAM"
       }
     }
   ],

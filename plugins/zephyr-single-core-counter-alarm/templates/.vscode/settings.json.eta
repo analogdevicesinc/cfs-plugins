@@ -1,0 +1,17 @@
+<%~ include("@zephyrBoardName", it) %>
+<%~ include("@normalizeSoc", it) %>
+<%~ include("@coreDump", it) %>
+{
+  "cfs.configureWorkspace": "Yes",
+  "cfs.project.board": "<%= it.getZephyrBoardName() %>",
+  "cfs.programFile": "${workspaceFolder}/build/zephyr/zephyr.elf",
+  "cfs.debugPath": "${workspaceFolder}/build/zephyr",
+  "cfs.cmsis.svdFile": "${command:cfs.tool.path.zephyr}/modules/hal/adi/MAX/Libraries/CMSIS/Device/Maxim/<%= it.msdkInflectionPoint(it.soc) %>/Include/<%= it.msdkInflectionPoint(it.soc).toLowerCase() %>.svd",
+  "cfs.cmsis.pack": "None",
+  "cfs.openocd.interface": "interface/cmsis-dap.cfg",
+  "cfs.openocd.target": "target/<%= it.openocdInflectionPoint(it.soc).toLowerCase() %>.cfg",
+  "cfs.project.target": "<%= it.projectInflectionPoint(it.soc) %>",
+  "cfs.jlink.device": "<%= it.jlinkInflectionPoint(it.soc) %>",
+  "cfs.coreDump.gdbServerPort": "<%= it.coreDump() %>",
+  "cfs.project.firmwarePlatform": "Zephyr"
+}

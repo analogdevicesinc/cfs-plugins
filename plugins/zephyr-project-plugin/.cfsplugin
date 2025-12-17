@@ -1,7 +1,7 @@
 {
   "pluginName": "Zephyr Project Plugin",
   "pluginId": "com.analog.project.zephyr.plugin",
-  "pluginDescription": "Manually configure and create Zephyr projects",
+  "pluginDescription": "Manually configure and create Zephyr projects.",
   "pluginVersion": "1.0.0",
   "pluginApiVersion": 1,
   "author": "Analog Devices, Inc.",
@@ -699,14 +699,14 @@
                 "Value": 3
               }
             ],
-            "partRegexp": "MAX32657"
+            "partRegexp": "MAX3265[78]"
           }
         ],
         "defaultOverrides": [
           {
             "Id": "MUX",
             "Value": "INRO_DIV_4",
-            "partRegexp": "MAX32657"
+            "partRegexp": "MAX3265[78]"
           }
         ]
       }

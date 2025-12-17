@@ -1,0 +1,154 @@
+  "Projects": [
+    {
+      "CoreId": "CM4",
+      "ProjectId": "CM4",
+      "PluginId": "com.analog.project.zephyr.plugin",
+      "PluginVersion": "1.0.0",
+      "FirmwarePlatform": "zephyr",
+      "ExternallyManaged": false,
+      "PlatformConfig": {
+        "ProjectName": "m4",
+        "ZephyrVersion": "4.2.0",
+        "ZephyrBoardName": "ad_swiot1l_sl"
+      },
+      "Partitions": [
+        {
+          "Name": "m4_flash",
+          "StartAddress": "0x10000000",
+          "Size": 3145728,
+          "IsOwner": true,
+          "Access": "R",
+          "Config": {
+            "CHOSEN": "code-partition"
+          }
+        },
+        {
+          "Name": "m4_sram",
+          "StartAddress": "0x20000000",
+          "Size": 1048576,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "CHOSEN": "sram"
+          }
+        }
+      ],
+      "Peripherals": [
+        {
+          "Name": "CM4 SysTick",
+          "Signals": [],
+          "Config": {
+            "ENABLE": "TRUE",
+            "TICKS_PER_SEC": "10000"
+          }
+        },
+        {
+          "Name": "UART0",
+          "Signals": [
+            {
+              "Name": "CTS",
+              "Config": {}
+            },
+            {
+              "Name": "RTS",
+              "Config": {}
+            },
+            {
+              "Name": "RX",
+              "Config": {
+                "PWR": "VDDIO",
+                "PS": "WEAK_PU"
+              }
+            },
+            {
+              "Name": "TX",
+              "Config": {
+                "PWR": "VDDIO"
+              }
+            }
+          ],
+          "Config": {
+            "PARITY": "DISABLED",
+            "CHAR_SIZE": "8",
+            "STOP_BITS": "1",
+            "HW_FLOW_CTRL": "DISABLED",
+            "CHOSEN": "console,shell-uart",
+            "BAUD": "115200"
+          }
+        },
+        {
+          "Name": "GPIO2",
+          "Signals": [
+            {
+              "Name": "P2.15",
+              "Config": {
+                "MODE": "OUT",
+                "PWR": "VDDIO",
+                "POLARITY": "HIGH",
+                "DT_NAME": "led_1",
+                "PHANDLE": "led1",
+                "ALIAS": "led0",
+                "DS": "0"
+              }
+            },
+            {
+              "Name": "P2.14",
+              "Config": {
+                "MODE": "OUT",
+                "PWR": "VDDIO",
+                "POLARITY": "HIGH",
+                "DT_NAME": "led_2",
+                "PHANDLE": "led2",
+                "ALIAS": "led1",
+                "DS": "0"
+              }
+            }],
+          "Config": {}
+        }
+      ]
+    }
+  ],
+  "Pins": [
+    {
+      "Pin": "144",
+      "Peripheral": "GPIO2",
+      "Signal": "P2.15"
+    },
+    {
+      "Pin": "143",
+      "Peripheral": "GPIO2",
+      "Signal": "P2.14"
+    },
+    {
+      "Pin": "132",
+      "Peripheral": "UART0",
+      "Signal": "RX"
+    },
+    {
+      "Pin": "137",
+      "Peripheral": "UART0",
+      "Signal": "TX"
+    }
+  ],
+  "ClockNodes": [
+    {
+      "Name": "UART0/1/2",
+      "Control": "UART0_ENABLE",
+      "Value": "TRUE",
+      "Enabled": true
+    }
+  ],
+  "ClockFrequencies": {
+    "HSCLK": 120000000,
+    "INRO": 8000,
+    "APBCLK": 60000000,
+    "WDT0": 60000000,
+    "WDT1": 60000000,
+    "Cortex-M4": 120000000,
+    "SYS_OSC": 120000000,
+    "SYS_CLK": 120000000,
+    "UART0": 60000000,
+    "UART1": 60000000,
+    "UART2": 60000000,
+    "POWER SEQ": 8000
+  }

@@ -2,7 +2,7 @@
   "pluginName": "Zephyr Single Core TensorFlow AI Model",
   "pluginDescription": "Single Core Zephyr TensorFlow Lite Micro (TFLM) template.",
   "pluginId": "com.analog.zephyr.workspace.tflm",
-  "pluginVersion": "1.0.0",
+  "pluginVersion": "1.0.1",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "zephyr",
   "supportedSocs": [
@@ -37,6 +37,7 @@
       "package": "csbga"
     }
   ],
+  "aiGenCommand" : "build --target MAX32690.CM4 --model ./files/hello_world_f32.tflite --output-path ./files/src/adi_tflm/ --backend tflm -e Symbol=hello_world_model_f32",
   "features": {
     "workspace": {
       "files": [
@@ -143,6 +144,10 @@
         {
           "src": "templates/ozone-project.jdebug.eta",
           "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm4'}/${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm4'}.jdebug"
+        },
+        {
+          "src": "templates/.cfsdependencies.eta",
+          "dst": ".cfs/.cfsdependencies"
         }
       ]
     }

@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "packages": [
+    {
+      "name": "zephyr",
+      "version": "<%= ['max32657','max32658'].includes(it.soc.toLowerCase()) ? '4.3.0-b.1' : '4.2.0' %>"
+    },
+    {
+      "name": "msdk",
+      "version": "2.0.1"
+    },
+    {
+      "name": "cfs_base_data_models",
+      "version": "2.0.1"
+    },
+    {
+      "name": "cfs_base_plugins",
+      "version": "2.0.1"
+    }
+  ]
+}

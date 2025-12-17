@@ -1,0 +1,72 @@
+/**
+ * This file was generated using Analog Devices CodeFusion Studio.
+ * https://github.com/analogdevicesinc/codefusion-studio
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright (c) 2025 Analog Devices, Inc.
+ */
+
+<% if (["max32672"].includes(it.soc.toLowerCase())) { %>
+&ain10_p0_18 {
+	power-source = <MAX32_VSEL_VDDIO>;
+};
+
+&ain11_p0_19 {
+	power-source = <MAX32_VSEL_VDDIO>;
+};
+
+&adc {
+	pinctrl-0 = <&ain10_p0_18 &ain11_p0_19>;
+	pinctrl-names = "default";
+	track-count = <4>;
+	idle-count = <0>;
+	#address-cells = <1>;
+	#size-cells = <0>;
+	status = "okay";
+
+	channel@10 {
+		reg = <10>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,resolution = <12>;
+		
+	};
+	channel@11 {
+		reg = <11>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,resolution = <12>;
+	
+	};	
+};
+<% } else { %>
+&adc {
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	channel@0 {
+		reg = <0>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+<% if (["max32655", "max32665", "max32666", "max32680", "max78000"].includes(it.soc.toLowerCase())) { %>
+		zephyr,resolution = <10>;
+<% } else { %>
+		zephyr,resolution = <12>;
+<% } %>		
+	};
+	channel@1 {
+		reg = <1>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+<% if (["max32655", "max32665", "max32666", "max32680", "max78000"].includes(it.soc.toLowerCase())) { %>
+		zephyr,resolution = <10>;
+<% } else { %>
+		zephyr,resolution = <12>;
+<% } %>	
+	};
+};
+<% } %>

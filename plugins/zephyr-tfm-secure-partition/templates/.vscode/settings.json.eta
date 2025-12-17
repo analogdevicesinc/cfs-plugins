@@ -1,7 +1,7 @@
 <%~ include("@normalizeSoc", it) %>
 <%
 function getZephyrBoardName() {
-  let soc = it.soc.toLowerCase() === "max32658" ? "max32657" : it.soc.toLowerCase();
+  let soc = it.soc.toLowerCase();
   switch(it.board.toLowerCase()) {
     case "evkit_v1":
       return soc + "evkit/" + soc + "/ns";

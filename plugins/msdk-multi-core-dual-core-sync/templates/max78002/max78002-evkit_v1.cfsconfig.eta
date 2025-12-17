@@ -1,0 +1,265 @@
+  "Projects": [
+    {
+      "CoreId": "CM4",
+      "ProjectId": "CM4",
+      "PluginId": "com.analog.project.msdk.plugin",
+      "PluginVersion": "1.1.0",
+      "FirmwarePlatform": "MSDK",
+      "ExternallyManaged": false,
+      "PlatformConfig": {
+        "ProjectName": "m4",
+        "MsdkBoardName": "EvKit_V1"
+      },
+      "Partitions": [
+        {
+          "Name": "FLASH",
+          "StartAddress": "0x10000000",
+          "Size": 2621440,
+          "IsOwner": true,
+          "Access": "R",
+          "Config": {}
+        },
+        {
+          "Name": "SRAM",
+          "StartAddress": "0x20000000",
+          "Size": 262144,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {}
+        }
+      ],
+      "Peripherals": [
+        {
+          "Name": "CM4 SysTick",
+          "Signals": [],
+          "Config": {
+            "ENABLE": "FALSE"
+          }
+        },
+        {
+          "Name": "RV",
+          "Signals": [
+            {
+              "Name": "TCK",
+              "Config": {
+                "PWR": "VDDIO"
+              }
+            },
+            {
+              "Name": "TDI",
+              "Config": {
+                "PWR": "VDDIO"
+              }
+            },
+            {
+              "Name": "TDO",
+              "Config": {
+                "PWR": "VDDIO"
+              }
+            },
+            {
+              "Name": "TMS",
+              "Config": {
+                "PWR": "VDDIO"
+              }
+            }
+          ],
+          "Config": {}
+        },
+        {
+          "Name": "UART0",
+          "Signals": [
+            {
+              "Name": "CTS",
+              "Config": {}
+            },
+            {
+              "Name": "RTS",
+              "Config": {}
+            },
+            {
+              "Name": "RX",
+              "Config": {
+                "PWR": "VDDIO",
+                "PS": "WEAK_PU"
+              }
+            },
+            {
+              "Name": "TX",
+              "Config": {
+                "PWR": "VDDIO"
+              }
+            }
+          ],
+          "Config": {
+            "PARITY": "DISABLED",
+            "CHAR_SIZE": "8",
+            "STOP_BITS": "1",
+            "HW_FLOW_CTRL": "DISABLED",
+            "RX_FRAME_ERROR_IE": "FALSE",
+            "CTS_IE": "FALSE",
+            "RX_OVERRUN_IE": "FALSE",
+            "RX_THD_IE": "FALSE",
+            "TX_ONE_BYTE_IE": "FALSE",
+            "TX_HALF_EMPTY_IE": "FALSE",
+            "BAUD": "115200"
+          }
+        }
+      ]
+    },
+    {
+      "CoreId": "RV",
+      "ProjectId": "RV",
+      "PluginId": "com.analog.project.msdk.plugin",
+      "PluginVersion": "1.1.0",
+      "FirmwarePlatform": "MSDK",
+      "ExternallyManaged": false,
+      "PlatformConfig": {
+        "ProjectName": "riscv",
+        "MsdkBoardName": "EvKit_V1"
+      },
+      "Partitions": [
+        {
+          "Name": "RV_SRAM",
+          "StartAddress": "0x20040000",
+          "Size": 65536,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "NAME_OVERRIDE": "SRAM5"
+          }
+        }
+      ],
+      "Peripherals": [
+        {
+          "Name": "RV mtime",
+          "Signals": [],
+          "Config": {}
+        },
+        {
+          "Name": "GPIO2",
+          "Signals": [
+            {
+              "Name": "P2.4",
+              "Config": {
+                "MODE": "OUT",
+                "PWR": "VDDIO",
+                "DS": "0"
+              }
+            },
+            {
+              "Name": "P2.5",
+              "Config": {
+                "MODE": "OUT",
+                "PWR": "VDDIO",
+                "DS": "0"
+              }
+            },
+            {
+              "Name": "P2.6",
+              "Config": {
+                "MODE": "IN",
+                "PWR": "VDDIO",
+                "PS": "STRONG_PU"
+              }
+            },
+            {
+              "Name": "P2.7",
+              "Config": {
+                "MODE": "IN",
+                "PWR": "VDDIO",
+                "PS": "STRONG_PU"
+              }
+            }
+          ],
+          "Config": {}
+        }
+      ]
+    }
+  ],
+  "Pins": [
+    {
+      "Pin": "C3",
+      "Peripheral": "GPIO2",
+      "Signal": "P2.7"
+    },
+    {
+      "Pin": "D3",
+      "Peripheral": "GPIO2",
+      "Signal": "P2.6"
+    },
+    {
+      "Pin": "E3",
+      "Peripheral": "GPIO2",
+      "Signal": "P2.5"
+    },
+    {
+      "Pin": "F3",
+      "Peripheral": "GPIO2",
+      "Signal": "P2.4"
+    },
+    {
+      "Pin": "K2",
+      "Peripheral": "RV",
+      "Signal": "TCK"
+    },
+    {
+      "Pin": "K6",
+      "Peripheral": "UART0",
+      "Signal": "RX"
+    },
+    {
+      "Pin": "L2",
+      "Peripheral": "RV",
+      "Signal": "TMS"
+    },
+    {
+      "Pin": "L3",
+      "Peripheral": "RV",
+      "Signal": "TDI"
+    },
+    {
+      "Pin": "L6",
+      "Peripheral": "UART0",
+      "Signal": "TX"
+    },
+    {
+      "Pin": "M3",
+      "Peripheral": "RV",
+      "Signal": "TDO"
+    }
+  ],
+  "ClockNodes": [
+    {
+      "Name": "UART0/1/2",
+      "Control": "UART0_ENABLE",
+      "Value": "TRUE",
+      "Enabled": true
+    },
+    {
+      "Name": "UART0/1/2",
+      "Control": "UART0_MUX",
+      "Value": "IBRO",
+      "Enabled": true
+    },
+    {
+      "Name": "RISC-V",
+      "Control": "ENABLE",
+      "Value": "TRUE",
+      "Enabled": true
+    }
+  ],
+  "ClockFrequencies": {
+    "SYS_CLK_DIV_2": 30000000,
+    "IBRO": 7372800,
+    "ISO": 60000000,
+    "SYS_OSC": 60000000,
+    "SYS_CLK": 60000000,
+    "PCLK": 30000000,
+    "Cortex-M4": 60000000,
+    "FLC0": 1000000,
+    "RISC-V": 30000000,
+    "UART0": 7372800,
+    "UART1": 30000000,
+    "UART2": 30000000
+  }

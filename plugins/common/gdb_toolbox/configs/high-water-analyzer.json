@@ -2,6 +2,8 @@
   "name": "Analyze Stack High-water Mark",
   "description": "Analyze the max stack depth reached during runtime. Call the stack painter before running this script.",
   "version": "1.0.0",
+  "core": "arm",
+  "firmwarePlatform": "msdk",
   "commands": [
     {
       "command": "source {defaultScriptsDirectory}/high-water-analyzer.gdb",

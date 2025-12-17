@@ -1,0 +1,176 @@
+{
+  "pluginName": "MSDK Single Core I2C Scan",
+  "pluginDescription": "Single Core MSDK I2C Scan template demonstrating how to use the I2C controller to scan and detect connected I2C target devices.",
+  "pluginId": "com.analog.singlecore.msdk.i2c.scan",
+  "pluginVersion": "1.0.0",
+  "author": "Analog Devices, Inc.",
+  "firmwarePlatform": "MSDK",
+  "supportedSocs": [
+    {
+      "name": "MAX32655",
+      "dataModel": "max32655-ctbga.json",
+      "board": "EvKit_V1",
+      "package": "ctbga"
+    },
+    {
+      "name": "MAX32655",
+      "dataModel": "max32655-ctbga.json",
+      "board": "FTHR",
+      "package": "ctbga"
+    },
+    {
+      "name": "MAX32672",
+      "board": "EvKit_V1",
+      "package": "tqfn40"
+    },   
+    {
+      "name": "MAX32690",
+      "dataModel": "max32690-tqfn.json",
+      "board": "EvKit_V1",
+      "package": "tqfn"
+    },
+    {
+      "name": "MAX32690",
+      "dataModel": "max32690-wlp.json",
+      "board": "AD-APARD32690-SL",
+      "package": "wlp"
+    },
+    {
+      "name": "MAX32690",
+      "dataModel": "max32690-tqfn.json",
+      "board": "FTHR",
+      "package": "tqfn"
+    }   
+  ],
+  "features": {
+    "workspace": {
+      "files": [
+        {
+          "src": "files/m4/.vscode/launch.json",
+          "dst": "m4/.vscode/launch.json"
+        },
+        {
+          "src": "files/m4/.vscode/flash.gdb",
+          "dst": "m4/.vscode/flash.gdb"
+        },
+        {
+          "src": "files/max32655/main.c",
+          "dst": "m4/src/main.c",
+          "condition": "${context.soc.toLowerCase() === 'max32655'}"
+        },
+        {
+          "src": "files/max32655/README.md",
+          "dst": "m4/README.md",
+          "condition": "${context.soc.toLowerCase() === 'max32655'}"
+        },
+        {
+          "src": "files/max32672/main.c",
+          "dst": "m4/src/main.c",
+          "condition": "${context.soc.toLowerCase() === 'max32672'}"
+        },
+        {
+          "src": "files/max32672/README.md",
+          "dst": "m4/README.md",
+          "condition": "${context.soc.toLowerCase() === 'max32672'}"
+        },
+        {
+          "src": "files/max32690/main.c",
+          "dst": "m4/src/main.c",
+          "condition": "${context.soc.toLowerCase() === 'max32690'}"
+        },
+        {
+          "src": "files/max32690/README.md",
+          "dst": "m4/README.md",
+          "condition": "${context.soc.toLowerCase() === 'max32690'}"
+        },    
+        {
+          "src": "files/gdb_toolbox/configs/fault-analyzer.json",
+          "dst": ".cfs/gdb_toolbox/configs/fault-analyzer.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/memory-dump.json",
+          "dst": ".cfs/gdb_toolbox/configs/memory-dump.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/register-dump.json",
+          "dst": ".cfs/gdb_toolbox/configs/register-dump.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/interrupt-status-arm.json",
+          "dst": ".cfs/gdb_toolbox/configs/interrupt-status-arm.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/high-water-analyzer.json",
+          "dst": ".cfs/gdb_toolbox/configs/high-water-analyzer.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/stack-analyzer.json",
+          "dst": ".cfs/gdb_toolbox/configs/stack-analyzer.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/stack-painter.json",
+          "dst": ".cfs/gdb_toolbox/configs/stack-painter.json"
+        },
+        {
+          "src": "files/gdb_toolbox/gdb/fault-analyzer-arm.gdb",
+          "dst": ".cfs/gdb_toolbox/gdb/fault-analyzer-arm.gdb"
+        },
+        {
+          "src": "files/gdb_toolbox/gdb/interrupt-status-arm.gdb",
+          "dst": ".cfs/gdb_toolbox/gdb/interrupt-status-arm.gdb"
+        },
+        {
+          "src": "files/gdb_toolbox/gdb/high-water-analyzer.gdb",
+          "dst": ".cfs/gdb_toolbox/gdb/high-water-analyzer.gdb"
+        },
+        {
+          "src": "files/gdb_toolbox/gdb/stack-analyzer.gdb",
+          "dst": ".cfs/gdb_toolbox/gdb/stack-analyzer.gdb"
+        },
+        {
+          "src": "files/gdb_toolbox/gdb/stack-painter.gdb",
+          "dst": ".cfs/gdb_toolbox/gdb/stack-painter.gdb"
+        },
+        {
+          "src": "files/.cfsdependencies",
+          "dst": ".cfs"
+        }
+      ],
+      "templates": [
+        {
+          "src": "templates/workspace-name.code-workspace.eta",
+          "dst": "${context.workspaceName}.code-workspace"
+        },
+        {
+          "src": "templates/.cfsconfig.eta",
+          "dst": ".cfs/${context.soc.toLowerCase()}-${context.package.toLowerCase()}.cfsconfig",
+          "condition": "${['max32650', 'max32655', 'max32670', 'max32690', 'max78000', 'max78002'].includes(context.soc.toLowerCase())}"
+        },
+        {
+          "src": "templates/settings.json.eta",
+          "dst": "m4/.vscode/settings.json"
+        },
+        {
+          "src": "templates/project.mk.eta",
+          "dst": "m4/project.mk"
+        },
+        {
+          "src": "templates/Makefile.eta",
+          "dst": "m4/Makefile"
+        },
+        {
+          "src": "templates/c_cpp_properties.json.eta",
+          "dst": "m4/.vscode/c_cpp_properties.json"
+        },
+        {
+          "src": "templates/ozone-project.jdebug.eta",
+          "dst": "m4/m4.jdebug"
+        },
+        {
+          "src": "templates/cfs.tasks.json.eta",
+          "dst": "m4/.vscode/cfs.tasks.json"
+        }
+      ]
+    }
+  }
+}

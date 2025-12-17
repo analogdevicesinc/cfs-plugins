@@ -57,16 +57,6 @@ function getI2SWordSize() {
   return wsize;
 }
 
-// Return whether the TX mode is enabled
-function getI2STxEnable() {
-  return getPeriConfigValue(it.instance, "TX_RX_MODE", "TX_RX") !== "RX_ONLY";
-}
-
-// Return whether the RX mode is enabled
-function getI2SRxEnable() {
-  return getPeriConfigValue(it.instance, "TX_RX_MODE", "TX_RX") !== "TX_ONLY";
-}
-
 // Return the FIFO interrupt threshold value for transmission
 function getI2SRxThreshold() {
   return getPeriConfigValue(it.instance, "RX_THD_VAL", "0");
@@ -135,6 +125,9 @@ function getI2SIntMask() {
   return arg;
 }
 %>
+<%
+  eval(this.render("templates/i2s_common.js"));
+%>
 <% if (isUnassignedPeripheralClockSetTo(it.instance, it.enable, "TRUE")) { %>
   /* The <%= it.instance %> peripheral is enabled on the clock canvas but is
    * not assigned to any core. In order to generate configuration code, please
@@ -166,9 +159,9 @@ function getI2SIntMask() {
 <%   } %>
       .adjust = <%= getI2SAdjust() %>,
       .bitsWord = <%= getI2SBitsWord() %>,
-      .rawData = <%= getI2STxEnable() ? getPeriConfigValue(it.instance, "RAW_DATA_BUFFER_NAME", it.instance.toLowerCase() + "_raw_data_buffer") : "NULL" %>,
-      .txData = <%= getI2STxEnable() ? getPeriConfigValue(it.instance, "TX_BUFFER_NAME", it.instance.toLowerCase() + "_tx_buffer") : "NULL" %>,
-      .rxData = <%= getI2SRxEnable() ? getPeriConfigValue(it.instance, "RX_BUFFER_NAME", it.instance.toLowerCase() + "_rx_buffer") : "NULL" %>,
+      .rawData = <%= getI2STxEnable() ? getI2SRawDataBufferName() : "NULL" %>,
+      .txData = <%= getI2STxEnable() ? getI2STxBufferName() : "NULL" %>,
+      .rxData = <%= getI2SRxEnable() ? getI2SRxBufferName() : "NULL" %>,
       .length = <%= (getI2STxEnable() || getI2SRxEnable())? getI2SBufferLength() : "0" %> 
     };
 
@@ -190,7 +183,7 @@ function getI2SIntMask() {
 <%   } %>
 <%   if (getI2SDmaTx()) { %>
     /* Setup TX DMA. */
-    result = MXC_I2S_TXDMAConfig(<%= getI2STxEnable() ? it.instance.toLowerCase() + "_tx_buffer" : "NULL" %>, <%= (getI2STxEnable() || getI2SRxEnable())? getI2SBufferLength() : "0" %>);
+    result = MXC_I2S_TXDMAConfig(<%= getI2STxEnable() ? getI2STxBufferName() : "NULL" %>, <%= (getI2STxEnable() || getI2SRxEnable())? getI2SBufferLength() : "0" %>);
     if (result != E_NO_ERROR) {
       return result;
     }
@@ -202,7 +195,7 @@ function getI2SIntMask() {
 <%   } %>
 <%   if (getI2SDmaRx()) { %>
     /* Setup RX DMA. */
-    result = MXC_I2S_RXDMAConfig(<%= getI2SRxEnable() ? it.instance.toLowerCase() + "_rx_buffer" : "NULL" %>, <%= (getI2STxEnable() || getI2SRxEnable())? getI2SBufferLength() : "0" %>);
+    result = MXC_I2S_RXDMAConfig(<%= getI2SRxEnable() ? getI2SRxBufferName() : "NULL" %>, <%= (getI2STxEnable() || getI2SRxEnable())? getI2SBufferLength() : "0" %>);
     if (result != E_NO_ERROR) {
       return result;
     }

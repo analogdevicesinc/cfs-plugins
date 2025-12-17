@@ -48,6 +48,7 @@ export interface SocControl {
   Type: string;
   EnumValues?: SocControlValue[];
   Condition?: string;
+  Increment?: string | number;
   MinimumValue?: string | number;
   MaximumValue?: string | number;
   NumericBase?: string;

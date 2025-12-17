@@ -1,13 +1,14 @@
 {
   "name": "plugins",
   "packageManager": "yarn@4.2.2",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "type": "module",
   "scripts": {
     "lint": "eslint . --ext ts ",
     "build": "rollup -c",
     "build:watch": "rollup -c -w",
-    "clean": "shx rm -rf .rollup.cache dist"
+    "clean": "shx rm -rf .rollup.cache dist",
+    "genai": "node genai.js"
   },
   "dependencies": {
     "cfs-plugins-api": "workspace:^"

@@ -1,6 +1,6 @@
 {
   "pluginName": "MSDK Project Plugin",
-  "pluginDescription": "MSDK project and code generation",
+  "pluginDescription": "MSDK project and code generation.",
   "pluginId": "com.analog.project.msdk.plugin",
   "pluginVersion": "1.1.0",
   "author": "Analog Devices, Inc.",
@@ -36,12 +36,6 @@
     {
       "name": "MAX32657",
       "dataModel": "max32657-wlp.json",
-      "board": "EvKit_V1",
-      "package": "wlp"
-    },
-    {
-      "name": "MAX32658",
-      "dataModel": "max32658-wlp.json",
       "board": "EvKit_V1",
       "package": "wlp"
     },
@@ -246,7 +240,7 @@
           {
             "Id": "MUX",
             "Value": "IPO",
-            "partRegexp": "MAX(32655|32657|32658|32662|32672|32690)"
+            "partRegexp": "MAX(32655|32657|32658|32690)"
           },
           {
             "Id": "MUX",
@@ -1091,13 +1085,7 @@
             "Id": "SEC"
           },
           {
-            "Id": "SSEC"
-          },
-          {
             "Id": "TOD_ALARM"
-          },
-          {
-            "Id": "SSEC_ALARM"
           },
           {
             "Id": "TOD_ALARM_IE"
@@ -1110,6 +1098,70 @@
           },
           {
             "Id": "TRIM"
+          }
+        ],
+        "addedControls": [
+          {
+            "Id": "SSEC_UNITS",
+            "Description": "Units Used to Specify the Sub-second Alarm",
+            "EnumValues": [
+              {
+                "Id": "TICKS",
+                "Description": "RTC Ticks (1/4096 second)",
+                "Value": 0
+              },
+              {
+                "Id": "MS",
+                "Description": "Milliseconds",
+                "Value": 1
+              }
+            ],
+            "Type": "enum",
+            "Hint": "TICKS"
+          },
+          {
+            "Id": "SSEC_TICKS",
+            "Description": "Initial Value of Sub-seconds Counter (RTC Ticks)",
+            "Type": "integer",
+            "Hint": "0",
+            "MinimumValue": 0,
+            "MaximumValue": 999,
+            "Increment": 1,
+            "NumericBase": "Decimal",
+            "Condition": "${Control:SSEC_UNITS} ${String:TICKS} ="
+          },
+          {
+            "Id": "SSEC_ALARM_TICKS",
+            "Description": "Reload Value for the Sub-second Alarm (RTC Ticks Pending)",
+            "Type": "integer",
+            "Hint": "0",
+            "MinimumValue": 0,
+            "MaximumValue": 4294967295,
+            "Increment": 1,
+            "NumericBase": "Decimal",
+            "Condition": "${Control:SSEC_UNITS} ${String:TICKS} ="
+          },
+          {
+            "Id": "SSEC_MS",
+            "Description": "Initial Value of Sub-seconds Counter (Milliseconds)",
+            "Type": "integer",
+            "Hint": "0",
+            "MinimumValue": 0,
+            "MaximumValue": 999,
+            "Increment": 1,
+            "NumericBase": "Decimal",
+            "Condition": "${Control:SSEC_UNITS} ${String:MS} ="
+          },
+          {
+            "Id": "SSEC_ALARM_MS",
+            "Description": "Reload Value for the Sub-second Alarm (Milliseconds Pending)",
+            "Type": "integer",
+            "Hint": "0",
+            "MinimumValue": 0,
+            "MaximumValue": 1048575000,
+            "Increment": 1,
+            "NumericBase": "Decimal",
+            "Condition": "${Control:SSEC_UNITS} ${String:MS} ="
           }
         ]
       },

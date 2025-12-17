@@ -88,7 +88,7 @@ function modifiesSysClk() {
 
 <% } %>
 <% if (isSystemClockSetTo("LPM Mux", "MUX", "SYS_CLK_DIV_2_ISO")) { %>
-  /* LPM Mux: Clock Source is set to ISO. */
+  /* LPM Mux: Clock Source is set to SYS_CLK_DIV_2 (ISO if in LPM). */
   #warning There is currently no code emitted to configure the Low-Power Mode clock.
 
 <% } %>

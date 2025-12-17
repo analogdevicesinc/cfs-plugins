@@ -63,10 +63,6 @@ int RunFloat32Model() {
   bool pass = 0;
   int fails = 0;
 
-  // Set dimensions [1,1] for input
-  interpreter.input(0)->dims->data[0] = 1;
-  interpreter.input(0)->dims->data[1] = 1;
-
   for (int i = 0; i < kNumTestValues; ++i) {
     interpreter.input(0)->data.f[0] = golden_inputs[i];
     TF_LITE_ENSURE_STATUS(interpreter.Invoke());

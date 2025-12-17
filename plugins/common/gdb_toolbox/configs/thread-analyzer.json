@@ -2,6 +2,7 @@
   "name": "Analyze Threads",
   "description": "Analyzes threads in the target application.",
   "version": "1.0.0",
+  "firmwarePlatform": "zephyr",
   "commands": [
     {
       "command": "source {defaultScriptsDirectory}/thread-analyzer.gdb",

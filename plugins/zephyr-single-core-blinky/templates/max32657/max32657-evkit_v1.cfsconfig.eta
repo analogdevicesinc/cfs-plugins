@@ -38,7 +38,7 @@
       "ExternallyManaged": false,
       "PlatformConfig": {
         "ProjectName": "m33",
-        "ZephyrVersion": "4.2.0",
+        "ZephyrVersion": "4.3.0",
         "ZephyrBoardName": "max32657evkit/max32657"
       },
       "Partitions": [

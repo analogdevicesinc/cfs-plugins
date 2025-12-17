@@ -361,6 +361,10 @@ function getVssel(pin, signal_config) {
 <% for (const region of it.datamodel.Cores.find(c => c.Id === it.coreId)?.Memory ?? []) { %>
 <%   if (getRegionProperty(region, 'Type') === "Flash" && getProjectPartitionsStartingInRegion(region).length > 0) { %>
 &<%= region.Name %> {
+<%     if (it.datamodel.Name === "MAX32657" || it.datamodel.Name === "MAX32658") { %>
+	/* First remove partitions from base devicetree to avoid conflicts. */
+	/delete-node/ partitions;
+<%     } %>
 	partitions {
 		compatible = "fixed-partitions";
 		#address-cells = <1>;

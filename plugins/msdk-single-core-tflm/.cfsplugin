@@ -2,7 +2,7 @@
   "pluginName": "MSDK Single Core TensorFlow AI Model",
   "pluginDescription": "Single Core MSDK TensorFlow Lite Micro (TFLM) template..",
   "pluginId": "com.analog.singlecore.msdk.tflm",
-  "pluginVersion": "1.0.1",
+  "pluginVersion": "1.0.2",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "MSDK",
   "supportedSocs": [
@@ -30,6 +30,7 @@
       "package": "csbga"
     }
   ],
+  "aiGenCommand" : "build --target MAX32690.CM4 --model ./files/m4/hello_world_f32.tflite --output-path ./files/m4/src/adi_tflm/ --backend tflm -e Symbol=hello_world_model_f32",
   "features": {
     "workspace": {
       "files": [

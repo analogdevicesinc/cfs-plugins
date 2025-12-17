@@ -5,7 +5,7 @@
       "label": "CFS: Generate MCUboot key",
       "type": "shell",
       "problemMatcher": [],
-      "command": "python ${config:cfs.sdk.path}/SDK/zephyr/bootloader/mcuboot/scripts/imgtool.py keygen -k ${input:fileName}.pem -t ${input:MCUbootKeyType}",
+      "command": "python ${command:cfs.tool.path.zephyr}/bootloader/mcuboot/scripts/imgtool.py keygen -k ${input:fileName}.pem -t ${input:MCUbootKeyType}",
       "windows": {
         "options": {
           "env": {
@@ -16,14 +16,14 @@
       "linux": {
         "options": {
           "env": {
-            "PATH": "${config:cfs.sdk.path}/Tools/python:${env:PATH}"
+            "PATH": "${config:cfs.sdk.path}/Tools/python/bin:${env:PATH}"
           }
         }
       },
       "osx": {
         "options": {
           "env": {
-            "PATH": "${config:cfs.sdk.path}/Tools/python:${env:PATH}"
+            "PATH": "${config:cfs.sdk.path}/Tools/python/bin:${env:PATH}"
           }
         }
       }

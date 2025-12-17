@@ -1,8 +1,8 @@
 {
   "pluginName": "Zephyr Single Core Blinky",
-  "pluginDescription": "Single Core Zephyr blinky template for supported MCUs.",
+  "pluginDescription": "Single Core Zephyr blinky template.",
   "pluginId": "com.analog.zephyr.workspace.blinky",
-  "pluginVersion": "1.0.0",
+  "pluginVersion": "1.0.1",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "zephyr",
   "supportedSocs": [
@@ -188,6 +188,10 @@
           "src": "templates/.cfsconfig.eta",
           "dst": ".cfs/${context.soc.toLowerCase()}-${context.package.toLowerCase()}.cfsconfig",
           "condition": "${['max32650', 'max32655', 'max32657', 'max32658', 'max32670', 'max32690', 'max78000', 'max78002'].includes(context.soc.toLowerCase())}"
+        },
+        {
+          "src": "templates/.cfsdependencies.eta",
+          "dst": ".cfs/.cfsdependencies"
         },
         {
           "src": "templates/workspace-name.code-workspace.eta",

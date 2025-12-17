@@ -50,6 +50,11 @@ function getSQWOUTFreq() {
   }
   return undefined;
 }
+
+// Get the frequency of the sub-second alarm.
+function getRTCSubSecondFreq() {
+  return 4096;
+}
 %>
 <% if (!getAssignedProjectForPeripheral(it.instance) && clockNodeExists(it.output_clocknode) && ((isClockSet(it.output_clocknode, it.output_ctrl) && !isClockSetTo(it.output_clocknode, it.output_ctrl, "DIS")) || (it.enable && isClockSetTo(it.enable_clocknode, it.enable, "TRUE")))) { %>
   /* The <%= it.output_clocknode %> clock node is enabled on the clock canvas but the RTC
@@ -71,7 +76,11 @@ function getSQWOUTFreq() {
 
     /* Initialize the peripheral. */
     result = MXC_RTC_Init(<%= getPeriConfigValue(it.instance, "SEC", "0") %>U,
-                          <%= getPeriConfigValue(it.instance, "SSEC", "0") %>U);
+<%   if (getPeriConfigValue(it.instance, "SSEC_UNITS", "TICKS") === "MS") { %>
+                          (<%= getPeriConfigValue(it.instance, "SSEC_MS", "0") %>U * <%= getRTCSubSecondFreq() %>U) / 1000U);
+<%   } else { %>
+                          <%= getPeriConfigValue(it.instance, "SSEC_TICKS", getPeriConfigValue(it.instance, "SSEC", "0")) %>U);
+<%   } %>
     if (result != E_NO_ERROR) {
       return result;
     }
@@ -90,7 +99,15 @@ function getSQWOUTFreq() {
     }
 
     /* Set the sub-second alarm value. */
-    result = MXC_RTC_SetSubsecondAlarm(<%= getPeriConfigValue(it.instance, "SSEC_ALARM", "0") %>U);
+<%   if (getPeriConfigValue(it.instance, "SSEC_UNITS", "TICKS") === "MS") { %>
+<%     if (Number(getPeriConfigValue(it.instance, "SSEC_ALARM_MS", "0")) > (0xFFFFFFFF / getRTCSubSecondFreq())) { %>
+    result = MXC_RTC_SetSubsecondAlarm(0U - (uint32_t)((<%= getPeriConfigValue(it.instance, "SSEC_ALARM_MS", "0") %>ULL * <%= getRTCSubSecondFreq() %>U) / 1000U));
+<%     } else { %>
+    result = MXC_RTC_SetSubsecondAlarm(0U - ((<%= getPeriConfigValue(it.instance, "SSEC_ALARM_MS", "0") %>U * <%= getRTCSubSecondFreq() %>U) / 1000U));
+<%     } %>
+<%   } else { %>
+    result = MXC_RTC_SetSubsecondAlarm(0U - <%= getPeriConfigValue(it.instance, "SSEC_ALARM_TICKS", getPeriConfigValue(it.instance, "SSEC_ALARM", "0")) %>U);
+<%   } %>
     if (result != E_NO_ERROR) {
       return result;
     }

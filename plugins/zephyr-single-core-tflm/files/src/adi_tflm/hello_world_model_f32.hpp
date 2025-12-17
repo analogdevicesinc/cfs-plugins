@@ -12,12 +12,12 @@ Operators 1:
 
 Model graph:
 ------------
-Subgraph 0 "main": Inputs: 1, Outputs: 1, Operators: 3, Tensors: 10
+Subgraph 0 "main": Inputs: 1, Outputs: 1, Operators: 1, Tensors: 10
   Inputs (1):
     0: serving_default_dense_input:0: [1, 1]
   Outputs (1):
     0: StatefulPartitionedCall:0: [1, 1]
-  Operators (3):
+  Operators (1):
     0: FullyConnected
   Tensors (10):
     0: serving_default_dense_input:0
@@ -48,4 +48,5 @@ TfLiteStatus adi_resolve_ops_hello_world_model_f32 (tflite::MicroMutableOpResolv
 #endif /* __cplusplus */
 
 extern const unsigned int hello_world_model_f32_len;
-extern unsigned char hello_world_model_f32[] __attribute__((section(".data"), aligned(16)));
+extern const unsigned char hello_world_model_f32[] __attribute__((aligned(16)));
+

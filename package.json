@@ -3,12 +3,13 @@
   "publisher": "analogdevices",
   "description": "Plugins for CodeFusion Studio",
   "author": "Analog Devices, Inc.",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "private": true,
   "scripts": {
     "build": "yarn ws:api build && yarn ws:plugins build",
     "clean": "yarn ws:api clean && yarn ws:plugins clean",
     "clean-build": "yarn clean && yarn build",
+    "genai": "yarn ws:plugins genai",
     "ws:api": "yarn workspace cfs-plugins-api",
     "ws:plugins": "yarn workspace plugins",
     "test": "mocha --require ts-node/register --loader ts-node/esm --recursive tests/**/*.test.ts"

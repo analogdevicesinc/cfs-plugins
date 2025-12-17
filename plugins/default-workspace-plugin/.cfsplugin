@@ -1,7 +1,7 @@
 {
   "pluginName": "Default Workspace Plugin",
   "pluginId": "com.analog.workspace.default.plugin",
-  "pluginDescription": "Create a workspace by copying files and processing Eta templates",
+  "pluginDescription": "Create a workspace by copying files and processing Eta templates.",
   "pluginVersion": "1.0.0",
   "pluginApiVersion": 1,
   "author": "Analog Devices, Inc.",

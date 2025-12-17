@@ -2,7 +2,7 @@
   "pluginName": "SHARC-FX Multi-Core Hello World",
   "pluginDescription": "SHARC-FX (core 1) and ARM (core 2) Hello World template with preload.",
   "pluginId": "com.analog.sharcfx.m33.example",
-  "pluginVersion": "1.0.1",
+  "pluginVersion": "1.0.2",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "SHARC-FX",
   "supportedHostPlatforms": [

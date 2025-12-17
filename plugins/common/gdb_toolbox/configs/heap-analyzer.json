@@ -2,6 +2,7 @@
   "name": "Analyze Global Heap",
   "description": "Analyzes the global heap in the target application.",
   "version": "1.0.0",
+  "firmwarePlatform": "zephyr",
   "commands": [
     {
       "command": "source {defaultScriptsDirectory}/heap-analyzer.gdb",

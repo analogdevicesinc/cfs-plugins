@@ -1,0 +1,17 @@
+<%~ include("@msdkBoardName", it) %>
+<%~ include("@normalizeSoc", it) %>
+{
+  "C_Cpp.default.forcedInclude": [
+    "${workspaceFolder}/build/project_defines.h"
+  ],
+  "cfs.project.target": "<%= it.projectInflectionPoint(it.soc) %>",
+  "cfs.jlink.device": "<%= it.jlinkInflectionPoint(it.soc) %>",
+  "cfs.project.board": "<%= it.getMsdkBoardName() %>",
+  "cfs.programFile": "${workspaceFolder}/build/${workspaceFolderBasename}.elf",
+  "cfs.debugPath": "${workspaceFolder}/build",
+  "cfs.configureWorkspace": "Yes",
+  "cfs.project.firmwarePlatform": "MSDK",
+  "cfs.openocd.target": "target/<%= it.openocdInflectionPoint(it.soc).toLowerCase() %>.cfg",
+  "cfs.openocd.interface": "interface/cmsis-dap.cfg",
+  "cfs.cmsis.svdFile": "${command:cfs.tool.path.msdk}/Libraries/CMSIS/Device/Maxim/<%= it.msdkInflectionPoint(it.soc) %>/Include/<%= it.msdkInflectionPoint(it.soc).toLowerCase() %>.svd"
+}

@@ -1,0 +1,17 @@
+{
+  "folders": [
+    {
+      "path": ".cfs"
+    },
+    {
+      "path": "<%= it.soc.toLowerCase() === 'max32657' || it.soc.toLowerCase() === 'max32658' ? 'm33' : 'm4' %>"
+    }
+  ],
+  "settings": {
+    "cfs.configureWorkspace": "Yes",
+    "cfs.project.target": "<%= it.soc %>",
+    "terminal.integrated.defaultProfile.windows": "CFS Terminal",
+    "terminal.integrated.defaultProfile.osx": "CFS Terminal",
+    "terminal.integrated.defaultProfile.linux": "CFS Terminal"
+  }
+}

@@ -1,0 +1,187 @@
+"Pins": [
+    {
+      "Pin": "E7",
+      "Peripheral": "UART0",
+      "Signal": "TX"
+    },
+    {
+      "Pin": "F7",
+      "Peripheral": "UART0",
+      "Signal": "RX"
+    }
+  ],
+  "ClockNodes": [
+    {
+      "Name": "UART0/1/2",
+      "Control": "UART0_ENABLE",
+      "Value": "TRUE",
+      "Enabled": true
+    },
+    {
+      "Name": "UART0/1/2",
+      "Control": "UART0_MUX",
+      "Value": "IBRO",
+      "Enabled": true
+    },
+    {
+      "Name": "SYS_OSC Mux",
+      "Control": "MUX",
+      "Value": "IPO",
+      "Enabled": true
+    },
+    {
+      "Name": "TMR0/1/2/3",
+      "Control": "TMR0_ENABLE",
+      "Value": "TRUE",
+      "Enabled": true
+    }
+  ],
+  "Projects": [
+    {
+      "CoreId": "CM4",
+      "ProjectId": "CM4",
+      "PluginId": "com.analog.project.zephyr.plugin",
+      "PluginVersion": "1.0.0",
+      "FirmwarePlatform": "zephyr",
+      "ExternallyManaged": false,
+      "PlatformConfig": {
+        "ProjectName": "m4",
+        "ZephyrVersion": "4.2.0",
+        "ZephyrBoardName": "max32655fthr/max32655/m4"
+      },
+      "Family": "Cortex-M",
+      "Partitions": [
+        {
+          "Name": "m4_flash",
+          "StartAddress": "0x10000000",
+          "Size": 458752,
+          "IsOwner": true,
+          "Access": "R",
+          "Config": {
+            "CHOSEN": "code-partition"
+          }
+        },
+        {
+          "Name": "storage_partition",
+          "StartAddress": "0x10070000",
+          "Size": 65536,
+          "IsOwner": true,
+          "Access": "R",
+          "Config": {
+            "LABEL": "storage"
+          }
+        },
+        {
+          "Name": "m4_sram",
+          "StartAddress": "0x20000000",
+          "Size": 114688,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "CHOSEN": "sram"
+          }
+        }
+      ],
+      "Peripherals": [
+        {
+          "Name": "CM4 SysTick",
+          "Signals": [],
+          "Config": {
+            "ENABLE": "TRUE",
+            "TICKS_PER_SEC": "10000"
+          }
+        },
+        {
+          "Name": "UART0",
+          "Signals": [
+            {
+              "Name": "CTS",
+              "Config": {}
+            },
+            {
+              "Name": "RTS",
+              "Config": {}
+            },
+            {
+              "Name": "RX",
+              "Config": {
+                "PWR": "VDDIO",
+                "PS": "WEAK_PU"
+              }
+            },
+            {
+              "Name": "TX",
+              "Config": {
+                "PWR": "VDDIO"
+              }
+            }
+          ],
+          "Config": {
+            "CHOSEN": "console,shell-uart",
+            "BAUD": "115200",
+            "PARITY": "DISABLED",
+            "HW_FLOW_CTRL": "DISABLED",
+            "CHAR_SIZE": "8",
+            "STOP_BITS": "1"
+          }
+        },
+        {
+          "Name": "TMR0",
+          "Signals": [
+            {
+              "Name": "IOA",
+              "Config": {}
+            },
+            {
+              "Name": "IOAN",
+              "Config": {}
+            },
+            {
+              "Name": "IOB",
+              "Config": {}
+            },
+            {
+              "Name": "IOBN",
+              "Config": {}
+            }
+          ],
+          "Config": {
+            "CONFIGURATION": "SINGLE_32BIT",
+            "MODE_A": "COMPARE",
+            "CLKDIV_A": "1"
+          }
+        }
+      ]
+    },
+    {
+      "CoreId": "RV",
+      "ProjectId": "RV",
+      "PluginId": "",
+      "PluginVersion": "",
+      "FirmwarePlatform": "",
+      "ExternallyManaged": true,
+      "Family": "RISC-V",
+      "Partitions": [],
+      "Peripherals": []
+    }
+  ],
+  "ClockFrequencies": {
+    "SYS_CLK_DIV_2": 50000000,
+    "IBRO": 7372800,
+    "Cortex-M4": 100000000,
+    "SYS_OSC": 100000000,
+    "SYS_CLK": 100000000,
+    "IPO": 100000000,
+    "PCLK": 50000000,
+    "TMR0a": 50000000,
+    "TMR0b": 50000000,
+    "TMR1a": 50000000,
+    "TMR1b": 50000000,
+    "TMR2a": 50000000,
+    "TMR2b": 50000000,
+    "TMR3a": 50000000,
+    "TMR3b": 50000000,
+    "UART0": 7372800,
+    "UART1": 50000000,
+    "UART2": 50000000
+  }

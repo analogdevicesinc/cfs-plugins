@@ -20,6 +20,15 @@
 <% if (!getProject()?.Partitions.find(p => getPartitionName(p, "NAME_OVERRIDE") === "FLASH")) { %>
     FLASH       (rx)  : ORIGIN = 0x00000000, LENGTH = 0x00000000 /* Section not defined. */
 <% } %>
-<% if (!getProject()?.Partitions.find(p => getPartitionName(p, "NAME_OVERRIDE") === "SRAM2")) { %>
-    SRAM2       (rwx) : ORIGIN = 0x00000000, LENGTH = 0x00000000 /* Section not defined. */
+<% if (!getProject()?.Partitions.find(p => getPartitionName(p, "NAME_OVERRIDE") === "PAL_NVM_DB")) { %>
+    PAL_NVM_DB  (r)   : ORIGIN = 0x00000000, LENGTH = 0x00000000 /* Section not defined. */
+<% } %>
+<% if (!getProject()?.Partitions.find(p => getPartitionName(p, "NAME_OVERRIDE") === "MAILBOX_0")) { %>
+    MAILBOX_0 (rw)    : ORIGIN = 0x00000000, LENGTH = 0x00000000 /* Section not defined. */
+<% } %>
+<% if (!getProject()?.Partitions.find(p => getPartitionName(p, "NAME_OVERRIDE") === "MAILBOX_1")) { %>
+    MAILBOX_1 (rw)    : ORIGIN = 0x00000000, LENGTH = 0x00000000 /* Section not defined. */
+<% } %>
+<% if (!getProject()?.Partitions.find(p => getPartitionName(p, "NAME_OVERRIDE") === "SRAM")) { %>
+    SRAM      (rwx)   : ORIGIN = 0x00000000, LENGTH = 0x00000000 /* Section not defined. */
 <% } %>

@@ -1,0 +1,60 @@
+<% 
+/**
+ * Copyright (c) 2025 Analog Devices, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+%>
+# This file was generated using Analog Devices CodeFusion Studio.
+# https://github.com/analogdevicesinc/codefusion-studio
+#
+# Generated at: <%= new Date().toISOString() %> 
+#
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) <%= new Date().getFullYear() %> Analog Devices, Inc.
+
+<%~ include("@normalizeSoc", it) %>
+
+CONFIG_ADC=y
+
+# CONFIG_SEQUENCE_SAMPLES=1
+# CONFIG_SEQUENCE_32BITS_REGISTERS=y
+<% if (["max32655", "max32665", "max32666", "max32680", "max78000"].includes(it.soc.toLowerCase())) { %>
+CONFIG_SEQUENCE_RESOLUTION=10
+<% } else { %>
+# CONFIG_SEQUENCE_RESOLUTION=12
+<% } %>	
+
+# Build for debug (no optimizations) by default
+CONFIG_DEBUG=y
+CONFIG_NO_OPTIMIZATIONS=y
+
+# Enable thread awareness when debugging
+CONFIG_THREAD_NAME=y
+CONFIG_DEBUG_THREAD_INFO=y
+CONFIG_THREAD_ANALYZER=y
+
+<% if (["MAX32690", "MAX32657", "MAX32658"].includes(it.projectInflectionPoint(it.soc))) { %>
+# Enable Zephyr core dump support
+CONFIG_DEBUG_COREDUMP=y
+CONFIG_DEBUG_COREDUMP_BACKEND_FLASH_PARTITION=y
+CONFIG_DEBUG_COREDUMP_MEMORY_DUMP_THREADS=y
+CONFIG_SMP=n
+CONFIG_PRINTK=y
+CONFIG_LOG=y
+
+CONFIG_HEAP_MEM_POOL_SIZE=8192
+CONFIG_MAIN_STACK_SIZE=16384
+
+
+# Enable flash support
+CONFIG_FLASH=y
+<% } %>

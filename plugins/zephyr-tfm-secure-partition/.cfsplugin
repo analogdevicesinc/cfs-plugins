@@ -1,8 +1,8 @@
 {
   "pluginName": "TF-M Secure Partition",
-  "pluginDescription": "Zephyr TF-M secure partition template for supported MCUs.",
+  "pluginDescription": "Zephyr TF-M secure partition template.",
   "pluginId": "com.analog.zephyr.tfmsecurepartition",
-  "pluginVersion": "1.0.1",
+  "pluginVersion": "1.0.2",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "zephyr",
   "supportedSocs": [
@@ -115,6 +115,10 @@
         {
           "src": "templates/.cfsconfig.eta",
           "dst": ".cfs/${context.soc.toLowerCase()}-${context.package.toLowerCase()}.cfsconfig"
+        },
+        {
+          "src": "templates/.cfsdependencies.eta",
+          "dst": ".cfs/.cfsdependencies"
         },
         {
           "src": "templates/.vscode/settings.json.eta",

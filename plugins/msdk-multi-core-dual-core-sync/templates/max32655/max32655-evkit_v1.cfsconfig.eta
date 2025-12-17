@@ -1,0 +1,304 @@
+  "Pins": [
+    {
+      "Pin": "D5",
+      "Peripheral": "RV",
+      "Signal": "TDI"
+    },
+    {
+      "Pin": "E4",
+      "Peripheral": "RV",
+      "Signal": "TDO"
+    },
+    {
+      "Pin": "F2",
+      "Peripheral": "RV",
+      "Signal": "TMS"
+    },
+    {
+      "Pin": "F3",
+      "Peripheral": "RV",
+      "Signal": "TCK"
+    },
+    {
+      "Pin": "H5",
+      "Peripheral": "GPIO0",
+      "Signal": "P0.18"
+    },
+    {
+      "Pin": "G4",
+      "Peripheral": "GPIO0",
+      "Signal": "P0.19"
+    },
+    {
+      "Pin": "J2",
+      "Peripheral": "GPIO0",
+      "Signal": "P0.24"
+    },
+    {
+      "Pin": "J1",
+      "Peripheral": "GPIO0",
+      "Signal": "P0.25"
+    },
+    {
+      "Pin": "F7",
+      "Peripheral": "UART0",
+      "Signal": "RX"
+    },
+    {
+      "Pin": "E7",
+      "Peripheral": "UART0",
+      "Signal": "TX"
+    }
+  ],
+  "ClockNodes": [
+    {
+      "Name": "UART0/1/2",
+      "Control": "UART0_ENABLE",
+      "Value": "TRUE",
+      "Enabled": true
+    },
+    {
+      "Name": "UART0/1/2",
+      "Control": "UART0_MUX",
+      "Value": "IBRO",
+      "Enabled": true
+    },
+    {
+      "Name": "SYS_OSC Mux",
+      "Control": "MUX",
+      "Value": "IPO",
+      "Enabled": true
+    },
+    {
+      "Name": "RISC-V",
+      "Control": "ENABLE",
+      "Value": "TRUE",
+      "Enabled": true
+    }
+  ],
+  "Projects": [
+    {
+      "CoreId": "CM4",
+      "ProjectId": "CM4",
+      "PluginId": "com.analog.project.msdk.plugin",
+      "PluginVersion": "1.1.0",
+      "FirmwarePlatform": "msdk",
+      "ExternallyManaged": false,
+      "PlatformConfig": {
+        "ProjectName": "m4"
+      },
+      "Name": "ARM Cortex-M4",
+      "Description": "ARM Cortex-M4",
+      "CoreNum": 0,
+      "IsPrimary": true,
+      "Partitions": [
+        {
+          "Name": "FLASH",
+          "StartAddress": "0x10000000",
+          "Size": 262144,
+          "IsOwner": true,
+          "Access": "R",
+          "Config": {
+          }
+        },
+        {
+          "Name": "RISCV_FLASH",
+          "StartAddress": "0x10040000",
+          "Size": 262144,
+          "IsOwner": false,
+          "Access": "R",
+          "Config": {
+          }
+        },
+        {
+          "Name": "SRAM",
+          "StartAddress": "0x20000000",
+          "Size": 65536,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+          }
+        },
+        {
+          "Name": "MAILBOX_0",
+          "StartAddress": "0x20010000",
+          "Size": 64,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+          }
+        },
+        {
+          "Name": "MAILBOX_1",
+          "StartAddress": "0x20010040",
+          "Size": 64,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+          }
+        }
+      ],
+      "Peripherals": [
+        {
+          "Name": "CM4 SysTick",
+          "Signals": [],
+          "Config": {
+            "ENABLE": "FALSE"
+          }
+        },
+        {
+          "Name": "RV",
+          "Signals": [
+            {
+              "Name": "TCK",
+              "Config": {
+                "PWR": "VDDIO"
+              }
+            },
+            {
+              "Name": "TDI",
+              "Config": {
+                "PWR": "VDDIO"
+              }
+            },
+            {
+              "Name": "TDO",
+              "Config": {
+                "PWR": "VDDIO"
+              }
+            },
+            {
+              "Name": "TMS",
+              "Config": {
+                "PWR": "VDDIO"
+              }
+            }
+          ],
+          "Config": {}
+        },
+        {
+          "Name": "UART0",
+          "Signals": [
+            {
+              "Name": "CTS",
+              "Config": {}
+            },
+            {
+              "Name": "RTS",
+              "Config": {}
+            },
+            {
+              "Name": "RX",
+              "Config": {
+                "PWR": "VDDIO",
+                "PS": "WEAK_PU"
+              }
+            },
+            {
+              "Name": "TX",
+              "Config": {
+                "PWR": "VDDIO"
+              }
+            }
+          ],
+          "Config": {
+            "PARITY": "DISABLED",
+            "PARITY_MD": "MARK",
+            "CHAR_SIZE": "8",
+            "STOP_BITS": "1",
+            "HW_FLOW_CTRL": "DISABLED",
+            "BAUD": "115200"
+          }
+        }
+      ]
+    },
+    {
+      "CoreId": "RV",
+      "ProjectId": "RV",
+      "PluginId": "com.analog.project.msdk.plugin",
+      "PluginVersion": "1.1.0",
+      "FirmwarePlatform": "msdk",
+      "ExternallyManaged": false,
+      "Name": "RISC-V (RV32)",
+      "Description": "RISC-V (RV32)",
+      "CoreNum": 1,
+      "Partitions": [
+        {
+          "Name": "RISCV_FLASH",
+          "StartAddress": "0x10040000",
+          "Size": 262144,
+          "IsOwner": true,
+          "Access": "R",
+          "Config": {
+            "NAME_OVERRIDE": "FLASH"
+          }
+        },
+        {
+          "Name": "MAILBOX_0",
+          "StartAddress": "0x20010000",
+          "Size": 64,
+          "IsOwner": false,
+          "Access": "R/W",
+          "Config": {
+          }
+        },
+        {
+          "Name": "MAILBOX_1",
+          "StartAddress": "0x20010040",
+          "Size": 64,
+          "IsOwner": false,
+          "Access": "R/W",
+          "Config": {
+          }
+        },
+        {
+          "Name": "RISCV_SRAM",
+          "StartAddress": "0x20010080",
+          "Size": 49024,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "NAME_OVERRIDE": "SRAM"
+          }
+        }
+      ],
+      "Peripherals": [
+        {
+          "Name": "RV mtime",
+          "Signals": [],
+          "Config": {
+          }
+        },
+        {
+          "Name": "GPIO0",
+          "Signals": [
+            {
+              "Name": "P0.24",
+              "Config": {
+                "MODE": "OUT",
+                "PWR": "VDDIO",
+                "DS": "0"
+              }
+            }
+          ],
+          "Config": {}
+        }
+      ],
+      "PlatformConfig": {
+        "ProjectName": "riscv"
+      }
+    }
+  ],
+  "ClockFrequencies": {
+    "SYS_CLK_DIV_2": 50000000,
+    "IBRO": 7372800,
+    "Cortex-M4": 100000000,
+    "SYS_OSC": 100000000,
+    "SYS_CLK": 100000000,
+    "IPO": 100000000,
+    "PCLK": 50000000,
+    "UART0": 7372800,
+    "UART1": 50000000,
+    "UART2": 50000000,
+    "RISC-V": 50000000
+  }

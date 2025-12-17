@@ -1,8 +1,8 @@
 {
   "pluginName": "MSDK Multicore Hello World",
-  "pluginDescription": "Multicore MSDK Hello World template for supported MCUs.",
+  "pluginDescription": "Multicore MSDK Hello World template.",
   "pluginId": "com.analog.multicore.msdk.helloworld",
-  "pluginVersion": "1.0.1",
+  "pluginVersion": "1.0.2",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "MSDK",
   "supportedSocs": [

@@ -1,8 +1,8 @@
 {
   "pluginName": "MSDK Single Core Hello World",
-  "pluginDescription": "Single Core MSDK Hello World template for supported MCUs.",
+  "pluginDescription": "Single Core MSDK Hello World template.",
   "pluginId": "com.analog.singlecore.msdk.helloworld",
-  "pluginVersion": "1.0.1",
+  "pluginVersion": "1.0.2",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "MSDK",
   "supportedSocs": [

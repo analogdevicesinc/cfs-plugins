@@ -2,7 +2,7 @@
   "pluginName": "SHARC-FX Single Core with TFLM",
   "pluginDescription": "SHARC-FX (core 1) and TensorFlow Lite Micro template.",
   "pluginId": "com.analog.sharcfx.tflm.example",
-  "pluginVersion": "1.0.1",
+  "pluginVersion": "1.0.2",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "SHARC-FX",
   "supportedHostPlatforms": [
@@ -191,6 +191,7 @@
       "package": "bga_ed"
     }
   ],
+  "aiGenCommand" : "build --target ADSP-SC835.FX --model ./files/sfx/hello_world_f32.tflite --output-path ./files/sfx/src/adi_tflm/ --backend tflm -e Symbol=hello_world_model_f32",
   "features": {
     "workspace": {
       "files": [

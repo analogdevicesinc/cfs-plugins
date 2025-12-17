@@ -12,6 +12,7 @@
         "${env:cfs.zephyr.workspace.path}/include/zephyr",
         "${env:cfs.zephyr.workspace.path}/include"
       ],
+      "compileCommands": "${workspaceFolder}/build/compile_commands.json",
       "defines": ["${config:cfs.project.board}", "__GNUC__"],
       "intelliSenseMode": "gcc-arm",
       "compilerPath": "${config:cfs.zephyr.sdk.path}/arm-zephyr-eabi/bin/arm-zephyr-eabi-gcc.exe",
@@ -36,6 +37,7 @@
         "${env:cfs.zephyr.workspace.path}/include/zephyr",
         "${env:cfs.zephyr.workspace.path}/include"
       ],
+      "compileCommands": "${workspaceFolder}/build/compile_commands.json",
       "defines": ["${config:cfs.project.board}", "__GNUC__"],
       "intelliSenseMode": "gcc-arm",
       "compilerPath": "${config:cfs.zephyr.sdk.path}/arm-zephyr-eabi/bin/arm-zephyr-eabi-gcc",
@@ -60,6 +62,7 @@
         "${env:cfs.zephyr.workspace.path}/include/zephyr",
         "${env:cfs.zephyr.workspace.path}/include"
       ],
+      "compileCommands": "${workspaceFolder}/build/compile_commands.json",
       "defines": ["${config:cfs.project.board}", "__GNUC__"],
       "intelliSenseMode": "gcc-arm",
       "compilerPath": "${config:cfs.zephyr.sdk.path}/arm-zephyr-eabi/bin/arm-zephyr-eabi-gcc",

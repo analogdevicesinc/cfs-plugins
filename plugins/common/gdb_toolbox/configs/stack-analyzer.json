@@ -2,6 +2,8 @@
   "name": "Analyze Stack",
   "description": "Analyzes stack usage in the target application.",
   "version": "1.0.0",
+  "core": "arm",
+  "firmwarePlatform": "msdk",
   "commands": [
     {
       "command": "source {defaultScriptsDirectory}/stack-analyzer.gdb",

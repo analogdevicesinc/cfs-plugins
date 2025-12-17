@@ -54,9 +54,10 @@ export class PropertyProvider
       }
     }
 
-    const { boardId, soc } = (context ?? {}) as Partial<{
+    const { boardId, soc, secure } = (context ?? {}) as Partial<{
       boardId: string;
       soc: string;
+      secure: boolean;
     }>;
 
     if (boardId && soc) {
@@ -66,7 +67,20 @@ export class PropertyProvider
       );
 
       if (boardNameProp) {
-        boardNameProp.default = getZephyrBoardName(boardId, soc);
+        boardNameProp.default = getZephyrBoardName(
+          boardId,
+          soc,
+          secure
+        );
+      }
+
+      const zephyrVersionProp = properties.find(
+        (property) => property.id === "ZephyrVersion"
+      );
+
+      if (zephyrVersionProp && (soc.toLowerCase() === "max32657" || soc.toLowerCase() === "max32658")) {
+        zephyrVersionProp.default = "4.3.0";
+        zephyrVersionProp.enum?.push({ label: "4.3.0", value: "4.3.0" });
       }
     }
     return properties;
@@ -90,7 +104,8 @@ export class PropertyProvider
  */
 export const getZephyrBoardName = (
   board: string,
-  soc: string
+  soc: string,
+  secure?: boolean
 ): string => {
   switch (board.toLowerCase()) {
     case "ad-apard32690-sl":
@@ -107,7 +122,10 @@ export const getZephyrBoardName = (
                 soc.toLowerCase()
               )
             ? "/m4"
-            : ""
+            : ["max32657", "max32658"].includes(soc.toLowerCase()) &&
+                secure === false
+              ? "/ns"
+              : ""
       }`;
     case "evsys":
       return `${soc.toLowerCase()}evsys`;

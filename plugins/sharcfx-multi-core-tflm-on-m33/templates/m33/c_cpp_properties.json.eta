@@ -2,6 +2,9 @@
 <%~ include("@normalizeSoc", it) %>
 <%~ include("@sharcfxUtils", it) %>
 {
+  "env": {
+    "cfs.msdk.path": ""
+  },
   "configurations": [
     {
       "name": "Win32",
@@ -9,9 +12,8 @@
         "${default}",
         "${workspaceFolder}",
         "${workspaceFolder}/**",
-        "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/Device/ADSP-SC83x_DFP/2.0.0/Include/**",
-        "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/Device/ADSP-SC8xx_SSDD/1.0.1/Include/**",
-        "${config:cfs.sdk.path}/SDK/MAX/Libraries/CMSIS/5.9.0/Core/Include"
+        "${config:cfs.sdk.path}/SDK/SHARC-FX/ARM/packs/AnalogDevices/ADSP-SC83x_DFP/2.0.0/Include/**",
+        "${env:cfs.msdk.path}/Libraries/CMSIS/5.9.0/Core/Include"
       ],
       "defines": [
         "${config:cfs.project.board}",

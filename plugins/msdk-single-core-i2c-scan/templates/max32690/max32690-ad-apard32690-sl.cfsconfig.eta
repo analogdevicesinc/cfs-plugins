@@ -1,0 +1,200 @@
+  "Pins": [
+    {
+      "Pin": "H5",
+      "Peripheral": "I2C0",
+      "Signal": "SDA"
+    },
+    {
+      "Pin": "J4",
+      "Peripheral": "I2C0",
+      "Signal": "SCL"
+    },
+    {
+      "Pin": "J5",
+      "Peripheral": "UART0",
+      "Signal": "TX"
+    },
+    {
+      "Pin": "K5",
+      "Peripheral": "UART0",
+      "Signal": "RX"
+    }
+  ],
+  "ClockNodes": [
+    {
+      "Type": "Peripheral",
+      "Name": "UART0/1/2",
+      "Control": "UART0_ENABLE",
+      "Value": "TRUE",
+      "Enabled": true
+    },
+    {
+      "Type": "Peripheral",
+      "Name": "UART0/1/2",
+      "Control": "UART0_MUX",
+      "Value": "IBRO",
+      "Enabled": true
+    },
+    {
+      "Type": "Mux",
+      "Name": "SYS_OSC Mux",
+      "Control": "MUX",
+      "Value": "IPO",
+      "Enabled": true
+    },
+    {
+      "Name": "I2C0/1/2",
+      "Control": "I2C0_ENABLE",
+      "Value": "TRUE",
+      "Enabled": true
+    }
+  ],
+  "Projects": [
+    {
+      "CoreId": "CM4",
+      "ProjectId": "CM4",
+      "PluginId": "com.analog.project.msdk.plugin",
+      "PluginVersion": "1.1.0",
+      "FirmwarePlatform": "msdk",
+      "ExternallyManaged": false,
+      "PlatformConfig": {
+        "ProjectName": "m4"
+      },
+      "Name": "ARM Cortex-M4",
+      "Description": "ARM Cortex-M4",
+      "CoreNum": 0,
+      "IsPrimary": true,
+      "Partitions": [
+        {
+          "Name": "FLASH",
+          "StartAddress": "0x10000000",
+          "Size": 3407872,
+          "IsOwner": true,
+          "Access": "R",
+          "Config": {
+          }
+        },
+        {
+          "Name": "SRAM",
+          "StartAddress": "0x20000000",
+          "Size": 1048576,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+          }
+        }
+      ],
+      "Peripherals": [
+        {
+          "Name": "CM4 SysTick",
+          "Signals": [],
+          "Config": {
+            "ENABLE": "FALSE"
+          }
+        },
+        {
+          "Name": "UART0",
+          "Signals": [
+            {
+              "Name": "CTS",
+              "Config": {}
+            },
+            {
+              "Name": "RTS",
+              "Config": {}
+            },
+            {
+              "Name": "RX",
+              "Config": {
+                "PWR": "VDDIO",
+                "PS": "WEAK_PU"
+              }
+            },
+            {
+              "Name": "TX",
+              "Config": {
+                "PWR": "VDDIO"
+              }
+            }
+          ],
+          "Config": {
+            "PARITY": "DISABLED",
+            "PARITY_MD": "MARK",
+            "CHAR_SIZE": "8",
+            "STOP_BITS": "1",
+            "HW_FLOW_CTRL": "DISABLED",
+            "BAUD": "115200"
+          }
+        },
+        {
+          "Name": "I2C0",
+          "Signals": [
+            {
+              "Name": "SCL",
+              "Config": {
+                "PWR": "VDDIO",
+                "PS": "DIS"
+              }
+            },
+            {
+              "Name": "SDA",
+              "Config": {
+                "PWR": "VDDIO",
+                "PS": "DIS"
+              }
+            }
+          ],
+          "Config": {
+            "MODE": "CONTROLLER",
+            "CLKSTR": "FALSE",
+            "SCL_TIMEOUT": "0",
+            "TRANSMIT_DMA_ENABLE": "FALSE",
+            "RECEIVE_DMA_ENABLE": "FALSE",
+            "DONE_IE": "FALSE",
+            "IRXM_IE": "FALSE",
+            "RX_THD_IE": "FALSE",
+            "TX_THD_IE": "FALSE",
+            "STOP_IE": "FALSE",
+            "TO_ERR_IE": "FALSE",
+            "START_ERR_IE": "FALSE",
+            "STOP_ERR_IE": "FALSE",
+            "TX_LOCKOUT_IE": "FALSE",
+            "RX_OV_IE": "FALSE",
+            "TX_UN_IE": "FALSE",
+            "START_IE": "FALSE",
+            "FREQ": "100000",
+            "GC_ADDR_MATCH_IE": "FALSE",
+            "ADDR_ACK_IE": "FALSE",
+            "ARB_ERR_IE": "FALSE",
+            "ADDR_NACK_ERR_IE": "FALSE",
+            "DATA_ERR_IE": "FALSE"
+          }
+        }
+      ]
+    },
+    {
+      "CoreId": "RV",
+      "ProjectId": "RV",
+      "PluginId": "",
+      "PluginVersion": "",
+      "FirmwarePlatform": "",
+      "ExternallyManaged": true,
+      "Partitions": [],
+      "Peripherals": []
+    }
+  ],
+  "ClockFrequencies": {
+    "Cortex-M4": 120000000,
+    "FLC0/1": 120000000,
+    "SYS_OSC": 120000000,
+    "IBRO": 7372800,
+    "SYS_CLK": 120000000,
+    "IPO": 120000000,
+    "PCLK": 60000000,
+    "I2C0": 60000000,
+    "I2C1": 60000000,
+    "I2C2": 60000000,   
+    "UART0": 7372800,
+    "UART1": 60000000,
+    "UART2": 60000000
+  }

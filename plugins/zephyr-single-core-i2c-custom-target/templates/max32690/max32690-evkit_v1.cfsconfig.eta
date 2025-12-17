@@ -1,0 +1,192 @@
+  "Pins": [
+    {
+      "Pin": "15",
+      "Peripheral": "UART2",
+      "Signal": "RX"
+    },
+    {
+      "Pin": "16",
+      "Peripheral": "UART2",
+      "Signal": "TX"
+    },
+    {
+      "Pin": "1",
+      "Peripheral": "I2C0",
+      "Signal": "SDA"
+    },
+    {
+      "Pin": "2",
+      "Peripheral": "I2C0",
+      "Signal": "SCL"
+    }
+  ],
+  "ClockNodes": [
+    {
+      "Name": "SYS_OSC Mux",
+      "Control": "MUX",
+      "Value": "IPO",
+      "Enabled": true
+    },
+    {
+      "Name": "UART0/2",
+      "Control": "UART2_ENABLE",
+      "Value": "TRUE",
+      "Enabled": true
+    },
+    {
+      "Name": "UART0/2",
+      "Control": "UART2_MUX",
+      "Value": "IBRO",
+      "Enabled": true
+    },
+    {
+      "Name": "I2C0/2",
+      "Control": "I2C0_ENABLE",
+      "Value": "TRUE",
+      "Enabled": true
+    }
+  ],
+  "Projects": [
+    {
+      "CoreId": "CM4",
+      "ProjectId": "CM4",
+      "PluginId": "com.analog.project.zephyr.plugin",
+      "PluginVersion": "1.0.0",
+      "FirmwarePlatform": "zephyr",
+      "ExternallyManaged": false,
+      "Partitions": [
+        {
+          "Name": "m4_flash",
+          "StartAddress": "0x10000000",
+          "Size": 3080192,
+          "IsOwner": true,
+          "Access": "R",
+          "Config": {
+            "CHOSEN": "code-partition"
+          }
+        },
+        {
+          "Name": "coredump_partition",
+          "StartAddress": "0x102F0000",
+          "Size": 65536,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "CHOSEN": "coredump-partition",
+            "LABEL": "coredump"
+          }
+        },
+        {
+          "Name": "m4_sram",
+          "StartAddress": "0x20000000",
+          "Size": 786432,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "CHOSEN": "sram"
+          }
+        }
+      ],
+      "Peripherals": [
+        {
+          "Name": "CM4 SysTick",
+          "Signals": [],
+          "Config": {
+            "ENABLE": "TRUE",
+            "TICKS_PER_SEC": "10000"
+          }
+        },
+        {
+          "Name": "UART2",
+          "Signals": [
+            {
+              "Name": "CTS",
+              "Config": {}
+            },
+            {
+              "Name": "RTS",
+              "Config": {}
+            },
+            {
+              "Name": "RX",
+              "Config": {
+                "PWR": "VDDIO",
+                "PS": "WEAK_PU"
+              }
+            },
+            {
+              "Name": "TX",
+              "Config": {
+                "PWR": "VDDIO"
+              }
+            }
+          ],
+          "Config": {
+            "CHOSEN": "console,shell-uart",
+            "BAUD": "115200",
+            "PARITY": "DISABLED",
+            "HW_FLOW_CTRL": "DISABLED",
+            "CHAR_SIZE": "8",
+            "STOP_BITS": "1"
+          }
+        },
+        {
+          "Name": "I2C0",
+          "Signals": [
+            {
+              "Name": "SCL",
+              "Config": {
+                "PWR": "VDDIO",
+                "PS": "DIS"
+              }
+            },
+            {
+              "Name": "SDA",
+              "Config": {
+                "PWR": "VDDIO",
+                "PS": "DIS"
+              }
+            }
+          ],
+          "Config": {
+            "FREQ": "100000"
+          }
+        } 
+      ],
+      "PlatformConfig": {
+        "ProjectName": "m4",
+        "ZephyrVersion": "4.2.0",
+        "ZephyrBoardName": "max32690evkit/max32690/m4",
+        "EnableCoreDump": true
+      },
+      "Profiling" : {
+        "Zephelin": {
+          "Enabled": false,
+          "AIEnabled": false,
+          "Format": "TEXT",
+          "Interface": "UART",
+          "Port": 2
+        }
+      }
+    },
+    {
+      "CoreId": "RV",
+      "ProjectId": "RV",
+      "PluginId": "",
+      "PluginVersion": "",
+      "FirmwarePlatform": "",
+      "ExternallyManaged": true,
+      "Partitions": [],
+      "Peripherals": []
+    }
+  ],
+  "ClockFrequencies": {
+    "Cortex-M4": 120000000,
+    "FLC0/1": 120000000,
+    "SYS_OSC": 120000000,
+    "IBRO": 7372800,
+    "SYS_CLK": 120000000,
+    "IPO": 120000000,
+    "UART0": 60000000,
+    "UART2": 7372800
+  }

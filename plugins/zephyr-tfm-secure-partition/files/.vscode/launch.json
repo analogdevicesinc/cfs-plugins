@@ -74,14 +74,7 @@
         "set logging on",
         "set remotetimeout 60"
       ],
-      "preLaunchTask": "CFS: build",
-      "overrideLaunchCommands": [
-        "monitor halt",
-        "monitor reset",
-        "-target-download"
-      ],
-      "overrideResetCommands": ["monitor reset"],
-      "overrideRestartCommands": ["monitor reset"]
+      "preLaunchTask": "CFS: build"
     },
     {
       "name": "CFS: Debug with JlinkGDBServer and JLink (ARM Embedded, Non-Secure TF-M)",
@@ -116,14 +109,7 @@
         "set logging on",
         "set remotetimeout 60"
       ],
-      "preLaunchTask": "CFS: build",
-      "overrideLaunchCommands": [
-        "monitor halt",
-        "monitor reset",
-        "-target-download"
-      ],
-      "overrideResetCommands": ["monitor reset"],
-      "overrideRestartCommands": ["monitor reset"]
+      "preLaunchTask": "CFS: build"
     },
     {
       "name": "CFS: Debug with JlinkGDBServer and JLink (ARM Embedded, Non-Secure BL2)",
@@ -158,14 +144,7 @@
         "set logging on",
         "set remotetimeout 60"
       ],
-      "preLaunchTask": "CFS: build",
-      "overrideLaunchCommands": [
-        "monitor halt",
-        "monitor reset",
-        "-target-download"
-      ],
-      "overrideResetCommands": ["monitor reset"],
-      "overrideRestartCommands": ["monitor reset"]
+      "preLaunchTask": "CFS: build"
     }
   ]
 }

@@ -96,7 +96,15 @@ describe("Unit test for Arm Zephyr Project Plugin", () => {
         PluginVersion: "string",
         FirmwarePlatform: "zephyr",
         ExternallyManaged: true,
-        Partitions: [{ Name: "Name" } as any],
+        Partitions: [
+          { Name: "Name",
+            StartAddress: "0x20000000",
+            Size: 2048,
+            IsOwner: true,
+            Access: "R/W",
+            Config: {}
+          } as any
+        ],
         PlatformConfig: {
           ProjectName: "m4",
           ZephyrVersion: "4.2.0",

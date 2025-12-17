@@ -1,0 +1,174 @@
+  "Pins": [
+    {
+      "Pin": "B2",
+      "Peripheral": "UART0",
+      "Signal": "TX"
+    },
+    {
+      "Pin": "C3",
+      "Peripheral": "UART0",
+      "Signal": "RX"
+    },
+    {
+      "Pin": "C4",
+      "Peripheral": "GPIO0",
+      "Signal": "P0.13"
+    },
+    {
+      "Pin": "C5",
+      "Peripheral": "GPIO0",
+      "Signal": "P0.12"
+    }
+  ],
+  "ClockNodes": [
+    {
+      "Name": "UART0",
+      "Control": "ENABLE",
+      "Value": "TRUE",
+      "Enabled": true
+    }
+  ],
+  "Projects": [
+    {
+      "CoreId": "CM33",
+      "ProjectId": "CM33",
+      "PluginId": "com.analog.project.zephyr.plugin",
+      "PluginVersion": "1.0.0",
+      "FirmwarePlatform": "zephyr",
+      "ExternallyManaged": false,
+      "PlatformConfig": {
+        "ProjectName": "m33",
+        "ZephyrVersion": "4.2.0",
+        "ZephyrBoardName": "max32657evkit/max32657"
+      },
+      "Partitions": [
+        {
+          "Name": "slot0_partition",
+          "StartAddress": "0x01000000",
+          "Size": 917504,
+          "IsOwner": true,
+          "Access": "R",
+          "Config": {
+            "CHOSEN": "code-partition",
+            "LABEL": "image-0"
+          }
+        },
+        {
+          "Name": "storage_partition",
+          "StartAddress": "0x010f0000",
+          "Size": 65536,
+          "IsOwner": true,
+          "Access": "R",
+          "Config": {
+            "LABEL": "storage"
+          }
+        },
+        {
+          "Name": "coredump_partition",
+          "StartAddress": "0x010e0000",
+          "Size": 65536,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "CHOSEN": "coredump-partition",
+            "LABEL": "coredump"
+          }
+        },
+        {
+          "Name": "secure_ram",
+          "StartAddress": "0x20000000",
+          "Size": 262144,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "CHOSEN": "sram",
+            "LABEL": "secure-memory"
+          }
+        }
+      ],
+      "Peripherals": [
+        {
+          "Name": "CM33 SysTick (S)",
+          "Signals": [],
+          "Config": {
+            "ENABLE": "TRUE",
+            "TICKS_PER_SEC": "10000"
+          }
+        },
+        {
+          "Name": "UART0",
+          "Signals": [
+            {
+              "Name": "RX",
+              "Config": {
+                "PWR": "VDDIO",
+                "PS": "WEAK_PU"
+              }
+            },
+            {
+              "Name": "TX",
+              "Config": {
+                "PWR": "VDDIO"
+              }
+            }
+          ],
+          "Config": {
+            "CHOSEN": "console,shell-uart,bt-c2h-uart",
+            "BAUD": "115200",
+            "PARITY": "DISABLED",
+            "HW_FLOW_CTRL": "DISABLED",
+            "CHAR_SIZE": "8",
+            "STOP_BITS": "1"
+          }
+        },
+        {
+          "Name": "GPIO0",
+          "Signals": [
+            {
+              "Name": "P0.12",
+              "Config": {
+                "MODE": "IN",
+                "PS": "STRONG_PU",
+                "POLARITY": "LOW",
+                "DT_NAME": "pb1",
+                "PHANDLE": "pb1",
+                "INPUT_CODE": "INPUT_KEY_0",
+                "ALIAS": ""
+              }
+            },
+            {
+              "Name": "P0.13",
+              "Description": "Blink LED",
+              "Config": {
+                "MODE": "OUT",
+                "POLARITY": "HIGH",
+                "DT_NAME": "led_1",
+                "PHANDLE": "led1",
+                "DS": "2",
+                "ALIAS": "led0"
+              }
+            }
+          ],
+          "Config": {}
+        }
+      ]
+    }
+  ],
+  "ClockFrequencies": {
+    "PCLK": 25000000,
+    "CLK_4KHZ": 4096,
+    "ERTCO_CLK": 32768,
+    "32KOUT": 32768,
+    "Cortex-M4": 50000000,
+    "FLC": 50000000,
+    "WUT": 32768,
+    "RTC": 4096,
+    "IPO": 50000000,
+    "ERTCO_OSC": 32768,
+    "ERTCO_OUT": 32768,
+    "SYS_OSC": 50000000,
+    "SYS_CLK": 50000000,
+    "ERTCO": 32768,
+    "CLK_32KHZ": 32768,
+    "UART0": 25000000
+  }

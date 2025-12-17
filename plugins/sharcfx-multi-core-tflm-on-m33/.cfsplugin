@@ -2,7 +2,7 @@
   "pluginName": "SHARC-FX Multi-Core with TFLM running on the ARM core",
   "pluginDescription": "Template for SHARC-FX (core 1) and ARM (core 2) with TensorFlow Lite Micro.",
   "pluginId": "com.analog.sharcfx.m33.tflm.example",
-  "pluginVersion": "1.0.1",
+  "pluginVersion": "1.0.2",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "SHARC-FX",
   "supportedHostPlatforms": [
@@ -71,6 +71,7 @@
       "package": "bga_ed"
     }
   ],
+  "aiGenCommand" : "build --target ADSP-SC835.CM33 --model ./files/m33/hello_world_f32.tflite --output-path ./files/m33/src/adi_tflm/ --backend tflm -e Symbol=hello_world_model_f32",
   "features": {
     "workspace": {
       "files": [

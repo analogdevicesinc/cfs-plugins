@@ -12,32 +12,23 @@
  * limitations under the License.
  *
  */
-
-// Return the length of the buffer
-function getI2SBufferLength() {
-  return getPeriConfigValue(it.instance, "LENGTH", "256");
-}
-
-// Return whether the TX mode is enabled
-function getI2STxEnable() {
-  return getPeriConfigValue(it.instance, "TX_RX_MODE", "TX_RX") !== "RX_ONLY";
-}
-
-// Return whether the RX mode is enabled
-function getI2SRxEnable() {
-  return getPeriConfigValue(it.instance, "TX_RX_MODE", "TX_RX") !== "TX_ONLY";
-}
+%>
+<%
+  eval(this.render("templates/i2s_common.js"));
 %>
 <% if (getAssignedPeripheral(it.instance)) { %>
 <%   if (getI2STxEnable() || getI2SRxEnable()) { %>
 /* Global variables declared for <%= it.instance %>. 
 */
+<%     if (hasDuplicateI2SBufferNames()) { %>
+#warning Duplicate buffer names detected. Ensure all buffer names are unique.
+<%     } %>
 <%     if (getI2STxEnable()) { %>
-extern uint8_t <%= getPeriConfigValue(it.instance, "TX_BUFFER_NAME", it.instance.toLowerCase() + "_tx_buffer") %>[<%= getI2SBufferLength() %>];
-extern uint8_t <%= getPeriConfigValue(it.instance, "RAW_DATA_BUFFER_NAME", it.instance.toLowerCase() + "_raw_data_buffer") %>[<%= getI2SBufferLength() %>];
+extern uint8_t <%= getI2STxBufferName() %>[<%= getI2SBufferLength() %>];
+extern uint8_t <%= getI2SRawDataBufferName() %>[<%= getI2SBufferLength() %>];
 <%     } %>
 <%     if (getI2SRxEnable()) { %>
-extern uint8_t <%= getPeriConfigValue(it.instance, "RX_BUFFER_NAME", it.instance.toLowerCase() + "_rx_buffer") %>[<%= getI2SBufferLength() %>];
+extern uint8_t <%= getI2SRxBufferName() %>[<%= getI2SBufferLength() %>];
 <%     } %>
 
 <%   } %>

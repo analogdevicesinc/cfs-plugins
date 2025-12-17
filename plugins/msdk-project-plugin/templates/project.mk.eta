@@ -27,11 +27,12 @@
 
 # Add your config here!
 
-<% if (["max32655", "max32690", "max78000", "max78002"].includes(it.soc.toLowerCase())) { %>
+<% if (["max32655", "max32690", "max78000", "max78002"].includes(it.soc.toLowerCase()) && it.coreId !== "RV") { %>
 # To load an application on the RISC-V core, uncomment the following
 # lines, and set the RISCV_APP variable to point to the RISC-V application.
+# This is the folder name used for the RISC-V application in your workspace.
 #RISCV_LOAD=1
-#RISCV_APP=riscv
+#RISCV_APP=../RV
 
 <% } %>
 <% if (["max32650", "max32655", "max32657", "max32658", "max32670", "max32690", "max78000", "max78002"].includes(it.soc.toLowerCase())) { %>

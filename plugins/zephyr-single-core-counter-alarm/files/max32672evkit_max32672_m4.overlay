@@ -1,0 +1,17 @@
+/**
+ * This file was generated using Analog Devices CodeFusion Studio.
+ * https://github.com/analogdevicesinc/codefusion-studio
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright (c) 2025 Analog Devices, Inc.
+ */
+
+
+&timer0 {
+    status = "okay";
+    counter0: counter {
+        status = "okay";
+    };
+};
+
+

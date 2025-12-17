@@ -1,7 +1,7 @@
 {
   "pluginName": "Registers-Only Plugin",
   "pluginId": "com.analog.project.registers.plugin",
-  "pluginDescription": "Create example baremetal projects which generates configuration code using MMR accesses only",
+  "pluginDescription": "Create example baremetal projects which generates configuration code using MMR accesses only.",
   "pluginVersion": "1.0.0",
   "pluginApiVersion": 1,
   "author": "Analog Devices, Inc.",
@@ -128,7 +128,7 @@
           "condition": "${context.coreId.toLowerCase().includes('fx')}"
         },
         {
-          "src": "templates/sharc-fx/sfx/tasks.json.eta",
+          "src": "templates/sharc-fx/sfx/cfs.tasks.json.eta",
           "dst": ".vscode/tasks.json",
           "condition": "${context.coreId.toLowerCase().includes('fx')}"
         },

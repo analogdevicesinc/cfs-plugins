@@ -217,7 +217,7 @@ export function partitionOverlapsSystemRegion(
 /* Get the partitions for this project.
  */
 export function getProjectPartitions() {
-  return getProject()?.Partitions?.filter((p) => p.IsOwner) ?? [];
+  return getProject()?.Partitions ?? [];
 }
 
 /* Get the partitions for this project that start in this core memory region.
@@ -226,6 +226,25 @@ export function getProjectPartitionsStartingInRegion(
   region: SocCoreMemoryRef
 ) {
   const partitions = getProjectPartitions();
+  return (
+    partitions.filter(
+      (p) => getCoreRegion(p.StartAddress) == region
+    ) ?? []
+  );
+}
+
+/* Get the partitions owned by this project.
+ */
+export function getProjectOwnedPartitions() {
+  return getProject()?.Partitions?.filter((p) => p.IsOwner) ?? [];
+}
+
+/* Get the partitions owned by this project that start in this core memory region.
+ */
+export function getProjectOwnedPartitionsStartingInRegion(
+  region: SocCoreMemoryRef
+) {
+  const partitions = getProjectOwnedPartitions();
   return (
     partitions.filter(
       (p) => getCoreRegion(p.StartAddress) == region

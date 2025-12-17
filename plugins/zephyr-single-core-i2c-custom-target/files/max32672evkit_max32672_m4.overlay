@@ -1,0 +1,23 @@
+/**
+ * This file was generated using Analog Devices CodeFusion Studio.
+ * https://github.com/analogdevicesinc/codefusion-studio
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright (c) 2025 Analog Devices, Inc.
+ */
+
+
+&i2c0a_scl_p0_6 {
+	power-source = <MAX32_VSEL_VDDIO>;
+};
+
+&i2c0a_sda_p0_7 {
+	power-source = <MAX32_VSEL_VDDIO>;
+};
+
+&i2c0 {
+	pinctrl-0 = <&i2c0a_scl_p0_6 &i2c0a_sda_p0_7>;
+	pinctrl-names = "default";
+	clock-frequency = <DT_FREQ_K(100)>;
+	status = "okay";
+};
