@@ -46,6 +46,11 @@
     },
     {
       "name": "MAX32660",
+      "board": "EVSYS",
+      "package": "tqfn20"
+    },
+    {
+      "name": "MAX32660",
       "package": "tqfn24"
     },
     {

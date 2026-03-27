@@ -28,6 +28,11 @@
       "Pin": "J2",
       "Peripheral": "GPIO0",
       "Signal": "P0.24"
+    },
+    {
+      "Pin": "E6",
+      "Peripheral": "MISC",
+      "Signal": "SQWOUT"
     }
   ],
   "ClockNodes": [

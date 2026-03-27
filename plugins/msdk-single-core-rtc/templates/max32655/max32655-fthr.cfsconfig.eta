@@ -33,6 +33,11 @@
       "Pin": "E7",
       "Peripheral": "UART0",
       "Signal": "TX"
+    },
+    {
+      "Pin": "E6",
+      "Peripheral": "MISC",
+      "Signal": "SQWOUT"
     }
   ],
   "ClockNodes": [

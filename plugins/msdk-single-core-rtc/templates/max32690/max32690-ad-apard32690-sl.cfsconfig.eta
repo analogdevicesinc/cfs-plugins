@@ -28,6 +28,11 @@
       "Pin": "K7",
       "Peripheral": "GPIO1",
       "Signal": "P1.27"
+    },
+    {
+      "Pin": "H9",
+      "Peripheral": "MISC",
+      "Signal": "SQWOUT"
     }
   ],
   "ClockNodes": [

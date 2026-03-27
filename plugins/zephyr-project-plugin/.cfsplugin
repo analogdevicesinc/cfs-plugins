@@ -26,18 +26,27 @@
       "name": "MAX32655",
       "dataModel": "max32655-ctbga.json",
       "board": "EvKit_V1",
-      "package": "ctbga"
+      "package": "ctbga",
+      "cores": [
+        "CM4"
+      ]
     },
     {
       "name": "MAX32655",
       "dataModel": "max32655-ctbga.json",
       "board": "FTHR",
-      "package": "ctbga"
+      "package": "ctbga",
+      "cores": [
+        "CM4"
+      ]
     },
     {
       "name": "MAX32655",
       "dataModel": "max32655-wlp.json",
-      "package": "wlp"
+      "package": "wlp",
+      "cores": [
+        "CM4"
+      ]
     },
     {
       "name": "MAX32657",
@@ -50,11 +59,6 @@
       "dataModel": "max32658-wlp.json",
       "board": "EvKit_V1",
       "package": "wlp"
-    },
-    {
-      "name": "MAX32660",
-      "board": "EvKit_V1",
-      "package": "tqfn20"
     },
     {
       "name": "MAX32660",
@@ -123,34 +127,52 @@
       "name": "MAX32690",
       "dataModel": "max32690-tqfn.json",
       "board": "EvKit_V1",
-      "package": "tqfn"
+      "package": "tqfn",
+      "cores": [
+        "CM4"
+      ]
     },
     {
       "name": "MAX32690",
       "dataModel": "max32690-wlp.json",
       "board": "AD-APARD32690-SL",
-      "package": "wlp"
+      "package": "wlp",
+      "cores": [
+        "CM4"
+      ]
     },
     {
       "name": "MAX32690",
       "dataModel": "max32690-tqfn.json",
       "board": "FTHR",
-      "package": "tqfn"
+      "package": "tqfn",
+      "cores": [
+        "CM4"
+      ]
     },
     {
       "name": "MAX78000",
       "board": "EvKit_V1",
-      "package": "ctbga"
+      "package": "ctbga",
+      "cores": [
+        "CM4"
+      ]
     },
     {
       "name": "MAX78000",
       "board": "FTHR",
-      "package": "ctbga"
+      "package": "ctbga",
+      "cores": [
+        "CM4"
+      ]
     },
     {
       "name": "MAX78002",
       "board": "EvKit_V1",
-      "package": "csbga"
+      "package": "csbga",
+      "cores": [
+        "CM4"
+      ]
     }
   ],
   "features": {
@@ -610,7 +632,7 @@
           }
         ]
       },
-      "LPTMR0":{
+      "LPTMR0": {
         "modifiedControls": [
           {
             "Id": "MUX",
@@ -645,7 +667,7 @@
           }
         ]
       },
-      "LPTMR1":{
+      "LPTMR1": {
         "modifiedControls": [
           {
             "Id": "MUX",

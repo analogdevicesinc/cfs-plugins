@@ -61,6 +61,7 @@ export const getMsdkBoardName = (
   soc: string
 ): string => {
   switch (board.toLowerCase()) {
+    case "evsys":
     case "evkit_v1":
       return "EvKit_V1";
 
@@ -83,8 +84,6 @@ export const getMsdkBoardName = (
       return "APARD";
     case "ad-swiot1l-sl":
       return "AD-SWIOT1L-SL";
-    case "evsys":
-      return "EVSYS";
     default:
       return "";
   }

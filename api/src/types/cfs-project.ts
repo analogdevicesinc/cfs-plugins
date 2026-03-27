@@ -35,6 +35,11 @@ export interface CfsProject extends Record<string, unknown> {
   soc: string;
 
   /**
+   * The board used in the project
+   */
+  board?: string;
+
+  /**
    * The package used in the project
    */
   package: string;

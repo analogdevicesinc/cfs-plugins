@@ -1,9 +1,11 @@
 <%~ include("@copyrightHeader", it) %>
 
+<% if (['max32650', 'max32655', 'max32657', 'max32658', 'max32670', 'max32690', 'max78000', 'max78002'].includes(it.soc.toLowerCase())) { %>
 /* Include global variables and configurations for the SoC.
 */
 #include "../soc_init.h"
 
+<% } %>
 int main(void) {
   return 0;
 }

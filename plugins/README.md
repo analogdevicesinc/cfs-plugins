@@ -30,6 +30,16 @@ By default, if no `index.ts` file is present, CodeFusion Studio uses the generic
 
 To override this behavior, you can add an `index.ts` file that exports a class implementing one or more service interfaces defined in `cfs-services.ts` in the Plugin API, such as `CfsProjectGenerationService` and `CfsCodeGenerationService`. Your custom class can reuse generic plugin components, plug in a different templating engine, or define fully custom logic.
 
+## 🖋 Eta templating
+
+By default, templates in the `templates/` directory are rendered using the [Eta](https://eta.js.org/docs/) templating engine. Eta has access to the plugin context, which includes values from the selected SoC, board, and package. Templates can be used for any generated file, from workspace settings and launch configurations to task definitions.
+
+Common examples include `.vscode/settings.json.eta`, `.code-workspace.eta`, and `cfs.tasks.json.eta`. All template files must be declared in `.cfsplugin` under the appropriate `features.<name>.templates` entry with a `src`/`dst` mapping.
+
+You can use a different templating engine by providing a custom `index.ts` — see [Plugin Development Guide](../DEVELOPMENT.md).
+
+For controlling which tasks appear in the **Actions** view in the CFS UI, see [Defining custom tasks with cfs.tasks.json](#-defining-custom-tasks-with-cfstasksjson).
+
 ## 🧪 Example: Plugin with `workspace` service
 
 ### [-single-core-blinky`](./zephyr-single-core-blinky/)
@@ -41,7 +51,7 @@ Provides a `workspace` service that defines a workspace layout for a single-core
 - **`.cfsplugin`**
   Declares a `workspace` service that includes:
   - `files` to be copied into the workspace
-  - `templates` rendered using Eta (example templates: `.cfsconfig`or `.code-workspace`)
+  - `templates` rendered using Eta (example templates: `.cfsconfig`, `.code-workspace`)
 
 - **`files/`**
   Static assets copied as-is into the workspace.
@@ -49,9 +59,7 @@ Provides a `workspace` service that defines a workspace layout for a single-core
 - **`templates/`**
   Eta templates rendered dynamically using values from the selected SoC, board, and package.
 
-> **Note**: All files must be listed in `.cfsplugin.features.workspace.files` or `.templates`.
-> Static files are copied as-is. Templates (such as `.vscode/settings.json.eta`) are processed using the Eta templating engine by default. You can use another templating engine if preferred.
-> The generator services determine how templates are rendered or files are transformed.
+> **Note**: All files must be listed in `.cfsplugin.features.workspace.files` or `.templates`. Static files are copied as-is. `.eta` files are processed as described in [Eta templating](#-eta-templating). The generator services determine how templates are rendered or files are transformed.
 
 ## 🧪 Example: Plugin with `project`, `codegen`, and `properties` services
 
@@ -179,6 +187,27 @@ async configureProject(soc: string, config: ConfiguredProject): Promise<Configur
 Here, `CfsJsonProjectConfig` reads: `<plugin-root>/config-patches/<soc>/<ProjectId>.json` and merges its contents into the matching entry under `Projects[]`.
 
 💡 The structure of `.cfsconfig` may evolve in future releases. Avoid hardcoding assumptions about its format in your plugin logic.
+
+## 🔧 Defining custom tasks with cfs.tasks.json
+
+A `cfs.tasks.json.eta` template controls which tasks appear in the **Actions** view in the CFS UI when a workspace is created. Without one, CFS falls back to a default view. With one, your plugin can hide tasks that are not supported for your target, or add entirely new ones.
+
+For example, [msdk-multi-core-hello-world](./msdk-multi-core-hello-world/templates/cfs.tasks.json.eta) uses `if (!it.relativeFilePath.includes('riscv'))` to conditionally filter tasks in the Actions view for the RISC-V core. A plugin could equally add a custom task — such as opening SDK documentation — using a tool path variable to locate the installed SDK:
+
+```json
+{
+  "label": "Open SDK Documentation",
+  "type": "shell",
+  "windows": { "command": "start \"\" \"${cfs:tool.path.<tool-name>}/doc/html/index.html\"" },
+  "linux":   { "command": "xdg-open \"${cfs:tool.path.<tool-name>}/doc/html/index.html\"" },
+  "osx":     { "command": "open \"${cfs:tool.path.<tool-name>}/doc/html/index.html\"" },
+  "problemMatcher": []
+}
+```
+
+Replace `<tool-name>` with the tool identifier registered by your plugin (for example, `xtensa-sharcfx`).
+
+CFS-specific variables such as `${config:cfs.project.target}`, `${config:cfs.programFile}`, and `${cfs:tool.path.<tool-name>}` are resolved automatically within task commands.
 
 ## 📄 Want to build your own plugin?
 

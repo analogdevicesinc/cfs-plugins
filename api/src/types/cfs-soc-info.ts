@@ -36,4 +36,9 @@ export interface CfsSocInfo {
    * The SoC package name, e.g. "WLP"
    */
   package: string;
+
+  /**
+   * supported data model core IDs eg., 'CM4'
+   */
+  cores?: string[];
 }

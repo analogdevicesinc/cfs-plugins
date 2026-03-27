@@ -1,6 +1,7 @@
 export default `<%
 it.getMsdkBoardName = function() {
   switch (it.board.toLowerCase()) {
+    case "evsys":
     case "evkit_v1":
       return "EvKit_V1";
     case "fthr":

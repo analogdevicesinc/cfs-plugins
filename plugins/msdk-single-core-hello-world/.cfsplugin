@@ -34,6 +34,11 @@
       "package": "tqfn20"
     },
     {
+      "name": "MAX32660",
+      "board": "EVSYS",
+      "package": "tqfn20"
+    },
+    {
       "name": "MAX32662",
       "board": "EvKit_V1",
       "package": "tqfnep"
