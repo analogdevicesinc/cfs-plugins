@@ -22,8 +22,7 @@ Building and Running
 
 Make sure that the ADC is enabled (``status = "okay";``) and has each channel as a
 child node, with your desired settings like gain, reference, or acquisition time and
-oversampling setting (if used). See :zephyr_file:`boards/max32690evkit_max32690_m4.overlay and
-boards/channel_adc_max32.overlay` for an example of such setup.
+oversampling setting (if used). See the ADC-related .overlay files under boards/ for an example of such setup.
 
 Building and Running
 ========================================

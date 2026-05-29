@@ -3,23 +3,35 @@
       "CoreId": "CM4",
       "ProjectId": "CM4",
       "PluginId": "com.analog.project.zephyr.plugin",
-      "PluginVersion": "1.0.0",
+      "PluginVersion": "^1.1.0",
       "FirmwarePlatform": "zephyr",
       "ExternallyManaged": false,
       "PlatformConfig": {
         "ProjectName": "m4",
-        "ZephyrVersion": "4.2.0",
-        "ZephyrBoardName": "ad_swiot1l_sl"
+        "ZephyrVersion": "4.3.0",
+        "ZephyrBoardName": "ad_swiot1l_sl",
+        "EnableCoreDump": true
       },
       "Partitions": [
         {
           "Name": "m4_flash",
           "StartAddress": "0x10000000",
-          "Size": 3145728,
+          "Size": 3080192,
           "IsOwner": true,
-          "Access": "R",
+          "Access": "R/X",
           "Config": {
             "CHOSEN": "code-partition"
+          }
+        },
+        {
+          "Name": "coredump_partition",
+          "StartAddress": "0x102F0000",
+          "Size": 65536,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "CHOSEN": "coredump-partition",
+            "LABEL": "coredump"
           }
         },
         {
@@ -104,6 +116,11 @@
               }
             }],
           "Config": {}
+        },
+        {
+          "Name": "FLC",
+          "Signals": [],
+          "Config": {}
         }
       ]
     }
@@ -136,6 +153,12 @@
       "Control": "UART0_ENABLE",
       "Value": "TRUE",
       "Enabled": true
+    },
+    {
+      "Name": "FLC",
+      "Control": "SFLC_ENABLE",
+      "Value": "TRUE",
+      "Enabled": true
     }
   ],
   "ClockFrequencies": {
@@ -147,6 +170,8 @@
     "Cortex-M4": 120000000,
     "SYS_OSC": 120000000,
     "SYS_CLK": 120000000,
+    "SFLC": 120000000,
+    "FIC": 120000000,
     "UART0": 60000000,
     "UART1": 60000000,
     "UART2": 60000000,

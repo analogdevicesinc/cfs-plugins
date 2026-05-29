@@ -1,6 +1,6 @@
 /**
  *
- * Copyright (c) 2025 Analog Devices, Inc.
+ * Copyright (c) 2025-2026 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,15 @@
 import path from "node:path";
 import sinon from "sinon";
 import fs, { promises as fsp } from "node:fs";
-import {
-  type CfsPluginInfo,
-  type CfsProject,
-  type CfsWorkspace,
-  type CfsConfig,
-  type CfsCodeGenerationContext,
-  type CfsFeatureScope,
-  evalNestedTemplateLiterals,
-  GenericPlugin,
-} from "cfs-plugins-api";
+import { evalNestedTemplateLiterals, GenericPlugin } from "cfs-plugins-sdk";
+import type {
+  CfsCodeGenerationContext,
+  CfsConfig,
+  CfsFeatureScope,
+  CfsPluginInfo,
+  CfsProject,
+  CfsWorkspace,
+} from "cfs-types";
 import {
   directoryExists,
   fileExists,
@@ -84,8 +83,8 @@ describe("Unit tests for the Registers Project Plugin", () => {
   const cfsConfig: CfsConfig = {
     Copyright:
       "Copyright (c) 2024 Analog Devices, Inc.  All rights reserved. This software is proprietary to Analog Devices, Inc. and its licensors.",
+    SchemaVersion: "2.1.0",
     DataModelVersion: "0.0.25",
-    DataModelSchemaVersion: "1.0.0",
     Soc: "MAX32690",
     Package: "TQFN",
     Pins: [],
@@ -169,10 +168,13 @@ describe("Unit tests for the Registers Project Plugin", () => {
       ...projectPluginInfo.features.project.templates
         .filter((template) => {
           return template.condition
-            ? evalNestedTemplateLiterals(template.condition, cfsProject) === "true"
+            ? evalNestedTemplateLiterals(template.condition, cfsProject) ===
+                "true"
             : true;
         })
-        .map((template) => evalNestedTemplateLiterals(template.dst, cfsProject)),
+        .map((template) =>
+          evalNestedTemplateLiterals(template.dst, cfsProject),
+        ),
 
       ...projectPluginInfo.features.project.files
         .filter((file) => {

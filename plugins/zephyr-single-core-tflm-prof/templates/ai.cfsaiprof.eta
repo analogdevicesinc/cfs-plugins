@@ -1,0 +1,19 @@
+{
+    "Soc": "<%= it.soc %>",
+    "Package": "<%= it.package %>",
+    "BoardName": "<%= it.board %>",
+    "SchemaVersion": "1.0",
+    "Debuggers": {
+        "JLink" : "flash & run (JLink)",
+        "CMSIS-DAP" : "flash & run (OpenOCD)"
+    },
+    "Output": {
+        "Interface": "UART",
+<% if ( ['max32690', 'max78002'].includes(it.soc.toLowerCase()) ) { %>
+        "Port": "CN2",
+<% } else { %>
+        "Port": "J1",
+<% } %>
+        "Format": "CTF"
+    }
+}

@@ -24,8 +24,10 @@ PROJ_DIRS = src src/system
 
 # External base directories (absolute paths)
 # Add new external base directories here
-EXTERNAL_BASES = $(SFX_PATH)/Xtensa/SHARC-FX/lsp/<%= it.remove_W(it.soc) %>/gdbio
-LSP_PATH = $(EXTERNAL_BASES)
+EXTERNAL_BASES =
+
+# Point to the local Linker Support Package
+LSP_PATH = src/linker
 
 #=============================================================================
 # BUILD CONFIGURATION
@@ -197,7 +199,18 @@ all: link
 # Linking step
 link: $(DXE)
 
-$(DXE): $(ALL_OBJS) $(ADDITIONAL_LIBS)
+$(LSP_PATH)/ldscripts/elf32xtensa.x: $(LSP_PATH)/memmap.xmm $(LSP_PATH)/specs
+	@echo "Generating LD scripts from Linker Support Package"
+	$(SFX_PATH)/Xtensa/XtensaTools/bin/xt-genldscripts -b $(LSP_PATH) -nompu
+
+$(LSP_PATH)/mpu_table.c: $(LSP_PATH)/ldscripts/elf32xtensa.x
+	@echo "Generating MPU table"
+	$(SFX_PATH)/Xtensa/XtensaTools/bin/xt-genmpu -mlsp=$(LSP_PATH) -o $(LSP_PATH)/mpu_table.c
+
+$(LSP_PATH)/mpu_table.o: $(LSP_PATH)/mpu_table.c
+	$(CC) $(CFLAGS) -c $(LSP_PATH)/mpu_table.c -o $(LSP_PATH)/mpu_table.o
+
+$(DXE): $(ALL_OBJS) $(ADDITIONAL_LIBS) $(LSP_PATH)/ldscripts/elf32xtensa.x $(LSP_PATH)/mpu_table.o
 	@echo "Invoking: CodeFusion SHARC-FX C++ Linker"
 	@mkdir -p $(BUILD_DIR)
 	$(CXX) -o $(DXE) $(ALL_OBJS) -mlsp=$(LSP_PATH) $(LDFLAGS) -lm
@@ -282,6 +295,8 @@ list-objs:
 clean:
 	@echo "Cleaning $(BUILD_TYPE) build..."
 	@rm -rf $(BUILD_DIR)
+	@rm -f $(LSP_PATH)/mpu_table.c $(LSP_PATH)/mpu_table.o
+	@rm -rf $(LSP_PATH)/ldscripts
 	@echo " $(BUILD_TYPE) build cleaned"
 
 # Clean all build types
@@ -289,6 +304,8 @@ clean:
 clean-all:
 	@echo " Cleaning all builds..."
 	@rm -rf build
+	@rm -f $(LSP_PATH)/mpu_table.c $(LSP_PATH)/mpu_table.o
+	@rm -rf $(LSP_PATH)/ldscripts
 	@echo " All builds cleaned"
 
 # Rebuild (clean + build)

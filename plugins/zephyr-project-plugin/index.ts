@@ -28,15 +28,15 @@ import type {
   CfsProject,
   CfsConfig,
   ConfiguredProject
-} from "cfs-plugins-api";
+} from "cfs-types";
 import {
   CfsJsonProjectConfig,
   CfsSSPlusProjectGenerator
-} from "cfs-plugins-api";
-import { CfsJsonSystemConfig } from "cfs-plugins-api";
+} from "cfs-plugins-sdk";
+import { CfsJsonSystemConfig } from "cfs-plugins-sdk";
 import path from "path";
-import { CfsEtaProjectGenerator } from "cfs-plugins-api";
-import { CfsEtaCodeGenerator } from "cfs-plugins-api";
+import { CfsEtaProjectGenerator } from "cfs-plugins-sdk";
+import { CfsEtaCodeGenerator } from "cfs-plugins-sdk";
 import { PropertyProvider } from "./services/property-provider.js";
 
 class ZephyrProjectPlugin

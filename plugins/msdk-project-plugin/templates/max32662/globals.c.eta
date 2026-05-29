@@ -14,4 +14,4 @@
  */
 
 %>
-<%~ include("../i2s_globals.c.eta", { ...it, instance: "I2S0" }) %>
+<%~ include("../i2s_globals.c.eta", { ...it, instance: "I2S" }) %>

@@ -3,11 +3,22 @@
     {
       "Name": "m4_flash",
       "StartAddress": "0x10000000",
-      "Size": 393216,
+      "Size": 327680,
       "IsOwner": true,
-      "Access": "R",
+      "Access": "R/X",
       "Config": {
         "CHOSEN": "code-partition"
+      }
+    },
+    {
+      "Name": "coredump_partition",
+      "StartAddress": "0x10050000",
+      "Size": 65536,
+      "IsOwner": true,
+      "Access": "R/W",
+      "Config": {
+        "CHOSEN": "coredump-partition",
+        "LABEL": "coredump"
       }
     },
     {
@@ -29,6 +40,37 @@
         "ENABLE": "TRUE",
         "TICKS_PER_SEC": "10000"
       }
+    },
+    {
+      "Name": "FLC0",
+      "Signals": [],
+      "Config": {}
+    },
+    {
+      "Name": "MISC",
+      "Signals": [
+        {
+          "Name": "EXT_CLK1",
+          "Config": {}
+        },
+        {
+          "Name": "EXT_CLK2",
+          "Config": {}
+        },
+        {
+          "Name": "RSTN",
+          "Config": {}
+        },
+        {
+          "Name": "SWDCLK",
+          "Config": {}
+        },
+        {
+          "Name": "SWDIO",
+          "Config": {}
+        }
+      ],
+      "Config": {}
     }
   ]
 }

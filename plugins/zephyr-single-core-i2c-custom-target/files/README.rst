@@ -15,8 +15,6 @@ Requirements
 
 This sample requires an I2C peripheral which is capable of acting as a target.
 
-This sample has been tested on :zephyr:board:`MAX32690 EVKIT`.
-
 Building and Running
 ********************
 
@@ -24,4 +22,22 @@ The code for this sample can be found in :zephyr_file:`samples/drivers/i2c/custo
 
 To build and flash the application:
 
-Press Pristine Build and then Flash directly in the CFS Tool.
+- Press **Pristine Build**
+- Then press **Flash** directly in the CFS Tool
+
+Hardware Notes
+**************
+
+This sample requires external pull-up resistors on the SCL and SDA lines for the
+I2C bus to operate correctly in target mode.
+
+On several ADI MAX series development boards, dedicated jumpers are available to
+provide the required pull-up resistors directly on the board. However, on boards
+that do not include these jumpers, external pull-up resistors must be added to
+both the SCL and SDA lines.
+
+If the pull-ups are missing, the target driver will fail to initialize and the
+application will report an error similar to the following::
+
+    i2c custom target sample
+    Failed to register target

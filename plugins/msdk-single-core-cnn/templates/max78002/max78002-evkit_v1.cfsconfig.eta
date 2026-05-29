@@ -3,17 +3,13 @@
       "CoreId": "CM4",
       "ProjectId": "CM4",
       "PluginId": "com.analog.project.msdk.plugin",
-      "PluginVersion": "1.1.0",
+      "PluginVersion": "^1.2.0",
       "FirmwarePlatform": "MSDK",
       "ExternallyManaged": false,
       "PlatformConfig": {
         "ProjectName": "m4",
         "MsdkBoardName": "EvKit_V1"
       },
-      "Name": "ARM Cortex-M4",
-      "Description": "ARM Cortex-M4",
-      "CoreNum": 0,
-      "IsPrimary": true,
       "AIModels": [
           {
                "Name": "Izer1",
@@ -37,7 +33,7 @@
           "StartAddress": "0x10000000",
           "Size": 2621440,
           "IsOwner": true,
-          "Access": "R",
+          "Access": "R/X",
           "Config": {}
         },
         {

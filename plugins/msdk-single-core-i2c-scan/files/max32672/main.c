@@ -2,7 +2,7 @@
  *
  * Copyright (C) 2022-2023 Maxim Integrated Products, Inc. (now owned by 
  * Analog Devices, Inc.),
- * Copyright (C) 2023-2024 Analog Devices, Inc.
+ * Copyright (C) 2023-2026 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,11 +38,10 @@
 
 /***** Definitions *****/
 #if defined(BOARD_FTHR)
-#define I2C_CONTROLLER MXC_I2C2 // SCL P0_19; SDA P0_18
+#define I2C_CONTROLLER MXC_I2C2 // SCL P0_18; SDA P0_19
 #else
 #define I2C_CONTROLLER MXC_I2C0 // SCL P0_6; SDA P0_7
 #endif
-#define I2C_FREQ 100000 // 100kHZ
 
 // *****************************************************************************
 int main(void)
@@ -59,16 +58,8 @@ int main(void)
     printf("\nby connecting jumpers JP4 and JP5.\n\n");
 #endif
 
-    //Setup the I2C controller
-    if (E_NO_ERROR != MXC_I2C_Init(I2C_CONTROLLER, 1, 0)) {
-        printf("-->Failed controller\n");
-        return -1;
-    } else {
-        printf("\n-->I2C Controller Initialization Complete\n");
-    }
-
     printf("-->Scanning started\n");
-    MXC_I2C_SetFrequency(I2C_CONTROLLER, I2C_FREQ);
+
     mxc_i2c_req_t reqController;
     reqController.i2c = I2C_CONTROLLER;
     reqController.addr = 0;

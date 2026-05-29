@@ -1,0 +1,16 @@
+{
+  "ClockFrequencies": {
+    "ERTCO_CLK": 32768,
+    "32KOUT": 32768,
+    "POWER SEQUENCER": 8000,
+    "WAKE_UP": 32768,
+    "INRO": 8000,
+    "CPU0": 96000000,
+    "ERTCO_OSC": 32768,
+    "ERTCO_OUT": 32768,
+    "HSO": 96000000,
+    "SYS_OSC": 96000000,
+    "SYS_CLK": 96000000,
+    "ERTCO": 32768
+  }
+}

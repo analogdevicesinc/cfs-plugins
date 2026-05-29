@@ -2,7 +2,8 @@
   "pluginName": "Default Workspace Plugin",
   "pluginId": "com.analog.workspace.default.plugin",
   "pluginDescription": "Create a workspace by copying files and processing Eta templates.",
-  "pluginVersion": "1.0.0",
+  "pluginVersion": "1.1.0",
+  "schemaVersion": "1.2.0",
   "pluginApiVersion": 1,
   "author": "Analog Devices, Inc.",
   "features": {
@@ -15,7 +16,7 @@
         {
           "src": "templates/.cfsconfig.eta",
           "dst": ".cfs/${context.workspaceName}.cfsconfig",
-          "condition": "${['max32650', 'max32655', 'max32657', 'max32658', 'max32670', 'max32690', 'max78000', 'max78002'].includes(context.soc.toLowerCase()) || context.soc.toLowerCase().startsWith('adsp')}"
+          "condition": "${context.soc.toLowerCase().startsWith('max') || context.soc.toLowerCase().startsWith('adsp')}"
         }
       ],
       "files": [
@@ -34,17 +35,17 @@
         {
           "src": "files/gdb_toolbox/configs/crash-cause-zephyr.json",
           "dst": ".cfs/gdb_toolbox/configs/crash-cause-zephyr.json",
-          "condition": "${['max32657', 'max32658', 'max32690'].includes(context.soc.toLowerCase())}"
+          "condition": "${['max32650', 'max32655', 'max32657', 'max32658', 'max32660', 'max32662', 'max32666', 'max32670', 'max32672', 'max32690', 'max78000', 'max78002'].includes(context.soc.toLowerCase())}"
         },
         {
           "src": "files/gdb_toolbox/configs/thread-analyzer.json",
           "dst": ".cfs/gdb_toolbox/configs/thread-analyzer.json",
-          "condition": "${['max32657', 'max32658', 'max32690'].includes(context.soc.toLowerCase())}"
+          "condition": "${['max32650', 'max32655', 'max32657', 'max32658', 'max32660', 'max32662', 'max32666', 'max32670', 'max32672', 'max32690', 'max78000', 'max78002'].includes(context.soc.toLowerCase())}"
         },
         {
           "src": "files/gdb_toolbox/configs/heap-analyzer.json",
           "dst": ".cfs/gdb_toolbox/configs/heap-analyzer.json",
-          "condition": "${['max32657', 'max32658', 'max32690'].includes(context.soc.toLowerCase())}"
+          "condition": "${['max32650', 'max32655', 'max32657', 'max32658', 'max32660', 'max32662', 'max32666', 'max32670', 'max32672', 'max32690', 'max78000', 'max78002'].includes(context.soc.toLowerCase())}"
         },
         {
           "src": "files/gdb_toolbox/gdb/fault-analyzer-arm.gdb",
@@ -53,17 +54,17 @@
         {
           "src": "files/gdb_toolbox/gdb/heap-analyzer.gdb",
           "dst": ".cfs/gdb_toolbox/gdb/heap-analyzer.gdb",
-          "condition": "${['max32657', 'max32658', 'max32690'].includes(context.soc.toLowerCase())}"
+          "condition": "${['max32650', 'max32655', 'max32657', 'max32658', 'max32660', 'max32662', 'max32666', 'max32670', 'max32672', 'max32690', 'max78000', 'max78002'].includes(context.soc.toLowerCase())}"
         },
         {
           "src": "files/gdb_toolbox/gdb/crash-cause-zephyr.gdb",
           "dst": ".cfs/gdb_toolbox/gdb/crash-cause-zephyr.gdb",
-          "condition": "${['max32657', 'max32658', 'max32690'].includes(context.soc.toLowerCase())}"
+          "condition": "${['max32650', 'max32655', 'max32657', 'max32658', 'max32660', 'max32662', 'max32666', 'max32670', 'max32672', 'max32690', 'max78000', 'max78002'].includes(context.soc.toLowerCase())}"
         },
         {
           "src": "files/gdb_toolbox/gdb/thread-analyzer.gdb",
           "dst": ".cfs/gdb_toolbox/gdb/thread-analyzer.gdb",
-          "condition": "${['max32657', 'max32658', 'max32690'].includes(context.soc.toLowerCase())}"
+          "condition": "${['max32650', 'max32655', 'max32657', 'max32658', 'max32660', 'max32662', 'max32666', 'max32670', 'max32672', 'max32690', 'max78000', 'max78002'].includes(context.soc.toLowerCase())}"
         }
       ]
     }

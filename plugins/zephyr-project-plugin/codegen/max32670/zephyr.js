@@ -53,6 +53,7 @@ if (it.cfsconfig.Package.toUpperCase() === "TQFN") {
             { signal: "OA", pin: "11", name: "lptmr0b_oa_p0_7"}
         ],
         subnode: () => getAssignedPeripheral("LPTMR0").Config?.MODE_A === "COMPARE" ? "counter" : "pwm",
+        subnode_boilerplate: () => getAssignedPeripheral("LPTMR0").Config?.MODE_A === "PWM" ? ['compatible = "adi,max32-pwm"', '#pwm-cells = <3>'] : [],
         pins_node: () => getAssignedPeripheral("LPTMR0").Config?.MODE_A === "COMPARE" ? undefined : "subnode",
         config: [
             { name: "prescaler", type: "int", control: "CLKDIV_A", cfg_default: "1"}
@@ -63,6 +64,7 @@ if (it.cfsconfig.Package.toUpperCase() === "TQFN") {
             { signal: "IA", pin: "3", name: "lptmr1a_ia_p0_22"}
         ],
         subnode: () => getAssignedPeripheral("LPTMR1").Config?.MODE_A === "COMPARE" ? "counter" : "pwm",
+        subnode_boilerplate: () => getAssignedPeripheral("LPTMR1").Config?.MODE_A === "PWM" ? ['compatible = "adi,max32-pwm"', '#pwm-cells = <3>'] : [],
         pins_node: () => getAssignedPeripheral("LPTMR1").Config?.MODE_A === "COMPARE" ? undefined : "subnode",
         config: [
             { name: "prescaler", type: "int", control: "CLKDIV_A", cfg_default: "1"}
@@ -264,6 +266,7 @@ if (it.cfsconfig.Package.toUpperCase() === "TQFN") {
             { signal: "IA", pin: "B6", name: "lptmr0b_ia_p0_6"}
         ],
         subnode: () => getAssignedPeripheral("LPTMR0").Config?.MODE_A === "COMPARE" ? "counter" : "pwm",
+        subnode_boilerplate: () => getAssignedPeripheral("LPTMR0").Config?.MODE_A === "PWM" ? ['compatible = "adi,max32-pwm"', '#pwm-cells = <3>'] : [],
         pins_node: () => getAssignedPeripheral("LPTMR0").Config?.MODE_A === "COMPARE" ? undefined : "subnode",
         config: [
             { name: "prescaler", type: "int", control: "CLKDIV_A", cfg_default: "1"}

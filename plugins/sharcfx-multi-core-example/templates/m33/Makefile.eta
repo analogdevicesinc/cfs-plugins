@@ -133,11 +133,7 @@ ALL_OBJS = $(WS_C_OBJS) $(WS_CXX_OBJS) $(EXT_C_OBJS) $(EXT_CXX_OBJS)
 TARGET = $(BUILD_DIR)/$(PROJECT).elf
 
 # Linker script handling
-<% if (["adsp-sc834", "adsp-sc834w"].includes(it.soc.toLowerCase())) { %>
-LD_SCRIPT_IN = ADSP-SC83x-1MB.ld
-<% } else { %>
-LD_SCRIPT_IN = ADSP-SC83x-2MB.ld
-<% } %>
+LD_SCRIPT_IN = ADSP-SC83x.ld
 LD_SCRIPT = $(BUILD_DIR)/$(PROJECT).ld
 
 #=============================================================================

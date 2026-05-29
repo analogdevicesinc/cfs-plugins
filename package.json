@@ -3,16 +3,16 @@
   "publisher": "analogdevices",
   "description": "Plugins for CodeFusion Studio",
   "author": "Analog Devices, Inc.",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "private": true,
   "scripts": {
-    "build": "yarn ws:api build && yarn ws:plugins build",
-    "clean": "yarn ws:api clean && yarn ws:plugins clean",
+    "build": "yarn ws:plugins build",
+    "clean": "yarn ws:plugins clean",
     "clean-build": "yarn clean && yarn build",
     "genai": "yarn ws:plugins genai",
-    "ws:api": "yarn workspace cfs-plugins-api",
+    "postinstall": "tsc -b --force node_modules/cfs-plugins-sdk/tsconfig.json",
     "ws:plugins": "yarn workspace plugins",
-    "test": "mocha --require ts-node/register --loader ts-node/esm --recursive tests/**/*.test.ts"
+    "test": "TS_NODE_PROJECT=tests/tsconfig.json mocha --recursive tests/**/*.test.ts"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^28.0.2",
@@ -31,7 +31,9 @@
     "chai-as-promised": "^8.0.1",
     "eslint": "8.57.0",
     "eslint-config-prettier": "^10.1.5",
+    "glob": "^10.0.0",
     "mocha": "^11.1.0",
+    "prettier": "^3.5.0",
     "rollup": "^4.34.8",
     "rollup-plugin-copy": "^3.5.0",
     "rollup-plugin-typescript-resolve": "^1.0.1",
@@ -44,8 +46,10 @@
   "type": "module",
   "license": "Apache-2.0",
   "workspaces": [
-    "api",
     "plugins"
   ],
-  "packageManager": "yarn@4.2.2"
+  "resolutions": {
+    "cfs-types@npm:^2.2.0": "https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-types&tag=V2.2.0"
+  },
+  "packageManager": "yarn@4.13.0"
 }

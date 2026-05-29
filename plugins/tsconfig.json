@@ -2,13 +2,14 @@
   "compilerOptions": {
     "composite": true,
     "declaration": true,
-    "module": "ESNext",
+    "module": "Node16",
     "allowJs": true,
     "outDir": "dist",
     "rootDir": ".",
     "strict": true,
     "target": "es2022",
-    "moduleResolution": "Node",
+    "moduleResolution": "Node16",
+    "types": ["node"],
     "skipLibCheck": true,
     "strictPropertyInitialization": false,
     "resolveJsonModule": true,
@@ -18,10 +19,5 @@
   "exclude": ["**/*.test.ts", "dist"],
   "ts-node": {
     "esm": true
-  },
-  "references": [
-    {
-      "path": "../api"
-    }
-  ]
+  }
 }

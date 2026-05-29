@@ -54,23 +54,19 @@
       "CoreId": "CM4",
       "ProjectId": "CM4",
       "PluginId": "com.analog.project.msdk.plugin",
-      "PluginVersion": "1.1.0",
+      "PluginVersion": "^1.2.0",
       "FirmwarePlatform": "msdk",
       "ExternallyManaged": false,
       "PlatformConfig": {
         "ProjectName": "m4"
       },
-      "Name": "ARM Cortex-M4",
-      "Description": "ARM Cortex-M4",
-      "CoreNum": 0,
-      "IsPrimary": true,
       "Partitions": [
         {
           "Name": "FLASH",
           "StartAddress": "0x10000000",
           "Size": 3407872,
           "IsOwner": true,
-          "Access": "R",
+          "Access": "R/X",
           "Config": {
           }
         },
@@ -123,6 +119,11 @@
             "CHAR_SIZE": "8",
             "STOP_BITS": "1",
             "HW_FLOW_CTRL": "DISABLED",
+            "RX_FRAME_ERROR_IE": "FALSE",
+            "RX_OVERRUN_IE": "FALSE",
+            "RX_THD_IE": "FALSE",
+            "TX_ONE_BYTE_IE": "FALSE",
+            "TX_HALF_EMPTY_IE": "FALSE",
             "BAUD": "115200"
           }
         },
@@ -193,7 +194,7 @@
     "PCLK": 60000000,
     "I2C0": 60000000,
     "I2C1": 60000000,
-    "I2C2": 60000000,   
+    "I2C2": 60000000,
     "UART0": 7372800,
     "UART1": 60000000,
     "UART2": 60000000

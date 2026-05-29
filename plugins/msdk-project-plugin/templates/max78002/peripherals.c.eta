@@ -58,11 +58,6 @@ function modifiesSysClk() {
   MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_AES);
 
 <% } %>
-<% if (isPeripheralClockSetTo("CRC", "CRC_ENABLE", "TRUE")) { %>
-  /* AES/CRC/TRNG: Enable the CRC Clock. */
-  MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_CRC);
-
-<% } %>
 <% if (isPeripheralClockSetTo("DMA", "ENABLE", "TRUE")) { %>
   /* DMA: Enable the Component Clock. */
   MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_DMA);
@@ -72,7 +67,24 @@ function modifiesSysClk() {
   /* High-Speed USB: Enable the Component Clock. */
   MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_USB);
 
-<% } %>
+<%   if (getPeripheralClockSetting("USBHS", "MUX", "USB_OSC_DIV") === "USB_OSC_DIV") { %>
+  /* High-Speed USB: Clock Source for USB PHY is set to SYS_CLK divided by 10. */
+  result = MXC_USB_SetClockSource(MXC_USB_CLOCK_SYS_DIV_10);
+  if (result != E_NO_ERROR) {
+    return result;
+  }
+
+<%   } %>
+<%   if (isPeripheralClockSetTo("USBHS", "MUX", "USB_EXTCLK")) { %>
+  /* High-Speed USB: Clock Source for USB PHY is set to USBCLKEXT on P0.27. */
+  result = MXC_USB_SetClockSource(MXC_USB_CLOCK_EXTCLK);
+  if (result != E_NO_ERROR) {
+    return result;
+  }
+
+<%   } %>
+<% } /* end if "High-Speed USB", "ENABLE", "TRUE"*/ %>
+
 <% if (isSystemClockSetTo("ERFO Mux", "MUX", "ERFO_CLK")) { %>
   /* ERFO Mux: Clock Source is set to External Clock on HFXIN. */
   #warning There is currently no code emitted to configure the ERFO bypass.
@@ -163,6 +175,7 @@ function modifiesSysClk() {
 <%~ include("../trng_config.c.eta", { ...it, instance: "TRNG", enable: "TRNG_ENABLE"}) %>
 <%~ include("../i2s_config.c.eta", { ...it, instance: "I2S0", enable: "ENABLE" }) %>
 <%~ include("../owm_config.c.eta", { ...it, instance: "OWM", enable: "ENABLE" }) %>
+<%~ include("../crc_config.c.eta", { ...it, instance: "CRC", enable: "CRC_ENABLE"}) %>
 <% if (modifiesSysClk()) { %>
   /* Update the System Core Clock as core clock settings have changed. */
   SystemCoreClockUpdate();

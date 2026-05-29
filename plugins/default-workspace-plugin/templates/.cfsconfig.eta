@@ -1,7 +1,7 @@
 {
   "Copyright": "Copyright (c) <%= new Date().getFullYear() %> Analog Devices, Inc.  All rights reserved. This software is proprietary to Analog Devices, Inc. and its licensors.",
-  "DataModelVersion": "<%= it.dataModelVersion || '1.0.0' %>",
-  "DataModelSchemaVersion": "<%= it.dataModelSchemaVersion || '1.0.0' %>",
+  "DataModelVersion": "^<%= it.dataModelVersion || '1.0.0' %>",
+  "SchemaVersion": "2.1.0",
   "Soc": "<%= it.soc %>",
   "Package": "<%= it.package %>",
   "BoardName": "<%= it.board %>",
@@ -13,7 +13,7 @@
       "CoreId": "<%= project.coreId %>",
       "ProjectId": "<%= project.id %>",
       "PluginId": "<%= project.pluginId %>",
-      "PluginVersion": "<%= project.pluginVersion %>",
+      "PluginVersion": "^<%= project.pluginVersion %>",
       "FirmwarePlatform": "<%= project.firmwarePlatform %>",
       "ExternallyManaged": <%= !project.isEnabled %>,
       <% if ('Secure' in project) { %>
@@ -26,19 +26,7 @@
             .map(key => `"${key}": ${JSON.stringify(project.platformConfig[key])}`)
             .join(',\n        ') %> 
 <% } %>      },
-      "Partitions": [<% if (['MAX32690', 'MAX32657', 'MAX32658'].includes(it.soc.toUpperCase())) { %>
-        {
-          "Name": "coredump_partition",
-          "StartAddress": "0x102F0000",
-          "Size": 65536,
-          "IsOwner": true,
-          "Access": "R/W",
-          "Config": {
-            "CHOSEN": "coredump-partition",
-            "LABEL": "coredump"
-          }
-        }<% } %>
-      ],
+      "Partitions": [],
       "Peripherals": []
     }<% if (index < it.projects.length - 1) { %>,
 <% } %>

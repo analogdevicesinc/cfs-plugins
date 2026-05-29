@@ -31,12 +31,6 @@
       "Control": "MUX",
       "Value": "IPO",
       "Enabled": false
-    },
-    {
-      "Name": "ICC0/1",
-      "Control": "ENABLE",
-      "Value": "TRUE",
-      "Enabled": true
     }
   ],
   "Projects": [
@@ -44,21 +38,19 @@
       "CoreId": "CM4",
       "ProjectId": "CM4",
       "PluginId": "com.analog.project.msdk.plugin",
-      "PluginVersion": "1.1.0",
+      "PluginVersion": "^1.2.0",
       "FirmwarePlatform": "msdk",
       "ExternallyManaged": false,
       "PlatformConfig": {
         "ProjectName": "m4"
       },
-      "Family": "Cortex-M",
-      "Ai": {},
       "Partitions": [
         {
           "Name": "FLASH",
           "StartAddress": "0x10000000",
           "Size": 3407872,
           "IsOwner": true,
-          "Access": "R",
+          "Access": "R/X",
           "Config": {}
         },
         {
@@ -109,6 +101,11 @@
             "CHAR_SIZE": "8",
             "STOP_BITS": "1",
             "HW_FLOW_CTRL": "DISABLED",
+            "RX_FRAME_ERROR_IE": "FALSE",
+            "RX_OVERRUN_IE": "FALSE",
+            "RX_THD_IE": "FALSE",
+            "TX_ONE_BYTE_IE": "FALSE",
+            "TX_HALF_EMPTY_IE": "FALSE",
             "BAUD": "115200"
           }
         },
@@ -126,7 +123,6 @@
       "PluginVersion": "",
       "FirmwarePlatform": "",
       "ExternallyManaged": true,
-      "Family": "RISC-V",
       "Partitions": [],
       "Peripherals": []
     }

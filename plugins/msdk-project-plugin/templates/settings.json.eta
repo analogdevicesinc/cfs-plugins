@@ -4,19 +4,20 @@
     "${workspaceFolder}/build/project_defines.h"
   ],
   "cfs.project.board": "<%= it.platformConfig.MsdkBoardName %>",
+<% if (it.msdkInflectionPoint(it.soc) !== it.projectInflectionPoint(it.soc)) { %>
+  "cfs.project.target": "<%= it.msdkInflectionPoint(it.soc) %>",
+<% } %>
   "cfs.jlink.device": "<%= it.jlinkInflectionPoint(it.soc) %>",
   "cfs.programFile": "${workspaceFolder}/build/${workspaceFolderBasename}.elf",
   "cfs.debugPath": "${workspaceFolder}/build/",
   "cfs.configureWorkspace": "Yes",
   "cfs.project.firmwarePlatform": "MSDK",
-
-<% if (it.coreId === "CM4" || it.coreId === "CM33") { %>
+<% if (it.coreId.startsWith("CM")) { %>
   "cfs.openocd.target": "target/<%= it.openocdInflectionPoint(it.soc).toLowerCase() %>.cfg",
   "cfs.openocd.interface": "interface/cmsis-dap.cfg",
 <% } else if (it.coreId === "RV") { %>
   "cfs.openocd.target": "target/<%= it.openocdInflectionPoint(it.soc).toLowerCase() %>_riscv.cfg",
   "cfs.openocd.interface": "interface/ftdi/olimex-arm-usb-ocd-h.cfg",
 <% } %>
-
   "cfs.cmsis.svdFile": "${command:cfs.tool.path.msdk}/Libraries/CMSIS/Device/Maxim/<%= it.msdkInflectionPoint(it.soc) %>/Include/<%= it.msdkInflectionPoint(it.soc).toLowerCase() %>.svd"
 }

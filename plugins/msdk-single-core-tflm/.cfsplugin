@@ -1,36 +1,38 @@
 {
   "pluginName": "MSDK Single Core TensorFlow AI Model",
-  "pluginDescription": "Single Core MSDK TensorFlow Lite Micro (TFLM) template..",
+  "pluginDescription": "Single Core MSDK TensorFlow Lite Micro (TFLM) template.",
   "pluginId": "com.analog.singlecore.msdk.tflm",
-  "pluginVersion": "1.0.2",
+  "pluginVersion": "1.1.0",
+  "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "MSDK",
   "supportedSocs": [
     {
       "name": "MAX32690",
-      "dataModel": "max32690-tqfn.json",
       "board": "EvKit_V1",
-      "package": "tqfn"
+      "package": "tqfn",
+      "dataModelVersion": "^1.3.628"
     },
     {
       "name": "MAX32690",
-      "dataModel": "max32690-wlp.json",
       "board": "AD-APARD32690-SL",
-      "package": "wlp"
+      "package": "wlp",
+      "dataModelVersion": "^1.3.628"
     },
     {
       "name": "MAX32690",
-      "dataModel": "max32690-tqfn.json",
       "board": "FTHR",
-      "package": "tqfn"
+      "package": "tqfn",
+      "dataModelVersion": "^1.3.628"
     },
     {
       "name": "MAX78002",
       "board": "EvKit_V1",
-      "package": "csbga"
+      "package": "csbga",
+      "dataModelVersion": "^1.3.628"
     }
   ],
-  "aiGenCommand" : "build --target MAX32690.CM4 --model ./files/m4/hello_world_f32.tflite --output-path ./files/m4/src/adi_tflm/ --backend tflm -e Symbol=hello_world_model_f32",
+  "aiGenCommand": "build --target MAX32690.CM4 --model ./files/m4/hello_world_f32.tflite --output-path ./files/m4/src/adi_tflm/ --backend tflm -e Symbol=hello_world_model_f32",
   "features": {
     "workspace": {
       "files": [
@@ -49,6 +51,10 @@
         {
           "src": "files/m4/README.md",
           "dst": "m4/README.md"
+        },
+        {
+          "src": "files/m4/src/adi_tflm/adi_tflm.hpp",
+          "dst": "m4/src/adi_tflm/adi_tflm.hpp"
         },
         {
           "src": "files/m4/src/adi_tflm/hello_world_model_f32.cpp",
@@ -109,6 +115,10 @@
         {
           "src": "files/gdb_toolbox/gdb/stack-painter.gdb",
           "dst": ".cfs/gdb_toolbox/gdb/stack-painter.gdb"
+        },
+        {
+          "src": "files/.cfsdependencies",
+          "dst": ".cfs"
         }
       ],
       "templates": [

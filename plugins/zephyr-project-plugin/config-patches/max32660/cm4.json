@@ -1,0 +1,68 @@
+{
+  "Partitions": [
+    {
+      "Name": "m4_flash",
+      "StartAddress": "0x00000000",
+      "Size": 196608,
+      "IsOwner": true,
+      "Access": "R/X",
+      "Config": {
+        "CHOSEN": "code-partition"
+      }
+    },
+    {
+      "Name": "coredump_partition",
+      "StartAddress": "0x00030000",
+      "Size": 65536,
+      "IsOwner": true,
+      "Access": "R/W",
+      "Config": {
+        "CHOSEN": "coredump-partition",
+        "LABEL": "coredump"
+      }
+    },
+    {
+      "Name": "m4_sram",
+      "StartAddress": "0x20000000",
+      "Size": 98304,
+      "IsOwner": true,
+      "Access": "R/W",
+      "Config": {
+        "CHOSEN": "sram"
+      }
+    }
+  ],
+  "Peripherals": [
+    {
+      "Name": "CM4 SysTick",
+      "Signals": [],
+      "Config": {
+        "ENABLE": "TRUE",
+        "TICKS_PER_SEC": "10000"
+      }
+    },
+    {
+      "Name": "FLC",
+      "Signals": [],
+      "Config": {}
+    },
+    {
+      "Name": "MISC",
+      "Signals": [
+        {
+          "Name": "RSTN",
+          "Config": {}
+        },
+        {
+          "Name": "SWDCLK",
+          "Config": {}
+        },
+        {
+          "Name": "SWDIO",
+          "Config": {}
+        }
+      ],
+      "Config": {}
+    }
+  ]
+}

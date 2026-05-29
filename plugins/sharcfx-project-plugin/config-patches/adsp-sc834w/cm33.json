@@ -1,0 +1,48 @@
+{
+  "Partitions": [
+    {
+      "Name": "L1_code_arm",
+      "StartAddress": "0x28A80000",
+      "Size": 65536,
+      "DisplayUnit": "KB",
+      "IsOwner": true,
+      "Access": "R/W",
+      "Config": {
+        "NAME_OVERRIDE": "L1_IRAM"
+      }
+    },
+    {
+      "Name": "L1_data_arm",
+      "StartAddress": "0x28AC0000",
+      "Size": 131072,
+      "DisplayUnit": "KB",
+      "IsOwner": true,
+      "Access": "R/W",
+      "Config": {
+        "NAME_OVERRIDE": "L1_DRAM"
+      }
+    },
+    {
+      "Name": "L3_ram_arm",
+      "StartAddress": "0x90000000",
+      "Size": 268435456,
+      "DisplayUnit": "MB",
+      "IsOwner": true,
+      "Access": "R/W",
+      "Config": {
+        "NAME_OVERRIDE": "L3_SDRAM"
+      }
+    },
+    {
+      "Name": "L2_ram_arm",
+      "StartAddress": "0x20100000",
+      "Size": 131072,
+      "DisplayUnit": "KB",
+      "IsOwner": true,
+      "Access": "R/W",
+      "Config": {
+        "NAME_OVERRIDE": "L2_SRAM"
+      }
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 /**
  *
- * Copyright (c) 2025 Analog Devices, Inc.
+ * Copyright (c) 2025-2026 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,17 @@
 import path from "node:path";
 import sinon from "sinon";
 import fs, { promises as fsp } from "node:fs";
+import { evalNestedTemplateLiterals, GenericPlugin } from "cfs-plugins-sdk";
 import {
+  CfsCodeGenerationContext,
+  CfsConfig,
   CfsFeatureScope,
   CfsPluginInfo,
   CfsProject,
-  CfsWorkspace,
-  CfsConfig,
-  CfsCodeGenerationContext,
   CfsSocDataModel,
+  CfsWorkspace,
   SocControl,
-  evalNestedTemplateLiterals,
-  GenericPlugin,
-} from "cfs-plugins-api";
+} from "cfs-types";
 import MsdkProjectPlugin from "../../../../plugins/msdk-project-plugin/index.js";
 import {
   directoryExists,
@@ -90,8 +89,8 @@ describe("Unit tests for MSDK Project Plugin", () => {
   const cfsConfig: CfsConfig = {
     Copyright:
       "Copyright (c) 2024 Analog Devices, Inc.  All rights reserved. This software is proprietary to Analog Devices, Inc. and its licensors.",
+    SchemaVersion: "2.1.0",
     DataModelVersion: "0.0.25",
-    DataModelSchemaVersion: "1.0.0",
     Soc: "MAX32690",
     Package: "TQFN",
     Pins: [],
@@ -126,7 +125,7 @@ describe("Unit tests for MSDK Project Plugin", () => {
       const absoluteWorkspacePath = path.resolve(workspacePluginPath);
       const workspaceFileContent = await fs.promises.readFile(
         absoluteWorkspacePath,
-        "utf-8"
+        "utf-8",
       );
       workspacePluginInfo = JSON.parse(workspaceFileContent) as CfsPluginInfo;
       workspacePluginInfo.pluginPath = absoluteWorkspacePath;
@@ -134,7 +133,7 @@ describe("Unit tests for MSDK Project Plugin", () => {
       const absoluteProjectPath = path.resolve(projectPluginPath);
       const projectFileContent = await fs.promises.readFile(
         absoluteProjectPath,
-        "utf-8"
+        "utf-8",
       );
       projectPluginInfo = JSON.parse(projectFileContent) as CfsPluginInfo;
       projectPluginInfo.pluginPath = absoluteProjectPath;
@@ -180,7 +179,7 @@ describe("Unit tests for MSDK Project Plugin", () => {
             : true;
         })
         .map((template) =>
-          evalNestedTemplateLiterals(template.dst, cfsProject)
+          evalNestedTemplateLiterals(template.dst, cfsProject),
         ),
 
       ...projectPluginInfo.features.project.files
@@ -198,7 +197,7 @@ describe("Unit tests for MSDK Project Plugin", () => {
 
       expect(
         fileExistsInProject,
-        `File ${file} should exist in the project directory`
+        `File ${file} should exist in the project directory`,
       ).to.be.true;
     }
 
@@ -213,7 +212,7 @@ describe("Unit tests for MSDK Project Plugin", () => {
 
   it("Should generate code for RISC-V MSDK", async () => {
     const socPath = path.resolve(
-      `tests/unit-tests/soc/${cfsConfig.Soc.toLowerCase()}-${cfsConfig.Package.toLowerCase()}.json`
+      `tests/unit-tests/soc/${cfsConfig.Soc.toLowerCase()}-${cfsConfig.Package.toLowerCase()}.json`,
     );
 
     expect(fs.existsSync(socPath), `Soc path does not exist: ${socPath}`).to.be
@@ -233,7 +232,7 @@ describe("Unit tests for MSDK Project Plugin", () => {
 
     const filesGenerated = await projectPlugin.generateCode(
       codeGenData,
-      codeGenerationPath
+      codeGenerationPath,
     );
 
     const expectedFiles = projectPluginInfo.features.codegen.templates
@@ -247,37 +246,37 @@ describe("Unit tests for MSDK Project Plugin", () => {
 
     const projectName =
       cfsConfig.Projects.find(
-        (project) => project.ProjectId === codeGenData.projectId
+        (project) => project.ProjectId === codeGenData.projectId,
       )?.PlatformConfig.ProjectName ?? "";
     for (const file of expectedFiles) {
       let filePath = joinPath(
         codeGenerationPath,
         projectName,
-        evalNestedTemplateLiterals(file, codeGenData)
+        evalNestedTemplateLiterals(file, codeGenData),
       );
       const fileExistsInProject = await fileExists(filePath);
       expect(
         fileExistsInProject,
-        `File ${file} should exist in the project directory`
+        `File ${file} should exist in the project directory`,
       ).to.be.true;
     }
 
     expect(
       expectedFiles.every((expectedFile) => {
         return filesGenerated.includes(
-          `${codeGenerationPath}/${projectName}/${expectedFile}`
+          `${codeGenerationPath}/${projectName}/${expectedFile}`,
         );
       }),
       `Expected files: ${expectedFiles.join(
-        ", "
-      )} are not found in generated files: ${filesGenerated.join(", ")}`
+        ", ",
+      )} are not found in generated files: ${filesGenerated.join(", ")}`,
     ).to.be.true;
   });
 
   it("Should return empty array if scope is not found on properties", () => {
     const getPropertiesSpy = sinon.spy(projectPlugin, "getProperties");
     const properties = projectPlugin.getProperties(
-      "fakeScope" as CfsFeatureScope
+      "fakeScope" as CfsFeatureScope,
     );
     expect(getPropertiesSpy.called).to.be.true;
     expect(Array.isArray(properties)).to.be.true;
@@ -289,7 +288,7 @@ describe("Unit tests for MSDK Project Plugin", () => {
     const boardId = "evkit_v1";
     const soc = "max32690";
 
-    const result = projectPlugin.getProperties(CfsFeatureScope.Project, {
+    const result = projectPlugin.getProperties("project", {
       boardId,
       soc,
     });
@@ -337,8 +336,8 @@ describe("Unit tests for MSDK Project Plugin", () => {
 
     it("should handle PinConfig scope", () => {
       const result = projectPlugin.overrideControls(
-        CfsFeatureScope.PinConfig,
-        mockSoc as unknown as CfsSocDataModel
+        "pinConfig",
+        mockSoc as unknown as CfsSocDataModel,
       ) as Record<string, SocControl[]>;
 
       expect(result).to.be.an("object");

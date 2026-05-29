@@ -2,21 +2,22 @@
   "pluginName": "TF-M Secure Partition",
   "pluginDescription": "Zephyr TF-M secure partition template.",
   "pluginId": "com.analog.zephyr.tfmsecurepartition",
-  "pluginVersion": "1.0.2",
+  "pluginVersion": "1.1.0",
+  "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "zephyr",
   "supportedSocs": [
     {
       "name": "MAX32657",
-      "dataModel": "max32657-wlp.json",
       "board": "EvKit_V1",
-      "package": "wlp"
+      "package": "wlp",
+      "dataModelVersion": "^1.3.628"
     },
     {
       "name": "MAX32658",
-      "dataModel": "max32658-wlp.json",
       "board": "EvKit_V1",
-      "package": "wlp"
+      "package": "wlp",
+      "dataModelVersion": "^1.3.628"
     }
   ],
   "features": {

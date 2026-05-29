@@ -2,7 +2,7 @@
  *
  * Copyright (C) 2022-2023 Maxim Integrated Products, Inc. (now owned by 
  * Analog Devices, Inc.),
- * Copyright (C) 2023-2024 Analog Devices, Inc.
+ * Copyright (C) 2023-2026 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,25 +88,7 @@ int main(void)
     NVIC_DisableIRQ(MXC_UART_GET_IRQ(READING_UART_IDX));
     MXC_NVIC_SetVector(MXC_UART_GET_IRQ(READING_UART_IDX), Reading_UART_Handler);
     NVIC_EnableIRQ(MXC_UART_GET_IRQ(READING_UART_IDX));
-#endif //
-
-    // Initialize the UART
-    error = MXC_UART_Init(READING_UART, UART_BAUD, MXC_UART_APB_CLK);
-    if (error < E_NO_ERROR) {
-        printf("-->Error initializing UART: %d\n", error);
-        printf("-->Example Failed\n");
-        return error;
-    }
-    printf("-->Reading UART Initialized\n");
-
-    // Initialize writing UART
-    error = MXC_UART_Init(WRITING_UART, UART_BAUD, MXC_UART_APB_CLK);
-    if (error < E_NO_ERROR) {
-        printf("-->Error initializing UART: %d\n", error);
-        printf("-->Example Failed\n");
-        return error;
-    }
-    printf("-->Writing UART Initialized\n\n");
+#endif
 
 #ifdef DMA
     // Automatically set up DMA handlers/ISRs

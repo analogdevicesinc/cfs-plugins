@@ -1,10 +1,10 @@
 /*
- * Generated C representation of hello_world_model_f32. Do not modify.
+ * Generated C representation of hello_world_model_f32 on Wed Apr 29 11:32:26 2026. Do not modify.
  */
 
 #include "hello_world_model_f32.hpp"
 
-const unsigned int hello_world_model_f32_len = 3164;
+alignas(16) unsigned char hello_world_model_f32_arena[2888];
 alignas(16) const unsigned char hello_world_model_f32[] = {
 0x1c,0x00,0x00,0x00,0x54,0x46,0x4c,0x33,0x14,0x00,0x20,0x00,0x1c,0x00,0x18,0x00,
 0x14,0x00,0x10,0x00,0x0c,0x00,0x00,0x00,0x08,0x00,0x04,0x00,0x14,0x00,0x00,0x00,
@@ -210,3 +210,4 @@ TfLiteStatus adi_resolve_ops_hello_world_model_f32 (tflite::MicroMutableOpResolv
     TF_LITE_ENSURE_STATUS(resolver.AddFullyConnected());
     return kTfLiteOk;
 }
+const unsigned int hello_world_model_f32_len = HELLO_WORLD_MODEL_F32_LEN;

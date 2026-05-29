@@ -2,7 +2,8 @@
   "pluginName": "Zephyr Project Plugin",
   "pluginId": "com.analog.project.zephyr.plugin",
   "pluginDescription": "Manually configure and create Zephyr projects.",
-  "pluginVersion": "1.0.0",
+  "pluginVersion": "1.1.0",
+  "schemaVersion": "1.2.0",
   "pluginApiVersion": 1,
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "zephyr",
@@ -10,145 +11,177 @@
     {
       "name": "MAX32650",
       "board": "EvKit_V1",
-      "package": "tqfp"
+      "package": "tqfp",
+      "dataModelVersion": "^1.3.628"
     },
     {
       "name": "MAX32650",
       "board": "FTHR",
-      "package": "wlp"
+      "package": "wlp",
+      "dataModelVersion": "^1.3.628"
     },
     {
       "name": "MAX32650",
       "board": "AD-SWIOT1L-SL",
-      "package": "tqfp"
+      "package": "tqfp",
+      "dataModelVersion": "^1.3.628"
     },
     {
       "name": "MAX32655",
-      "dataModel": "max32655-ctbga.json",
       "board": "EvKit_V1",
       "package": "ctbga",
       "cores": [
         "CM4"
-      ]
+      ],
+      "dataModelVersion": "^1.3.628"
     },
     {
       "name": "MAX32655",
-      "dataModel": "max32655-ctbga.json",
       "board": "FTHR",
       "package": "ctbga",
       "cores": [
         "CM4"
-      ]
+      ],
+      "dataModelVersion": "^1.3.628"
     },
     {
       "name": "MAX32655",
-      "dataModel": "max32655-wlp.json",
       "package": "wlp",
       "cores": [
         "CM4"
-      ]
+      ],
+      "dataModelVersion": "^1.3.628"
     },
     {
       "name": "MAX32657",
-      "dataModel": "max32657-wlp.json",
       "board": "EvKit_V1",
-      "package": "wlp"
+      "package": "wlp",
+      "dataModelVersion": "^1.3.628"
     },
     {
       "name": "MAX32658",
-      "dataModel": "max32658-wlp.json",
       "board": "EvKit_V1",
-      "package": "wlp"
+      "package": "wlp",
+      "dataModelVersion": "^1.3.628"
     },
     {
       "name": "MAX32660",
       "board": "EVSYS",
-      "package": "tqfn20"
+      "package": "tqfn20",
+      "dataModelVersion": "^1.0.628"
     },
     {
       "name": "MAX32660",
-      "package": "tqfn24"
+      "package": "tqfn24",
+      "dataModelVersion": "^1.0.628"
     },
     {
       "name": "MAX32660",
-      "package": "wlp"
+      "package": "wlp",
+      "dataModelVersion": "^1.0.628"
     },
     {
       "name": "MAX32662",
       "board": "EvKit_V1",
-      "package": "tqfnep"
+      "package": "tqfnep",
+      "dataModelVersion": "^1.0.628"
     },
     {
       "name": "MAX32662",
-      "package": "wlp"
+      "package": "wlp",
+      "dataModelVersion": "^1.0.628"
     },
     {
       "name": "MAX32666",
       "board": "EvKit_V1",
-      "package": "ctbga"
+      "package": "ctbga",
+      "cores": [
+        "CM4-0"
+      ],
+      "dataModelVersion": "^1.0.628"
     },
     {
       "name": "MAX32666",
       "board": "FTHR",
-      "package": "ctbga"
+      "package": "ctbga",
+      "cores": [
+        "CM4-0"
+      ],
+      "dataModelVersion": "^1.0.628"
     },
     {
       "name": "MAX32666",
-      "package": "ctbga"
-    },
-    {
-      "name": "MAX32666",
-      "package": "wlp"
+      "package": "wlp",
+      "cores": [
+        "CM4-0"
+      ],
+      "dataModelVersion": "^1.0.628"
     },
     {
       "name": "MAX32670",
       "board": "EvKit_V1",
-      "package": "tqfn"
+      "package": "tqfn",
+      "dataModelVersion": "^1.3.628"
     },
     {
       "name": "MAX32670",
-      "package": "wlp"
+      "package": "wlp",
+      "dataModelVersion": "^1.3.628"
+    },
+    {
+      "name": "MAX32672",
+      "package": "ewlb",
+      "dataModelVersion": "^1.0.628"
     },
     {
       "name": "MAX32672",
       "board": "EvKit_V1",
-      "package": "tqfn40"
+      "package": "tqfn40",
+      "dataModelVersion": "^1.0.628"
     },
     {
       "name": "MAX32672",
-      "package": "tqfn56"
+      "board": "FTHR",
+      "package": "tqfn40",
+      "dataModelVersion": "^1.0.628"
+    },
+    {
+      "name": "MAX32672",
+      "package": "tqfn56",
+      "dataModelVersion": "^1.0.628"
     },
     {
       "name": "MAX32675C",
       "board": "EvKit_V1",
-      "package": "tqfn"
+      "package": "lga",
+      "dataModelVersion": "^1.0.628"
     },
     {
       "name": "MAX32690",
-      "dataModel": "max32690-tqfn.json",
       "board": "EvKit_V1",
       "package": "tqfn",
       "cores": [
         "CM4"
-      ]
+      ],
+      "dataModelVersion": "^1.3.628"
     },
     {
       "name": "MAX32690",
-      "dataModel": "max32690-wlp.json",
       "board": "AD-APARD32690-SL",
       "package": "wlp",
       "cores": [
         "CM4"
-      ]
+      ],
+      "dataModelVersion": "^1.3.628"
     },
     {
       "name": "MAX32690",
-      "dataModel": "max32690-tqfn.json",
       "board": "FTHR",
       "package": "tqfn",
       "cores": [
         "CM4"
-      ]
+      ],
+      "dataModelVersion": "^1.3.628"
     },
     {
       "name": "MAX78000",
@@ -156,7 +189,8 @@
       "package": "ctbga",
       "cores": [
         "CM4"
-      ]
+      ],
+      "dataModelVersion": "^1.3.628"
     },
     {
       "name": "MAX78000",
@@ -164,7 +198,8 @@
       "package": "ctbga",
       "cores": [
         "CM4"
-      ]
+      ],
+      "dataModelVersion": "^1.3.628"
     },
     {
       "name": "MAX78002",
@@ -172,7 +207,8 @@
       "package": "csbga",
       "cores": [
         "CM4"
-      ]
+      ],
+      "dataModelVersion": "^1.3.628"
     }
   ],
   "features": {
@@ -201,8 +237,8 @@
         },
         {
           "src": "templates/arm/ozone-project.jdebug.eta",
-          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm4'}.jdebug",
-          "condition": "${['CM4', 'CM33', 'CM55'].includes(context.coreId)}"
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : ['max32666'].includes(context.soc.toLowerCase()) ? 'cpu0' : 'm4'}.jdebug",
+          "condition": "${['CM4', 'CM33', 'CM55', 'CPU0', 'CM4-0'].includes(context.coreId)}"
         }
       ],
       "files": [
@@ -258,12 +294,16 @@
       {
         "id": "ZephyrVersion",
         "name": "Zephyr Version",
-        "default": "4.2.0",
+        "default": "4.3.0",
         "type": "array",
         "enum": [
           {
             "value": "4.2.0",
             "label": "4.2.0"
+          },
+          {
+            "value": "4.3.0",
+            "label": "4.3.0"
           }
         ],
         "required": true
@@ -309,7 +349,7 @@
         "default": false,
         "type": "boolean",
         "required": false,
-        "condition": "${['max32690','max32657','max32658'].includes(context.soc?.toLowerCase())}"
+        "condition": "${['max32650', 'max32655', 'max32657', 'max32658', 'max32660', 'max32662', 'max32666', 'max32670', 'max32672', 'max32690', 'max78000', 'max78002'].includes(context.soc?.toLowerCase())}"
       },
       {
         "id": "CMakeArgs",
@@ -414,7 +454,15 @@
           {
             "Id": "DIV",
             "Value": "8",
-            "partRegexp": "MAX(32650|32655|32666|78000)"
+            "partRegexp": "MAX(32650|32655|78000)"
+          }
+        ]
+      },
+      "ADC_CLK_SCALER": {
+        "defaultOverrides": [
+          {
+            "Id": "DIV",
+            "Value": "8"
           }
         ]
       },
@@ -422,8 +470,67 @@
         "defaultOverrides": [
           {
             "Id": "MUX",
+            "Value": "HSCLK",
+            "partRegexp": "MAX32650"
+          },
+          {
+            "Id": "MUX",
             "Value": "IPO",
-            "partRegexp": "MAX(32690|32655|32657|32658|78002)"
+            "partRegexp": "MAX(32655|32657|32658|32690|78000|78002)"
+          },
+          {
+            "Id": "MUX",
+            "Value": "HFIO",
+            "partRegexp": "MAX32660"
+          },
+          {
+            "Id": "MUX",
+            "Value": "IPO PRESCALER",
+            "partRegexp": "MAX(32662|32675C)"
+          },
+          {
+            "Id": "MUX",
+            "Value": "HSO",
+            "partRegexp": "MAX32666"
+          },
+          {
+            "Id": "MUX",
+            "Value": "PRESCALED IPO",
+            "partRegexp": "MAX3267[02]"
+          }
+        ]
+      },
+      "AOD_CLK": {
+        "modifiedControls": [
+          {
+            "Id": "DIV",
+            "Description": "Divider Value",
+            "EnumValues": [
+              {
+                "Id": "4",
+                "Description": "Divide by 4",
+                "Value": 0
+              }
+            ],
+            "Type": "enum",
+            "partRegexp": "MAX32675C"
+          }
+        ]
+      },
+      "AoD": {
+        "modifiedControls": [
+          {
+            "Id": "DIV",
+            "Description": "Clock for Always on Domain",
+            "EnumValues": [
+              {
+                "Id": "4",
+                "Description": "Divide by 4",
+                "Value": 2
+              }
+            ],
+            "Type": "enum",
+            "partRegexp": "MAX32672"
           }
         ]
       },
@@ -447,7 +554,7 @@
               }
             ],
             "Type": "enum",
-            "partRegexp": "MAX(32662|32670|32675C)"
+            "partRegexp": "MAX(32662|32670|32672|32675C)"
           }
         ]
       },
@@ -539,14 +646,14 @@
                 "Value": 4
               }
             ],
-            "partRegexp": "MAX32670"
+            "partRegexp": "MAX(32670|32672)"
           }
         ],
         "defaultOverrides": [
           {
             "Id": "MUX",
             "Value": "ERTCO",
-            "partRegexp": "MAX32670"
+            "partRegexp": "MAX(32670|32672)"
           }
         ]
       },
@@ -564,16 +671,6 @@
                 "Value": 0
               },
               {
-                "Id": "EXT_CLK1",
-                "Description": "EXT_CLK1 (External Clock One)",
-                "Value": 1
-              },
-              {
-                "Id": "ERFO",
-                "Description": "ERFO (External RF Osc.)",
-                "Value": 2
-              },
-              {
                 "Id": "IBRO",
                 "Description": "IBRO (Internal Baud Rate Osc.)",
                 "Value": 3
@@ -589,7 +686,31 @@
                 "Value": 6
               }
             ],
-            "partRegexp": "MAX32670"
+            "partRegexp": "MAX(32670|32672)"
+          },
+          {
+            "Id": "WDT0_MUX",
+            "Description": "Clock Source for WDT0",
+            "Type": "enum",
+            "Condition": "${Control:WDT0_ENABLE}",
+            "EnumValues": [
+              {
+                "Id": "PCLK",
+                "Description": "PCLK (Peripheral Clock)",
+                "Value": 0
+              },
+              {
+                "Id": "IBRO",
+                "Description": "IBRO (Internal Baud Rate Osc.)",
+                "Value": 2
+              },
+              {
+                "Id": "INRO",
+                "Description": "INRO (Internal Nano-Ring Osc.)",
+                "Value": 3
+              }
+            ],
+            "partRegexp": "MAX32675C"
           },
           {
             "Id": "WDT1_MUX",
@@ -603,16 +724,6 @@
                 "Value": 0
               },
               {
-                "Id": "EXT_CLK1",
-                "Description": "EXT_CLK1 (External Clock One)",
-                "Value": 1
-              },
-              {
-                "Id": "ERFO",
-                "Description": "ERFO (External RF Osc.)",
-                "Value": 2
-              },
-              {
                 "Id": "IBRO",
                 "Description": "IBRO (Internal Baud Rate Osc.)",
                 "Value": 3
@@ -628,18 +739,75 @@
                 "Value": 6
               }
             ],
-            "partRegexp": "MAX32670"
+            "partRegexp": "MAX(32670|32672)"
+          },
+          {
+            "Id": "WDT1_MUX",
+            "Description": "Clock Source for WDT1",
+            "Type": "enum",
+            "Condition": "${Control:WDT1_ENABLE}",
+            "EnumValues": [
+              {
+                "Id": "PCLK",
+                "Description": "PCLK (Peripheral Clock)",
+                "Value": 0
+              },
+              {
+                "Id": "IBRO",
+                "Description": "IBRO (Internal Baud Rate Osc.)",
+                "Value": 2
+              },
+              {
+                "Id": "INRO",
+                "Description": "INRO (Internal Nano-Ring Osc.)",
+                "Value": 3
+              }
+            ],
+            "partRegexp": "MAX32675C"
           }
         ]
       },
-      "LPTMR0": {
+      "WDT0": {
         "modifiedControls": [
           {
             "Id": "MUX",
             "Description": "Clock Source",
             "Type": "enum",
             "Condition": "${Control:ENABLE}",
-            "partRegexp": "MAX32670",
+            "EnumValues": [
+              {
+                "Id": "IBRO",
+                "Description": "IBRO (Internal Baud Rate Osc.)",
+                "Value": 1
+              },
+              {
+                "Id": "INRO",
+                "Description": "INRO (Internal Nano-Ring Osc.)",
+                "Value": 9
+              },
+              {
+                "Id": "ERTCO",
+                "Description": "ERTCO Digital Interface 32kHz",
+                "Value": 12
+              },
+              {
+                "Id": "PCLK",
+                "Description": "PCLK (Peripheral Clock)",
+                "Value": 14
+              }
+            ],
+            "partRegexp": "MAX(32662)"
+          }
+        ]
+      },
+      "LPTMR[01]": {
+        "modifiedControls": [
+          {
+            "Id": "MUX",
+            "Description": "Clock Source",
+            "Type": "enum",
+            "Condition": "${Control:ENABLE}",
+            "partRegexp": "MAX(32670|32672)",
             "EnumValues": [
               {
                 "Id": "ERTCO",
@@ -663,42 +831,7 @@
           {
             "Id": "MUX",
             "Value": "ERTCO",
-            "partRegexp": "MAX32670"
-          }
-        ]
-      },
-      "LPTMR1": {
-        "modifiedControls": [
-          {
-            "Id": "MUX",
-            "Description": "Clock Source",
-            "Type": "enum",
-            "Condition": "${Control:ENABLE}",
-            "partRegexp": "MAX32670",
-            "EnumValues": [
-              {
-                "Id": "ERTCO",
-                "Description": "ERTCO (External RTC Osc.)",
-                "Value": 1
-              },
-              {
-                "Id": "INRO",
-                "Description": "INRO (Internal Nano-Ring Osc.)",
-                "Value": 3
-              },
-              {
-                "Id": "EXT_CLK2",
-                "Description": "EXT_CLK2 (External Clock Two)",
-                "Value": 4
-              }
-            ]
-          }
-        ],
-        "defaultOverrides": [
-          {
-            "Id": "MUX",
-            "Value": "ERTCO",
-            "partRegexp": "MAX32670"
+            "partRegexp": "MAX(32670|32672)"
           }
         ]
       },
@@ -731,31 +864,74 @@
             "partRegexp": "MAX3265[78]"
           }
         ]
+      },
+      "I2C0/1/2": {
+        "modifiedControls": [
+          {
+            "Id": "I2C0_MUX",
+            "Description": "Clock source for I2C0",
+            "Type": "enum",
+            "Condition": "${Control:I2C0_ENABLE}",
+            "EnumValues": [
+              {
+                "Id": "PCLK",
+                "Description": "PCLK Bus Clock",
+                "Value": 0
+              }
+            ],
+            "partRegexp": "MAX(32666|32665)"
+          },
+          {
+            "Id": "I2C1_MUX",
+            "Description": "Clock source for I2C1",
+            "Type": "enum",
+            "Condition": "${Control:I2C1_ENABLE}",
+            "EnumValues": [
+              {
+                "Id": "PCLK",
+                "Description": "PCLK Bus Clock",
+                "Value": 0
+              }
+            ],
+            "partRegexp": "MAX(32666|32665)"
+          },
+          {
+            "Id": "I2C2_MUX",
+            "Description": "Clock source for I2C2",
+            "Type": "enum",
+            "Condition": "${Control:I2C2_ENABLE}",
+            "EnumValues": [
+              {
+                "Id": "PCLK",
+                "Description": "PCLK Bus Clock",
+                "Value": 0
+              }
+            ],
+            "partRegexp": "MAX(32666|32665)"
+          }
+        ]
+      },
+      "PT0-15": {
+        "modifiedControls": [
+          {
+            "Id": "MUX",
+            "Description": "Clock source for PT0-15",
+            "Type": "enum",
+            "Condition": "1",
+            "EnumValues": [
+              {
+                "Id": "PCLK",
+                "Description": "PCLK Bus Clock",
+                "Value": 0
+              }
+            ],
+            "partRegexp": "MAX(32666|32665)"
+          }
+        ]
       }
     },
     "peripheral": {
-      "CM4 SysTick": {
-        "removedControls": [
-          {
-            "Id": "TICKS_BETWEEN_INTS"
-          }
-        ]
-      },
-      "CM33 SysTick (S)": {
-        "removedControls": [
-          {
-            "Id": "TICKS_BETWEEN_INTS"
-          }
-        ]
-      },
-      "CM33 SysTick (NS)": {
-        "removedControls": [
-          {
-            "Id": "TICKS_BETWEEN_INTS"
-          }
-        ]
-      },
-      "RV mtime": {
+      "CM.* SysTick.*": {
         "removedControls": [
           {
             "Id": "TICKS_BETWEEN_INTS"
@@ -772,33 +948,7 @@
           }
         ]
       },
-      "I2C0": {
-        "supportedControls": [],
-        "addedControls": [
-          {
-            "Id": "FREQ",
-            "Description": "Frequency",
-            "Hint": "100000",
-            "Type": "integer",
-            "MinimumValue": 1,
-            "MaximumValue": 3400000
-          }
-        ]
-      },
-      "I2C1": {
-        "supportedControls": [],
-        "addedControls": [
-          {
-            "Id": "FREQ",
-            "Description": "Frequency",
-            "Hint": "100000",
-            "Type": "integer",
-            "MinimumValue": 1,
-            "MaximumValue": 3400000
-          }
-        ]
-      },
-      "I2C2": {
+      "I2C[012]": {
         "supportedControls": [],
         "addedControls": [
           {
@@ -814,7 +964,7 @@
       "RTC": {
         "supportedControls": []
       },
-      "SPI0": {
+      "SPI[0-4]": {
         "supportedControls": [],
         "addedControls": [
           {
@@ -827,60 +977,11 @@
           }
         ]
       },
-      "SPI1": {
-        "supportedControls": [],
-        "addedControls": [
-          {
-            "Id": "FREQ",
-            "Description": "Frequency",
-            "Hint": "15000000",
-            "Type": "integer",
-            "MinimumValue": 1,
-            "MaximumValue": 4294967295
-          }
-        ]
-      },
-      "SPI2": {
-        "supportedControls": [],
-        "addedControls": [
-          {
-            "Id": "FREQ",
-            "Description": "Frequency",
-            "Hint": "15000000",
-            "Type": "integer",
-            "MinimumValue": 1,
-            "MaximumValue": 4294967295
-          }
-        ]
-      },
-      "SPI3": {
-        "supportedControls": [],
-        "addedControls": [
-          {
-            "Id": "FREQ",
-            "Description": "Frequency",
-            "Hint": "15000000",
-            "Type": "integer",
-            "MinimumValue": 1,
-            "MaximumValue": 4294967295
-          }
-        ]
-      },
-      "SPI4": {
-        "supportedControls": [],
-        "addedControls": [
-          {
-            "Id": "FREQ",
-            "Description": "Frequency",
-            "Hint": "15000000",
-            "Type": "integer",
-            "MinimumValue": 1,
-            "MaximumValue": 4294967295
-          }
-        ]
-      },
-      "UART0": {
+      "(LP)?UART[012]": {
         "supportedControls": [
+          {
+            "Id": "TX_RX_MODES"
+          },
           {
             "Id": "PARITY"
           },
@@ -916,199 +1017,9 @@
             "Description": "Hardware Flow Control RTS Mode",
             "EnumValues": [
               {
-                "Id": "DEASSERT_ON_FULL",
-                "Description": "Deassert On Full",
-                "Value": 0
-              },
-              {
                 "Id": "DISABLED",
-                "Description": "Disabled",
+                "Description": "Not Implemented",
                 "Value": 2
-              }
-            ],
-            "Type": "enum"
-          }
-        ]
-      },
-      "UART1": {
-        "supportedControls": [
-          {
-            "Id": "PARITY"
-          },
-          {
-            "Id": "CHAR_SIZE"
-          },
-          {
-            "Id": "STOP_BITS"
-          },
-          {
-            "Id": "HW_FLOW_CTRL"
-          }
-        ],
-        "addedControls": [
-          {
-            "Id": "CHOSEN",
-            "Description": "Chosen. Multiple values can be separated by commas.",
-            "Type": "text",
-            "Pattern": "([a-z][a-z0-9-]*)?(,[a-z][a-z0-9-]*)*"
-          },
-          {
-            "Id": "BAUD",
-            "Description": "Baud Rate",
-            "Hint": "115200",
-            "Type": "integer",
-            "MinimumValue": 1,
-            "MaximumValue": 4294967295
-          }
-        ],
-        "modifiedControls": [
-          {
-            "Id": "HW_FLOW_CTRL",
-            "Description": "Hardware Flow Control RTS Mode",
-            "EnumValues": [
-              {
-                "Id": "DEASSERT_ON_FULL",
-                "Description": "Deassert On Full",
-                "Value": 0
-              },
-              {
-                "Id": "DISABLED",
-                "Description": "Disabled",
-                "Value": 2
-              }
-            ],
-            "Type": "enum"
-          }
-        ]
-      },
-      "UART2": {
-        "supportedControls": [
-          {
-            "Id": "PARITY"
-          },
-          {
-            "Id": "CHAR_SIZE"
-          },
-          {
-            "Id": "STOP_BITS"
-          },
-          {
-            "Id": "HW_FLOW_CTRL"
-          }
-        ],
-        "addedControls": [
-          {
-            "Id": "CHOSEN",
-            "Description": "Chosen. Multiple values can be separated by commas.",
-            "Type": "text",
-            "Pattern": "([a-z][a-z0-9-]*)?(,[a-z][a-z0-9-]*)*"
-          },
-          {
-            "Id": "BAUD",
-            "Description": "Baud Rate",
-            "Hint": "115200",
-            "Type": "integer",
-            "MinimumValue": 1,
-            "MaximumValue": 4294967295
-          }
-        ],
-        "modifiedControls": [
-          {
-            "Id": "HW_FLOW_CTRL",
-            "Description": "Hardware Flow Control RTS Mode",
-            "EnumValues": [
-              {
-                "Id": "DEASSERT_ON_FULL",
-                "Description": "Deassert On Full",
-                "Value": 0
-              },
-              {
-                "Id": "DISABLED",
-                "Description": "Disabled",
-                "Value": 2
-              }
-            ],
-            "Type": "enum"
-          }
-        ]
-      },
-      "LPUART0": {
-        "supportedControls": [
-          {
-            "Id": "PARITY"
-          },
-          {
-            "Id": "CHAR_SIZE"
-          },
-          {
-            "Id": "STOP_BITS"
-          },
-          {
-            "Id": "HW_FLOW_CTRL"
-          }
-        ],
-        "addedControls": [
-          {
-            "Id": "CHOSEN",
-            "Description": "Chosen. Multiple values can be separated by commas.",
-            "Type": "text",
-            "Pattern": "([a-z][a-z0-9-]*)?(,[a-z][a-z0-9-]*)*"
-          },
-          {
-            "Id": "BAUD",
-            "Description": "Baud Rate",
-            "Hint": "115200",
-            "Type": "integer",
-            "MinimumValue": 1,
-            "MaximumValue": 4294967295
-          }
-        ],
-        "modifiedControls": [
-          {
-            "Id": "HW_FLOW_CTRL",
-            "Description": "Hardware Flow Control RTS Mode",
-            "EnumValues": [
-              {
-                "Id": "DEASSERT_ON_FULL",
-                "Description": "Deassert On Full",
-                "Value": 0
-              },
-              {
-                "Id": "DISABLED",
-                "Description": "Disabled",
-                "Value": 2
-              }
-            ],
-            "Type": "enum"
-          }
-        ]
-      },
-      "LPTMR0": {
-        "supportedControls": [
-          {
-            "Id": "CONFIGURATION"
-          },
-          {
-            "Id": "CLKDIV_A"
-          },
-          {
-            "Id": "MODE_A"
-          }
-        ],
-        "modifiedControls": [
-          {
-            "Id": "MODE_A",
-            "Description": "Mode for Single Timer or Timer A",
-            "EnumValues": [
-              {
-                "Id": "PWM",
-                "Description": "PWM Mode",
-                "Value": 3
-              },
-              {
-                "Id": "COMPARE",
-                "Description": "Compare Mode",
-                "Value": 5
               }
             ],
             "Type": "enum"
@@ -1116,12 +1027,12 @@
         ],
         "defaultOverrides": [
           {
-            "Id": "MODE_A",
-            "Value": "COMPARE"
+            "Id": "TX_RX_MODES",
+            "Value": "TX_RX"
           }
         ]
       },
-      "LPTMR1": {
+      "LPTMR[01]": {
         "supportedControls": [
           {
             "Id": "CONFIGURATION"
@@ -1175,432 +1086,7 @@
           }
         ]
       },
-      "TMR0": {
-        "supportedControls": [
-          {
-            "Id": "CONFIGURATION"
-          },
-          {
-            "Id": "CLKDIV_A"
-          },
-          {
-            "Id": "MODE_A"
-          },
-          {
-            "Id": "CLKDIV"
-          },
-          {
-            "Id": "MODE"
-          }
-        ],
-        "modifiedControls": [
-          {
-            "Id": "CONFIGURATION",
-            "Description": "Timer Configuration",
-            "EnumValues": [
-              {
-                "Id": "SINGLE_32BIT",
-                "Description": "Single 32-bit Timer",
-                "Value": 1
-              }
-            ],
-            "Type": "enum"
-          },
-          {
-            "Id": "MODE_A",
-            "Description": "Mode for Single Timer or Timer A",
-            "EnumValues": [
-              {
-                "Id": "PWM",
-                "Description": "PWM Mode",
-                "Value": 3
-              },
-              {
-                "Id": "COMPARE",
-                "Description": "Compare Mode",
-                "Value": 5
-              }
-            ],
-            "Type": "enum"
-          },
-          {
-            "Id": "MODE",
-            "Description": "Mode for Single Timer",
-            "EnumValues": [
-              {
-                "Id": "PWM",
-                "Description": "PWM Mode",
-                "Value": 3
-              },
-              {
-                "Id": "COMPARE",
-                "Description": "Compare Mode",
-                "Value": 5
-              }
-            ],
-            "Type": "enum"
-          }
-        ],
-        "defaultOverrides": [
-          {
-            "Id": "CONFIGURATION",
-            "Value": "SINGLE_32BIT"
-          },
-          {
-            "Id": "MODE_A",
-            "Value": "COMPARE"
-          },
-          {
-            "Id": "MODE_B",
-            "Value": "COMPARE"
-          },
-          {
-            "Id": "MODE",
-            "Value": "COMPARE"
-          }
-        ]
-      },
-      "TMR1": {
-        "supportedControls": [
-          {
-            "Id": "CONFIGURATION"
-          },
-          {
-            "Id": "CLKDIV_A"
-          },
-          {
-            "Id": "MODE_A"
-          },
-          {
-            "Id": "CLKDIV"
-          },
-          {
-            "Id": "MODE"
-          }
-        ],
-        "modifiedControls": [
-          {
-            "Id": "CONFIGURATION",
-            "Description": "Timer Configuration",
-            "EnumValues": [
-              {
-                "Id": "SINGLE_32BIT",
-                "Description": "Single 32-bit Timer",
-                "Value": 1
-              }
-            ],
-            "Type": "enum"
-          },
-          {
-            "Id": "MODE_A",
-            "Description": "Mode for Single Timer or Timer A",
-            "EnumValues": [
-              {
-                "Id": "PWM",
-                "Description": "PWM Mode",
-                "Value": 3
-              },
-              {
-                "Id": "COMPARE",
-                "Description": "Compare Mode",
-                "Value": 5
-              }
-            ],
-            "Type": "enum"
-          },
-          {
-            "Id": "MODE",
-            "Description": "Mode for Single Timer",
-            "EnumValues": [
-              {
-                "Id": "PWM",
-                "Description": "PWM Mode",
-                "Value": 3
-              },
-              {
-                "Id": "COMPARE",
-                "Description": "Compare Mode",
-                "Value": 5
-              }
-            ],
-            "Type": "enum"
-          }
-        ],
-        "defaultOverrides": [
-          {
-            "Id": "CONFIGURATION",
-            "Value": "SINGLE_32BIT"
-          },
-          {
-            "Id": "MODE_A",
-            "Value": "COMPARE"
-          },
-          {
-            "Id": "MODE_B",
-            "Value": "COMPARE"
-          },
-          {
-            "Id": "MODE",
-            "Value": "COMPARE"
-          }
-        ]
-      },
-      "TMR2": {
-        "supportedControls": [
-          {
-            "Id": "CONFIGURATION"
-          },
-          {
-            "Id": "CLKDIV_A"
-          },
-          {
-            "Id": "MODE_A"
-          },
-          {
-            "Id": "CLKDIV"
-          },
-          {
-            "Id": "MODE"
-          }
-        ],
-        "modifiedControls": [
-          {
-            "Id": "CONFIGURATION",
-            "Description": "Timer Configuration",
-            "EnumValues": [
-              {
-                "Id": "SINGLE_32BIT",
-                "Description": "Single 32-bit Timer",
-                "Value": 1
-              }
-            ],
-            "Type": "enum"
-          },
-          {
-            "Id": "MODE_A",
-            "Description": "Mode for Single Timer or Timer A",
-            "EnumValues": [
-              {
-                "Id": "PWM",
-                "Description": "PWM Mode",
-                "Value": 3
-              },
-              {
-                "Id": "COMPARE",
-                "Description": "Compare Mode",
-                "Value": 5
-              }
-            ],
-            "Type": "enum"
-          },
-          {
-            "Id": "MODE",
-            "Description": "Mode for Single Timer",
-            "EnumValues": [
-              {
-                "Id": "PWM",
-                "Description": "PWM Mode",
-                "Value": 3
-              },
-              {
-                "Id": "COMPARE",
-                "Description": "Compare Mode",
-                "Value": 5
-              }
-            ],
-            "Type": "enum"
-          }
-        ],
-        "defaultOverrides": [
-          {
-            "Id": "CONFIGURATION",
-            "Value": "SINGLE_32BIT"
-          },
-          {
-            "Id": "MODE_A",
-            "Value": "COMPARE"
-          },
-          {
-            "Id": "MODE_B",
-            "Value": "COMPARE"
-          },
-          {
-            "Id": "MODE",
-            "Value": "COMPARE"
-          }
-        ]
-      },
-      "TMR3": {
-        "supportedControls": [
-          {
-            "Id": "CONFIGURATION"
-          },
-          {
-            "Id": "CLKDIV_A"
-          },
-          {
-            "Id": "MODE_A"
-          },
-          {
-            "Id": "CLKDIV"
-          },
-          {
-            "Id": "MODE"
-          }
-        ],
-        "modifiedControls": [
-          {
-            "Id": "CONFIGURATION",
-            "Description": "Timer Configuration",
-            "EnumValues": [
-              {
-                "Id": "SINGLE_32BIT",
-                "Description": "Single 32-bit Timer",
-                "Value": 1
-              }
-            ],
-            "Type": "enum"
-          },
-          {
-            "Id": "MODE_A",
-            "Description": "Mode for Single Timer or Timer A",
-            "EnumValues": [
-              {
-                "Id": "PWM",
-                "Description": "PWM Mode",
-                "Value": 3
-              },
-              {
-                "Id": "COMPARE",
-                "Description": "Compare Mode",
-                "Value": 5
-              }
-            ],
-            "Type": "enum"
-          },
-          {
-            "Id": "MODE",
-            "Description": "Mode for Single Timer",
-            "EnumValues": [
-              {
-                "Id": "PWM",
-                "Description": "PWM Mode",
-                "Value": 3
-              },
-              {
-                "Id": "COMPARE",
-                "Description": "Compare Mode",
-                "Value": 5
-              }
-            ],
-            "Type": "enum"
-          }
-        ],
-        "defaultOverrides": [
-          {
-            "Id": "CONFIGURATION",
-            "Value": "SINGLE_32BIT"
-          },
-          {
-            "Id": "MODE_A",
-            "Value": "COMPARE"
-          },
-          {
-            "Id": "MODE_B",
-            "Value": "COMPARE"
-          },
-          {
-            "Id": "MODE",
-            "Value": "COMPARE"
-          }
-        ]
-      },
-      "TMR4": {
-        "supportedControls": [
-          {
-            "Id": "CONFIGURATION"
-          },
-          {
-            "Id": "CLKDIV_A"
-          },
-          {
-            "Id": "MODE_A"
-          },
-          {
-            "Id": "CLKDIV"
-          },
-          {
-            "Id": "MODE"
-          }
-        ],
-        "modifiedControls": [
-          {
-            "Id": "CONFIGURATION",
-            "Description": "Timer Configuration",
-            "EnumValues": [
-              {
-                "Id": "SINGLE_32BIT",
-                "Description": "Single 32-bit Timer",
-                "Value": 1
-              }
-            ],
-            "Type": "enum"
-          },
-          {
-            "Id": "MODE_A",
-            "Description": "Mode for Single Timer or Timer A",
-            "EnumValues": [
-              {
-                "Id": "PWM",
-                "Description": "PWM Mode",
-                "Value": 3
-              },
-              {
-                "Id": "COMPARE",
-                "Description": "Compare Mode",
-                "Value": 5
-              }
-            ],
-            "Type": "enum"
-          },
-          {
-            "Id": "MODE",
-            "Description": "Mode for Single Timer",
-            "EnumValues": [
-              {
-                "Id": "PWM",
-                "Description": "PWM Mode",
-                "Value": 3
-              },
-              {
-                "Id": "COMPARE",
-                "Description": "Compare Mode",
-                "Value": 5
-              }
-            ],
-            "Type": "enum"
-          }
-        ],
-        "defaultOverrides": [
-          {
-            "Id": "CONFIGURATION",
-            "Value": "SINGLE_32BIT"
-          },
-          {
-            "Id": "MODE_A",
-            "Value": "COMPARE"
-          },
-          {
-            "Id": "MODE_B",
-            "Value": "COMPARE"
-          },
-          {
-            "Id": "MODE",
-            "Value": "COMPARE"
-          }
-        ]
-      },
-      "TMR5": {
+      "TMR[0-5]": {
         "supportedControls": [
           {
             "Id": "CONFIGURATION"
@@ -1688,19 +1174,10 @@
       "LPWDT0": {
         "supportedControls": []
       },
-      "WDT": {
+      "WDT[012]?": {
         "supportedControls": []
       },
-      "WDT0": {
-        "supportedControls": []
-      },
-      "WDT1": {
-        "supportedControls": []
-      },
-      "I2S": {
-        "supportedControls": []
-      },
-      "I2S0": {
+      "I2S0?": {
         "supportedControls": []
       },
       "TRNG": {
@@ -1718,10 +1195,7 @@
       "BOOST": {
         "supportedControls": []
       },
-      "CAN0": {
-        "supportedControls": []
-      },
-      "CAN1": {
+      "CAN[01]": {
         "supportedControls": []
       },
       "CLCD": {
@@ -1745,13 +1219,7 @@
       "DDE": {
         "supportedControls": []
       },
-      "DMA": {
-        "supportedControls": []
-      },
-      "DMA0": {
-        "supportedControls": []
-      },
-      "DMA1": {
+      "DMA[01]?": {
         "supportedControls": []
       },
       "DSS": {
@@ -1766,13 +1234,7 @@
       "FFT": {
         "supportedControls": []
       },
-      "FLC": {
-        "supportedControls": []
-      },
-      "FLC0": {
-        "supportedControls": []
-      },
-      "FLC1": {
+      "FLC[01]?": {
         "supportedControls": []
       },
       "HBMC": {
@@ -1784,19 +1246,10 @@
       "I3C0": {
         "supportedControls": []
       },
-      "ICC": {
+      "ICC[01]?": {
         "supportedControls": []
       },
-      "ICC0": {
-        "supportedControls": []
-      },
-      "ICC1": {
-        "supportedControls": []
-      },
-      "LPCMP": {
-        "supportedControls": []
-      },
-      "LPCMP0": {
+      "LPCMP0?": {
         "supportedControls": []
       },
       "MPC": {
@@ -1811,52 +1264,7 @@
       "PCIF": {
         "supportedControls": []
       },
-      "PT0": {
-        "supportedControls": []
-      },
-      "PT1": {
-        "supportedControls": []
-      },
-      "PT10": {
-        "supportedControls": []
-      },
-      "PT11": {
-        "supportedControls": []
-      },
-      "PT12": {
-        "supportedControls": []
-      },
-      "PT13": {
-        "supportedControls": []
-      },
-      "PT14": {
-        "supportedControls": []
-      },
-      "PT15": {
-        "supportedControls": []
-      },
-      "PT2": {
-        "supportedControls": []
-      },
-      "PT3": {
-        "supportedControls": []
-      },
-      "PT4": {
-        "supportedControls": []
-      },
-      "PT5": {
-        "supportedControls": []
-      },
-      "PT6": {
-        "supportedControls": []
-      },
-      "PT7": {
-        "supportedControls": []
-      },
-      "PT8": {
-        "supportedControls": []
-      },
-      "PT9": {
+      "PT[0-9]+": {
         "supportedControls": []
       },
       "PTG": {
@@ -1913,13 +1321,7 @@
       "USBHS": {
         "supportedControls": []
       },
-      "WUT": {
-        "supportedControls": []
-      },
-      "WUT0": {
-        "supportedControls": []
-      },
-      "WUT1": {
+      "WUT[01]?": {
         "supportedControls": []
       }
     },
@@ -1979,6 +1381,7 @@
               }
             ],
             "Type": "enum",
+            "Hint": "9",
             "Condition": "${Control:_ENDPOINT} ${String:DESTINATION} = ${Control:INT_WINDOW_EN} ${Control:INT_BUFFER_EN} | &"
           },
           {
@@ -2007,6 +1410,7 @@
               }
             ],
             "Type": "enum",
+            "Hint": "13",
             "Condition": "${Control:_ENDPOINT} ${String:SOURCE} = ${Control:INT_WINDOW_EN} ${Control:INT_BUFFER_EN} | &"
           }
         ]

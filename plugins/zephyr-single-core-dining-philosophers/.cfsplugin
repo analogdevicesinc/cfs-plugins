@@ -2,44 +2,46 @@
   "pluginName": "Zephyr Single Core Dining Philosophers",
   "pluginDescription": "Single Core Zephyr Dining Philosophers template.",
   "pluginId": "com.analog.zephyr.workspace.dining.philosophers",
-  "pluginVersion": "1.0.0",
+  "pluginVersion": "1.1.0",
+  "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "zephyr",
   "supportedSocs": [
     {
       "name": "MAX32655",
-      "dataModel": "max32655-ctbga.json",
       "board": "EvKit_V1",
-      "package": "ctbga"
+      "package": "ctbga",
+      "dataModelVersion": "^1.3.628"
     },
     {
       "name": "MAX32655",
-      "dataModel": "max32655-ctbga.json",
       "board": "FTHR",
-      "package": "ctbga"
+      "package": "ctbga",
+      "dataModelVersion": "^1.3.628"
     },
     {
       "name": "MAX32672",
       "board": "EvKit_V1",
-      "package": "tqfn40"
-    },   
+      "package": "tqfn40",
+      "dataModelVersion": "^1.0.628"
+    },
     {
       "name": "MAX32690",
-      "dataModel": "max32690-tqfn.json",
       "board": "EvKit_V1",
-      "package": "tqfn"
+      "package": "tqfn",
+      "dataModelVersion": "^1.3.628"
     },
     {
       "name": "MAX32690",
-      "dataModel": "max32690-wlp.json",
       "board": "AD-APARD32690-SL",
-      "package": "wlp"
+      "package": "wlp",
+      "dataModelVersion": "^1.3.628"
     },
     {
       "name": "MAX32690",
-      "dataModel": "max32690-tqfn.json",
       "board": "FTHR",
-      "package": "tqfn"
+      "package": "tqfn",
+      "dataModelVersion": "^1.3.628"
     }
   ],
   "features": {

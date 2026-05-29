@@ -19,7 +19,7 @@ limitations under the License.
 // Needed for sin() and fabsf()
 #include <math.h>
 
-// Standard TfLM includes 
+// Standard TfLM includes
 #pragma GCC diagnostic push
 // TFLM library mixes float/double literals which produces warnings
 #pragma GCC diagnostic ignored "-Wdouble-promotion"
@@ -34,55 +34,21 @@ limitations under the License.
 #pragma GCC diagnostic pop
 
 // ADI Generated model header
-#include "hello_world_model_f32.hpp"
-
-// Zephelin profiler includes
-extern "C" {
-
-#ifdef CONFIG_ZPL
-#include <zpl.h>
-#endif
-
-#ifdef CONFIG_ZPL_INFERENCE_PROFILING
-#include <zpl/inference_event.h>
-#endif
-
-}
-
-#ifdef CONFIG_ZPL_TFLM_PROFILER
-#include <zpl/tflm_profiler.hpp>
-static zpl::TFLMProfiler* p_profiler = new zpl::TFLMProfiler();
-#endif
+#include "adi_tflm.hpp"
 
 int RunFloat32Model() {
   const tflite::Model* model = ::tflite::GetModel(hello_world_model_f32);
   TFLITE_CHECK_EQ(model->version(), TFLITE_SCHEMA_VERSION);
 
   // Call op resolver function provided by ADI generated file to avoid
-  // having to identify which operators are used by the model. 
+  // having to identify which operators are used by the model.
   tflite::MicroMutableOpResolver<HELLO_WORLD_MODEL_F32_NUM_OPERATORS> op_resolver;
   TF_LITE_ENSURE_STATUS(adi_resolve_ops_hello_world_model_f32(op_resolver));
 
-  // Arena size just a round number. The exact arena usage can be determined
-  // using the RecordingMicroInterpreter.
-  constexpr int kTensorArenaSize = 3000;
-
-  // Using alignas(16) as recommended by tflite-micro documentation:
-  // https://github.com/zephyrproject-rtos/tflite-micro/blob/8d404de73acf7687831e16d88e86e4f73cfddf8e/tensorflow/lite/micro/micro_allocator.h#L133
-  alignas(16) uint8_t tensor_arena[kTensorArenaSize];
-
-#ifdef CONFIG_ZPL_TFLM_PROFILER
-  tflite::MicroAllocator *p_allocator = tflite::MicroAllocator::Create(tensor_arena, kTensorArenaSize);
-  tflite::MicroInterpreter interpreter(model, op_resolver, p_allocator, nullptr, p_profiler);
-#else
-  tflite::MicroInterpreter interpreter(model, op_resolver, tensor_arena,
-                                       kTensorArenaSize);
-#endif
-
-#ifdef CONFIG_ZPL_TFLM_PROFILER
-  p_profiler->SetInterpreter(&interpreter);
-  p_profiler->SetAllocator(p_allocator);
-#endif
+  tflite::MicroInterpreter interpreter(model,
+                                       op_resolver,
+                                       hello_world_model_f32_arena,
+                                       HELLO_WORLD_MODEL_F32_ARENA_SIZE);
 
   TF_LITE_ENSURE_STATUS(interpreter.AllocateTensors());
 
@@ -96,16 +62,7 @@ int RunFloat32Model() {
 
   for (int i = 0; i < kNumTestValues; ++i) {
     interpreter.input(0)->data.f[0] = golden_inputs[i];
-#ifdef CONFIG_ZPL_INFERENCE_PROFILING
-	  zpl_inference_enter();
-#endif
     TF_LITE_ENSURE_STATUS(interpreter.Invoke());
-#ifdef CONFIG_ZPL_INFERENCE_PROFILING
-	  zpl_inference_exit();
-#endif
-#ifdef CONFIG_ZPL_TFLM_PROFILER
-    p_profiler->DumpEvents();
-#endif
     float y_pred = interpreter.output(0)->data.f[0];
     float y_calc = sin(golden_inputs[i]);
     pass = fabsf(y_calc - y_pred) < epsilon;
@@ -119,9 +76,6 @@ int RunFloat32Model() {
 
 int main() {
   int fails = 0;
-#ifdef CONFIG_ZPL
-  zpl_init();
-#endif
   tflite::InitializeTarget();
   fails += RunFloat32Model();
   MicroPrintf("Done - %s\n", fails ? "Failures" : "Success");

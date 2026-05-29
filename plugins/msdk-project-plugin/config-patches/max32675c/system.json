@@ -1,0 +1,8 @@
+{
+  "ClockFrequencies": {
+    "Cortex-M4": 7372800,
+    "IBRO": 7372800,
+    "SYS_OSC": 7372800,
+    "SYS_CLK": 7372800
+  }
+}

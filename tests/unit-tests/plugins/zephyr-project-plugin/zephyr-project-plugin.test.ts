@@ -1,6 +1,6 @@
 /**
  *
- * Copyright (c) 2025 Analog Devices, Inc.
+ * Copyright (c) 2025-2026 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,13 @@ import fs, { promises as fsp } from "node:fs";
 import { expect } from "chai";
 import * as chai from "chai";
 import * as sinon from "sinon";
+import { GenericPlugin, evalNestedTemplateLiterals } from "cfs-plugins-sdk";
 import {
-  CfsPluginInfo,
-  CfsFeatureScope,
-  CfsConfig,
   CfsCodeGenerationContext,
-  GenericPlugin,
-  evalNestedTemplateLiterals,
-} from "cfs-plugins-api";
+  CfsConfig,
+  CfsFeatureScope,
+  CfsPluginInfo,
+} from "cfs-types";
 import ZephyrProjectPlugin from "../../../../plugins/zephyr-project-plugin/index.js";
 import { directoryExists, fileExists } from "../../utilities/test-utilities.js";
 import { isDebug } from "../../utilities/test-utilities.js";
@@ -56,7 +55,7 @@ describe("Unit test for Arm Zephyr Project Plugin", () => {
     pluginVersion: "1.0.0",
     platformConfig: {
       ProjectName: "m4",
-      ZephyrVersion: "4.2.0",
+      ZephyrVersion: "4.3.0",
       ZephyrBoardName: "apard32690/max32690/m4",
       CMakeArgs: "",
     },
@@ -80,8 +79,8 @@ describe("Unit test for Arm Zephyr Project Plugin", () => {
   const cfsConfig: CfsConfig = {
     Copyright:
       "Copyright (c) 2024 Analog Devices, Inc.  All rights reserved. This software is proprietary to Analog Devices, Inc. and its licensors.",
+    SchemaVersion: "2.1.0",
     DataModelVersion: "0.0.25",
-    DataModelSchemaVersion: "1.0.0",
     Soc: "MAX32690",
     Package: "WLP",
     Pins: [],
@@ -97,17 +96,18 @@ describe("Unit test for Arm Zephyr Project Plugin", () => {
         FirmwarePlatform: "zephyr",
         ExternallyManaged: true,
         Partitions: [
-          { Name: "Name",
+          {
+            Name: "Name",
             StartAddress: "0x20000000",
             Size: 2048,
             IsOwner: true,
             Access: "R/W",
-            Config: {}
-          } as any
+            Config: {},
+          } as any,
         ],
         PlatformConfig: {
           ProjectName: "m4",
-          ZephyrVersion: "4.2.0",
+          ZephyrVersion: "4.3.0",
           ZephyrBoardName: "apard32690/max32690/m4",
         },
         Peripherals: [{ Name: "Name" } as any],

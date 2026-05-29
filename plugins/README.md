@@ -138,7 +138,7 @@ Sample `.cfsconfig` structure:
         "ProjectId": "m4",
         // Derived from the plugin that created the project
         "PluginId": "com.analog.project.zephyr.plugin",
-        "PluginVersion": "1.0.0",
+        "PluginVersion": "1.1.0",
         "FirmwarePlatform": "zephyr",
         "PlatformConfig": { /* plugin-defined properties */ },
          // IDE-generated from System Planner configuration and plugin overrides

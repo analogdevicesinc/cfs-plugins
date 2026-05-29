@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024-2025 Analog Devices, Inc.
+ * Copyright (c) 2024-2026 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,42 +54,85 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
     },
     { zephyr : "dma0", datamodel : "DMA", enable : "ENABLE" },
     { zephyr : "i2c0", datamodel : "I2C0", enable : "I2C0_ENABLE",
-      pins : [
-        { name: "i2c0a_scl_p0_31", signal: "SCL", pin: "F6" },
-        { name: "i2c0a_scl_p2_8", signal: "SCL", pin: "J4" },
-        { name: "i2c0a_sda_p0_30", signal: "SDA", pin: "G6" },
-        { name: "i2c0a_sda_p2_7", signal: "SDA", pin: "H5" }
+      pins: [
+        { signal: "SCL", pin: "F6", name: "i2c0a_scl_p0_31" },
+        { signal: "SDA", pin: "G6", name: "i2c0a_sda_p0_30" },
+        { signal: "SDA", pin: "H5", name: "i2c0a_sda_p2_7" },
+        { signal: "SCL", pin: "J4", name: "i2c0a_scl_p2_8" }
       ],
-      config : [
+      config: [
         { name: "clock-frequency", type: "int", control: "FREQ", cfg_default: "100000",
           value: x => convertToUnitsMacro(x, "FREQ", 1000)
-	}
+        }
       ]
     },
     { zephyr : "i2c1", datamodel : "I2C1", enable : "I2C1_ENABLE",
-      pins : [
-        { name: "i2c1a_scl_p0_12", signal: "SCL", pin: "F3" },
-        { name: "i2c1a_scl_p2_18", signal: "SCL", pin: "E3" },
-        { name: "i2c1a_sda_p0_11", signal: "SDA", pin: "F2" },
-        { name: "i2c1a_sda_p2_17", signal: "SDA", pin: "E2" }
+      pins: [
+        { signal: "SDA", pin: "E2", name: "i2c1a_sda_p2_17" },
+        { signal: "SCL", pin: "E3", name: "i2c1a_scl_p2_18" },
+        { signal: "SDA", pin: "F2", name: "i2c1a_sda_p0_11" },
+        { signal: "SCL", pin: "F3", name: "i2c1a_scl_p0_12" }
       ],
-      config : [
+      config: [
         { name: "clock-frequency", type: "int", control: "FREQ", cfg_default: "100000",
           value: x => convertToUnitsMacro(x, "FREQ", 1000)
-	}
+        }
       ]
     },
-    { zephyr : "i2c2", datamodel : "I2C2", enable : "I2C2_ENABLE",
-      pins : [
-        { name: "i2c2c_scl_p0_14", signal: "SCL", pin: "C1" },
-        { name: "i2c2c_scl_p1_8", signal: "SCL", pin: "A2" },
-        { name: "i2c2c_sda_p0_13", signal: "SDA", pin: "D2" },
-        { name: "i2c2c_sda_p1_7", signal: "SDA", pin: "D4" }
+    { zephyr: "i2c2", datamodel : "I2C2", enable : "I2C2_ENABLE",
+      pins: [
+        { signal: "SCL", pin: "A2", name: "i2c2c_scl_p1_8" },
+        { signal: "SCL", pin: "C1", name: "i2c2c_scl_p0_14" },
+        { signal: "SDA", pin: "D2", name: "i2c2c_sda_p0_13" },
+        { signal: "SDA", pin: "D4", name: "i2c2c_sda_p1_7" }
       ],
-      config : [
+      config: [
         { name: "clock-frequency", type: "int", control: "FREQ", cfg_default: "100000",
           value: x => convertToUnitsMacro(x, "FREQ", 1000)
-	}
+        }
+      ]
+    },
+    { zephyr: "lptimer0", datamodel: "LPTMR0", enable: "ENABLE", clock_mux: "MUX", clock_default: "IBRO",
+      pins: [
+        { name: "lptmr0b_ioa_p3_4", signal: "IOA", pin: "G10"}
+      ],
+      subnode: () => getAssignedPeripheral("LPTMR0").Config?.MODE_A === "COMPARE" ? "counter" : "pwm",
+      subnode_boilerplate: () => getAssignedPeripheral("LPTMR0").Config?.MODE_A === "PWM" ? ['compatible = "adi,max32-pwm"', '#pwm-cells = <3>'] : [],
+      pins_node: () => getAssignedPeripheral("LPTMR0").Config?.MODE_A === "COMPARE" ? undefined : "subnode",
+      config: [
+        { name: "prescaler", type: "int", control: "CLKDIV_A", cfg_default: "1" }
+      ]
+    },
+    { zephyr: "lptimer1", datamodel: "LPTMR1", enable: "ENABLE", clock_mux: "MUX", clock_default: "IBRO",
+      pins: [
+        { name: "lptmr1b_ioa_p3_7", signal: "IOA", pin: "J10"}
+      ],
+      subnode: () => getAssignedPeripheral("LPTMR1").Config?.MODE_A === "COMPARE" ? "counter" : "pwm",
+      subnode_boilerplate: () => getAssignedPeripheral("LPTMR1").Config?.MODE_A === "PWM" ? ['compatible = "adi,max32-pwm"', '#pwm-cells = <3>'] : [],
+      pins_node: () => getAssignedPeripheral("LPTMR1").Config?.MODE_A === "COMPARE" ? undefined : "subnode",
+      config: [
+        { name: "prescaler", type: "int", control: "CLKDIV_A", cfg_default: "1" }
+      ]
+    },
+    { zephyr: "uart3", datamodel: "LPUART0", enable: "ENABLE", clock_mux: "MUX", clock_default: "IBRO",
+      pins: [
+        { name: "lpuart0b_cts_p3_2", signal: "CTS", pin: "E12" },
+        { name: "lpuart0b_rts_p3_3", signal: "RTS", pin: "F10" },
+        { name: "lpuart0b_rx_p3_0", signal: "RX", pin: "E10" },
+        { name: "lpuart0b_tx_p3_1", signal: "TX", pin: "E11" }
+      ],
+      config : [
+        { name: "current-speed", type: "int", control: "BAUD", cfg_default: "115200" },
+        { name: "hw-flow-control", type: "boolean", control: "HW_FLOW_CTRL", cfg_default: "DISABLED",
+          value: x => x !== "DISABLED"
+        },
+        { name: "parity", type: "string", control: "PARITY", cfg_default: "DISABLED",
+          value: x => (x === "DISABLED" ? "none" : (x === "EVEN" ? "even" : "odd"))
+        },
+        { name: "stop-bits", type: "string", control: "STOP_BITS", cfg_default: "1",
+          value: x => (x === "1" ? "1" : (getAssignedPeripheral("LPUART0").Config?.CHAR_SIZE === "5" ? "1_5" : "2"))
+        },
+        { name: "data-bits", type: "int", control: "CHAR_SIZE", cfg_default: "5" }
       ]
     },
     { zephyr: "w1", datamodel: "OWM", enable: "ENABLE",
@@ -112,8 +155,8 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
       ]
     },
     { datamodel: "RTC", zephyr: "rtc_counter" },
-    { zephyr : "spi0", datamodel : "SPI0", enable : "SPI0_ENABLE",
-      pins : [
+    { zephyr: "spi0", datamodel: "SPI0", enable: "SPI0_ENABLE",
+      pins: [
         { name: "spi0a_ss0_p0_22", signal: "CS0", pin: "K1" },
         { name: "spi0b_miso_p2_27", signal: "MISO", pin: "L2" },
         { name: "spi0b_mosi_p2_28", signal: "MOSI", pin: "L1" },
@@ -125,11 +168,11 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
       config : [
         { name: "clock-frequency", type: "int", control: "FREQ", cfg_default: "15000000",
           value: x => convertToUnitsMacro(x, "FREQ", 1000)
-	}
+        }
       ]
     },
-    { zephyr : "spi1", datamodel : "SPI1", enable : "SPI1_ENABLE",
-      pins : [
+    { zephyr: "spi1", datamodel: "SPI1", enable: "SPI1_ENABLE",
+      pins: [
         { name: "spi1a_miso_p1_28", signal: "MISO", pin: "L7" },
         { name: "spi1a_mosi_p1_29", signal: "MOSI", pin: "M7" },
         { name: "spi1a_sck_p1_26", signal: "SCK", pin: "L8" },
@@ -142,11 +185,11 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
       config : [
         { name: "clock-frequency", type: "int", control: "FREQ", cfg_default: "15000000",
           value: x => convertToUnitsMacro(x, "FREQ", 1000)
-	}
+        }
       ]
     },
-    { zephyr : "spi2", datamodel : "SPI2", enable : "SPI2_ENABLE",
-      pins : [
+    { zephyr: "spi2", datamodel: "SPI2", enable: "SPI2_ENABLE",
+      pins: [
         { name: "spi2a_miso_p2_3", signal: "MISO", pin: "L6" },
         { name: "spi2a_mosi_p2_4", signal: "MOSI", pin: "K6" },
         { name: "spi2a_sck_p2_2", signal: "SCK", pin: "M6" },
@@ -159,11 +202,11 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
       config : [
         { name: "clock-frequency", type: "int", control: "FREQ", cfg_default: "15000000",
           value: x => convertToUnitsMacro(x, "FREQ", 1000)
-	}
+        }
       ]
     },
-    { zephyr : "spi3", datamodel : "SPI3", enable : "SPI3_ENABLE",
-      pins : [
+    { zephyr: "spi3", datamodel: "SPI3", enable: "SPI3_ENABLE",
+      pins: [
         { name: "spi3a_miso_p0_20", signal: "MISO", pin: "C3" },
         { name: "spi3a_mosi_p0_21", signal: "MOSI", pin: "B2" },
         { name: "spi3a_sck_p0_16", signal: "SCK", pin: "B3" },
@@ -176,11 +219,11 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
       config : [
         { name: "clock-frequency", type: "int", control: "FREQ", cfg_default: "15000000",
           value: x => convertToUnitsMacro(x, "FREQ", 1000)
-	}
+        }
       ]
     },
-    { zephyr : "spi4", datamodel : "SPI4", enable : "SPI4_ENABLE",
-      pins : [
+    { zephyr: "spi4", datamodel: "SPI4", enable: "SPI4_ENABLE",
+      pins: [
         { name: "spi4a_miso_p1_2", signal: "MISO", pin: "D5" },
         { name: "spi4a_mosi_p1_1", signal: "MOSI", pin: "C4" },
         { name: "spi4a_sck_p1_3", signal: "SCK", pin: "C5" },
@@ -193,11 +236,21 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
       config : [
         { name: "clock-frequency", type: "int", control: "FREQ", cfg_default: "15000000",
           value: x => convertToUnitsMacro(x, "FREQ", 1000)
-	}
+        }
       ]
     },
-    { zephyr : "timer0", datamodel : "TMR0", enable : "TMR0_ENABLE", clock_mux : "TMR0a_MUX", clock_default : "PCLK",
-      pins : [
+    { zephyr: "spixf", datamodel: "SPIXF", enable: "ENABLE", zephyrVersionMin: "4.3.0",
+      pins: [
+        { signal: "SS0", pin: "H1", name: "spixf_ss0_p0_6"},
+        { signal: "SDIO1", pin: "H2", name: "spixf_sdio1_p0_5"},
+        { signal: "SDIO3", pin: "H3", name: "spixf_sdio3_p0_4"},
+        { signal: "SCK", pin: "J1", name: "spixf_sck_p0_3"},
+        { signal: "SDIO0", pin: "J2", name: "spixf_sdio0_p0_1"},
+        { signal: "SDIO2", pin: "J3", name: "spixf_sdio2_p0_2"}
+      ]
+    },
+    { zephyr: "timer0", datamodel: "TMR0", enable: "TMR0_ENABLE", clock_mux: "TMR0a_MUX", clock_default: "PCLK",
+      pins: [
         { name: "tmr0b_iob_p0_14", signal: "IOB", pin: "C1"},
         { name: "tmr0b_ioa_p0_13", signal: "IOA", pin: "D2"},
         { name: "tmr0c_iobn_p0_10", signal: "IOBN", pin: "F7"},
@@ -210,8 +263,8 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
         { name: "prescaler", type: "int", control: "CLKDIV_A", cfg_default: "1" }
       ]
     },
-    { zephyr : "timer1", datamodel : "TMR1", enable : "TMR1_ENABLE", clock_mux : "TMR1a_MUX", clock_default : "PCLK",
-      pins : [
+    { zephyr: "timer1", datamodel: "TMR1", enable: "TMR1_ENABLE", clock_mux: "TMR1a_MUX", clock_default: "PCLK",
+      pins: [
         { name: "tmr1c_ioa_p0_15", signal: "IOA", pin: "C2"},
         { name: "tmr1c_iob_p0_17", signal: "IOB", pin: "D3"},
         { name: "tmr1c_ioan_p0_11", signal: "IOAN", pin: "F2"},
@@ -225,8 +278,8 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
         { name: "prescaler", type: "int", control: "CLKDIV_A", cfg_default: "1" }
       ]
     },
-    { zephyr : "timer2", datamodel : "TMR2", enable : "TMR2_ENABLE", clock_mux : "TMR2a_MUX", clock_default : "PCLK",
-      pins : [
+    { zephyr: "timer2", datamodel: "TMR2", enable: "TMR2_ENABLE", clock_mux: "TMR2a_MUX", clock_default: "PCLK",
+      pins: [
         { name: "tmr2b_iob_p1_5", signal: "IOB", pin: "A5"},
         { name: "tmr2b_ioa_p1_4", signal: "IOA", pin: "B4"},
         { name: "tmr2c_iob_p2_21", signal: "IOB", pin: "D9"},
@@ -239,8 +292,8 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
         { name: "prescaler", type: "int", control: "CLKDIV_A", cfg_default: "1" }
       ]
     },
-    { zephyr : "timer3", datamodel : "TMR3", enable : "TMR3_ENABLE", clock_mux : "TMR3a_MUX", clock_default : "PCLK",
-      pins : [
+    { zephyr: "timer3", datamodel: "TMR3", enable: "TMR3_ENABLE", clock_mux: "TMR3a_MUX", clock_default: "PCLK",
+      pins: [
         { name: "tmr3a_iob_p1_14", signal: "IOB", pin: "A11"},
         { name: "tmr3a_ioa_p1_13", signal: "IOA", pin: "B7"},
         { name: "tmr3c_iob_p2_31", signal: "IOB", pin: "K2"},
@@ -252,71 +305,51 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
         { name: "prescaler", type: "int", control: "CLKDIV_A", cfg_default: "1" }
       ]
     },
-    { zephyr : "lptimer0", datamodel : "LPTMR0", enable : "ENABLE", clock_mux : "MUX", clock_default : "IBRO",
-      pins : [
-        { name: "lptmr0b_ioa_p3_4", signal: "IOA", pin: "G10"}
-      ],
-      subnode: () => getAssignedPeripheral("LPTMR0").Config?.MODE_A === "COMPARE" ? "counter" : "pwm",
-      pins_node: () => getAssignedPeripheral("LPTMR0").Config?.MODE_A === "COMPARE" ? undefined : "subnode",
-      config : [
-        { name: "prescaler", type: "int", control: "CLKDIV_A", cfg_default: "1" }
-      ]
-    },
-    { zephyr : "lptimer1", datamodel : "LPTMR1", enable : "ENABLE", clock_mux : "MUX", clock_default : "IBRO",
-      pins : [
-        { name: "lptmr1b_ioa_p3_7", signal: "IOA", pin: "J10"}
-      ],
-      subnode: () => getAssignedPeripheral("LPTMR1").Config?.MODE_A === "COMPARE" ? "counter" : "pwm",
-      pins_node: () => getAssignedPeripheral("LPTMR1").Config?.MODE_A === "COMPARE" ? undefined : "subnode",
-      config : [
-        { name: "prescaler", type: "int", control: "CLKDIV_A", cfg_default: "1" }
-      ]
-    },
-    { zephyr : "trng", datamodel : "TRNG", enable : "TRNG_ENABLE" },
-    { zephyr : "uart0", datamodel : "UART0", enable : "UART0_ENABLE", clock_mux : "UART0_MUX", clock_default : "PCLK",
-      pins : [
+    { zephyr: "trng", datamodel: "TRNG", enable: "TRNG_ENABLE" },
+    { zephyr: "uart0", datamodel: "UART0", enable: "UART0_ENABLE", clock_mux: "UART0_MUX", clock_default: "PCLK",
+      pins: [
         { name: "uart0a_cts_p2_9", signal: "CTS", pin: "M5" },
         { name: "uart0a_rts_p2_10", signal: "RTS", pin: "L5" },
         { name: "uart0a_rx_p2_11", signal: "RX", pin: "K5" },
         { name: "uart0a_tx_p2_12", signal: "TX", pin: "J5" }
       ],
-      config : [
+      config: [
         { name: "current-speed", type: "int", control: "BAUD", cfg_default: "115200" },
         { name: "hw-flow-control", type: "boolean", control: "HW_FLOW_CTRL", cfg_default: "DISABLED",
           value: x => x !== "DISABLED"
         },
         { name: "parity", type: "string", control: "PARITY", cfg_default: "DISABLED",
           value: x => (x === "DISABLED" ? "none" : (x === "EVEN" ? "even" : "odd"))
-	},
+        },
         { name: "stop-bits", type: "string", control: "STOP_BITS", cfg_default: "1",
           value: x => (x === "1" ? "1" : (getAssignedPeripheral("UART0").Config?.CHAR_SIZE === "5" ? "1_5" : "2"))
         },
         { name: "data-bits", type: "int", control: "CHAR_SIZE", cfg_default: "5" }
       ]
     },
-    { zephyr : "uart1", datamodel : "UART1", enable : "UART1_ENABLE", clock_mux : "UART1_MUX", clock_default : "PCLK",
-      pins : [
+    { zephyr: "uart1", datamodel: "UART1", enable: "UART1_ENABLE", clock_mux: "UART1_MUX", clock_default: "PCLK",
+      pins: [
         { name: "uart1a_cts_p2_13", signal: "CTS", pin: "E6" },
         { name: "uart1a_rts_p2_15", signal: "RTS", pin: "D7" },
         { name: "uart1a_rx_p2_14", signal: "RX", pin: "D6" },
         { name: "uart1a_tx_p2_16", signal: "TX", pin: "E7" }
       ],
-      config : [
+      config: [
         { name: "current-speed", type: "int", control: "BAUD", cfg_default: "115200" },
         { name: "hw-flow-control", type: "boolean", control: "HW_FLOW_CTRL", cfg_default: "DISABLED",
           value: x => x !== "DISABLED"
         },
         { name: "parity", type: "string", control: "PARITY", cfg_default: "DISABLED",
           value: x => (x === "DISABLED" ? "none" : (x === "EVEN" ? "even" : "odd"))
-	},
+        },
         { name: "stop-bits", type: "string", control: "STOP_BITS", cfg_default: "1",
           value: x => (x === "1" ? "1" : (getAssignedPeripheral("UART1").Config?.CHAR_SIZE === "5" ? "1_5" : "2"))
         },
         { name: "data-bits", type: "int", control: "CHAR_SIZE", cfg_default: "5" }
       ]
     },
-    { zephyr : "uart2", datamodel : "UART2", enable : "UART2_ENABLE", clock_mux : "UART2_MUX", clock_default : "PCLK",
-      pins : [
+    { zephyr: "uart2", datamodel: "UART2", enable: "UART2_ENABLE", clock_mux: "UART2_MUX", clock_default: "PCLK",
+      pins: [
         { name: "uart2a_cts_p1_7", signal: "CTS", pin: "D4" },
         { name: "uart2a_rts_p1_8", signal: "RTS", pin: "A2" },
         { name: "uart2a_rx_p1_9", signal: "RX", pin: "B1" },
@@ -326,44 +359,25 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
         { name: "uart2c_rx_p0_6", signal: "RX", pin: "H1" },
         { name: "uart2c_tx_p0_1", signal: "TX", pin: "J2" }
       ],
-      config : [
+      config: [
         { name: "current-speed", type: "int", control: "BAUD", cfg_default: "115200" },
         { name: "hw-flow-control", type: "boolean", control: "HW_FLOW_CTRL", cfg_default: "DISABLED",
           value: x => x !== "DISABLED"
         },
         { name: "parity", type: "string", control: "PARITY", cfg_default: "DISABLED",
           value: x => (x === "DISABLED" ? "none" : (x === "EVEN" ? "even" : "odd"))
-	},
+        },
         { name: "stop-bits", type: "string", control: "STOP_BITS", cfg_default: "1",
           value: x => (x === "1" ? "1" : (getAssignedPeripheral("UART2").Config?.CHAR_SIZE === "5" ? "1_5" : "2"))
         },
         { name: "data-bits", type: "int", control: "CHAR_SIZE", cfg_default: "5" }
       ]
     },
-    { zephyr : "uart3", datamodel : "LPUART0", enable : "ENABLE", clock_mux : "MUX", clock_default : "IBRO",
-      pins : [
-        { name: "lpuart0b_cts_p3_2", signal: "CTS", pin: "E12" },
-        { name: "lpuart0b_rts_p3_3", signal: "RTS", pin: "F10" },
-        { name: "lpuart0b_rx_p3_0", signal: "RX", pin: "E10" },
-        { name: "lpuart0b_tx_p3_1", signal: "TX", pin: "E11" }
-      ],
-      config : [
-        { name: "current-speed", type: "int", control: "BAUD", cfg_default: "115200" },
-        { name: "hw-flow-control", type: "boolean", control: "HW_FLOW_CTRL", cfg_default: "DISABLED",
-          value: x => x !== "DISABLED"
-        },
-        { name: "parity", type: "string", control: "PARITY", cfg_default: "DISABLED",
-          value: x => (x === "DISABLED" ? "none" : (x === "EVEN" ? "even" : "odd"))
-	},
-        { name: "stop-bits", type: "string", control: "STOP_BITS", cfg_default: "1",
-          value: x => (x === "1" ? "1" : (getAssignedPeripheral("LPUART0").Config?.CHAR_SIZE === "5" ? "1_5" : "2"))
-        },
-        { name: "data-bits", type: "int", control: "CHAR_SIZE", cfg_default: "5" }
-      ]
-    },
     { zephyr: "usbhs", datamodel: "USBHS", enable: "ENABLE"},
-    { zephyr : "wdt0", datamodel : "WDT0", enable : "ENABLE", clock_mux : "MUX", clock_default : "PCLK" },
-    { zephyr : "wdt1", datamodel : "LPWDT0", enable : "ENABLE", clock_mux : "MUX", clock_default : "IBRO" }
+    { zephyr: "wdt0", datamodel: "WDT0", enable: "ENABLE", clock_mux: "MUX", clock_default: "PCLK" },
+    { zephyr: "wdt1", datamodel: "LPWDT0", enable: "ENABLE", clock_mux: "MUX", clock_default: "IBRO" },
+    { zephyr: "wut0", datamodel: "WUT0", zephyrVersionMin: "4.3.0" },
+    { zephyr: "wut1", datamodel: "WUT1", zephyrVersionMin: "4.3.0" }
   ];
 
 } else if (it.cfsconfig.Package.toUpperCase() === "CTBGA") {
@@ -392,18 +406,18 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
     },
     { zephyr: "can0", datamodel: "CAN0", enable: "CAN0_ENABLE",
       pins: [
-          { signal: "TX", pin: "G9", name: "can0b_tx_p2_23"},
-          { signal: "RX", pin: "F9", name: "can0b_rx_p2_22"},
+          { signal: "RX", pin: "D7", name: "can0b_rx_p1_24"},
           { signal: "TX", pin: "E7", name: "can0b_tx_p1_25"},
-          { signal: "RX", pin: "D7", name: "can0b_rx_p1_24"}
+          { signal: "RX", pin: "F9", name: "can0b_rx_p2_22"},
+          { signal: "TX", pin: "G9", name: "can0b_tx_p2_23"}
       ]
     },
     { zephyr: "can1", datamodel: "CAN1", enable: "CAN1_ENABLE",
       pins: [
-          { signal: "TX", pin: "F3", name: "can1b_tx_p2_25"},
+          { signal: "TX", pin: "A7", name: "can1b_tx_p1_29"},
           { signal: "RX", pin: "B4", name: "can1b_rx_p2_24"},
           { signal: "RX", pin: "B7", name: "can1b_rx_p1_28"},
-          { signal: "TX", pin: "A7", name: "can1b_tx_p1_29"}
+          { signal: "TX", pin: "F3", name: "can1b_tx_p2_25"}
       ]
     },
     { zephyr : "dma0", datamodel : "DMA", enable : "ENABLE" },
@@ -417,7 +431,7 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
       config : [
         { name: "clock-frequency", type: "int", control: "FREQ", cfg_default: "100000",
           value: x => convertToUnitsMacro(x, "FREQ", 1000)
-	}
+        }
       ]
     },
     { zephyr : "i2c1", datamodel : "I2C1", enable : "I2C1_ENABLE",
@@ -430,7 +444,7 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
       config : [
         { name: "clock-frequency", type: "int", control: "FREQ", cfg_default: "100000",
           value: x => convertToUnitsMacro(x, "FREQ", 1000)
-	}
+        }
       ]
     },
     { zephyr : "i2c2", datamodel : "I2C2", enable : "I2C2_ENABLE",
@@ -443,7 +457,50 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
       config : [
         { name: "clock-frequency", type: "int", control: "FREQ", cfg_default: "100000",
           value: x => convertToUnitsMacro(x, "FREQ", 1000)
-	}
+        }
+      ]
+    },
+    { zephyr : "lptimer0", datamodel : "LPTMR0", enable : "ENABLE", clock_mux : "MUX", clock_default : "IBRO",
+      pins : [
+        { name: "lptmr0b_ioa_p3_4", signal: "IOA", pin: "F10"}
+      ],
+      subnode: () => getAssignedPeripheral("LPTMR0").Config?.MODE_A === "COMPARE" ? "counter" : "pwm",
+      subnode_boilerplate: () => getAssignedPeripheral("LPTMR0").Config?.MODE_A === "PWM" ? ['compatible = "adi,max32-pwm"', '#pwm-cells = <3>'] : [],
+      pins_node: () => getAssignedPeripheral("LPTMR0").Config?.MODE_A === "COMPARE" ? undefined : "subnode",
+      config : [
+        { name: "prescaler", type: "int", control: "CLKDIV_A", cfg_default: "1" }
+      ]
+    },
+    { zephyr : "lptimer1", datamodel : "LPTMR1", enable : "ENABLE", clock_mux : "MUX", clock_default : "IBRO",
+      pins : [
+        { name: "lptmr1b_ioa_p3_7", signal: "IOA", pin: "D10"}
+      ],
+      subnode: () => getAssignedPeripheral("LPTMR1").Config?.MODE_A === "COMPARE" ? "counter" : "pwm",
+      subnode_boilerplate: () => getAssignedPeripheral("LPTMR1").Config?.MODE_A === "PWM" ? ['compatible = "adi,max32-pwm"', '#pwm-cells = <3>'] : [],
+      pins_node: () => getAssignedPeripheral("LPTMR1").Config?.MODE_A === "COMPARE" ? undefined : "subnode",
+      config : [
+        { name: "prescaler", type: "int", control: "CLKDIV_A", cfg_default: "1" }
+      ]
+    },
+    { zephyr : "uart3", datamodel : "LPUART0", enable : "ENABLE", clock_mux : "MUX", clock_default : "IBRO",
+      pins : [
+        { name: "lpuart0b_cts_p3_2", signal: "CTS", pin: "H12" },
+        { name: "lpuart0b_rts_p3_3", signal: "RTS", pin: "G10" },
+        { name: "lpuart0b_rx_p3_0", signal: "RX", pin: "H10" },
+        { name: "lpuart0b_tx_p3_1", signal: "TX", pin: "H11" }
+      ],
+      config : [
+        { name: "current-speed", type: "int", control: "BAUD", cfg_default: "115200" },
+        { name: "hw-flow-control", type: "boolean", control: "HW_FLOW_CTRL", cfg_default: "DISABLED",
+          value: x => x !== "DISABLED"
+        },
+        { name: "parity", type: "string", control: "PARITY", cfg_default: "DISABLED",
+          value: x => (x === "DISABLED" ? "none" : (x === "EVEN" ? "even" : "odd"))
+        },
+        { name: "stop-bits", type: "string", control: "STOP_BITS", cfg_default: "1",
+          value: x => (x === "1" ? "1" : (getAssignedPeripheral("LPUART0").Config?.CHAR_SIZE === "5" ? "1_5" : "2"))
+        },
+        { name: "data-bits", type: "int", control: "CHAR_SIZE", cfg_default: "5" }
       ]
     },
     { zephyr: "w1", datamodel: "OWM", enable: "ENABLE",
@@ -479,7 +536,7 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
       config : [
         { name: "clock-frequency", type: "int", control: "FREQ", cfg_default: "15000000",
           value: x => convertToUnitsMacro(x, "FREQ", 1000)
-	}
+        }
       ]
     },
     { zephyr : "spi1", datamodel : "SPI1", enable : "SPI1_ENABLE",
@@ -496,7 +553,7 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
       config : [
         { name: "clock-frequency", type: "int", control: "FREQ", cfg_default: "15000000",
           value: x => convertToUnitsMacro(x, "FREQ", 1000)
-	}
+        }
       ]
     },
     { zephyr : "spi2", datamodel : "SPI2", enable : "SPI2_ENABLE",
@@ -513,7 +570,7 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
       config : [
         { name: "clock-frequency", type: "int", control: "FREQ", cfg_default: "15000000",
           value: x => convertToUnitsMacro(x, "FREQ", 1000)
-	}
+        }
       ]
     },
     { zephyr : "spi3", datamodel : "SPI3", enable : "SPI3_ENABLE",
@@ -530,7 +587,7 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
       config : [
         { name: "clock-frequency", type: "int", control: "FREQ", cfg_default: "15000000",
           value: x => convertToUnitsMacro(x, "FREQ", 1000)
-	}
+        }
       ]
     },
     { zephyr : "spi4", datamodel : "SPI4", enable : "SPI4_ENABLE",
@@ -547,7 +604,17 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
       config : [
         { name: "clock-frequency", type: "int", control: "FREQ", cfg_default: "15000000",
           value: x => convertToUnitsMacro(x, "FREQ", 1000)
-	}
+        }
+      ]
+    },
+    { zephyr : "spixf", datamodel : "SPIXF", enable : "ENABLE", zephyrVersionMin : "4.3.0",
+      pins : [
+        { signal: "SCK", pin: "D1", name: "spixf_sck_p0_3"},
+        { signal: "SDIO0", pin: "D2", name: "spixf_sdio0_p0_1"},
+        { signal: "SDIO2", pin: "D3", name: "spixf_sdio2_p0_2"},
+        { signal: "SS0", pin: "E1", name: "spixf_ss0_p0_6"},
+        { signal: "SDIO1", pin: "E2", name: "spixf_sdio1_p0_5"},
+        { signal: "SDIO3", pin: "E3", name: "spixf_sdio3_p0_4"}
       ]
     },
     { zephyr : "timer0", datamodel : "TMR0", enable : "TMR0_ENABLE", clock_mux : "TMR0a_MUX", clock_default : "PCLK",
@@ -606,26 +673,6 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
         { name: "prescaler", type: "int", control: "CLKDIV_A", cfg_default: "1" }
       ]
     },
-    { zephyr : "lptimer0", datamodel : "LPTMR0", enable : "ENABLE", clock_mux : "MUX", clock_default : "IBRO",
-      pins : [
-        { name: "lptmr0b_ioa_p3_4", signal: "IOA", pin: "F10"}
-      ],
-      subnode: () => getAssignedPeripheral("LPTMR0").Config?.MODE_A === "COMPARE" ? "counter" : "pwm",
-      pins_node: () => getAssignedPeripheral("LPTMR0").Config?.MODE_A === "COMPARE" ? undefined : "subnode",
-      config : [
-        { name: "prescaler", type: "int", control: "CLKDIV_A", cfg_default: "1" }
-      ]
-    },
-    { zephyr : "lptimer1", datamodel : "LPTMR1", enable : "ENABLE", clock_mux : "MUX", clock_default : "IBRO",
-      pins : [
-        { name: "lptmr1b_ioa_p3_7", signal: "IOA", pin: "D10"}
-      ],
-      subnode: () => getAssignedPeripheral("LPTMR1").Config?.MODE_A === "COMPARE" ? "counter" : "pwm",
-      pins_node: () => getAssignedPeripheral("LPTMR1").Config?.MODE_A === "COMPARE" ? undefined : "subnode",
-      config : [
-        { name: "prescaler", type: "int", control: "CLKDIV_A", cfg_default: "1" }
-      ]
-    },
     { zephyr : "trng", datamodel : "TRNG", enable : "TRNG_ENABLE" },
     { zephyr : "uart0", datamodel : "UART0", enable : "UART0_ENABLE", clock_mux : "UART0_MUX", clock_default : "PCLK",
       pins : [
@@ -641,7 +688,7 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
         },
         { name: "parity", type: "string", control: "PARITY", cfg_default: "DISABLED",
           value: x => (x === "DISABLED" ? "none" : (x === "EVEN" ? "even" : "odd"))
-	},
+        },
         { name: "stop-bits", type: "string", control: "STOP_BITS", cfg_default: "1",
           value: x => (x === "1" ? "1" : (getAssignedPeripheral("UART0").Config?.CHAR_SIZE === "5" ? "1_5" : "2"))
         },
@@ -662,7 +709,7 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
         },
         { name: "parity", type: "string", control: "PARITY", cfg_default: "DISABLED",
           value: x => (x === "DISABLED" ? "none" : (x === "EVEN" ? "even" : "odd"))
-	},
+        },
         { name: "stop-bits", type: "string", control: "STOP_BITS", cfg_default: "1",
           value: x => (x === "1" ? "1" : (getAssignedPeripheral("UART1").Config?.CHAR_SIZE === "5" ? "1_5" : "2"))
         },
@@ -687,37 +734,18 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
         },
         { name: "parity", type: "string", control: "PARITY", cfg_default: "DISABLED",
           value: x => (x === "DISABLED" ? "none" : (x === "EVEN" ? "even" : "odd"))
-	},
+        },
         { name: "stop-bits", type: "string", control: "STOP_BITS", cfg_default: "1",
           value: x => (x === "1" ? "1" : (getAssignedPeripheral("UART2").Config?.CHAR_SIZE === "5" ? "1_5" : "2"))
         },
         { name: "data-bits", type: "int", control: "CHAR_SIZE", cfg_default: "5" }
       ]
     },
-    { zephyr : "uart3", datamodel : "LPUART0", enable : "ENABLE", clock_mux : "MUX", clock_default : "IBRO",
-      pins : [
-        { name: "lpuart0b_cts_p3_2", signal: "CTS", pin: "H12" },
-        { name: "lpuart0b_rts_p3_3", signal: "RTS", pin: "G10" },
-        { name: "lpuart0b_rx_p3_0", signal: "RX", pin: "H10" },
-        { name: "lpuart0b_tx_p3_1", signal: "TX", pin: "H11" }
-      ],
-      config : [
-        { name: "current-speed", type: "int", control: "BAUD", cfg_default: "115200" },
-        { name: "hw-flow-control", type: "boolean", control: "HW_FLOW_CTRL", cfg_default: "DISABLED",
-          value: x => x !== "DISABLED"
-        },
-        { name: "parity", type: "string", control: "PARITY", cfg_default: "DISABLED",
-          value: x => (x === "DISABLED" ? "none" : (x === "EVEN" ? "even" : "odd"))
-	},
-        { name: "stop-bits", type: "string", control: "STOP_BITS", cfg_default: "1",
-          value: x => (x === "1" ? "1" : (getAssignedPeripheral("LPUART0").Config?.CHAR_SIZE === "5" ? "1_5" : "2"))
-        },
-        { name: "data-bits", type: "int", control: "CHAR_SIZE", cfg_default: "5" }
-      ]
-    },
     { zephyr: "usbhs", datamodel: "USBHS", enable: "ENABLE"},
     { zephyr : "wdt0", datamodel : "WDT0", enable : "ENABLE", clock_mux : "MUX", clock_default : "PCLK" },
-    { zephyr : "wdt1", datamodel : "LPWDT0", enable : "ENABLE", clock_mux : "MUX", clock_default : "IBRO" }
+    { zephyr : "wdt1", datamodel : "LPWDT0", enable : "ENABLE", clock_mux : "MUX", clock_default : "IBRO" },
+    { zephyr : "wut0", datamodel : "WUT0", zephyrVersionMin : "4.3.0" },
+    { zephyr : "wut1", datamodel : "WUT1", zephyrVersionMin : "4.3.0" }
   ];
 
 } else {
@@ -758,7 +786,7 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
       config : [
         { name: "clock-frequency", type: "int", control: "FREQ", cfg_default: "100000",
           value: x => convertToUnitsMacro(x, "FREQ", 1000)
-	}
+        }
       ]
     },
     { zephyr : "i2c2", datamodel : "I2C2", enable : "I2C2_ENABLE",
@@ -770,7 +798,7 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
       config : [
         { name: "clock-frequency", type: "int", control: "FREQ", cfg_default: "100000",
           value: x => convertToUnitsMacro(x, "FREQ", 1000)
-	}
+        }
       ]
     },
     { zephyr: "w1", datamodel: "OWM", enable: "ENABLE",
@@ -801,7 +829,7 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
       config : [
         { name: "clock-frequency", type: "int", control: "FREQ", cfg_default: "15000000",
           value: x => convertToUnitsMacro(x, "FREQ", 1000)
-	}
+        }
       ]
     },
     { zephyr : "timer0", datamodel : "TMR0", enable : "TMR0_ENABLE", clock_mux : "TMR0a_MUX", clock_default : "PCLK",
@@ -852,6 +880,7 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
         { name: "lptmr0b_ioa_p3_4", signal: "IOA", pin: "41"}
       ],
       subnode: () => getAssignedPeripheral("LPTMR0").Config?.MODE_A === "COMPARE" ? "counter" : "pwm",
+      subnode_boilerplate: () => getAssignedPeripheral("LPTMR0").Config?.MODE_A === "PWM" ? ['compatible = "adi,max32-pwm"', '#pwm-cells = <3>'] : [],
       pins_node: () => getAssignedPeripheral("LPTMR0").Config?.MODE_A === "COMPARE" ? undefined : "subnode",
       config : [
         { name: "prescaler", type: "int", control: "CLKDIV_A", cfg_default: "1" }
@@ -861,6 +890,7 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
       pins : [
       ],
       subnode: () => getAssignedPeripheral("LPTMR1").Config?.MODE_A === "COMPARE" ? "counter" : "pwm",
+      subnode_boilerplate: () => getAssignedPeripheral("LPTMR1").Config?.MODE_A === "PWM" ? ['compatible = "adi,max32-pwm"', '#pwm-cells = <3>'] : [],
       pins_node: () => getAssignedPeripheral("LPTMR1").Config?.MODE_A === "COMPARE" ? undefined : "subnode",
       config : [
         { name: "prescaler", type: "int", control: "CLKDIV_A", cfg_default: "1" }
@@ -876,7 +906,7 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
         { name: "current-speed", type: "int", control: "BAUD", cfg_default: "115200" },
         { name: "parity", type: "string", control: "PARITY", cfg_default: "DISABLED",
           value: x => (x === "DISABLED" ? "none" : (x === "EVEN" ? "even" : "odd"))
-	},
+        },
         { name: "stop-bits", type: "string", control: "STOP_BITS", cfg_default: "1",
           value: x => (x === "1" ? "1" : (getAssignedPeripheral("UART0").Config?.CHAR_SIZE === "5" ? "1_5" : "2"))
         },
@@ -897,7 +927,7 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
         },
         { name: "parity", type: "string", control: "PARITY", cfg_default: "DISABLED",
           value: x => (x === "DISABLED" ? "none" : (x === "EVEN" ? "even" : "odd"))
-	},
+        },
         { name: "stop-bits", type: "string", control: "STOP_BITS", cfg_default: "1",
           value: x => (x === "1" ? "1" : (getAssignedPeripheral("UART2").Config?.CHAR_SIZE === "5" ? "1_5" : "2"))
         },
@@ -916,7 +946,7 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
         },
         { name: "parity", type: "string", control: "PARITY", cfg_default: "DISABLED",
           value: x => (x === "DISABLED" ? "none" : (x === "EVEN" ? "even" : "odd"))
-	},
+        },
         { name: "stop-bits", type: "string", control: "STOP_BITS", cfg_default: "1",
           value: x => (x === "1" ? "1" : (getAssignedPeripheral("LPUART0").Config?.CHAR_SIZE == "5" ? "1_5" : "2"))
         },
@@ -925,10 +955,20 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
     },
     { zephyr: "usbhs", datamodel: "USBHS", enable: "ENABLE"},
     { zephyr : "wdt0", datamodel : "WDT0", enable : "ENABLE", clock_mux : "MUX", clock_default : "PCLK" },
-    { zephyr : "wdt1", datamodel : "LPWDT0", enable : "ENABLE", clock_mux : "MUX", clock_default : "IBRO" }
+    { zephyr : "wdt1", datamodel : "LPWDT0", enable : "ENABLE", clock_mux : "MUX", clock_default : "IBRO" },
+    { zephyr: "wut0", datamodel: "WUT0", zephyrVersionMin: "4.3.0" },
+    { zephyr: "wut1", datamodel: "WUT1", zephyrVersionMin: "4.3.0" }
   ];
 
 }
+
+// Filter peripheralData based on zephyrVersionMin/zephyrVersionMax and packages fields.
+// Entries outside the supported range or package are removed and later added to unsupported_in_dts.
+const { supported, unsupported } = filterByZephyrVersion(peripheralData);
+
+// Replace peripheralData with only the supported peripherals so the template
+// does not generate code for peripherals filtered out by version constraints.
+peripheralData = supported;
 
 unsupported_in_dts = [
     { datamodel: "BLE", diag: "The Bluetooth Low Energy peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE" },
@@ -955,7 +995,6 @@ unsupported_in_dts = [
     { datamodel: "PT15", diag: "The Pulse Train Engine PT15 is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE" },
     { datamodel: "PUF", diag: "The ChipDNA PUF peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE" },
     { datamodel: "SEMA", diag: "The Semaphore peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE" },
-    { datamodel: "SPIFX", diag: "The SPI Execute-In-Place Flash peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE" },
     { datamodel: "USBHS", diag: "The USB peripheral CLKEXT clock source is not currently supported in devicetree.", ctrl: "USB_MUX", value: "USBCLKEXT" },
     { datamodel: "USBHS", diag: "The USB peripheral ERFO clock source is not currently supported in devicetree.", ctrl: "USB_MUX", value: "ERFO" },
     { datamodel: "RTC", clocknode: "SQWOUT", diag: "Enabling SQWOUT from the RTC is not currently supported in devicetree.", ctrl: "SQWOUT", value: "1HZ" },
@@ -966,6 +1005,9 @@ unsupported_in_dts = [
     { clocknode: "ERFO Mux", diag: "Bypass of the ERFO is not currently supported in devicetree.", ctrl: "MUX", value: "ERFO_CLK" },
     { clocknode: "LPM Mux", diag: "Setting the LPM Mux is not currently supported in devicetree.", ctrl: "MUX", value: "SYS_CLK_DIV_2_ISO" }
 ]
+
+// Add filtered-out peripherals to unsupported_in_dts
+unsupported_in_dts.push(...buildUnsupportedVersionEntries(unsupported));
 
 function mapClockName(clock) {
     if (clock === "CLKEXT") {
@@ -988,7 +1030,7 @@ function mapClockName(clock) {
 
 function getClocksUsed() {
     let clocksUsed = new Set();
-    for (const peri of peripheralData) {
+    for (const peri of supported) {
         if (peri.clock_mux && isPeripheralClockSetTo(peri.datamodel, peri.enable, "TRUE")) {
             const clockName = mapClockName(getPeripheralClockSetting(peri.datamodel, peri.clock_mux, peri.clock_default));
             if (clockName) {

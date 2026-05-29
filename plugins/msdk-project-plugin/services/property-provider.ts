@@ -1,6 +1,6 @@
 /**
  *
- * Copyright (c) 2025 Analog Devices, Inc.
+ * Copyright (c) 2025-2026 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,10 @@
 import {
   CfsFeatureScope,
   type CfsPluginProperty,
-  type CfsPropertyProviderService,
-  PropertyProvider as BasePropertyProvider
-} from "cfs-plugins-api";
+  type CfsPropertyProviderService
+} from "cfs-types";
+
+import { PropertyProvider as BasePropertyProvider } from "cfs-plugins-sdk";
 
 export class PropertyProvider
   extends BasePropertyProvider
@@ -66,19 +67,17 @@ export const getMsdkBoardName = (
       return "EvKit_V1";
 
     case "fthr":
-      if (soc === "MAX32690") {
-        return "FTHR";
-      }
-
-      if (soc === "MAX78000") {
-        return "FTHR_RevA";
-      }
-
       if (soc === "MAX32650") {
         return "FTHR_APPS_A";
+      } else if (soc === "MAX32655") {
+        return "FTHR_Apps_P1";
+      } else if (soc === "MAX32675C") {
+        return "FTHR_Apps_B";
+      } else if (soc === "MAX78000") {
+        return "FTHR_RevA";
+      } else {
+        return "FTHR";
       }
-
-      return "FTHR_Apps_P1";
     case "ad-apard32690-sl":
     case "apard":
       return "APARD";

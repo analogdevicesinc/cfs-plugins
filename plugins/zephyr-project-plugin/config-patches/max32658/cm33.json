@@ -5,7 +5,7 @@
       "StartAddress": "0x01000000",
       "Size": 706560,
       "IsOwner": true,
-      "Access": "R",
+      "Access": "R/X",
       "Config": {
         "CHOSEN": "code-partition",
         "LABEL": "image-0"
@@ -16,7 +16,7 @@
       "StartAddress": "0x010f0000",
       "Size": 65536,
       "IsOwner": true,
-      "Access": "R",
+      "Access": "R/X",
       "Config": {
         "LABEL": "storage"
       }
@@ -52,6 +52,11 @@
         "ENABLE": "TRUE",
         "TICKS_PER_SEC": "10000"
       }
+    },
+    {
+      "Name": "FLC",
+      "Signals": [],
+      "Config": {}
     }
   ]
 }

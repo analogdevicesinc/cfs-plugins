@@ -33,7 +33,7 @@ CONFIG_THREAD_NAME=y
 CONFIG_DEBUG_THREAD_INFO=y
 CONFIG_THREAD_ANALYZER=y
 
-<% if (["MAX32690", "MAX32657", "MAX32658"].includes(it.projectInflectionPoint(it.soc))) { %>
+<% if (["MAX32655", "MAX32657", "MAX32658", "MAX32660", "MAX32670", "MAX32690", "MAX78000", "MAX78002"].includes(it.projectInflectionPoint(it.soc))) { %>
 # Enable Zephyr core dump support
 CONFIG_DEBUG_COREDUMP=y
 CONFIG_DEBUG_COREDUMP_BACKEND_FLASH_PARTITION=y

@@ -1,3 +1,4 @@
+<%~ include("@msdkComponents", it) %>
 <%~ include("@msdkBoardName", it) %>
 <%~ include("@normalizeSoc", it) %>
 {
@@ -18,23 +19,9 @@
         "${env:cfs.msdk.path}/Libraries/MiscDrivers/Display",
         "${env:cfs.msdk.path}/Libraries/MiscDrivers/Display/fonts/",
         "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Include/<%= it.msdkInflectionPoint(it.soc) %>/",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/ADC",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/AES",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/CAN",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/DMA",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/FLC",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/GPIO",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/I2C",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/I2S",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/ICC",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/LP",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/PT",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/RTC",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/SPI",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/TMR",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/TRNG",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/UART",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/WDT",
+<% for (component of it.getMsdkComponents(it.soc)) { %>
+        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/<%= component %>",
+<% } %>
         "${env:cfs.msdk.path}/Libraries/CMSIS/Device/Maxim/<%= it.msdkInflectionPoint(it.soc) %>/Include",
         "${env:cfs.msdk.path}/Libraries/CMSIS/5.9.0/Core/Include"
       ],
@@ -72,23 +59,9 @@
         "${env:cfs.msdk.path}/Libraries/MiscDrivers/Display",
         "${env:cfs.msdk.path}/Libraries/MiscDrivers/Display/fonts/",
         "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Include/<%= it.msdkInflectionPoint(it.soc) %>/",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/ADC",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/AES",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/CAN",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/DMA",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/FLC",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/GPIO",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/I2C",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/I2S",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/ICC",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/LP",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/PT",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/RTC",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/SPI",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/TMR",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/TRNG",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/UART",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/WDT",
+<% for (component of it.getMsdkComponents(it.soc)) { %>
+        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/<%= component %>",
+<% } %>
         "${env:cfs.msdk.path}/Libraries/CMSIS/Device/Maxim/<%= it.msdkInflectionPoint(it.soc) %>/Include",
         "${env:cfs.msdk.path}/Libraries/CMSIS/5.9.0/Core/Include"
       ],
@@ -126,23 +99,9 @@
         "${env:cfs.msdk.path}/Libraries/MiscDrivers/Display",
         "${env:cfs.msdk.path}/Libraries/MiscDrivers/Display/fonts/",
         "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Include/<%= it.msdkInflectionPoint(it.soc) %>/",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/ADC",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/AES",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/CAN",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/DMA",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/FLC",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/GPIO",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/I2C",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/I2S",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/ICC",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/LP",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/PT",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/RTC",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/SPI",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/TMR",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/TRNG",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/UART",
-        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/WDT",
+<% for (component of it.getMsdkComponents(it.soc)) { %>
+        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/<%= component %>",
+<% } %>
         "${env:cfs.msdk.path}/Libraries/CMSIS/Device/Maxim/<%= it.msdkInflectionPoint(it.soc) %>/Include",
         "${env:cfs.msdk.path}/Libraries/CMSIS/5.9.0/Core/Include"
       ],

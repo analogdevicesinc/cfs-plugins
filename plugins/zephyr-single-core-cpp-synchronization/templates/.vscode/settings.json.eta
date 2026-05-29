@@ -12,10 +12,8 @@
   "cfs.openocd.target": "target/<%= it.openocdInflectionPoint(it.soc).toLowerCase() %>.cfg",
   "cfs.project.target": "<%= it.projectInflectionPoint(it.soc) %>",
   "cfs.jlink.device": "<%= it.jlinkInflectionPoint(it.soc) %>",
-<% if (['MAX32657', 'MAX32658'].includes(it.soc)) { %>
-  "cfs.coreDump.address": "0x010e0000",<% } %>
-
-<% if (['MAX32657', 'MAX32658', 'MAX32690'].includes(it.soc)) { %>
+  "cfs.coreDump.address": "<%= it.coreDumpAddress(it.soc) %>",
+<% if (['MAX32650', 'MAX32655', 'MAX32657', 'MAX32658', 'MAX32660', 'MAX32666', 'MAX32670', 'MAX32672', 'MAX32690', 'MAX78000', 'MAX78002'].includes(it.soc)) { %>
   "cfs.coreDump.gdbServerPort": "<%= it.coreDump() %>",<% } %>
 
   "cfs.project.firmwarePlatform": "Zephyr"

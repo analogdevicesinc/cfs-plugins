@@ -3,7 +3,7 @@
       "CoreId": "CM4",
       "ProjectId": "CM4",
       "PluginId": "com.analog.project.msdk.plugin",
-      "PluginVersion": "1.1.0",
+      "PluginVersion": "^1.2.0",
       "FirmwarePlatform": "MSDK",
       "ExternallyManaged": false,
       "PlatformConfig": {
@@ -16,7 +16,7 @@
           "StartAddress": "0x10000000",
           "Size": 3145728,
           "IsOwner": true,
-          "Access": "R",
+          "Access": "R/X",
           "Config": {}
         },
         {
@@ -57,7 +57,6 @@
             "PARITY": "DISABLED",
             "CHAR_SIZE": "8",
             "STOP_BITS": "1",
-            "HW_FLOW_CTRL": "DISABLED",
             "RX_FRAME_ERROR_IE": "FALSE",
             "RX_OVERRUN_IE": "FALSE",
             "RX_THD_IE": "FALSE",

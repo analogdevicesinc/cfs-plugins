@@ -28,11 +28,11 @@ If using the AD-APARD32690-SL:
 -   Connect a USB cable between the PC and the P10 (USB-C) connector.
 -   Connect a MAXPICO Debug adapter to P9 (SWD Connector)
 -   Open a terminal application on the PC and connect to the MAXPICO's console UART at 115200, 8-N-1.
--   Connect pins P2.12->P1.9.
+-   Remove P38 header and P50 header.
+-   Connect UART2 TX (Pin 1 of P38) to UART0 RX (Pin 3 of P50).
 
 ## Expected Output
-
-The Console UART of the device will output these messages:
+### For MAX32690EVKIT: The Console UART of the device will output these messages:
 
 ```
 **************** UART Example ******************
@@ -44,6 +44,28 @@ The red LED will illuminate if transaction failed.
 Remove JP7(RX_EN) header.
 Connect UART0 to UART2 (P2.12->P1.9) for this example.
 
+
+-->UART Baud    : 115200 Hz
+
+-->Test Length  : 1024 bytes
+-->UART Initialized
+
+-->Data verified
+
+-->Example Succeeded
+```
+### For MAX32690APARD: The Console UART of the device will output these messages:
+
+```
+**************** UART Example ******************
+This example sends data from one UART to another
+
+The green LED will illuminate for successful transaction.
+The red LED will illuminate if transaction failed.
+
+1. Remove P38 header and P50 header.
+2. Connect UART2 TX (Pin 1 of P38) to UART0 RX (Pin 3 of P50).
+3. Ensure board is powered and UART configuration matches.
 
 -->UART Baud    : 115200 Hz
 

@@ -2,32 +2,52 @@
   "pluginName": "MSDK Single Core UART Loopback",
   "pluginDescription": "Single Core MSDK UART Loopback template.",
   "pluginId": "com.analog.singlecore.msdk.uart.loop.back",
-  "pluginVersion": "1.0.0",
+  "pluginVersion": "1.1.0",
+  "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "MSDK",
   "supportedSocs": [
     {
       "name": "MAX32655",
-      "dataModel": "max32655-ctbga.json",
       "board": "EvKit_V1",
-      "package": "ctbga"
+      "package": "ctbga",
+      "dataModelVersion": "^1.3.628"
     },
     {
       "name": "MAX32672",
       "board": "EvKit_V1",
-      "package": "tqfn40"
+      "package": "tqfn40",
+      "dataModelVersion": "^1.0.628"
+    },
+    {
+      "name": "MAX32672",
+      "board": "FTHR",
+      "package": "tqfn40",
+      "dataModelVersion": "^1.0.628"
     },
     {
       "name": "MAX32690",
-      "dataModel": "max32690-tqfn.json",
       "board": "EvKit_V1",
-      "package": "tqfn"
+      "package": "tqfn",
+      "dataModelVersion": "^1.3.628"
     },
     {
       "name": "MAX32690",
-      "dataModel": "max32690-wlp.json",
       "board": "AD-APARD32690-SL",
-      "package": "wlp"
+      "package": "wlp",
+      "dataModelVersion": "^1.3.628"
+    },
+    {
+      "name": "MAX78000",
+      "board": "EvKit_V1",
+      "package": "ctbga",
+      "dataModelVersion": "^1.3.628"
+    },
+    {
+      "name": "MAX78000",
+      "board": "FTHR",
+      "package": "ctbga",
+      "dataModelVersion": "^1.3.628"
     }
   ],
   "features": {
@@ -62,14 +82,19 @@
           "condition": "${context.soc.toLowerCase() === 'max32672'}"
         },
         {
-          "src": "files/max32690/main.c",
-          "dst": "m4/src/main.c",
-          "condition": "${context.soc.toLowerCase() === 'max32690'}"
-        },
-        {
           "src": "files/max32690/README.md",
           "dst": "m4/README.md",
           "condition": "${context.soc.toLowerCase() === 'max32690'}"
+        },
+        {
+          "src": "files/max78000/main.c",
+          "dst": "m4/src/main.c",
+          "condition": "${context.soc.toLowerCase() === 'max78000'}"
+        },
+        {
+          "src": "files/max78000/README.md",
+          "dst": "m4/README.md",
+          "condition": "${context.soc.toLowerCase() === 'max78000'}"
         },
         {
           "src": "files/gdb_toolbox/configs/fault-analyzer.json",
@@ -131,8 +156,7 @@
         },
         {
           "src": "templates/.cfsconfig.eta",
-          "dst": ".cfs/${context.soc.toLowerCase()}-${context.package.toLowerCase()}.cfsconfig",
-          "condition": "${['max32650', 'max32655', 'max32670', 'max32690', 'max78000', 'max78002'].includes(context.soc.toLowerCase())}"
+          "dst": ".cfs/${context.soc.toLowerCase()}-${context.package.toLowerCase()}.cfsconfig"
         },
         {
           "src": "templates/settings.json.eta",
@@ -157,6 +181,11 @@
         {
           "src": "templates/cfs.tasks.json.eta",
           "dst": "m4/.vscode/cfs.tasks.json"
+        },
+        {
+          "src": "templates/max32690/main.c.eta",
+          "dst": "m4/src/main.c",
+          "condition": "${context.soc.toLowerCase() === 'max32690'}"
         }
       ]
     }

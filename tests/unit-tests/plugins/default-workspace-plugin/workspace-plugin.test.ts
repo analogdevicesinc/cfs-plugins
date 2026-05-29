@@ -1,6 +1,6 @@
 /**
  *
- * Copyright (c) 2025 Analog Devices, Inc.
+ * Copyright (c) 2025-2026 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,10 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { expect } from "chai";
-import { CfsPluginInfo } from "cfs-plugins-api";
-import { GenericPlugin } from "../../../../api/src/generic/cfs-generic-plugin.js";
+import { CfsPluginInfo } from "cfs-types";
+import { GenericPlugin } from "cfs-plugins-sdk";
 import { fileExists, isDebug } from "../../utilities/test-utilities.js";
 import { joinPath } from "../../utilities/path-utilities.js";
-import {
-  validateJsonFile,
-  findJsonFiles,
-} from "../../utilities/validate-json.js";
 
 describe("Unit test for WorkspacePlugin", () => {
   let plugin: GenericPlugin;
@@ -83,15 +79,15 @@ describe("Unit test for WorkspacePlugin", () => {
     const paths = {
       cfsWorkspace: joinPath(
         `${cfsWorkspace.location}/${cfsWorkspace.workspaceName}/.cfs/`,
-        `.cfsworkspace`
+        `.cfsworkspace`,
       ),
       codeWorkspace: joinPath(
         `${cfsWorkspace.location}/${cfsWorkspace.workspaceName}`,
-        `${cfsWorkspace.workspaceName}.code-workspace`
+        `${cfsWorkspace.workspaceName}.code-workspace`,
       ),
       cfsConfig: joinPath(
         `${cfsWorkspace.location}/${cfsWorkspace.workspaceName}/.cfs/`,
-        `${cfsWorkspace.workspaceName}.cfsconfig`
+        `${cfsWorkspace.workspaceName}.cfsconfig`,
       ),
     };
 

@@ -3,7 +3,7 @@
       "CoreId": "CM4",
       "ProjectId": "CM4",
       "PluginId": "com.analog.project.msdk.plugin",
-      "PluginVersion": "1.1.0",
+      "PluginVersion": "^1.2.0",
       "FirmwarePlatform": "MSDK",
       "ExternallyManaged": false,
       "PlatformConfig": {
@@ -16,7 +16,7 @@
           "StartAddress": "0x10000000",
           "Size": 524288,
           "IsOwner": true,
-          "Access": "R",
+          "Access": "R/X",
           "Config": {}
         },
         {
@@ -124,6 +124,21 @@
             }
           ],
           "Config": {}
+        },
+        {
+          "Name": "RTC",
+          "Signals": [],
+          "Config": {
+            "TOD_ALARM": "5",
+            "TOD_ALARM_IE": "TRUE",
+            "SSEC_ALARM_IE": "TRUE",
+            "TRIM": "0",
+            "SEC": "0",
+            "RDY_IE": "FALSE",
+            "SSEC_UNITS": "MS",
+            "SSEC_MS": "0",
+            "SSEC_ALARM_MS": "250"
+          }
         }
       ]
     },
@@ -169,6 +184,11 @@
       "Pin": "H9",
       "Peripheral": "UART0",
       "Signal": "TX"
+    },
+    {
+      "Pin": "B3",
+      "Peripheral": "MISC",
+      "Signal": "SQWOUT"
     }
   ],
   "ClockNodes": [
@@ -183,16 +203,34 @@
       "Control": "UART0_MUX",
       "Value": "IBRO",
       "Enabled": true
+    },
+    {
+      "Name": "SQWOUT",
+      "Control": "SQWOUT",
+      "Value": "512HZ",
+      "Enabled": true
+    },
+    {
+      "Name": "SYS_OSC Mux",
+      "Control": "MUX",
+      "Value": "IPO",
+      "Enabled": true
     }
   ],
   "ClockFrequencies": {
     "IBRO": 7372800,
-    "ISO": 60000000,
-    "SYS_OSC": 60000000,
-    "SYS_CLK": 60000000,
-    "Cortex-M4": 60000000,
+    "ERTCO_CLK": 32768,
+    "32KOUT": 32768,
+    "ERTCO_OSC": 32768,
+    "ERTCO_OUT": 32768,
+    "IPO": 100000000,
+    "SYS_OSC": 100000000,
+    "SYS_CLK": 100000000,
+    "ERTCO": 32768,
+    "SQWOUT": 512,
+    "Cortex-M4": 100000000,
     "FLC0": 1000000,
     "UART0": 7372800,
-    "UART1": 30000000,
-    "UART2": 30000000
+    "UART1": 50000000,
+    "UART2": 50000000
   }

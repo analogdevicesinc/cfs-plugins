@@ -1,7 +1,7 @@
 {
   "Copyright": "Copyright (c) <%= new Date().getFullYear() %> Analog Devices, Inc.  All rights reserved. This software is proprietary to Analog Devices, Inc. and its licensors.",
-  "DataModelVersion": "1.1.0",
-  "DataModelSchemaVersion": "1.1.0",
+  "SchemaVersion": "2.1.0",
+  "DataModelVersion": "^1.1.0",
   "Timestamp": "<%= new Date().toISOString() %>",
   "Soc": "<%= it.soc %>",
   "Package": "<%= it.package %>",
@@ -13,25 +13,123 @@
       "CoreId": "FX",
       "ProjectId": "FX",
       "PluginId": "com.analog.project.sharcfx.plugin",
-      "PluginVersion": "1.0.0",
+      "PluginVersion": "^1.1.0",
       "ExternallyManaged": false,
-      "Partitions": [],
+      "Partitions": [
+        {
+          "Name": "L1_code",
+          "StartAddress": "0x282C0000",
+          "Size": 65536,
+          "DisplayUnit": "KB",
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "NAME_OVERRIDE": "L1_code",
+            "KERNEL": "RWX",
+            "USER": "ILLEGAL",
+            "CACHEABILITY": "NC",
+            "BUFFERABLE": "TRUE",
+            "SHAREABILITY": "NS",
+            "SECTIONS": ".DispatchVector.text .ResetHandler.literal .ResetHandler.text .DispatchHandler.literal .DispatchHandler.text .ResetVector.text .L1.literal .L1.text",
+            "STACK": "FALSE",
+            "HEAP": "FALSE"
+          }
+        },
+        {
+          "Name": "L1_data",
+          "StartAddress": "0x28240000",
+          "Size": 524288,
+          "DisplayUnit": "KB",
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "NAME_OVERRIDE": "L1_data",
+            "KERNEL": "RWX",
+            "USER": "ILLEGAL",
+            "CACHEABILITY": "NC",
+            "BUFFERABLE": "TRUE",
+            "SHAREABILITY": "NS",
+            "SECTIONS": ".L1.rodata .L1.data .L1.noload .L1.bss",
+            "STACK": "TRUE",
+            "HEAP": "TRUE"
+          }
+        },
+        {
+          "Name": "L2_boot_noload",
+          "StartAddress": "0x201fe000",
+          "Size": 8192,
+          "DisplayUnit": "KB",
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "NAME_OVERRIDE": "",
+            "SECTIONS": ".L2_boot.noload",
+            "KERNEL": "RWX",
+            "USER": "ILLEGAL",
+            "CACHEABILITY": "WB",
+            "ALLOCATE": "RW",
+            "SHAREABILITY": "NS",
+            "STACK": "FALSE",
+            "HEAP": "FALSE"
+          }
+        },
+        {
+          "Name": "L2_ram",
+          "StartAddress": "<%= ["adsp-21834", "adsp-21834w", "adsp-21836", "adsp-21836w", "adsp-sc834", "adsp-sc834w"].includes(it.soc.toLowerCase()) ? "0x20100000" : "0x20000000" %>",
+          "Size": <%= ["adsp-21834", "adsp-21834w", "adsp-21836", "adsp-21836w", "adsp-sc834", "adsp-sc834w"].includes(it.soc.toLowerCase()) ? "1040384" : "2088960" %>,
+          "DisplayUnit": "KB",
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "NAME_OVERRIDE": "",
+            "SECTIONS": ".icc.data .L2.rodata .rodata .L2.literal .literal .L2.text .text .L2.data .data .L2.noload .noload .L2.bss .bss",
+            "KERNEL": "RWX",
+            "USER": "ILLEGAL",
+            "CACHEABILITY": "WB",
+            "ALLOCATE": "RW",
+            "SHAREABILITY": "NS",
+            "STACK": "FALSE",
+            "HEAP": "FALSE"
+          }
+        },
+        {
+          "Name": "L3_ram",
+          "StartAddress": "0x80000000",
+          "Size": 536870912,
+          "DisplayUnit": "MB",
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "NAME_OVERRIDE": "",
+            "KERNEL": "RWX",
+            "USER": "ILLEGAL",
+            "SECTIONS": ".L3.rodata .L3.literal .L3.text .L3.data .L3.noload .L3.bss",
+            "SHAREABILITY": "NS",
+            "CACHEABILITY": "WB",
+            "ALLOCATE": "RW",
+            "STACK": "FALSE",
+            "HEAP": "FALSE"
+          }
+        }
+      ],
       "Peripherals": [],
       "PlatformConfig": {
         "ProjectName": "sfx"
       }
+<% if (it.soc.toLowerCase().includes('adsp-sc')) { %>
     },
     {
       "CoreId": "CM33",
       "ProjectId": "CM33",
       "PluginId": "com.analog.project.sharcfx.plugin",
-      "PluginVersion": "1.0.0",
+      "PluginVersion": "^1.1.0",
       "ExternallyManaged": true,
       "Partitions": [],
       "Peripherals": [],
       "PlatformConfig": {
         "ProjectName": "m33"
       }
+<% } %>
     }
   ]
 }

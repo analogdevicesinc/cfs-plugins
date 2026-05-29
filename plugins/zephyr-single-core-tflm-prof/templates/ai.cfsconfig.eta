@@ -1,0 +1,29 @@
+      "AIModels" : [
+        {
+          "Name": "model",
+          "Files" : {
+<% if (['max32657'].includes(it.soc.toLowerCase())) { %>
+            "Model" : "./m33/model.tflite",
+<% } else { %>
+            "Model" : "./m4/model.tflite",
+<% } %>
+<% if (['max32657'].includes(it.soc.toLowerCase())) { %>
+            "Dataset" : "./m33/dataset.bin"
+<% } else { %>
+            "Dataset" : "./m4/dataset.bin"
+<% } %>
+          },
+          "Target": {
+<% if (['max32657'].includes(it.soc.toLowerCase())) { %>
+            "Core": "CM33"
+<% } else { %>
+            "Core": "CM4"
+<% } %>
+          },
+          "Backend" : {
+            "Name" : "tflm",
+            "Extensions" : {}
+          },
+          "Enabled": "true"
+        }
+      ]

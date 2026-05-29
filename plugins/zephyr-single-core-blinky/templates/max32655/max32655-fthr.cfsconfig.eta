@@ -33,6 +33,26 @@
       "Pin": "E7",
       "Peripheral": "UART0",
       "Signal": "TX"
+    },
+    {
+      "Pin": "G3",
+      "Peripheral": "SPI1",
+      "Signal": "SCK"
+    },
+    {
+      "Pin": "G8",
+      "Peripheral": "SPI0",
+      "Signal": "MOSI"
+    },
+    {
+      "Pin": "H9",
+      "Peripheral": "SPI0",
+      "Signal": "SCK"
+    },
+    {
+      "Pin": "J3",
+      "Peripheral": "SPI1",
+      "Signal": "MOSI"
     }
   ],
   "ClockNodes": [
@@ -53,6 +73,18 @@
       "Control": "MUX",
       "Value": "IPO",
       "Enabled": true
+    },
+    {
+      "Name": "SPI0",
+      "Control": "ENABLE",
+      "Value": "TRUE",
+      "Enabled": true
+    },
+    {
+      "Name": "SPI1",
+      "Control": "ENABLE",
+      "Value": "TRUE",
+      "Enabled": true
     }
   ],
   "Projects": [
@@ -60,18 +92,29 @@
       "CoreId": "CM4",
       "ProjectId": "CM4",
       "PluginId": "com.analog.project.zephyr.plugin",
-      "PluginVersion": "1.0.0",
+      "PluginVersion": "^1.1.0",
       "FirmwarePlatform": "zephyr",
       "ExternallyManaged": false,
       "Partitions": [
         {
           "Name": "m4_flash",
           "StartAddress": "0x10000000",
-          "Size": 458752,
+          "Size": 393216,
           "IsOwner": true,
-          "Access": "R",
+          "Access": "R/X",
           "Config": {
             "CHOSEN": "code-partition"
+          }
+        },
+        {
+          "Name": "coredump_partition",
+          "StartAddress": "0x10060000",
+          "Size": 65536,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "CHOSEN": "coredump-partition",
+            "LABEL": "coredump"
           }
         },
         {
@@ -206,11 +249,104 @@
             }
           ],
           "Config": {}
+        },
+        {
+          "Name": "SPI0",
+          "Signals": [
+            {
+              "Name": "CS0",
+              "Config": {}
+            },
+            {
+              "Name": "CS1",
+              "Config": {}
+            },
+            {
+              "Name": "CS2",
+              "Config": {}
+            },
+            {
+              "Name": "MISO",
+              "Config": {}
+            },
+            {
+              "Name": "MOSI",
+              "Config": {
+                "PWR": "VDDIO"
+              }
+            },
+            {
+              "Name": "SCK",
+              "Config": {
+                "PWR": "VDDIO"
+              }
+            },
+            {
+              "Name": "SDIO2",
+              "Config": {}
+            },
+            {
+              "Name": "SDIO3",
+              "Config": {}
+            }
+          ],
+          "Config": {
+            "FREQ": "15000000"
+          }
+        },
+        {
+          "Name": "SPI1",
+          "Signals": [
+            {
+              "Name": "CS0",
+              "Config": {}
+            },
+            {
+              "Name": "CS1",
+              "Config": {}
+            },
+            {
+              "Name": "CS2",
+              "Config": {}
+            },
+            {
+              "Name": "MISO",
+              "Config": {}
+            },
+            {
+              "Name": "MOSI",
+              "Config": {
+                "PWR": "VDDIO"
+              }
+            },
+            {
+              "Name": "SCK",
+              "Config": {
+                "PWR": "VDDIO"
+              }
+            },
+            {
+              "Name": "SDIO2",
+              "Config": {}
+            },
+            {
+              "Name": "SDIO3",
+              "Config": {}
+            }
+          ],
+          "Config": {
+            "FREQ": "15000000"
+          }
+        },
+        {
+          "Name": "FLC0",
+          "Signals": [],
+          "Config": {}
         }
       ],
       "PlatformConfig": {
         "ProjectName": "m4",
-        "ZephyrVersion": "4.2.0",
+        "ZephyrVersion": "4.3.0",
         "ZephyrBoardName": "max32655fthr/max32655/m4"
       }
     },

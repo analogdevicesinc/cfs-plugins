@@ -12,13 +12,9 @@
  * limitations under the License.
  *
  */
-
-// Is the monitor being used?
-function adcMonitorEnabled(idx) {
-  let ch_lo_limit_enable = getPeriConfigValue(it.instance, `CH_LO_LIMIT_EN_IDX${idx.toString()}`, "FALSE");
-  let ch_hi_limit_enable = getPeriConfigValue(it.instance, `CH_HI_LIMIT_EN_IDX${idx.toString()}`, "FALSE");
-  return ch_lo_limit_enable === "TRUE" || ch_hi_limit_enable === "TRUE";
-}
+%>
+<%
+  eval(this.render("templates/adc_sd10_common.js"));
 %>
 <% if (getAssignedPeripheral(it.instance) && %>
 <%     (adcMonitorEnabled(0) || adcMonitorEnabled(1) || adcMonitorEnabled(2) || adcMonitorEnabled(3))) { %>

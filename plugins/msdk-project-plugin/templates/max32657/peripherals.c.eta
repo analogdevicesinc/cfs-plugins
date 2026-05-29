@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 2024-2025 Analog Devices, Inc.
+ * Copyright (c) 2024-2026 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,13 +51,8 @@ function modifiesSysClk() {
 
 <% } %>
 <% if (isPeripheralClockSetTo("AES", "ENABLE", "TRUE")) { %>
-  /* AES/CRC/TRNG: Enable the AES Clock. */
+  /* AES: Enable the AES Clock. */
   MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_AES);
-
-<% } %>
-<% if (isPeripheralClockSetTo("CRC", "ENABLE", "TRUE")) { %>
-  /* AES/CRC/TRNG: Enable the CRC Clock. */
-  MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_CRC);
 
 <% } %>
 <% if (isPeripheralClockSetTo("DMA0", "ENABLE", "TRUE")) { %>
@@ -111,6 +106,7 @@ function modifiesSysClk() {
 <%~ include("../wdt_config.c.eta", { ...it, instance: "WDT", enable: "ENABLE", mux: "MUX", clock_default: "PCLK" }) %>
 <%~ include("../rtc_config.c.eta", { ...it, instance: "RTC", enable_clocknode: "SQWOUT", enable: "ENABLE", output_clocknode: "SQWOUT Mux", output_ctrl: "MUX" }) %>
 <%~ include("../trng_config.c.eta", { ...it, instance: "TRNG", enable: "ENABLE"}) %>
+<%~ include("../crc_config.c.eta", { ...it, instance: "CRC", enable: "ENABLE"}) %>
 <% if (modifiesSysClk()) { %>
   /* Update the System Core Clock as core clock settings have changed. */
   SystemCoreClockUpdate();

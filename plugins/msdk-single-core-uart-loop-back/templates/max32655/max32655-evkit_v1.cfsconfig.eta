@@ -77,23 +77,19 @@
       "CoreId": "CM4",
       "ProjectId": "CM4",
       "PluginId": "com.analog.project.msdk.plugin",
-      "PluginVersion": "1.1.0",
+      "PluginVersion": "^1.2.0",
       "FirmwarePlatform": "msdk",
       "ExternallyManaged": false,
       "PlatformConfig": {
         "ProjectName": "m4"
       },
-      "Name": "ARM Cortex-M4",
-      "Description": "ARM Cortex-M4",
-      "CoreNum": 0,
-      "IsPrimary": true,
       "Partitions": [
         {
           "Name": "FLASH",
           "StartAddress": "0x10000000",
           "Size": 524288,
           "IsOwner": true,
-          "Access": "R",
+          "Access": "R/X",
           "Config": {
           }
         },
@@ -117,6 +113,7 @@
         },
         {
           "Name": "UART0",
+          "Description": "Console UART",
           "Signals": [
             {
               "Name": "CTS",
@@ -146,11 +143,17 @@
             "CHAR_SIZE": "8",
             "STOP_BITS": "1",
             "HW_FLOW_CTRL": "DISABLED",
+            "RX_FRAME_ERROR_IE": "FALSE",
+            "RX_OVERRUN_IE": "FALSE",
+            "RX_THD_IE": "FALSE",
+            "TX_ONE_BYTE_IE": "FALSE",
+            "TX_HALF_EMPTY_IE": "FALSE",
             "BAUD": "115200"
           }
         },
         {
           "Name": "UART2",
+          "Description": "Reading UART",
           "Signals": [
             {
               "Name": "CTS",
@@ -189,6 +192,7 @@
         },
         {
           "Name": "LPUART0",
+          "Description": "Writing UART",
           "Signals": [
             {
               "Name": "RX",
@@ -257,7 +261,7 @@
     "SYS_OSC": 100000000,
     "SYS_CLK": 100000000,
     "IPO": 100000000,
-    "LPUART0": 7372800,    
+    "LPUART0": 7372800,
     "UART0": 7372800,
     "UART1": 50000000,
     "UART2": 50000000

@@ -1,16 +1,20 @@
 {
   "name": "plugins",
   "packageManager": "yarn@4.2.2",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "type": "module",
   "scripts": {
     "lint": "eslint . --ext ts ",
-    "build": "rollup -c",
+    "build": "tsc -b --force ../node_modules/cfs-plugins-sdk/tsconfig.json && rollup -c",
     "build:watch": "rollup -c -w",
     "clean": "shx rm -rf .rollup.cache dist",
     "genai": "node genai.js"
   },
   "dependencies": {
-    "cfs-plugins-api": "workspace:^"
+    "cfs-plugins-sdk": "https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-plugins-sdk&tag=V2.2.0"
+  },
+  "devDependencies": {
+    "cfs-data-models": "https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-data-models&tag=V2.2.0",
+    "fast-glob": "^3.3.3"
   }
 }

@@ -1,0 +1,53 @@
+{
+  "Partitions": [
+    {
+      "Name": "FLASH",
+      "StartAddress": "0x10000000",
+      "Size": 983040,
+      "IsOwner": true,
+      "Access": "R/X",
+      "Config": {
+        "CHOSEN": "code-partition"
+      }
+    },
+    {
+      "Name": "coredump_partition",
+      "StartAddress": "0x100F0000",
+      "Size": 65536,
+      "IsOwner": true,
+      "Access": "R/W",
+      "Config": {
+        "CHOSEN": "coredump-partition",
+        "LABEL": "coredump"
+      }
+    },
+    {
+      "Name": "SRAM",
+      "StartAddress": "0x20000000",
+      "Size": 573440,
+      "IsOwner": true,
+      "Access": "R/W",
+      "Config": {}
+    }
+  ],
+  "Peripherals": [
+    {
+      "Name": "CM4-0 SysTick",
+      "Signals": [],
+      "Config": {
+        "ENABLE": "TRUE",
+        "TICKS_PER_SEC": "10000"
+      }
+    },
+    {
+      "Name": "FLC0",
+      "Signals": [],
+      "Config": {}
+    },
+    {
+      "Name": "FLC1",
+      "Signals": [],
+      "Config": {}
+    }
+  ]
+}

@@ -12,6 +12,7 @@
   "cfs.openocd.target": "target/<%= it.openocdInflectionPoint(it.soc).toLowerCase() %>.cfg",
   "cfs.project.target": "<%= it.projectInflectionPoint(it.soc) %>",
   "cfs.jlink.device": "<%= it.jlinkInflectionPoint(it.soc) %>",
+  "cfs.coreDump.address": "<%= it.coreDumpAddress(it.soc) %>",
   "cfs.coreDump.gdbServerPort": "<%= it.coreDump() %>",
   "cfs.project.firmwarePlatform": "Zephyr"
 }

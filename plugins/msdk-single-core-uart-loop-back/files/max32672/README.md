@@ -16,8 +16,14 @@ Universal instructions on building, flashing, and debugging this project can be 
 
 ## Required Connections
 
+If using the MAX32672EVKIT (EvKit_V1):
 -   Connect a USB cable between the PC and the CN1 (USB/PWR) connector.
 -   Open an terminal application on the PC and connect to the EV kit's console UART at 115200, 8-N-1.
+-   Connect P0.28 to P0.15 (AIN7).
+
+If using the MAX32672FTHR (FTHR):
+-   Connect a USB cable between the PC and the J4 (USB/PWR) connector.
+-   Open a terminal application on the PC and connect to the FTHR's console UART at 115200, 8-N-1.
 -   Connect P0.28 to P0.15 (AIN7).
 
 ## Expected Output
@@ -35,9 +41,6 @@ Connect UART1 RX (P0.28) to UART2 TX (P0.15, AIN7).
 
 -->UART Baud    : 115200 Hz
 -->Test Length  : 1024 bytes
-
--->Reading UART Initialized
--->Writing UART Initialized
 
 -->Starting transaction
 -->Transaction complete

@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 2024-2025 Analog Devices, Inc.
+ * Copyright (c) 2024-2026 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,29 @@
  *
  */
 
-var pull_map = {
-  "STRONG_PU" : "PULL_UP",
-  "PU"        : "PULL_UP",
-  "WEAK_PU"   : "WEAK_PULL_UP",
-  "STRONG_PD" : "PULL_DOWN",
-  "PD"        : "PULL_DOWN",
-  "WEAK_PD"   : "WEAK_PULL_DOWN",
-  "DIS"       : "NONE"
+const chips_with_only_one_pull_level = ["MAX32660", "MAX32662", "MAX32670", "MAX32672", "MAX32675C"]
+const sortedPins = sortedConfigurablePins();
+
+function pullResistorValue(value, chip) {
+  switch (value)
+  {
+    case "STRONG_PU":
+    case "PU":
+      return "PULL_UP";
+    case "STRONG_PD":
+    case "PD":
+      return "PULL_DOWN";
+    case "WEAK_PU":
+      return chips_with_only_one_pull_level.includes(chip) ? "PULL_UP": "WEAK_PULL_UP";
+    case "WEAK_PD":
+      return chips_with_only_one_pull_level.includes(chip) ? "PULL_DOWN": "WEAK_PULL_DOWN";    
+  }
+  return "NONE";
 }
 
 function getGpioPorts() {
   const ports = new Set();
-  for (const pin of it.cfsconfig.Pins) {
+  for (const pin of sortedPins) {
     const p = getPin(pin);
     ports.add(p.GPIOPort);
   }
@@ -92,11 +102,91 @@ function getHeaders() {
   if (anyInstanceAssigned("OWM")) {
     hdrs.add("owm.h")
   }
+  if (anyInstanceAssigned("CRC")) {
+    hdrs.add("crc.h")
+  }
+  if (anyInstanceAssigned("CAN")) {
+    hdrs.add("can.h")
+  }
+  if (anyInstanceAssigned("SDHC")) {
+    hdrs.add("sdhc.h")
+  }
   hdrs.add("mxc_device.h")
   hdrs.add("mxc_sys.h")
   hdrs.add("stddef.h")
+  hdrs.add("gpio.h")
   return Array.from(hdrs).sort();
 }
+
+function getCoreFunctionSuffix() {
+  if (it.datamodel.Name === "MAX32666" && getProject().CoreId === "CM4-1") {
+    return "_Core1";
+  }
+  return "";
+}
+
+function specialSkippedPin(pin) {
+  const p = getPin(pin);
+  return (pin.Signal === "SWDIO" || pin.Signal === "SWDCLK") &&
+         (p?.Label === "P0.0" || p?.Label === "P0.1") &&
+         (it.datamodel.Name === "MAX32660" || it.datamodel.Name === "MAX32670"); 
+}
+
+function swdIsAssignedStrictly_P00_P01() {
+  for (const pin of sortedPins) {
+    if (getPin(pin)?.Label === "P0.0") {
+       if (pin.Signal !== "SWDIO") {
+         // P0.0 is used for a signal distinct from SWD
+         return false;
+       }
+    } else if (getPin(pin)?.Label === "P0.1") {
+       if (pin.Signal !== "SWDCLK") {
+          // P0.1 is used for a signal distinct from SWD
+          return false;
+       }
+    } else if (pin.Signal === "SWDIO" || pin.Signal === "SWDCLK") {
+       // SWD signal is assigned to the wrong pin
+       return false;
+    }
+  }
+  return true;  
+}
+
+function swdIsAssignedOnce() {
+  let swdClkCount = 0;
+  let swdIOCount = 0;
+  let p00Unassigned = true;
+  let p01Unassigned = true;
+  for (const pin of sortedPins) {
+    if (pin?.Signal === "SWDIO") {
+      swdIOCount = swdIOCount + 1;
+    }
+    if (pin?.Signal === "SWDCLK") {
+      swdClkCount = swdClkCount + 1;
+    }
+    if (getPin(pin)?.Label === "P0.0") {
+      p00Unassigned = false;
+    }
+    if (getPin(pin)?.Label === "P0.1") {
+      p01Unassigned = false;
+    }
+  }
+  const swdIOAssignedProperly = swdIOCount === 1 || (swdIOCount === 0 && p00Unassigned);
+  const swdClkAssignedProperly = swdClkCount === 1 || (swdClkCount === 0 && p01Unassigned);
+  return swdIOAssignedProperly && swdClkAssignedProperly;
+}
+
+function swdIsAssignedProperly() {
+  if ((it.datamodel.Name === "MAX32660" && it.cfsconfig.BoardName.toLowerCase() === "evsys") ||
+      (it.datamodel.Name === "MAX32670" && it.cfsconfig.BoardName.toLowerCase() === "evkit_v1")) {
+    return swdIsAssignedStrictly_P00_P01(sortedPins);
+  }
+  if (it.datamodel.Name === "MAX32660" || (it.datamodel.Name === "MAX32670" && it.cfsconfig?.Package?.toUpperCase() === "TQFN")) {
+    return swdIsAssignedOnce();
+  }
+  return true;
+}
+
 %>
 <%~ include("@normalizeSoc", it) %>
 <%~ include("@copyrightHeader", it) %>
@@ -104,11 +194,11 @@ function getHeaders() {
 <% for (const header of getHeaders()) { %>
 #include <<%= header %>>
 <% } %>
-#include "<%= getProject().Secure ? "adi_soc_peripheral_init.h" : "soc_init.h" %>"
+#include "<%= getProject().Secure ? "adi_soc_peripheral_init.h" : ("soc_init" + getCoreFunctionSuffix().toLowerCase() + ".h") %>"
 
-<%~ include("./" + it.cfsconfig.Soc.toLowerCase() + "/globals.c.eta", it); %>
-int PinInit(void) {
-<% if (it.cfsconfig.Pins.length > 0) { %>
+<%~ include("./" + it.msdkInflectionPoint(it.cfsconfig.Soc).toLowerCase() + "/globals.c.eta", it); %>
+int PinInit<%= getCoreFunctionSuffix() %>(void) {
+<% if (sortedPins.length > 0) { %>
   int result;
 
   /* Initialize all the used GPIO Ports.
@@ -119,14 +209,18 @@ int PinInit(void) {
   }
 
   MXC_GPIO_SetConfigLock(MXC_GPIO_CONFIG_UNLOCKED);
-<%   for (const pin of it.cfsconfig.Pins) { %>
+<%   for (const pin of sortedPins) { %>
 <%     const peri = getAssignedPeripheral(pin.Peripheral); %>
 <%     const signal = peri?.Signals?.find(s => s.Name === pin.Signal); %>
-<%     if (signal || (!getAssignedProjectForPin(pin) && isPrimaryProject())) { %>
+<%     if ((signal || (!getAssignedProjectForPin(pin) && isPrimaryProject())) && !specialSkippedPin(pin)) { %>
 
   /* <%= getPin(pin).Label %> (<%= pin.Pin %>): assigned to <%= pin.Peripheral %>_<%= pin.Signal %>.
 <%       if (signal?.Description) { %>
   ** This pin is used for <%= signal.Description %>.
+<%       } %>
+<%       if (getPeripheral(pin.Peripheral)?.Assignable !== false && !getAssignedProjectForPeripheral(pin.Peripheral)) { %>
+  ** Note: this pin is enabled, but <%= pin.Peripheral %> is not assigned to any core.
+  ** Consider disabling this pin or assigning <%= pin.Peripheral %> to a core.
 <%       } %>
   */
   const mxc_gpio_cfg_t cfg_<%= sanitize_identifier(getPin(pin).Label.toLowerCase()) %> = {
@@ -137,7 +231,7 @@ int PinInit(void) {
 <%     } else { %>
     .func = MXC_GPIO_FUNC_<%= signal?.Config.MODE ?? "IN"%>,
 <%     } %>
-    .pad = MXC_GPIO_PAD_<%= signal?.Config.PS ? pull_map[signal.Config.PS] : "NONE"%>,
+    .pad = MXC_GPIO_PAD_<%= signal?.Config.PS ? pullResistorValue(signal.Config.PS, it.datamodel.Name) : "NONE"%>,
     .vssel = MXC_GPIO_VSSEL_<%= getVssel(pin, signal) %>,
     .drvstr = MXC_GPIO_DRVSTR_<%= signal?.Config.DS?.replace("SPEC", "") ?? "0" %> 
   };
@@ -153,14 +247,26 @@ int PinInit(void) {
 
   MXC_GPIO_SetConfigLock(MXC_GPIO_CONFIG_LOCKED);
 
+<% if (unconfigurableSignals()) { %>
+#warning The following pins are fixed-function and were not configured: <%= unconfigurableSignals() %>.
+
+<% } %>
+<% if (unsupportedByDataModelSignals()) { %>
+#warning The following pins are not supported in CFS: <%= unsupportedByDataModelSignals() %>.
+
+<% } %>
+<% if (!swdIsAssignedProperly()) { %>
+#error Each of signals SWDIO and SWDCLK must be assigned to exactly one pin, or else it might be impossible to upload a new version of the firmware. For standard evaluation boards, P0.0 and P0.1 should be used.
+
+<% } %>
   return E_NO_ERROR;
 }
 
-int PeripheralInit(void) {
+int PeripheralInit<%= getCoreFunctionSuffix() %>(void) {
   int result = E_NO_ERROR;
 
-<% if (getProject().Secure) { %>
-  result = PinInit();
+<% if (getProject().Secure || getCoreFunctionSuffix() !== "") { %>
+  result = PinInit<%= getCoreFunctionSuffix() %>();
   if (result != E_NO_ERROR) {
     return result;
   }

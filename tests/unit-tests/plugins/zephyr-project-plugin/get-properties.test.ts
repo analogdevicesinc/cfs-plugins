@@ -1,6 +1,6 @@
 /**
  *
- * Copyright (c) 2025 Analog Devices, Inc.
+ * Copyright (c) 2025-2026 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,12 @@ import { expect } from "chai";
 import * as chai from "chai";
 import {
   CfsPluginInfo,
-  CfsFeatureScope,
   CfsSocDataModel,
   SocControl,
   CfsProject,
   CfsPluginProperty,
-} from "cfs-plugins-api";
-import { GenericPlugin } from "cfs-plugins-api/src/generic/cfs-generic-plugin.js";
+} from "cfs-types";
+import { GenericPlugin } from "cfs-plugins-sdk";
 import ZephyrProjectPlugin from "../../../../plugins/zephyr-project-plugin/index.js";
 import { isDebug } from "../../utilities/test-utilities.js";
 import chaiAsPromised from "chai-as-promised";
@@ -387,7 +386,7 @@ describe("Extended getProperties method for zephyr project plugin", () => {
       const soc = deepClone(mockSoc);
 
       const result = projectPlugin.overrideControls(
-        CfsFeatureScope.Peripheral,
+        "peripheral",
         soc as unknown as CfsSocDataModel,
       ) as Record<string, SocControl[]>;
 
@@ -409,7 +408,7 @@ describe("Extended getProperties method for zephyr project plugin", () => {
       const soc = deepClone(mockSoc);
 
       const result = projectPlugin.overrideControls(
-        CfsFeatureScope.PinConfig,
+        "pinConfig",
         soc as unknown as CfsSocDataModel,
       ) as Record<string, SocControl[]>;
 
@@ -464,7 +463,7 @@ describe("Extended getProperties method for zephyr project plugin", () => {
       const soc = deepClone(mockSoc);
 
       const result = projectPlugin.overrideControls(
-        CfsFeatureScope.ClockConfig,
+        "clockConfig",
         soc as unknown as CfsSocDataModel,
       ) as Record<string, SocControl[]>;
 
@@ -514,7 +513,7 @@ describe("Extended getProperties method for zephyr project plugin", () => {
 
     it("should handle getting properties based on platform", () => {
       for (let i = 0; i < 2; i++) {
-        const result = projectPlugin.getProperties(CfsFeatureScope.Project, {
+        const result = projectPlugin.getProperties("project", {
           soc: mockSoc.Name,
         }) as CfsPluginProperty[];
 
@@ -526,7 +525,7 @@ describe("Extended getProperties method for zephyr project plugin", () => {
     });
 
     it("should include EnableCoreDrump property for MAX32690", () => {
-      const result = projectPlugin.getProperties(CfsFeatureScope.Project, {
+      const result = projectPlugin.getProperties("project", {
         soc: mockSoc.Name,
       }) as CfsPluginProperty[];
 
@@ -536,10 +535,10 @@ describe("Extended getProperties method for zephyr project plugin", () => {
       expect(enableCoreDumpProp).to.exist;
     });
 
-    it("should not return EnableCoreDump when soc is different than MAX32690", () => {
-      const mockMAX32655 = { ...deepClone(mockSoc), Name: "max32655" };
-      const result = projectPlugin.getProperties(CfsFeatureScope.Project, {
-        soc: mockMAX32655.Name,
+    it("should not return EnableCoreDump when soc does not have core dump enabled", () => {
+      const mockMAX00000 = { ...deepClone(mockSoc), Name: "max00000" };
+      const result = projectPlugin.getProperties("project", {
+        soc: mockMAX00000.Name,
       }) as CfsPluginProperty[];
       const enableCoreDumpProp = result.find(
         (prop) => prop.id === "EnableCoreDump",
@@ -549,7 +548,7 @@ describe("Extended getProperties method for zephyr project plugin", () => {
 
     it("should not return EnableCoreDump prop when no context is passed", () => {
       const result = projectPlugin.getProperties(
-        CfsFeatureScope.Project,
+        "project",
       ) as CfsPluginProperty[];
 
       const enableCoreDumpProp = result.find(
@@ -560,7 +559,7 @@ describe("Extended getProperties method for zephyr project plugin", () => {
     });
 
     it("should not return EnableCoreDump prop when context is passed with other key value pairs", () => {
-      const result = projectPlugin.getProperties(CfsFeatureScope.Project, {
+      const result = projectPlugin.getProperties("project", {
         someKey: "some-value",
       }) as CfsPluginProperty[];
 
@@ -575,7 +574,7 @@ describe("Extended getProperties method for zephyr project plugin", () => {
       const boardId = "evkit_v1";
       const soc = "max32690";
 
-      const result = projectPlugin.getProperties(CfsFeatureScope.Project, {
+      const result = projectPlugin.getProperties("project", {
         boardId,
         soc,
       });

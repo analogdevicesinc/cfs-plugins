@@ -1,0 +1,143 @@
+{
+  "pluginName": "MSDK Multicore Hello World",
+  "pluginDescription": "Multicore MSDK Hello World template.",
+  "pluginId": "com.analog.multicore.msdk.helloworld.single.exe",
+  "pluginVersion": "1.0.0",
+  "schemaVersion": "1.2.0",
+  "author": "Analog Devices, Inc.",
+  "firmwarePlatform": "MSDK",
+  "supportedSocs": [
+    {
+      "name": "MAX32666",
+      "board": "EvKit_V1",
+      "package": "ctbga",
+      "dataModelVersion": "^1.0.628"
+    },
+    {
+      "name": "MAX32666",
+      "board": "FTHR",
+      "package": "ctbga",
+      "dataModelVersion": "^1.0.628"
+    }
+  ],
+  "features": {
+    "workspace": {
+      "files": [
+        {
+          "src": "files/m4-0/main.c",
+          "dst": "m4-0/src/main.c"
+        },
+        {
+          "src": "files/m4-1/main_core1.c",
+          "dst": "m4-1/src/main_core1.c"
+        },
+        {
+          "src": "files/m4-0/project.mk",
+          "dst": "m4-0/project.mk"
+        },
+        {
+          "src": "files/.vscode/launch.json",
+          "dst": "m4-0/.vscode/launch.json"
+        },
+        {
+          "src": "files/.vscode/flash.gdb",
+          "dst": "m4-0/.vscode/flash.gdb"
+        },
+        {
+          "src": "files/README.md",
+          "dst": "m4-0/README.md"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/fault-analyzer.json",
+          "dst": ".cfs/gdb_toolbox/configs/fault-analyzer.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/memory-dump.json",
+          "dst": ".cfs/gdb_toolbox/configs/memory-dump.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/register-dump.json",
+          "dst": ".cfs/gdb_toolbox/configs/register-dump.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/interrupt-status-arm.json",
+          "dst": ".cfs/gdb_toolbox/configs/interrupt-status-arm.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/high-water-analyzer.json",
+          "dst": ".cfs/gdb_toolbox/configs/high-water-analyzer.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/stack-analyzer.json",
+          "dst": ".cfs/gdb_toolbox/configs/stack-analyzer.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/stack-painter.json",
+          "dst": ".cfs/gdb_toolbox/configs/stack-painter.json"
+        },
+        {
+          "src": "files/gdb_toolbox/gdb/fault-analyzer-arm.gdb",
+          "dst": ".cfs/gdb_toolbox/gdb/fault-analyzer-arm.gdb"
+        },
+        {
+          "src": "files/gdb_toolbox/gdb/fault-analyzer-riscv.gdb",
+          "dst": ".cfs/gdb_toolbox/gdb/fault-analyzer-riscv.gdb"
+        },
+        {
+          "src": "files/gdb_toolbox/gdb/interrupt-status-arm.gdb",
+          "dst": ".cfs/gdb_toolbox/gdb/interrupt-status-arm.gdb"
+        },
+        {
+          "src": "files/gdb_toolbox/gdb/high-water-analyzer.gdb",
+          "dst": ".cfs/gdb_toolbox/gdb/high-water-analyzer.gdb"
+        },
+        {
+          "src": "files/gdb_toolbox/gdb/stack-analyzer.gdb",
+          "dst": ".cfs/gdb_toolbox/gdb/stack-analyzer.gdb"
+        },
+        {
+          "src": "files/gdb_toolbox/gdb/stack-painter.gdb",
+          "dst": ".cfs/gdb_toolbox/gdb/stack-painter.gdb"
+        },
+        {
+          "src": "files/.cfsdependencies",
+          "dst": ".cfs"
+        }
+      ],
+      "templates": [
+        {
+          "src": "templates/workspace-name.code-workspace.eta",
+          "dst": "${context.workspaceName}.code-workspace"
+        },
+        {
+          "src": "templates/.cfsconfig.eta",
+          "dst": ".cfs/${context.soc.toLowerCase()}-${context.package.toLowerCase()}.cfsconfig"
+        },
+        {
+          "src": "templates/settings.json.eta",
+          "dst": "m4-0/.vscode/settings.json"
+        },
+        {
+          "src": "templates/c_cpp_properties.json.eta",
+          "dst": "m4-0/.vscode/c_cpp_properties.json"
+        },
+        {
+          "src": "templates/c_cpp_properties.json.eta",
+          "dst": "m4-1/.vscode/c_cpp_properties.json"
+        },
+        {
+          "src": "templates/Makefile.eta",
+          "dst": "m4-0/Makefile"
+        },
+        {
+          "src": "templates/cfs.tasks.json.eta",
+          "dst": "m4-0/.vscode/cfs.tasks.json"
+        },
+        {
+          "src": "templates/ozone-project.jdebug.eta",
+          "dst": "m4-0/m4-0.jdebug"
+        }
+      ]
+    }
+  }
+}

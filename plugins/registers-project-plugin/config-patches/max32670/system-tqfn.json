@@ -1,0 +1,20 @@
+{
+  "Pins": [
+    {
+      "Pin": "4",
+      "Peripheral": "MISC",
+      "Signal": "SWDIO"
+    },
+    {
+      "Pin": "5",
+      "Peripheral": "MISC",
+      "Signal": "SWDCLK"
+    }
+  ],
+  "ClockFrequencies": {
+    "IPO": 100000000,
+    "PRESCALED IPO": 100000000,
+    "SYS_OSC": 100000000,
+    "SYS_CLK": 100000000
+  }
+}

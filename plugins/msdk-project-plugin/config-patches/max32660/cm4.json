@@ -1,0 +1,48 @@
+{
+  "Partitions": [
+    {
+      "Name": "FLASH",
+      "StartAddress": "0x00000000",
+      "Size": 262144,
+      "IsOwner": true,
+      "Access": "R/X",
+      "Config": {}
+    },
+    {
+      "Name": "SRAM",
+      "StartAddress": "0x20000000",
+      "Size": 98304,
+      "DisplayUnit": "KB",
+      "IsOwner": true,
+      "Access": "R/W",
+      "Config": {}
+    }
+  ],
+  "Peripherals": [
+    {
+      "Name": "CM4 SysTick",
+      "Signals": [],
+      "Config": {
+        "ENABLE": "FALSE"
+      }
+    },
+    {
+      "Name": "MISC",
+      "Signals": [
+        {
+          "Name": "RSTN",
+          "Config": {}
+        },
+        {
+          "Name": "SWDCLK",
+          "Config": {}
+        },
+        {
+          "Name": "SWDIO",
+          "Config": {}
+        }
+      ],
+      "Config": {}    
+    }
+  ]
+}

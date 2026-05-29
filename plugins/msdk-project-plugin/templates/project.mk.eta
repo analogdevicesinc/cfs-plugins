@@ -35,7 +35,23 @@
 #RISCV_APP=../RV
 
 <% } %>
-<% if (["max32650", "max32655", "max32657", "max32658", "max32670", "max32690", "max78000", "max78002"].includes(it.soc.toLowerCase())) { %>
+<% if (["max32666"].includes(it.soc.toLowerCase())) { %>
+# Set to 1 to build with the necessary Core1 startup/system files.
+ARM_DUALCORE=0
+
+ifeq ($(ARM_DUALCORE),1)
+  # Separate directories for Core 0 and Core 1 code.
+  # These should point to the Core 1 folder.
+  VPATH += .
+  VPATH += ../CM4-1
+  VPATH += ../CM4-1/src
+
+  IPATH += .
+  IPATH += ../CM4-1
+  IPATH += ../CM4-1/src
+endif
+
+<% } %>
 # Add library dependencies
 include config.mk
 
@@ -44,13 +60,10 @@ CONFIGMK ?= $(abspath ./config.mk)
 $(PROJECTMK): $(CONFIGMK)
 	@touch $(PROJECTMK)
 
-<% } %>
 <% it.platformConfig.Cflags.split("\n").forEach(function (flag) { %>
 PROJ_CFLAGS += <%= flag %>
 
 <% }) %>
-<% if (["max32650", "max32655", "max32657", "max32658", "max32670", "max32690", "max78000", "max78002"].includes(it.soc.toLowerCase())) { %>
 
 # Use the generated linker file from the project
 LINKERFILE = memory.ld
-<% } %>

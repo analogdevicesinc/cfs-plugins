@@ -1,6 +1,6 @@
 /**
  *
- * Copyright (c) 2025 Analog Devices, Inc.
+ * Copyright (c) 2025-2026 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,13 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { expect } from "chai";
-import { GenericPlugin } from "../../../../api/src/generic/cfs-generic-plugin.js";
-import type { CfsPluginInfo } from "cfs-plugins-api";
+import { GenericPlugin } from "cfs-plugins-sdk";
+import type { CfsPluginInfo } from "cfs-types";
 import { isDebug } from "../../utilities/test-utilities.js";
-import { validateJsonFile, findJsonFiles } from "../../utilities/validate-json.js";
+import {
+  validateJsonFile,
+  findJsonFiles,
+} from "../../utilities/validate-json.js";
 
 describe("Unit test for MSDK Single Core Hello World", () => {
   let plugin: GenericPlugin;

@@ -5,7 +5,7 @@
       "StartAddress": "0x10000000",
       "Size": 393216,
       "IsOwner": true,
-      "Access": "R/W",
+      "Access": "R/X",
       "Config": {}
     },
     {
@@ -25,6 +25,32 @@
       "Config": {
         "ENABLE": "FALSE"
       }
+    },
+    {
+      "Name": "MISC",
+      "Signals": [
+        {
+          "Name": "EXT_CLK1",
+          "Config": {}
+        },
+        {
+          "Name": "EXT_CLK2",
+          "Config": {}
+        },
+        {
+          "Name": "RSTN",
+          "Config": {}
+        },
+        {
+          "Name": "SWDCLK",
+          "Config": {}
+        },
+        {
+          "Name": "SWDIO",
+          "Config": {}
+        }
+      ],
+      "Config": {}
     }
   ]
 }

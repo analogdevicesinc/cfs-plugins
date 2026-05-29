@@ -55,18 +55,29 @@
       "CoreId": "CM4",
       "ProjectId": "CM4",
       "PluginId": "com.analog.project.zephyr.plugin",
-      "PluginVersion": "1.0.0",
+      "PluginVersion": "^1.1.0",
       "FirmwarePlatform": "zephyr",
       "ExternallyManaged": false,
       "Partitions": [
         {
           "Name": "m4_flash",
           "StartAddress": "0x10000000",
-          "Size": 458752,
+          "Size": 393216,
           "IsOwner": true,
-          "Access": "R",
+          "Access": "R/X",
           "Config": {
             "CHOSEN": "code-partition"
+          }
+        },
+        {
+          "Name": "coredump_partition",
+          "StartAddress": "0x10060000",
+          "Size": 65536,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "CHOSEN": "coredump-partition",
+            "LABEL": "coredump"
           }
         },
         {
@@ -189,11 +200,16 @@
             }
           ],
           "Config": {}
+        },
+        {
+          "Name": "FLC0",
+          "Signals": [],
+          "Config": {}
         }
       ],
       "PlatformConfig": {
         "ProjectName": "m4",
-        "ZephyrVersion": "4.2.0",
+        "ZephyrVersion": "4.3.0",
         "ZephyrBoardName": "max32655evkit/max32655/m4"
       },
 <%~ include("../ai.cfsconfig.eta", it) %>

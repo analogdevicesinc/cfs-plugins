@@ -1,0 +1,117 @@
+{
+  "pluginName": "MSDK Single Core Library Generate",
+  "pluginDescription": "Example project that demonstrates how to generate a static library using MSDK.",
+  "pluginId": "com.analog.singlecore.msdk.library.generate",
+  "pluginVersion": "1.0.0",
+  "schemaVersion": "1.2.0",
+  "author": "Analog Devices, Inc.",
+  "firmwarePlatform": "MSDK",
+  "supportedSocs": [
+    {
+      "name": "MAX32655",
+      "board": "EvKit_V1",
+      "package": "ctbga",
+      "dataModelVersion": "^1.3.628"
+    },
+    {
+      "name": "MAX32655",
+      "board": "FTHR",
+      "package": "ctbga",
+      "dataModelVersion": "^1.3.628"
+    },
+    {
+      "name": "MAX32672",
+      "board": "EvKit_V1",
+      "package": "tqfn40",
+      "dataModelVersion": "^1.0.628"
+    },
+    {
+      "name": "MAX32672",
+      "board": "FTHR",
+      "package": "tqfn40",
+      "dataModelVersion": "^1.0.628"
+    },
+    {
+      "name": "MAX32690",
+      "board": "EvKit_V1",
+      "package": "tqfn",
+      "dataModelVersion": "^1.3.628"
+    },
+    {
+      "name": "MAX32690",
+      "board": "AD-APARD32690-SL",
+      "package": "wlp",
+      "dataModelVersion": "^1.3.628"
+    },
+    {
+      "name": "MAX32690",
+      "board": "FTHR",
+      "package": "tqfn",
+      "dataModelVersion": "^1.3.628"
+    },
+    {
+      "name": "MAX78000",
+      "board": "EvKit_V1",
+      "package": "ctbga",
+      "dataModelVersion": "^1.3.628"
+    },
+    {
+      "name": "MAX78000",
+      "board": "FTHR",
+      "package": "ctbga",
+      "dataModelVersion": "^1.3.628"
+    }
+  ],
+  "features": {
+    "workspace": {
+      "files": [
+        {
+          "src": "files/m4/gpiolib.c",
+          "dst": "m4/src/gpiolib.c"
+        },
+        {
+          "src": "files/m4/README.md",
+          "dst": "m4/README.md"
+        },
+        {
+          "src": "files/.cfsdependencies",
+          "dst": ".cfs"
+        }
+      ],
+      "templates": [
+        {
+          "src": "templates/workspace-name.code-workspace.eta",
+          "dst": "${context.workspaceName}.code-workspace"
+        },
+        {
+          "src": "templates/settings.json.eta",
+          "dst": "m4/.vscode/settings.json"
+        },
+        {
+          "src": "templates/gpiolib.h.eta",
+          "dst": "m4/src/gpiolib.h"
+        },
+        {
+          "src": "templates/project.mk.eta",
+          "dst": "m4/project.mk"
+        },
+        {
+          "src": "templates/Makefile.eta",
+          "dst": "m4/Makefile"
+        },
+        {
+          "src": "templates/c_cpp_properties.json.eta",
+          "dst": "m4/.vscode/c_cpp_properties.json"
+        },
+        {
+          "src": "templates/ozone-project.jdebug.eta",
+          "dst": "m4/m4.jdebug"
+        },
+        {
+          "src": "templates/cfs.tasks.json.eta",
+          "dst": "m4/.vscode/cfs.tasks.json"
+        }
+      ]
+    }
+  }
+}

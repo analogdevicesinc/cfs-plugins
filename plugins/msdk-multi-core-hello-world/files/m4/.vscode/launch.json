@@ -19,7 +19,9 @@
         "gdbPath": "${config:cfs.toolchain.armAArch32GCC.path}/bin/arm-none-eabi-gdb"
       },
       "svdPath": "${config:cfs.cmsis.svdFile}",
-      "searchDir": ["${config:cfs.openocd.path}/share/openocd/scripts"],
+      "searchDir": [
+        "${config:cfs.openocd.path}/share/openocd/scripts"
+      ],
       "configFiles": [
         "${config:cfs.openocd.interface}",
         "${config:cfs.openocd.target}"
@@ -67,14 +69,7 @@
         "tbreak _exit",
         "set remotetimeout 60"
       ],
-      "preLaunchTask": "CFS: build",
-      "overrideLaunchCommands": [
-        "monitor halt",
-        "monitor reset",
-        "-target-download"
-      ],
-      "overrideResetCommands": ["monitor reset"],
-      "overrideRestartCommands": ["monitor reset"]
+      "preLaunchTask": "CFS: build"
     }
   ]
 }

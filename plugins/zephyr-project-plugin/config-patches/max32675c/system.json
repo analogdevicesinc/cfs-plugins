@@ -1,0 +1,11 @@
+{
+  "ClockFrequencies": {
+    "PCLK": 3686400,
+    "IBRO": 7372800,
+    "INRO": 115000,
+    "POWER_SEQUENCER": 115000,
+    "Cortex-M4": 7372800,
+    "SYS_OSC": 7372800,
+    "SYS_CLK": 7372800
+  }
+}

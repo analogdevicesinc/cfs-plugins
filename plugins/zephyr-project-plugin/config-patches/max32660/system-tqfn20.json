@@ -1,0 +1,29 @@
+{
+  "Pins": [
+    {
+      "Pin": "1",
+      "Peripheral": "MISC",
+      "Signal": "SWDCLK"
+    },
+    {
+      "Pin": "2",
+      "Peripheral": "MISC",
+      "Signal": "SWDIO"
+    }
+  ],
+  "ClockFrequencies": {
+    "PCLK": 48000000,
+    "INRO": 80000,
+    "HFIO": 96000000,
+    "SYS_OSC": 96000000,
+    "SYS_CLK": 96000000
+  },
+  "ClockNodes": [
+    {
+      "Name": "FLC",
+      "Control": "ENABLE",
+      "Value": "TRUE",
+      "Enabled": true
+    }
+  ]
+}

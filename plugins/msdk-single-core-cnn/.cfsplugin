@@ -2,17 +2,19 @@
   "pluginName": "MSDK Single Core PyTorch AI Model using CNN",
   "pluginDescription": "Single Core MSDK PyTorch using M4 + CNN Accelerator template.",
   "pluginId": "com.analog.singlecore.msdk.cnn",
-  "pluginVersion": "1.0.1",
+  "pluginVersion": "1.2.0",
+  "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "MSDK",
   "supportedSocs": [
     {
       "name": "MAX78002",
       "board": "EvKit_V1",
-      "package": "csbga"
+      "package": "csbga",
+      "dataModelVersion": "^1.3.628"
     }
   ],
-  "aiGenCommand" : "build --target MAX78002.CM4.CNN --model ./files/m4/ai85-catsdogs-qat8-q.pth.tar --izer-network-config ./files/m4/cats-dogs-hwc-no-fifo.yaml --output-path ./files/m4/adi_cnn",
+  "aiGenCommand": "build --target MAX78002.CM4.CNN --model ./files/m4/ai85-catsdogs-qat8-q.pth.tar --izer-network-config ./files/m4/cats-dogs-hwc-no-fifo.yaml --output-path ./files/m4/adi_cnn",
   "features": {
     "workspace": {
       "files": [

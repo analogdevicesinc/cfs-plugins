@@ -1,0 +1,10 @@
+{
+  "ClockFrequencies": {
+    "INRO": 80000,
+    "IBRO": 7372800,
+    "SYS_OSC": 100000000,
+    "SYS_CLK": 100000000,
+    "IPO": 100000000,
+    "PRESCALED IPO": 100000000
+  }
+}

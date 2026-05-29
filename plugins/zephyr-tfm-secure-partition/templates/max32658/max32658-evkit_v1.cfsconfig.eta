@@ -23,7 +23,7 @@
       "CoreId": "CM33",
       "ProjectId": "CM33 Secure",
       "PluginId": "com.analog.project.msdk.plugin",
-      "PluginVersion": "1.1.0",
+      "PluginVersion": "^1.2.0",
       "Secure": true,
       "FirmwarePlatform": "msdk",
       "ExternallyManaged": false,
@@ -100,7 +100,7 @@
       "CoreId": "CM33",
       "ProjectId": "CM33 Non-Secure",
       "PluginId": "com.analog.project.zephyr.plugin",
-      "PluginVersion": "1.0.0",
+      "PluginVersion": "^1.1.0",
       "Secure": false,
       "FirmwarePlatform": "zephyr",
       "ExternallyManaged": false,
@@ -136,7 +136,7 @@
           "StartAddress": "0x01060000",
           "Size": 589824,
           "IsOwner": true,
-          "Access": "R",
+          "Access": "R/X",
           "Config": {
             "CHOSEN": "code-partition",
             "LABEL": "image-0-nonsecure"
@@ -158,22 +158,20 @@
             {
               "Name": "RX",
               "Config": {
-                "PWR": "VDDIO",
                 "PS": "WEAK_PU"
               }
             },
             {
               "Name": "TX",
               "Config": {
-                "PWR": "VDDIO"
               }
             }
           ],
           "Config": {
+            "TX_RX_MODES": "TX_RX",
             "CHOSEN": "console,shell-uart,bt-c2h-uart",
             "BAUD": "115200",
             "PARITY": "DISABLED",
-            "HW_FLOW_CTRL": "DISABLED",
             "CHAR_SIZE": "8",
             "STOP_BITS": "1"
           }

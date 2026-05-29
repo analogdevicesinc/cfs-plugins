@@ -13,15 +13,17 @@
  *
  */
 
+import { PropertyProvider as BasePropertyProvider } from "cfs-plugins-sdk";
+import type {
+  CfsPluginProperty,
+  CfsPropertyProviderService
+} from "cfs-types";
 import {
   CfsFeatureScope,
-  type CfsPluginProperty,
-  type CfsPropertyProviderService,
   CfsSocDataModel,
   SocControl,
-  CfsSocControlsOverrideService,
-  PropertyProvider as BasePropertyProvider
-} from "cfs-plugins-api";
+  CfsSocControlsOverrideService
+} from "cfs-types";
 import os from "os";
 
 export class PropertyProvider
@@ -36,7 +38,7 @@ export class PropertyProvider
   ): CfsPluginProperty[] {
     const properties = super.getProperties(scope, context);
 
-    if (scope === CfsFeatureScope.Project) {
+    if (scope === "project") {
       const buildSystemProp = properties.find(
         (prop) => prop.id === "BuildSystem"
       );
@@ -72,15 +74,6 @@ export class PropertyProvider
           soc,
           secure
         );
-      }
-
-      const zephyrVersionProp = properties.find(
-        (property) => property.id === "ZephyrVersion"
-      );
-
-      if (zephyrVersionProp && (soc.toLowerCase() === "max32657" || soc.toLowerCase() === "max32658")) {
-        zephyrVersionProp.default = "4.3.0";
-        zephyrVersionProp.enum?.push({ label: "4.3.0", value: "4.3.0" });
       }
     }
     return properties;

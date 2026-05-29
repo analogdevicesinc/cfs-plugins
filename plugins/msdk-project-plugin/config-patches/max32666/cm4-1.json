@@ -1,0 +1,35 @@
+{
+  "Partitions": [
+    {
+      "Name": "FLASH",
+      "StartAddress": "0x10000000",
+      "Size": 1048576,
+      "DisplayUnit": "MB",
+      "IsOwner": false,
+      "Access": "R/X",
+      "Config": {
+        "NAME_OVERRIDE": ""
+      }
+    },
+    {
+      "Name": "SRAM",
+      "StartAddress": "0x20000000",
+      "Size": 573440,
+      "DisplayUnit": "KB",
+      "IsOwner": false,
+      "Access": "R/W",
+      "Config": {
+        "NAME_OVERRIDE": ""
+      }
+    }
+  ],
+  "Peripherals": [
+    {
+      "Name": "CM4-1 SysTick",
+      "Signals": [],
+      "Config": {
+        "ENABLE": "FALSE"
+      }
+    }
+  ]
+}

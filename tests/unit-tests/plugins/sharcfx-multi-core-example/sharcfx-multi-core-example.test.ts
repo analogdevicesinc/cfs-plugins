@@ -1,6 +1,6 @@
 /**
  *
- * Copyright (c) 2025 Analog Devices, Inc.
+ * Copyright (c) 2025-2026 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,10 @@
 
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import sinon from "sinon";
 import { expect } from "chai";
 
-import { CfsPluginInfo, GenericPlugin } from "cfs-plugins-api";
-import { CfsFeatureScope } from "cfs-plugins-api";
+import { GenericPlugin } from "cfs-plugins-sdk";
+import { CfsPluginInfo } from "cfs-types";
 import { fileExists, isDebug } from "../../utilities/test-utilities.js";
 import { joinPath } from "../../utilities/path-utilities.js";
 import {

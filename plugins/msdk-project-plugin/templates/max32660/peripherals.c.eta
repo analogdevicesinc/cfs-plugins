@@ -19,9 +19,23 @@ function modifiesSysClk() {
 }
 
 %>
-<% if (isSystemClockSet("SYS_OSC Mux", "MUX")) { %>
-/* SYS_OSC Mux: Clock Source is set to <%= getClockSettingDesc("SYS_OSC Mux", "MUX") %>. */
-  result = MXC_SYS_Clock_Select(MXC_SYS_CLOCK_<%= getClockSetting("SYS_OSC Mux", "MUX") %>);
+<% if (isSystemClockSetTo("SYS_OSC Mux", "MUX", "INRO")) { %>
+  /* SYS_OSC Mux: Clock Source is set to INRO. */
+  result = MXC_SYS_Clock_Select(MXC_SYS_CLOCK_NANORING);
+  if (result != E_NO_ERROR) {
+    return result;
+  }
+
+<% } else if (isSystemClockSetTo("SYS_OSC Mux", "MUX", "HFIO")) { %>
+  /* SYS_OSC Mux: Clock Source is set to HFIO. */
+  result = MXC_SYS_Clock_Select(MXC_SYS_CLOCK_HIRC);
+  if (result != E_NO_ERROR) {
+    return result;
+  }
+
+<% } else if (isSystemClockSetTo("SYS_OSC Mux", "MUX", "ERTCO")) { %>
+  /* SYS_OSC Mux: Clock Source is set to ERTCO. */
+  result = MXC_SYS_Clock_Select(MXC_SYS_CLOCK_HFXIN);
   if (result != E_NO_ERROR) {
     return result;
   }
@@ -32,7 +46,38 @@ function modifiesSysClk() {
   MXC_SYS_SetClockDiv(MXC_SYS_CLOCK_DIV_<%= getClockSetting("PRESCALER", "DIV") %>);
 
 <% } %>
-<%~ include("../spi_config.c.eta", { ...it, instance: "SPI0", clock: "PeripheralClock", enable: "SPI0_ENABLE" }) %>
+<% if (isSystemClockSetTo("ERTCO Mux", "MUX", "ERTCO_CLK")) { %>
+  /* ERTCO Mux: Clock Source is set to External Clock on 32KIN. */
+  #warning There is currently no code emitted to configure the ERTCO bypass.
+
+<% } %>
+<% if (isPeripheralClockSetTo("DMA", "ENABLE", "TRUE")) { %>
+  /* DMA: Enable the Component Clock. */
+  MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_DMA);
+
+<% } %>
+<% if (isPeripheralClockSetTo("ICC", "ENABLE", "TRUE")) { %>
+<%   if (!isSystemClockSetTo("ICC", "ENABLE", "TRUE")) { %>
+  /* Enable the ICC Cache Controller.
+   * Note that the ICC controller is not enabled on the clock canvas.
+   */
+<%   } else { %>
+  /* Enable the ICC Cache Controller. */
+<%   } %>
+  MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_ICACHE);
+
+<% } %>
+<% if (isSystemClockSetTo("FLC", "ENABLE", "TRUE")) { %>
+  /* FLC: Enable the Component Clock. */
+  MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_FLCD);
+
+<% } %>
+<% if (isSystemClockSetTo("SPIMSS", "ENABLE", "TRUE")) { %>
+  /* SPIMSS: Enable the Component Clock. */
+  MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_SPI1);
+
+<% } %>
+<%~ include("../spi_config.c.eta", { ...it, instance: "SPI0", clock: "PeripheralClock", enable: "ENABLE" }) %>
 <%~ include("../uart_config.c.eta", { ...it, instance: "UART0", enable: "UART0_ENABLE", mux: "UART0_MUX", clock_default: "PCLK" }) %>
 <%~ include("../uart_config.c.eta", { ...it, instance: "UART1", enable: "UART1_ENABLE", mux: "UART1_MUX", clock_default: "PCLK" }) %>
 <%~ include("../tmr_config.c.eta", { ...it, instance: "TMR0", enable: "TMR0_ENABLE", muxa: "MUX", clock_default: "PCLK" }) %>

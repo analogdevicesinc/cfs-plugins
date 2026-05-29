@@ -19,7 +19,7 @@
         "objdumpPath": "${config:cfs.sdk.path}/Tools/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-objdump.exe"
       },
       "osx": {
-        "gdbPath": "${config:cfs.toolchain.armAArch32GCC.path}/bin/arm-none-eabi-gdb"
+        "gdbPath": "${config:cfs.sdk.path}/Tools/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb"
       },
       "svdPath": "${config:cfs.cmsis.svdFile}",
       "searchDir": ["${config:cfs.openocd.path}/share/openocd/scripts"],
@@ -58,7 +58,7 @@
       },
       "osx": {
         "serverpath": "${command:cfs.jlink.setJlinkPath}/JLinkGDBServerCLExe",
-        "gdbPath": "${config:cfs.toolchain.armAArch32GCC.path}/bin/arm-none-eabi-gdb"
+        "gdbPath": "${config:cfs.sdk.path}/Tools/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb"
       },
       "device": "${config:cfs.jlink.device}",
       "interface": "swd",
@@ -72,15 +72,44 @@
         "tbreak _exit",
         "set remotetimeout 60"
       ],
-      "preLaunchTask": "CFS: build",
-      "overrideLaunchCommands": [
-        "monitor halt",
-        "monitor reset",
-        "-target-download"
+      "preLaunchTask": "CFS: build"
+    },
+    {
+      "name": "CFS: Debug with OpenOCD and JLink (ARM Embedded)",
+      "executable": "${config:cfs.programFile}",
+      "cwd": "${config:cfs.debugPath}",
+      "request": "launch",
+      "type": "cortex-debug",
+      "runToEntryPoint": "main",
+      "servertype": "openocd",
+      "serverpath": "${config:cfs.openocd.path}/bin/openocd",
+      "linux": {
+        "gdbPath": "${config:cfs.sdk.path}/Tools/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb-py",
+        "objdumpPath": "${config:cfs.sdk.path}/Tools/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-objdump"
+      },
+      "windows": {
+        "gdbPath": "${config:cfs.sdk.path}/Tools/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb-py.exe",
+        "objdumpPath": "${config:cfs.sdk.path}/Tools/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-objdump.exe"
+      },
+      "osx": {
+        "gdbPath": "${config:cfs.sdk.path}/Tools/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb"
+      },
+      "device": "${config:cfs.jlink.device}",
+      "interface": "swd",
+      "svdPath": "${config:cfs.cmsis.svdFile}",
+      "searchDir": ["${config:cfs.openocd.path}/share/openocd/scripts"],
+      "configFiles": ["interface/jlink.cfg", "${config:cfs.openocd.target}"],
+      "gdbTarget": "localhost:3333",
+      "preLaunchCommands": [
+        "set logging overwrite on",
+        "set logging file debug-arm.log",
+        "set logging on",
+        "tbreak abort",
+        "tbreak _exit",
+        "set remotetimeout 60"
       ],
-      "overrideResetCommands": ["monitor reset"],
-      "overrideRestartCommands": ["monitor reset"]
-    <% if (["MAX32690", "MAX32657", "MAX32658"].includes(it.projectInflectionPoint(it.soc))) { %>
+      "preLaunchTask": "CFS: build"
+    <% if (["MAX32650", "MAX32655", "MAX32657", "MAX32658", "MAX32660", "MAX32670", "MAX32690", "MAX78002"].includes(it.projectInflectionPoint(it.soc))) { %>
     },
     {
       "name": "CFS: Launch Core Dump Analysis",

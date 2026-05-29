@@ -3,15 +3,15 @@
   "packages": [
     {
       "name": "zephyr",
-      "version": "<%= ['max32657','max32658'].includes(it.soc.toLowerCase()) ? '4.3.0-b.1' : '4.2.0' %>"
+      "version": "4.3.0"
     },
     {
       "name": "cfs_base_data_models",
-      "version": "^2.1.0"
+      "version": "^2.2.0"
     },
     {
       "name": "cfs_base_plugins",
-      "version": "^2.1.0"
+      "version": "^2.2.0"
     }
   ]
 }

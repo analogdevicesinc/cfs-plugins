@@ -135,10 +135,16 @@ flash memory.
 
    * :zephyr:board:`max32655evkit`
    * :zephyr:board:`max32655fthr`
+   * :zephyr:board:`max32657evkit`
+   * :zephyr:board:`max32658evkit`
+   * :zephyr:board:`max32666evkit`
+   * :zephyr:board:`max32666fthr`
    * :zephyr:board:`max32672evkit`
    * :zephyr:board:`max32690evkit`
    * :zephyr:board:`max32690apard`
    * :zephyr:board:`max32690fthr`
+   * :zephyr:board:`max78000evkit`
+   * :zephyr:board:`max78000fthr`
 
    For these boards, only the :kconfig:option:`CONFIG_APP_LITTLEFS_STORAGE_FLASH`
    configuration is supported. The block-device backend

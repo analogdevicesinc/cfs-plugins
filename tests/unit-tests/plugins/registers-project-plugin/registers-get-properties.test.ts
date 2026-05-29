@@ -1,6 +1,6 @@
 /**
  *
- * Copyright (c) 2025 Analog Devices, Inc.
+ * Copyright (c) 2025-2026 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,8 @@
 
 import path from "node:path";
 import fs from "node:fs";
-import {
-  CfsFeatureScope,
-  CfsPluginInfo,
-  CfsProject,
-  CfsSocDataModel,
-} from "cfs-plugins-api";
-import { GenericPlugin } from "../../../../api/src/generic/cfs-generic-plugin.js";
+import { CfsPluginInfo, CfsProject, CfsSocDataModel } from "cfs-types";
+import { GenericPlugin } from "cfs-plugins-sdk";
 import { expect } from "chai";
 
 describe("getProperties method for registers-only project plugin", () => {
@@ -63,17 +58,12 @@ describe("getProperties method for registers-only project plugin", () => {
 
   describe("getProperties", () => {
     it("should replace dynamic values with values from context when getting properties", () => {
-      const properties = projectPlugin.getProperties(
-        CfsFeatureScope.Project,
-        cfsProject,
-      );
+      const properties = projectPlugin.getProperties("project", cfsProject);
 
-      if (
-        Array.isArray(projectPluginInfo.properties?.[CfsFeatureScope.Project])
-      ) {
+      if (Array.isArray(projectPluginInfo.properties?.project)) {
         expect(Array.isArray(properties)).to.be.true;
         expect(properties.length).to.equal(
-          projectPluginInfo.properties[CfsFeatureScope.Project].length,
+          projectPluginInfo.properties.project.length,
         );
         expect(properties[0].default).to.equal(cfsProject.coreId);
       }
@@ -117,7 +107,7 @@ describe("getProperties method for registers-only project plugin", () => {
 
     it("should handle PinConfig scope", () => {
       const result = projectPlugin.overrideControls(
-        CfsFeatureScope.PinConfig,
+        "pinConfig",
         mockSoc as unknown as CfsSocDataModel,
       );
 

@@ -3,7 +3,7 @@
       "CoreId": "CM4",
       "ProjectId": "CM4",
       "PluginId": "com.analog.project.msdk.plugin",
-      "PluginVersion": "1.1.0",
+      "PluginVersion": "^1.2.0",
       "FirmwarePlatform": "MSDK",
       "ExternallyManaged": false,
       "PlatformConfig": {
@@ -16,7 +16,7 @@
           "StartAddress": "0x10000000",
           "Size": 524288,
           "IsOwner": true,
-          "Access": "R",
+          "Access": "R/X",
           "Config": {}
         },
         {

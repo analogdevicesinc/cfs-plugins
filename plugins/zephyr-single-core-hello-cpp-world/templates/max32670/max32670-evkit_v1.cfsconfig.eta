@@ -3,12 +3,12 @@
       "CoreId": "CM4",
       "ProjectId": "CM4",
       "PluginId": "com.analog.project.zephyr.plugin",
-      "PluginVersion": "1.0.0",
+      "PluginVersion": "^1.1.0",
       "FirmwarePlatform": "zephyr",
       "ExternallyManaged": false,
       "PlatformConfig": {
         "ProjectName": "m4",
-        "ZephyrVersion": "4.2.0",
+        "ZephyrVersion": "4.3.0",
         "BuildSystem": "ninja",
         "ZephyrBoardName": "max32670evkit"
       },
@@ -16,11 +16,22 @@
         {
           "Name": "m4_flash",
           "StartAddress": "0x10000000",
-          "Size": 393216,
+          "Size": 327680,
           "IsOwner": true,
-          "Access": "R",
+          "Access": "R/X",
           "Config": {
             "CHOSEN": "code-partition"
+          }
+        },
+        {
+          "Name": "coredump_partition",
+          "StartAddress": "0x10050000",
+          "Size": 65536,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "CHOSEN": "coredump-partition",
+            "LABEL": "coredump"
           }
         },
         {
@@ -69,6 +80,7 @@
             }
           ],
           "Config": {
+            "TX_RX_MODES": "TX_RX",
             "PARITY": "DISABLED",
             "CHAR_SIZE": "8",
             "STOP_BITS": "1",
@@ -85,7 +97,7 @@
               "Config": {
                 "MODE": "OUT",
                 "PWR": "VDDIO",
-                "POLARITY": "HIGH",
+                "POLARITY": "LOW",
                 "DT_NAME": "led_1",
                 "PHANDLE": "led1",
                 "ALIAS": "led0",
@@ -97,7 +109,7 @@
               "Config": {
                 "MODE": "OUT",
                 "PWR": "VDDIO",
-                "POLARITY": "HIGH",
+                "POLARITY": "LOW",
                 "DT_NAME": "led_2",
                 "PHANDLE": "led2",
                 "ALIAS": "led1",
@@ -109,7 +121,7 @@
               "Config": {
                 "MODE": "IN",
                 "PWR": "VDDIO",
-                "PS": "STRONG_PU",
+                "PS": "WEAK_PU",
                 "POLARITY": "LOW",
                 "DT_NAME": "pb1",
                 "PHANDLE": "pb1",
@@ -118,6 +130,11 @@
               }
             }
           ],
+          "Config": {}
+        },
+        {
+          "Name": "FLC0",
+          "Signals": [],
           "Config": {}
         }
       ]

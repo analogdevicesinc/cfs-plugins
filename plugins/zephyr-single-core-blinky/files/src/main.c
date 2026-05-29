@@ -9,11 +9,6 @@
 #include <zephyr/kernel.h>
 #include <zephyr/drivers/gpio.h>
 
-// Zephelin profiler includes
-#ifdef CONFIG_ZPL
-#include <zpl.h>
-#endif
-
 /* 1000 msec = 1 sec */
 #define SLEEP_TIME_MS   1000
 
@@ -30,9 +25,6 @@ int main(void)
 {
 	int ret;
 	bool led_state = true;
-#ifdef CONFIG_ZPL
-  zpl_init();
-#endif
 
 	if (!gpio_is_ready_dt(&led)) {
 		return 0;

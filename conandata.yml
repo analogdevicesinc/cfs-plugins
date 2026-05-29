@@ -1,0 +1,4 @@
+# These are empty because they are updated on package creation by
+# export method in conanfile.py
+cfs_components: []
+cfs_soc: []

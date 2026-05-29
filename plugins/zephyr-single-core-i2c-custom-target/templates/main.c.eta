@@ -1,3 +1,18 @@
+<%
+const soc = it.soc.toLowerCase();
+const board = it.board.toLowerCase();
+
+let i2c_label = "i2c0";
+if (soc === "max32655" && board === "fthr") {
+  i2c_label = "i2c2";
+} else if (soc === "max78000" && board === "fthr") {
+  i2c_label = "i2c1";
+} else if (soc === "max78000" && board === "evkit_v1") {
+  i2c_label = "i2c2";
+} else if (soc === "max32672" && board === "fthr") {
+  i2c_label = "i2c2";
+}
+%>
 /*
  * Copyright (c) 2024 Open Pixel Systems
  * Portions Copyright (c) 2025 Analog Devices, Inc.
@@ -9,11 +24,7 @@
 #include <zephyr/sys/printk.h>
 #include <zephyr/drivers/i2c.h>
 
-<% if (it.soc.toLowerCase() === "max32655" && it.board.toLowerCase() === "fthr") { %>
-static const struct device *bus = DEVICE_DT_GET(DT_NODELABEL(i2c2));
-<% } else { %>
-static const struct device *bus = DEVICE_DT_GET(DT_NODELABEL(i2c0));
-<% } %>
+static const struct device *bus = DEVICE_DT_GET(DT_NODELABEL(<%= i2c_label %>));
 static char last_byte;
 
 /*

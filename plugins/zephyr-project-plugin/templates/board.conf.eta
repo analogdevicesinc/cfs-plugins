@@ -1,6 +1,6 @@
 <% 
 /**
- * Copyright (c) 2024-2025 Analog Devices, Inc.
+ * Copyright (c) 2024-2026 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,14 @@ CONFIG_SYS_CLOCK_HW_CYCLES_PER_SEC=<%= it.cfsconfig.ClockFrequencies.PCLK %>
 CONFIG_CORTEX_M_SYSTICK=y
 CONFIG_SYS_CLOCK_TICKS_PER_SEC=<%= getAssignedPeripheral("CM4 SysTick").Config.TICKS_PER_SEC %> 
 <% } else if (getAssignedPeripheral("CM4 SysTick")) { %>
+# Disable the SysTick timer
+CONFIG_CORTEX_M_SYSTICK=n
+<% } %>
+<% if (getAssignedPeripheral("CM4-0 SysTick")?.Config?.ENABLE === "TRUE") { %>
+# Set up the SysTick timer
+CONFIG_CORTEX_M_SYSTICK=y
+CONFIG_SYS_CLOCK_TICKS_PER_SEC=<%= getAssignedPeripheral("CM4-0 SysTick").Config.TICKS_PER_SEC %> 
+<% } else if (getAssignedPeripheral("CM4-0 SysTick")) { %>
 # Disable the SysTick timer
 CONFIG_CORTEX_M_SYSTICK=n
 <% } %>
@@ -65,6 +73,7 @@ CONFIG_ADC=y
 <% if (anyInstanceAssigned("CAN")) { %>
 # Using CAN
 CONFIG_CAN=y
+CONFIG_PINCTRL=y
 <% } %>
 <% if (anyInstanceAssignedSetTo("TMR", "MODE", "COMPARE") || anyInstanceAssignedSetTo("LPTMR", "MODE", "COMPARE") || anyInstanceAssignedSetTo("TMR", "MODE_A", "COMPARE") || anyInstanceAssignedSetTo("LPTMR", "MODE_A", "COMPARE") || anyInstanceAssigned("RTC") || anyInstanceAssigned("WUT")) { %>
 # Using counter
@@ -139,7 +148,82 @@ CONFIG_REQUIRES_FLOAT_PRINTF=y
 # Settings for Zephyr profiler
 CONFIG_ZPL=y
 CONFIG_ZPL_TRACE=y
+CONFIG_ZPL_TRACE_FORMAT_CTF=y
+
+<% if (getZephelinTraceInterface() === "UART") { %>
 CONFIG_ZPL_TRACE_BACKEND_UART=y
+
+<% /* Preemptively disable settings that interfere with trace capture. */ %>
+# Preemptively disables outputs to console when tracing is enabled and configured to use UART.
+# Tracing requires exclusive use of the communication channel (e.g. the specific UART interface).
+# If the same channel is used by STDOUT and tracing, the tracing content will be corrupted.
+# It's not currently possible to detect if STDOUT, logging, etc are routed to the same UART instance
+# that's selected for tracing, so they are preemptively disabled to avoid conflicts.
+CONFIG_LOG=n
+CONFIG_PRINTK=n
+CONFIG_EARLY_CONSOLE=n
+CONFIG_STDOUT_CONSOLE=n
+CONFIG_BOOT_BANNER=n
+
+<% } else if (getZephelinTraceInterface() === "USB") { %>
+CONFIG_ZPL_TRACE_BACKEND_USB=y
+
+<% } %>
+<% if (isZephelinInstrumentationSubsystemEnabled()) { %>
+CONFIG_INSTRUMENTATION=y
+CONFIG_ZPL_INSTRUMENTATION=y
+CONFIG_INSTRUMENTATION_BACKEND_TRACING_CORE=y
+CONFIG_THREAD_MAX_NAME_LEN=20
+CONFIG_TRACING_SYNC=y
+
+CONFIG_INSTRUMENTATION_MODE_CALLGRAPH_BUFFER_OVERWRITE=n
+CONFIG_INSTRUMENTATION_DYNAMIC_TRIGGER=n
+
+CONFIG_INSTRUMENTATION_RECURSIVE_EXCLUDE_LIST="sys_clock_isr,z_impl_k_sem_give,z_impl_k_sem_take,z_impl_k_mutex_lock,z_impl_k_mutex_unlock,z_impl_k_sleep,instr_timestamp_ns"
+<% } %>
+
+<% if (isZephelinProfilingMemoryUsageEnabled()) { %>
+CONFIG_SYS_HEAP_ARRAY_SIZE=4
+CONFIG_ZPL_MEMORY_PROFILING=y
+CONFIG_ZPL_MEMORY_PROFILING_THREAD_STACK_SIZE=1024
+CONFIG_ZPL_MEMORY_PROFILING_THREAD_PRIORITY=-1
+CONFIG_ZPL_MEMORY_PROFILING_INTERVAL=<%= getZephelinProfilingMemoryUsageInterval() %>
+
+<% } %>
+
+<% if (isZephelinProfilingCpuLoadEnabled()) { %>
+CONFIG_CPU_LOAD=y
+CONFIG_ZPL_CPU_LOAD_TRACE=y
+CONFIG_ZPL_CPU_LOAD_PROFILING=y
+CONFIG_ZPL_CPU_LOAD_PROFILING_THREAD_STACK_SIZE=1024
+CONFIG_ZPL_CPU_LOAD_PROFILING_THREAD_PRIORITY=-1
+CONFIG_ZPL_CPU_LOAD_PROFILING_INTERVAL=<%= getZephelinProfilingCpuLoadInterval() %>
+
+<% } %>
+
+<% if (!isZephelinRtosEventsEnabled()) { %>
+<% /* All options below are enabled by default. */ %>
+CONFIG_TRACING_SYSCALL=n
+CONFIG_TRACING_THREAD=n
+CONFIG_TRACING_WORK=n
+CONFIG_TRACING_ISR=n
+CONFIG_TRACING_SEMAPHORE=n
+CONFIG_TRACING_MUTEX=n
+CONFIG_TRACING_CONDVAR=n
+CONFIG_TRACING_QUEUE=n
+CONFIG_TRACING_FIFO=n
+CONFIG_TRACING_LIFO=n
+CONFIG_TRACING_STACK=n
+CONFIG_TRACING_MESSAGE_QUEUE=n
+CONFIG_TRACING_MAILBOX=n
+CONFIG_TRACING_PIPE=n
+CONFIG_TRACING_HEAP=n
+CONFIG_TRACING_MEMORY_SLAB=n
+CONFIG_TRACING_TIMER=n
+CONFIG_TRACING_EVENT=n
+CONFIG_TRACING_POLLING=n
+
+<% } %>
 
 <% if (isZephelinAIEnabled()) { %>
 CONFIG_ZPL_INFERENCE_PROFILING=y

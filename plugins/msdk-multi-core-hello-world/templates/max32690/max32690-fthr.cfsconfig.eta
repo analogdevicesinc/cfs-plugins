@@ -66,23 +66,19 @@
       "CoreId": "CM4",
       "ProjectId": "CM4",
       "PluginId": "com.analog.project.msdk.plugin",
-      "PluginVersion": "1.1.0",
+      "PluginVersion": "^1.2.0",
       "FirmwarePlatform": "msdk",
       "ExternallyManaged": false,
       "PlatformConfig": {
         "ProjectName": "m4"
       },
-      "Name": "ARM Cortex-M4",
-      "Description": "ARM Cortex-M4",
-      "CoreNum": 0,
-      "IsPrimary": true,
       "Partitions": [
         {
           "Name": "FLASH",
           "StartAddress": "0x10000000",
           "Size": 3145728,
           "IsOwner": true,
-          "Access": "R",
+          "Access": "R/X",
           "Config": {
           }
         },
@@ -91,7 +87,7 @@
           "StartAddress": "0x10300000",
           "Size": 262144,
           "IsOwner": false,
-          "Access": "R",
+          "Access": "R/X",
           "Config": {
           }
         },
@@ -135,14 +131,6 @@
           "Name": "UART0",
           "Signals": [
             {
-              "Name": "CTS",
-              "Config": {}
-            },
-            {
-              "Name": "RTS",
-              "Config": {}
-            },
-            {
               "Name": "RX",
               "Config": {
                 "PWR": "VDDIO",
@@ -161,7 +149,11 @@
             "PARITY_MD": "MARK",
             "CHAR_SIZE": "8",
             "STOP_BITS": "1",
-            "HW_FLOW_CTRL": "DISABLED",
+            "RX_FRAME_ERROR_IE": "FALSE",
+            "RX_OVERRUN_IE": "FALSE",
+            "RX_THD_IE": "FALSE",
+            "TX_ONE_BYTE_IE": "FALSE",
+            "TX_HALF_EMPTY_IE": "FALSE",
             "BAUD": "115200"
           }
         }
@@ -171,19 +163,16 @@
       "CoreId": "RV",
       "ProjectId": "RV",
       "PluginId": "com.analog.project.msdk.plugin",
-      "PluginVersion": "1.1.0",
+      "PluginVersion": "^1.2.0",
       "FirmwarePlatform": "msdk",
       "ExternallyManaged": false,
-      "Name": "RISC-V (RV32)",
-      "Description": "RISC-V (RV32)",
-      "CoreNum": 1,
       "Partitions": [
         {
           "Name": "RISCV_FLASH",
           "StartAddress": "0x10300000",
           "Size": 262144,
           "IsOwner": true,
-          "Access": "R",
+          "Access": "R/X",
           "Config": {
             "NAME_OVERRIDE": "FLASH"
           }

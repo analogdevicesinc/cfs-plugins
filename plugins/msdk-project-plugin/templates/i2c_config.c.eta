@@ -42,6 +42,15 @@ function getI2CFreq() {
   return getPeriConfigValue(it.instance, "FREQ", "100000");
 }
 
+// Return the I2C instance string (e.g., MXC_I2C0)
+function getI2CInstance() {
+  if (it.datamodel.Name === "MAX32666") {
+    return `MXC_${it.instance}_BUS0`;
+  } else {
+    return `MXC_${it.instance}`;
+  }
+}
+
 // Return the DMA TX setting.
 function getI2CDmaTx() {
   return getPeriConfigValue(it.instance, "TRANSMIT_DMA_ENABLE", "FALSE") === "TRUE";
@@ -78,6 +87,47 @@ function getI2CIntMask0() {
       { ctrl: "START_ERR_IE",     value: "MXC_F_I2C_INT_EN0_STRTERIE" },
       { ctrl: "STOP_ERR_IE",      value: "MXC_F_I2C_INT_EN0_STOPERIE" },
       { ctrl: "TX_LOCKOUT_IE",    value: "MXC_F_I2C_INT_EN0_TXLOIE" }
+    ];
+  } else if (it.datamodel.Name === "MAX32660") {
+    ie_table = [
+      { ctrl: "DONE_IE",          value: "MXC_F_I2C_INTEN0_DONEIE" },
+      { ctrl: "IRXM_IE",          value: "MXC_F_I2C_INTEN0_IRXMIE" },
+      { ctrl: "GC_ADDR_MATCH_IE", value: "MXC_F_I2C_INTEN0_GCIE" },
+      { ctrl: "ADDR_MATCH_IE",    value: "MXC_F_I2C_INTEN0_AMIE" },
+      { ctrl: "RX_THD_IE",        value: "MXC_F_I2C_INTEN0_RXTHIE" },
+      { ctrl: "TX_THD_IE",        value: "MXC_F_I2C_INTEN0_TXTHIE" },
+      { ctrl: "STOP_IE",          value: "MXC_F_I2C_INTEN0_STOPIE" },
+      { ctrl: "ADDR_ACK_IE",      value: "MXC_F_I2C_INTEN0_ADRACKIE" },
+      { ctrl: "ARB_ERR_IE",       value: "MXC_F_I2C_INTEN0_ARBERIE" },
+      { ctrl: "TO_ERR_IE",        value: "MXC_F_I2C_INTEN0_TOERIE" },
+      { ctrl: "ADDR_NACK_ERR_IE", value: "MXC_F_I2C_INTEN0_ADRERIE" },
+      { ctrl: "DATA_ERR_IE",      value: "MXC_F_I2C_INTEN0_DATERIE" },
+      { ctrl: "DNR_ERR_IE",       value: "MXC_F_I2C_INTEN0_DNRERIE" },
+      { ctrl: "START_ERR_IE",     value: "MXC_F_I2C_INTEN0_STRTERIE" },
+      { ctrl: "STOP_ERR_IE",      value: "MXC_F_I2C_INTEN0_STOPERIE" },
+      { ctrl: "TX_LOCKOUT_IE",    value: "MXC_F_I2C_INTEN0_TXLOIE" },
+      { ctrl: "MAMI0_IE",         value: "MXC_F_I2C_INTEN0_MAMIE" }
+    ];
+  } else if (it.datamodel.Name === "MAX32666") {
+    ie_table = [
+      { ctrl: "DONE_IE",          value: "MXC_F_I2C_INT_EN0_DONE" },
+      { ctrl: "IRXM_IE",          value: "MXC_F_I2C_INT_EN0_RX_MODE" },
+      { ctrl: "GC_ADDR_MATCH_IE", value: "MXC_F_I2C_INT_EN0_GEN_CALL_ADDR" },
+      { ctrl: "ADDR_MATCH_IE",    value: "MXC_F_I2C_INT_EN0_ADDR_MATCH" },
+      { ctrl: "RX_THD_IE",        value: "MXC_F_I2C_INT_EN0_RX_THRESH" },
+      { ctrl: "TX_THD_IE",        value: "MXC_F_I2C_INT_EN0_TX_THRESH" },
+      { ctrl: "STOP_IE",          value: "MXC_F_I2C_INT_EN0_STOP" },
+      { ctrl: "ADDR_ACK_IE",      value: "MXC_F_I2C_INT_EN0_ADDR_ACK" },
+      { ctrl: "ARB_ERR_IE",       value: "MXC_F_I2C_INT_EN0_ARB_ER" },
+      { ctrl: "TO_ERR_IE",        value: "MXC_F_I2C_INT_EN0_TO_ER" },
+      { ctrl: "ADDR_NACK_ERR_IE", value: "MXC_F_I2C_INT_EN0_ADDR_NACK_ER" },
+      { ctrl: "DATA_ERR_IE",      value: "MXC_F_I2C_INT_EN0_DATA_ER" },
+      { ctrl: "DNR_ERR_IE",       value: "MXC_F_I2C_INT_EN0_DO_NOT_RESP_ER" },
+      { ctrl: "START_ERR_IE",     value: "MXC_F_I2C_INT_EN0_START_ER" },
+      { ctrl: "STOP_ERR_IE",      value: "MXC_F_I2C_INT_EN0_STOP_ER" },
+      { ctrl: "TX_LOCKOUT_IE",    value: "MXC_F_I2C_INT_EN0_TX_LOCK_OUT" },
+      { ctrl: "RD_ADDR_MATCH_IE", value: "MXC_F_I2C_INT_EN0_RD_ADDR_MATCH" },
+      { ctrl: "WR_ADDR_MATCH_IE", value: "MXC_F_I2C_INT_EN0_WR_ADDR_MATCH" }
     ];
   } else {
     ie_table = [
@@ -125,6 +175,17 @@ function getI2CIntMask1() {
       { ctrl: "RX_OV_IE",         value: "MXC_F_I2C_INT_EN1_RXOFIE" },
       { ctrl: "TX_UN_IE",         value: "MXC_F_I2C_INT_EN1_TXUFIE" }
     ];
+  } else if (it.datamodel.Name === "MAX32660") {
+    ie_table = [
+      { ctrl: "RX_OV_IE",         value: "MXC_F_I2C_INTEN1_RXOFIE" },
+      { ctrl: "TX_UN_IE",         value: "MXC_F_I2C_INTEN1_TXUFIE" }
+    ];
+  } else if (it.datamodel.Name === "MAX32666") {
+    ie_table = [
+      { ctrl: "RX_OV_IE",         value: "MXC_F_I2C_INT_EN1_RX_OVERFLOW" },
+      { ctrl: "TX_UN_IE",         value: "MXC_F_I2C_INT_EN1_TX_UNDERFLOW" },
+      { ctrl: "START_IE",         value: "MXC_F_I2C_INT_EN1_START" }
+    ];
   } else {
     ie_table = [
       { ctrl: "RX_OV_IE",         value: "MXC_F_I2C_INTEN1_RX_OV" },
@@ -163,7 +224,7 @@ function getI2CIntMask1() {
      */
 
     /* Initialize the peripheral. */
-    result = MXC_I2C_Init(MXC_<%= it.instance %>,
+    result = MXC_I2C_Init(<%= getI2CInstance() %>,
                           <%= getI2CType() %>,
                           <%= getI2CTargAddr() %>U);
     if (result != E_NO_ERROR) {
@@ -171,44 +232,44 @@ function getI2CIntMask1() {
     }
 
     /* Set the frequency. */
-    result = MXC_I2C_SetFrequency(MXC_<%= it.instance %>, <%= getI2CFreq() %>U);
+    result = MXC_I2C_SetFrequency(<%= getI2CInstance() %>, <%= getI2CFreq() %>U);
     if (result < 0) {
       return result;
     }
 
     /* Enable or disable clock stretching. */
-    result = MXC_I2C_SetClockStretching(MXC_<%= it.instance %>, <%= getI2CClockStretching() %>);
+    result = MXC_I2C_SetClockStretching(<%= getI2CInstance() %>, <%= getI2CClockStretching() %>);
     if (result != E_NO_ERROR) {
       return result;
     }
 
     /* Set the timeout. */
-    MXC_I2C_SetTimeout(MXC_<%= it.instance %>, <%= getI2CTimeout() %>U);
+    MXC_I2C_SetTimeout(<%= getI2CInstance() %>, <%= getI2CTimeout() %>U);
 
 <%   if (getPeriConfigValue(it.instance, "PRELOAD_MODE", "NORMAL") === "PRELOAD") { %>
     /* Enable preload mode. */
-    MXC_I2C_EnablePreload(MXC_<%= it.instance %>);
+    MXC_I2C_EnablePreload(<%= getI2CInstance() %>);
 
 <%   } %>
 <%   if (getPeriConfigValue(it.instance, "PRELOAD_MODE", "NORMAL") === "NORMAL") { %>
     /* Disable preload mode. */
-    MXC_I2C_DisablePreload(MXC_<%= it.instance %>);
+    MXC_I2C_DisablePreload(<%= getI2CInstance() %>);
 
 <%   } %>
 <%   if (getPeriConfigValue(it.instance, "MODE", "TARGET") === "TARGET") { %>
 <%     if (getPeriConfigValue(it.instance, "GC_ADDR_EN", "IGNORE") === "ACK") { %>
     /* Enable general call acknowledgement. */
-    MXC_I2C_EnableGeneralCall(MXC_<%= it.instance %>);
+    MXC_I2C_EnableGeneralCall(<%= getI2CInstance() %>);
 
 <%     } else if (getPeriConfigValue(it.instance, "GC_ADDR_EN", "IGNORE") === "IGNORE") { %>
     /* Disable general call acknowledgement. */
-    MXC_I2C_DisableGeneralCall(MXC_<%= it.instance %>);
+    MXC_I2C_DisableGeneralCall(<%= getI2CInstance() %>);
 
 <%     } %>
 <%   } %>
 <%   if (getI2CDmaTx() || getI2CDmaRx()) { %>
     /* Set up DMA. */
-    result = MXC_I2C_DMA_Init(MXC_<%= it.instance %>,
+    result = MXC_I2C_DMA_Init(<%= getI2CInstance() %>,
                               <%= getI2CDma() %>,
                               <%= getI2CDmaTx() %> /*use TX DMA*/,
                               <%= getI2CDmaRx() %> /*use RX DMA*/);
@@ -220,7 +281,7 @@ function getI2CIntMask1() {
 <%   if (getI2CIntMask0() !== "0U" || getI2CIntMask1() !== "0U") { %>
 
     /* Enable interrupts. */
-    MXC_I2C_EnableInt(MXC_<%= it.msdk_instance ?? it.instance %>,
+    MXC_I2C_EnableInt(<%= getI2CInstance() %>,
                       <%= getI2CIntMask0() %>,
                       <%= getI2CIntMask1() %>);
 <%   } %>

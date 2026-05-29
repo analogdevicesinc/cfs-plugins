@@ -33,12 +33,12 @@
       "CoreId": "CM33",
       "ProjectId": "CM33",
       "PluginId": "com.analog.project.zephyr.plugin",
-      "PluginVersion": "1.0.0",
+      "PluginVersion": "^1.1.0",
       "FirmwarePlatform": "zephyr",
       "ExternallyManaged": false,
       "PlatformConfig": {
         "ProjectName": "m33",
-        "ZephyrVersion": "4.2.0",
+        "ZephyrVersion": "4.3.0",
         "ZephyrBoardName": "max32657evkit/max32657"
       },
       "Partitions": [
@@ -47,18 +47,18 @@
           "StartAddress": "0x01000000",
           "Size": 917504,
           "IsOwner": true,
-          "Access": "R",
+          "Access": "R/X",
           "Config": {
             "CHOSEN": "code-partition",
             "LABEL": "image-0"
           }
         },
         {
-          "Name": "storage_partition",
+          "Name": "lfs1_partition",
           "StartAddress": "0x010f0000",
           "Size": 65536,
           "IsOwner": true,
-          "Access": "R",
+          "Access": "R/W",
           "Config": {
             "LABEL": "storage"
           }
@@ -101,22 +101,20 @@
             {
               "Name": "RX",
               "Config": {
-                "PWR": "VDDIO",
                 "PS": "WEAK_PU"
               }
             },
             {
               "Name": "TX",
               "Config": {
-                "PWR": "VDDIO"
               }
             }
           ],
           "Config": {
+            "TX_RX_MODES": "TX_RX",
             "CHOSEN": "console,shell-uart,bt-c2h-uart",
             "BAUD": "115200",
             "PARITY": "DISABLED",
-            "HW_FLOW_CTRL": "DISABLED",
             "CHAR_SIZE": "8",
             "STOP_BITS": "1"
           }
@@ -128,7 +126,7 @@
               "Name": "P0.12",
               "Config": {
                 "MODE": "IN",
-                "PS": "STRONG_PU",
+                "PS": "WEAK_PU",
                 "POLARITY": "LOW",
                 "DT_NAME": "pb1",
                 "PHANDLE": "pb1",
@@ -149,6 +147,11 @@
               }
             }
           ],
+          "Config": {}
+        },
+        {
+          "Name": "FLC",
+          "Signals": [],
           "Config": {}
         }
       ]

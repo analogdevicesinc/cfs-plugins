@@ -3,29 +3,40 @@
       "CoreId": "CM4",
       "ProjectId": "CM4",
       "PluginId": "com.analog.project.zephyr.plugin",
-      "PluginVersion": "1.0.0",
+      "PluginVersion": "^1.1.0",
       "FirmwarePlatform": "zephyr",
       "ExternallyManaged": false,
       "PlatformConfig": {
         "ProjectName": "m4",
-        "ZephyrVersion": "4.2.0",
+        "ZephyrVersion": "4.3.0",
         "ZephyrBoardName": "max78000evkit/max78000/m4"
       },
       "Partitions": [
         {
           "Name": "m4_flash",
           "StartAddress": "0x10000000",
-          "Size": 524288,
+          "Size": 458752,
           "IsOwner": true,
-          "Access": "R",
+          "Access": "R/X",
           "Config": {
             "CHOSEN": "code-partition"
           }
         },
         {
+          "Name": "coredump_partition",
+          "StartAddress": "0x10070000",
+          "Size": 65536,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "CHOSEN": "coredump-partition",
+            "LABEL": "coredump"
+          }
+        },
+        {
           "Name": "m4_sram",
           "StartAddress": "0x20008000",
-          "Size": 32768,
+          "Size": 65536,
           "IsOwner": true,
           "Access": "R/W",
           "Config": {
@@ -135,6 +146,11 @@
               }
             }
           ],
+          "Config": {}
+        },
+        {
+          "Name": "FLC0",
+          "Signals": [],
           "Config": {}
         }
       ],

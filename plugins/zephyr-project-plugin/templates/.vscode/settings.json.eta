@@ -12,8 +12,7 @@
   "cfs.openocd.interface": "interface/cmsis-dap.cfg",
   "cfs.openocd.target": "target/<%= it.openocdInflectionPoint(it.soc).toLowerCase() %>.cfg",
   "cfs.environment": <%= it.configureEnvVariables() %>,
-  <% if (['MAX32657', 'MAX32658'].includes(it.soc) && it.platformConfig.EnableCoreDump) { %>
-  "cfs.coreDump.address": "0x010e0000",<% } %>
+  "cfs.coreDump.address": "<%= it.coreDumpAddress(it.soc) %>",
 
   "cfs.coreDump.gdbServerPort": "<%= it.coreDump() %>",
   "cfs.project.firmwarePlatform": "Zephyr"

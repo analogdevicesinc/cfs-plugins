@@ -22,7 +22,7 @@ function getWDTClock() {
       clock_enum = "MXC_WDT_ERTCO_CLK";
       break;
     case "INRO":
-      clock_enum = "MXC_WDT_INRO_CLK";
+      clock_enum = it.datamodel.Name === "MAX32662" ? "MXC_WDT_NANO_CLK" : "MXC_WDT_INRO_CLK";
       break;
     case "IBRO":
       clock_enum = "MXC_WDT_IBRO_CLK";
@@ -39,6 +39,7 @@ function getWDTClock() {
     case "EXT_CLK1":
       clock_enum = "MXC_WDT_EXT_CLK";
       break;
+    case "IPO":
     case "PRESCALED IPO":
       clock_enum = "MXC_WDT_IPO_CLK";
       break;

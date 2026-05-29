@@ -83,7 +83,9 @@ if (it.cfsconfig.Package.toUpperCase() === "TQFP") {
           { signal: "SCK", pin: "30", name: "spi3_sck_p0_16"},
           { signal: "SDIO2", pin: "31", name: "spi3_sdio2_p0_17"},
           { signal: "CS3", pin: "32", name: "spi3_ss3_p0_18"},
-          { signal: "CS0", pin: "34", name: "spi3_ss0_p0_19"}
+          { signal: "CS0", pin: "34", name: "spi3_ss0_p0_19"},
+          { signal: "MISO", pin: "35", name: "spi3_sdio1_p0_20"},
+          { signal: "MOSI", pin: "36", name: "spi3_sdio0_p0_21"}
         ],
         config: [
           { name: "clock-frequency", type: "int", control: "FREQ", cfg_default: "60000000",
@@ -243,6 +245,8 @@ if (it.cfsconfig.Package.toUpperCase() === "TQFP") {
         ]},
         { zephyr: "spi3", datamodel: "SPI3", enable: "SPI3_ENABLE",
         pins: [
+          { signal: "MISO", pin: "A2", name: "spi3_sdio1_p0_20"},
+          { signal: "MOSI", pin: "C2", name: "spi3_sdio0_p0_21"},
           { signal: "CS2", pin: "D1", name: "spi3_ss2_p0_14"},
           { signal: "CS3", pin: "D2", name: "spi3_ss3_p0_18"},
           { signal: "CS1", pin: "E1", name: "spi3_ss1_p0_13"},

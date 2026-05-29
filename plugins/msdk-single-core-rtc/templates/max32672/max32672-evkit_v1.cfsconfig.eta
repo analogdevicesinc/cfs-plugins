@@ -1,0 +1,216 @@
+  "Projects": [
+    {
+      "CoreId": "CM4",
+      "ProjectId": "CM4",
+      "PluginId": "com.analog.project.msdk.plugin",
+      "PluginVersion": "^1.2.0",
+      "FirmwarePlatform": "MSDK",
+      "ExternallyManaged": false,
+      "PlatformConfig": {
+        "ProjectName": "m4"
+      },
+      "Partitions": [
+        {
+          "Name": "FLASH",
+          "StartAddress": "0x10000000",
+          "Size": 1048576,
+          "IsOwner": true,
+          "Access": "R/X",
+          "Config": {}
+        },
+        {
+          "Name": "SRAM",
+          "StartAddress": "0x20000000",
+          "Size": 163840,
+          "DisplayUnit": "KB",
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {}
+        }
+      ],
+      "Peripherals": [
+        {
+          "Name": "CM4 SysTick",
+          "Signals": [],
+          "Config": {
+            "ENABLE": "FALSE"
+          }
+        },
+        {
+          "Name": "UART0",
+          "Signals": [
+            {
+              "Name": "CTS",
+              "Config": {}
+            },
+            {
+              "Name": "RTS",
+              "Config": {}
+            },
+            {
+              "Name": "RX",
+              "Config": {
+                "PS": "PU"
+              }
+            },
+            {
+              "Name": "TX",
+              "Config": {
+              }
+            }
+          ],
+          "Config": {
+            "PARITY": "DISABLED",
+            "CHAR_SIZE": "8",
+            "STOP_BITS": "1",
+            "HW_FLOW_CTRL": "DISABLED",
+            "RX_FRAME_ERROR_IE": "FALSE",
+            "CTS_IE": "FALSE",
+            "RX_OVERRUN_IE": "FALSE",
+            "RX_THD_IE": "FALSE",
+            "TX_ONE_BYTE_IE": "FALSE",
+            "TX_HALF_EMPTY_IE": "FALSE",
+            "BAUD": "115200"
+          }
+        },
+        {
+          "Name": "GPIO0",
+          "Signals": [
+            {
+              "Name": "P0.22",
+              "Config": {
+                "MODE": "OUT",
+                "DS": "0"
+              }
+            },
+            {
+              "Name": "P0.23",
+              "Config": {
+                "MODE": "OUT",
+                "DS": "0"
+              }
+            },
+            {
+              "Name": "P0.18",
+              "Config": {
+                "MODE": "IN",
+                "PS": "PU"
+              }
+            }
+          ],
+          "Config": {}
+        },
+        {
+          "Name": "RTC",
+          "Signals": [],
+          "Config": {
+            "TOD_ALARM": "5",
+            "TOD_ALARM_IE": "TRUE",
+            "SSEC_ALARM_IE": "TRUE",
+            "TRIM": "0",
+            "SEC": "0",
+            "RDY_IE": "FALSE",
+            "SSEC_UNITS": "MS",
+            "SSEC_MS": "0",
+            "SSEC_ALARM_MS": "250"
+          }
+        },
+        {
+          "Name": "OSC",
+          "Signals": [
+            {
+              "Name": "32KCAL",
+              "Config": {}
+            },
+            {
+              "Name": "32KIN",
+              "Config": {}
+            },
+            {
+              "Name": "32KOUT",
+              "Config": {}
+            },
+            {
+              "Name": "ERFO_CLK_OUT",
+              "Config": {}
+            },
+            {
+              "Name": "HFXIN",
+              "Config": {}
+            },
+            {
+              "Name": "HFXOUT",
+              "Config": {}
+            }
+          ],
+          "Config": {}
+        }
+      ]
+    }
+  ],
+  "Pins": [
+    {
+      "Pin": "3",
+      "Peripheral": "GPIO0",
+      "Signal": "P0.22"
+    },
+    {
+      "Pin": "12",
+      "Peripheral": "GPIO0",
+      "Signal": "P0.23"
+    },
+    {
+      "Pin": "29",
+      "Peripheral": "GPIO0",
+      "Signal": "P0.18"
+    },
+    {
+      "Pin": "19",
+      "Peripheral": "UART0",
+      "Signal": "RX"
+    },
+    {
+      "Pin": "20",
+      "Peripheral": "UART0",
+      "Signal": "TX"
+    },
+    {
+      "Pin": "24",
+      "Peripheral": "OSC",
+      "Signal": "32KCAL"
+    }
+  ],
+  "ClockNodes": [
+    {
+      "Name": "UART0/1/2",
+      "Control": "UART0_ENABLE",
+      "Value": "TRUE",
+      "Enabled": true
+    },
+    {
+      "Name": "32KCAL",
+      "Control": "32KCAL",
+      "Value": "512HZ",
+      "Enabled": true
+    }
+  ],
+  "ClockFrequencies": {
+    "PCLK": 50000000,
+    "INRO": 80000,
+    "ERTCO_CLK": 32768,
+    "32KOUT": 32768,
+    "ERTCO_OSC": 32768,
+    "ERTCO_OUT": 32768,
+    "SYS_OSC": 100000000,
+    "SYS_CLK": 100000000,
+    "ERTCO": 32768,
+    "32KCAL": "Undef",
+    "IPO": 100000000,
+    "PRESCALED IPO": 100000000,
+    "Cortex-M4": 100000000,
+    "FLC0/1": 100000000,
+    "UART0": 50000000,
+    "UART1": 50000000,
+    "UART2": 50000000,
+    "POWER SEQ": 80000
+  }

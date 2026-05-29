@@ -43,7 +43,7 @@
       "CoreId": "CM4",
       "ProjectId": "CM4",
       "PluginId": "com.analog.project.zephyr.plugin",
-      "PluginVersion": "1.0.0",
+      "PluginVersion": "^1.1.0",
       "FirmwarePlatform": "zephyr",
       "ExternallyManaged": false,
       "PlatformConfig": {
@@ -51,29 +51,13 @@
         "ZephyrBoardName": "apard32690/max32690/m4",
         "EnableCoreDump": true
       },
-      "Family": "Cortex-M",
-      "Ai": {
-        "FlashSize": 3072,
-        "RamSize": 1024,
-        "CoreClock": 120,
-        "SupportedOps": [],
-        "AccelOps": [],
-        "OperatorInfos": [
-          {
-            "Name": "MAC",
-            "Cycles": 2,
-            "Energy": 15
-          }
-        ],
-        "SupportedDataTypes": []
-      },
       "Partitions": [
         {
           "Name": "m4_flash",
           "StartAddress": "0x10000000",
           "Size": 3080192,
           "IsOwner": true,
-          "Access": "R",
+          "Access": "R/X",
           "Config": {
             "CHOSEN": "code-partition"
           }
@@ -168,6 +152,16 @@
             "MODE_A": "COMPARE",
             "CLKDIV_A": "1"
           }
+        },
+        {
+          "Name": "FLC0",
+          "Signals": [],
+          "Config": {}
+        },
+        {
+          "Name": "FLC1",
+          "Signals": [],
+          "Config": {}
         }
       ]
     },
@@ -178,7 +172,6 @@
       "PluginVersion": "",
       "FirmwarePlatform": "",
       "ExternallyManaged": true,
-      "Family": "RISC-V",
       "Partitions": [],
       "Peripherals": []
     }

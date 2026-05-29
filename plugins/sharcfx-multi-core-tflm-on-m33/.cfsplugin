@@ -2,7 +2,8 @@
   "pluginName": "SHARC-FX Multi-Core with TFLM running on the ARM core",
   "pluginDescription": "Template for SHARC-FX (core 1) and ARM (core 2) with TensorFlow Lite Micro.",
   "pluginId": "com.analog.sharcfx.m33.tflm.example",
-  "pluginVersion": "1.0.2",
+  "pluginVersion": "1.1.0",
+  "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "SHARC-FX",
   "supportedHostPlatforms": [
@@ -13,65 +14,77 @@
     {
       "name": "ADSP-SC834",
       "board": "ADSPSC834-EV-SOM",
-      "package": "bga_ed"
+      "package": "bga_ed",
+      "dataModelVersion": "^1.3.355"
     },
     {
       "name": "ADSP-SC834",
       "board": "EV-SOMCRR-EZKIT",
-      "package": "bga_ed"
+      "package": "bga_ed",
+      "dataModelVersion": "^1.3.355"
     },
     {
       "name": "ADSP-SC834",
       "board": "",
-      "package": "bga_ed"
+      "package": "bga_ed",
+      "dataModelVersion": "^1.3.355"
     },
     {
       "name": "ADSP-SC834W",
       "board": "ADSPSC834W-EV-SOM",
-      "package": "bga_ed"
+      "package": "bga_ed",
+      "dataModelVersion": "^1.3.355"
     },
     {
       "name": "ADSP-SC834W",
       "board": "EV-SOMCRR-EZKIT",
-      "package": "bga_ed"
+      "package": "bga_ed",
+      "dataModelVersion": "^1.3.355"
     },
     {
       "name": "ADSP-SC834W",
       "board": "",
-      "package": "bga_ed"
+      "package": "bga_ed",
+      "dataModelVersion": "^1.3.355"
     },
     {
       "name": "ADSP-SC835",
       "board": "ADSPSC835-EV-SOM",
-      "package": "bga_ed"
+      "package": "bga_ed",
+      "dataModelVersion": "^1.3.355"
     },
     {
       "name": "ADSP-SC835",
       "board": "EV-SOMCRR-EZKIT",
-      "package": "bga_ed"
+      "package": "bga_ed",
+      "dataModelVersion": "^1.3.355"
     },
     {
       "name": "ADSP-SC835",
       "board": "",
-      "package": "bga_ed"
+      "package": "bga_ed",
+      "dataModelVersion": "^1.3.355"
     },
     {
       "name": "ADSP-SC835W",
       "board": "ADSPSC835W-EV-SOM",
-      "package": "bga_ed"
+      "package": "bga_ed",
+      "dataModelVersion": "^1.3.355"
     },
     {
       "name": "ADSP-SC835W",
       "board": "EV-SOMCRR-EZKIT",
-      "package": "bga_ed"
+      "package": "bga_ed",
+      "dataModelVersion": "^1.3.355"
     },
     {
       "name": "ADSP-SC835W",
       "board": "",
-      "package": "bga_ed"
+      "package": "bga_ed",
+      "dataModelVersion": "^1.3.355"
     }
   ],
-  "aiGenCommand" : "build --target ADSP-SC835.CM33 --model ./files/m33/hello_world_f32.tflite --output-path ./files/m33/src/adi_tflm/ --backend tflm -e Symbol=hello_world_model_f32",
+  "aiGenCommand": "build --target ADSP-SC835.CM33 --model ./files/m33/hello_world_f32.tflite --output-path ./files/m33/src/adi_tflm/ --backend tflm -e Symbol=hello_world_model_f32",
   "features": {
     "workspace": {
       "files": [
@@ -84,6 +97,10 @@
           "dst": "m33/hello_world_f32.tflite"
         },
         {
+          "src": "files/m33/src/adi_tflm/adi_tflm.hpp",
+          "dst": "m33/src/adi_tflm/adi_tflm.hpp"
+        },
+        {
           "src": "files/m33/src/adi_tflm/hello_world_model_f32.cpp",
           "dst": "m33/src/adi_tflm/hello_world_model_f32.cpp"
         },
@@ -94,6 +111,10 @@
         {
           "src": "files/sfx/README.md",
           "dst": "sfx/README.md"
+        },
+        {
+          "src": "files/sfx/specs",
+          "dst": "sfx/src/linker"
         },
         {
           "src": "files/gdb_toolbox/configs/memory-dump.json",
@@ -154,14 +175,8 @@
           "dst": "m33/Makefile"
         },
         {
-          "src": "templates/m33/ADSP-SC83x-1MB.ld.eta",
-          "dst": "m33/ADSP-SC83x-1MB.ld",
-          "condition": "${['adsp-sc834','adsp-sc834w'].includes(context.soc.toLowerCase())}"
-        },
-        {
-          "src": "templates/m33/ADSP-SC83x-2MB.ld.eta",
-          "dst": "m33/ADSP-SC83x-2MB.ld",
-          "condition": "${['adsp-sc835','adsp-sc835w'].includes(context.soc.toLowerCase())}"
+          "src": "templates/m33/ADSP-SC83x.ld.eta",
+          "dst": "m33/ADSP-SC83x.ld"
         },
         {
           "src": "templates/sfx/c_cpp_properties.json.eta",

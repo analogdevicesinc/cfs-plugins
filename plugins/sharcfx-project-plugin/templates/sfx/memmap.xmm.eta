@@ -1,0 +1,223 @@
+<%
+/**
+ * Copyright (c) 2025-2026 Analog Devices, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+%>
+<%
+// Get the region's alias for the address.
+function getAlias(region, address) {
+  if (region && region.AliasType) {
+    let thisAddress = parseInt(address, 16);
+    const globalStartAddress = parseInt(getRegionProperty(region, 'AddressStart'), 16);
+    const offset = thisAddress - globalStartAddress;
+    const aliasStartAddress = parseInt(region.AliasBaseAddress, 16);
+    thisAddress = aliasStartAddress + offset;
+    return "0x" + thisAddress.toString(16).padStart(8, "0");
+  }
+  return address;
+}
+
+// Get the memory type for a memory region.
+function getRegionMemoryType(region) {
+  const aliasAddressInRegion = parseInt(getAlias(region, getRegionProperty(region, "AddressStart")), 16);
+  const systemAddress = parseInt(getRegionProperty(region, "AddressStart"), 16);
+  const isSystemSpace = (aliasAddressInRegion === systemAddress);
+  if (!isSystemSpace) {
+    if (region.Name === "SHARC_FX_L1_IRAM")
+      return "instRam";
+    if (region.Name === "SHARC_FX_L1_DRAM")
+      return "dataRam";
+  }
+  return "sysram";
+}
+
+// Get the general attributes for a memory region.
+function getRegionAttributes(region) {
+  let attrs = [];
+  if (region.Name !== "SHARC_FX_L1_DRAM" && region.Name !== "ARM_L1_IRAM")
+    attrs.push("executable");
+  if (getRegionProperty(region, "Access").includes("W"))
+    attrs.push("writable");
+  return attrs.join(", ");
+}
+
+// Is the region the MP alias for L1 memory?
+function isMultiProcessorSpace(region) {
+  const localRegion = getCoreRegion(getRegionProperty(region, 'AddressStart'), 'Local');
+  return localRegion && localRegion !== region;
+}
+
+// Get the cacheability mnemonic for a partition.
+function getCacheability(partition) {
+  switch (partition.Config.CACHEABILITY) {
+    case "WB":
+      switch (partition.Config.ALLOCATE) {
+        case "R":
+          return "WBNA";
+        case "RW":
+          return "WB";
+      }
+      break;
+    case "WT":
+      switch (partition.Config.ALLOCATE) {
+        case "NONE":
+          return "WTNA";
+        case "R":
+          return "WT";
+        case "RW":
+          return "WTWA";
+      }
+      break;
+  }
+  return partition.Config.CACHEABILITY;
+}
+
+// Get the name of the region used for this file.
+function getXmmRegionName(region) {
+  return region.Name + (isMultiProcessorSpace(region) ? "_MP" : "");
+}
+
+// Check if the requested section is mapped. If not return the default section.
+function getAvailableSection(requestedSection, defaultSection) {
+  return getProject()?.Partitions.some(p => p.Config?.SECTIONS?.split(/\s+/).includes(requestedSection)) ? requestedSection : defaultSection;
+}
+%>
+//  Memory map file to generate linker scripts for SHARC-FX programs.
+// Customer ID=15797; Build=0x8723b; Copyright (c) 2004-2015 Cadence Design Systems, Inc.
+//
+// Permission is hereby granted, free of charge, to any person obtaining
+// a copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to
+// permit persons to whom the Software is furnished to do so, subject to
+// the following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+// CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+// TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+// Portions (C) 2020-2025 Analog Devices, Inc.
+// Consult your license regarding permissions and restrictions.
+// A memory map is a sequence of memory descriptions and
+// optional parameter assignments.
+//
+// Each memory description has the following format:
+//   BEGIN <name>
+//     <addr> [,<paddr>] : <mem-type> : <mem-name> : <size> [,<psize>]
+//                       : [writable] [,executable] [,device] ;
+//     <segment>*
+//   END <name>
+//
+// where each <segment> description has the following format:
+//     <seg-name> : F|C : <start-addr> - <end-addr> [ : STACK ] [ : HEAP ]
+//                : <section-name>* ;
+//
+// Each parameter assignment is a keyword/value pair in the following format:
+//   <keyword> = <value>                (no spaces in <value>)
+// or
+//   <keyword> = "<value>"              (spaces allowed in <value>)
+//
+// The following primitives are also defined:
+//   PLACE SECTIONS( <section-name>* ) { WITH_SECTION(<section-name>)
+//                                       | IN_SEGMENT(<seg-name>) }
+//
+//   NOLOAD <section-name1> [ <section-name2> ... ]
+//
+// Please refer to the Xtensa LSP Reference Manual for more details.
+VECBASE=0x2f800000
+ENTRY=_ResetHandler
+PLACE SECTIONS(.dram0.data) WITH_SECTION(<%= getAvailableSection(".L1.data", ".data") %>)
+PLACE SECTIONS(.dram0.rodata) WITH_SECTION(<%= getAvailableSection(".L1.rodata", ".rodata") %>)
+PLACE SECTIONS(.dram0.bss) WITH_SECTION(<%= getAvailableSection(".L1.bss", ".bss") %>)
+PLACE SECTIONS(.iram0.text) WITH_SECTION(<%= getAvailableSection(".L1.text", ".text") %>)
+PLACE SECTIONS(.iram0.literal) WITH_SECTION(<%= getAvailableSection(".L1.literal", ".literal") %>)
+PLACE SECTIONS(.sram0.data) WITH_SECTION(<%= getAvailableSection(".L2.data", ".data") %>)
+PLACE SECTIONS(.sram0.rodata) WITH_SECTION(<%= getAvailableSection(".L2.rodata", ".rodata") %>)
+PLACE SECTIONS(.sram0.bss) WITH_SECTION(<%= getAvailableSection(".L2.bss", ".bss") %>)
+PLACE SECTIONS(.sram0.text) WITH_SECTION(<%= getAvailableSection(".L2.text", ".text") %>)
+PLACE SECTIONS(.sram0.literal) WITH_SECTION(<%= getAvailableSection(".L2.literal", ".literal") %>)
+PLACE SECTIONS(.clib.data) WITH_SECTION(.data)
+PLACE SECTIONS(.clib.percpu.data) WITH_SECTION(.data)
+PLACE SECTIONS(.clib.rodata) WITH_SECTION(.rodata)
+PLACE SECTIONS(.clib.bss) WITH_SECTION(.bss)
+PLACE SECTIONS(.clib.percpu.bss) WITH_SECTION(.bss)
+PLACE SECTIONS(.clib.text) WITH_SECTION(.text)
+PLACE SECTIONS(.clib.literal) WITH_SECTION(.literal)
+PLACE SECTIONS(.rtos.data) WITH_SECTION(.data)
+PLACE SECTIONS(.rtos.percpu.data) WITH_SECTION(.data)
+PLACE SECTIONS(.rtos.rodata) WITH_SECTION(.rodata)
+PLACE SECTIONS(.rtos.bss) WITH_SECTION(.bss)
+PLACE SECTIONS(.rtos.percpu.bss) WITH_SECTION(.bss)
+PLACE SECTIONS(.rtos.text) WITH_SECTION(.text)
+PLACE SECTIONS(.rtos.literal ) WITH_SECTION(.literal)
+PLACE SECTIONS(__llvm_prf_names) WITH_SECTION(.data)
+PLACE SECTIONS(.fft_twiddles.rodata) WITH_SECTION(.rodata)
+
+BEGIN L2_boot_rom
+0x20200000 : sysrom : L2_boot_rom : 0x20000 : executable;
+ L2_boot_code_0 : C : 0x20200000 - 0x2020ffff : ; AR=RX MT=WBNA,NS;
+ L2_boot_code_1 : C : 0x20210000 - 0x2021ffff : ; AR=RX MT=WBNA,NS;
+END L2_boot_rom
+
+BEGIN OTP
+0x24000000 : sysram : OTP : 0x2000 : writable;
+ OTP_data : C : 0x24000000 - 0x24001fff : ; AR=RW MT=DEV,SS;
+END OTP
+
+BEGIN L2_boot_rom_arm
+0x28a40000 : sysrom : L2_boot_rom_arm : 0x10000 : ;
+ L2_boot_code_arm : C : 0x28a40000 - 0x28a4ffff : ; AR=N MT=NC,SS;
+END L2_boot_rom_arm
+
+BEGIN Sys_mmr
+0x30000000 : sysram : Sys_mmr : 0x10000000 : writable;
+ System_mmr : C : 0x30000000 - 0x3fffffff : ; AR=RW MT=DEV,SS;
+END Sys_mmr
+
+<% for (const region of it.datamodel.Cores.find((c) => c.Id === it.coreId).Memory) { %>
+BEGIN <%= getXmmRegionName(region) %>
+
+<%= getAlias(region, getRegionProperty(region, "AddressStart")) %> : <%= getRegionMemoryType(region) %> : <%= getXmmRegionName(region) %> : 0x<%= (parseInt(getRegionProperty(region, "AddressEnd"), 16) - parseInt(getRegionProperty(region, "AddressStart"), 16) + 1).toString(16) %> : <%= getRegionAttributes(region) %>;
+<%   let last_address = parseInt(getAlias(region, getRegionProperty(region, "AddressStart")), 16); %>
+<%   let gap_count = 0; %>
+<%   if (!isMultiProcessorSpace(region)) { %>
+<%     for (const partition of getProject()?.Partitions.sort((a, b) => parseInt(a.StartAddress, 16) - parseInt(b.StartAddress, 16)) ?? []) { %>
+<%       if (getCoreRegion(partition.StartAddress) === getCoreRegion(getRegionProperty(region, "AddressStart"))) { // same physical memory %>
+<%         if (parseInt(getAlias(region, partition.StartAddress), 16) > last_address) { %>
+ _<%= getXmmRegionName(region) %>_<%= gap_count %> : C : 0x<%= last_address.toString(16) %> - 0x<%= (parseInt(getAlias(region, partition.StartAddress), 16) - 1).toString(16) %> : ; AR=N MT=NC,SS ;
+<%           gap_count += 1; %>
+<%         } %>
+<%         last_address = parseInt(getAlias(region, partition.StartAddress), 16) + partition.Size; %>
+ <%= getPartitionName(partition, "NAME_OVERRIDE") %> : C : <%= getAlias(region, partition.StartAddress) %> - 0x<%= (parseInt(getAlias(region, partition.StartAddress), 16) + partition.Size - 1).toString(16) %> <%= partition.Config.STACK === "TRUE" ? ": STACK " : "" %><%= partition.Config.HEAP === "TRUE" ? ": HEAP " : "" %>: <%= partition.Config?.SECTIONS ?? "" %> ; AR=<%= partition.Config.KERNEL === "ILLEGAL" ? (partition.Config.USER === "ILLEGAL" ? "N" : "") : partition.Config.KERNEL %><%= partition.Config.USER === "ILLEGAL" ? "" : partition.Config.USER.toLowerCase() %> MT=<%= getCacheability(partition) %>,<%= partition.Config.INTERRUPTIBLE ? "INT," : "" %><%= partition.Config.BUFFERABLE ? "BUF," : "" %><%= partition.Config.SHAREABILITY ?? "" %> ;
+<%       } %>
+<%     } %>
+<%   } %>
+<%   if (parseInt(getAlias(region, getRegionProperty(region, "AddressEnd")), 16) >= last_address) { %>
+ _<%= getXmmRegionName(region) %>_<%= gap_count %> : C : 0x<%= last_address.toString(16) %> - <%= getAlias(region, getRegionProperty(region, "AddressEnd")) %> : ; AR=N MT=NC,SS ;
+<%   } %>
+END <%= getXmmRegionName(region) %>
+
+
+<% } %>
+<% const noload_sections = getProject()?.Partitions?.map(p => p.Config.SECTIONS).join(" ").split(/\s+/).filter(s => s.includes("noload")); %>
+<% if (noload_sections.length > 0) { %>
+NOLOAD <%= noload_sections.join(" ") %>
+<% } %>

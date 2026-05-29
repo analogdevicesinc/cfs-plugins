@@ -1,34 +1,47 @@
 import commonjs from "@rollup/plugin-commonjs";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import typescript from "@rollup/plugin-typescript";
-import { glob } from "glob";
-import { dirname, sep } from "path";
+import fg from "fast-glob";
+import { dirname, resolve } from "path";
 import { fileURLToPath } from "url";
 import copy from "rollup-plugin-copy";
 import { existsSync, lstatSync } from "fs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
+const getTopLevelDir = (globPath) => {
+  const normalizedPath = globPath.replace(/^[.][/]/, "");
+  const firstSlashIdx = normalizedPath.indexOf("/");
+
+  return firstSlashIdx === -1
+    ? normalizedPath
+    : normalizedPath.slice(0, firstSlashIdx);
+};
+
 const config = async () => {
-  const files = await glob("./**/*.ts", {
+  const files = await fg.glob("./**/*.ts", {
     ignore: ["./**/dist/**", "./**/*.test.ts"],
     cwd: __dirname
   });
 
   // Get all plugin directories (those with .cfsplugin files)
-  let pluginDirs = await glob("./*/.cfsplugin", { cwd: __dirname });
+  let pluginDirs = await fg.glob("./*/.cfsplugin", {
+    cwd: __dirname
+  });
   // Convert .cfsplugin paths to directory names
-  pluginDirs = pluginDirs.map((file) => file.split(sep)[0]);
+  pluginDirs = pluginDirs.map((file) => getTopLevelDir(file));
 
   const configs = [];
 
   // Process TypeScript files
   configs.push(
     ...files.map((file) => {
-      const dir = file.split(sep)[0];
+      const dir = getTopLevelDir(file);
+      const dirAbsolutePath = resolve(__dirname, dir);
 
       const isDirectory =
-        existsSync(dir) && lstatSync(dir).isDirectory();
+        existsSync(dirAbsolutePath) &&
+        lstatSync(dirAbsolutePath).isDirectory();
 
       const copyTargets = [
         {
@@ -74,14 +87,23 @@ const config = async () => {
           }),
           ...(copyPlugin ? [copyPlugin] : [])
         ],
-        external: ["eta", "path", "fs", "url", /node_modules/]
+        external: [
+          "eta",
+          "path",
+          "fs",
+          "url",
+          /node_modules[\\/](?!cfs-plugins-sdk(?:[\\/]|$))/
+        ],
+        onwarn(warning, warn) {
+          throw new Error(warning.message);
+        }
       };
     })
   );
 
   // Process plugin directories without TypeScript files
   const processedDirs = new Set(
-    files.map((file) => file.split(sep)[0])
+    files.map((file) => getTopLevelDir(file))
   );
 
   pluginDirs.forEach((dir) => {

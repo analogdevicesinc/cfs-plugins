@@ -1,6 +1,6 @@
 /**
  *
- * Copyright (c) 2025 Analog Devices, Inc.
+ * Copyright (c) 2025-2026 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,11 @@
 
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { CfsPluginInfo } from "cfs-plugins-api";
+import { CfsPluginInfo } from "cfs-types";
 
 // Helper function to load plugin info from a file
 export const loadPluginInfo = async (
-  filePath: string
+  filePath: string,
 ): Promise<CfsPluginInfo> => {
   const absolutePath = path.resolve(filePath);
   const fileContent = await fs.readFile(absolutePath, "utf-8");

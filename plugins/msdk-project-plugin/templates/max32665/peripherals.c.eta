@@ -1,0 +1,178 @@
+<%
+/**
+ * Copyright (c) 2024-2025 Analog Devices, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+
+function modifiesSysClk() {
+  return (isSystemClockSet("SYS_OSC Mux", "MUX") || isSystemClockSet("PRESCALER", "DIV"));
+}
+
+%>
+<% if (isSystemClockSetTo("SYS_OSC Mux", "MUX", "ERFO")) { %>
+  /* SYS_OSC Mux: Clock Source is set to ERFO. */
+  result = MXC_SYS_Clock_Select(MXC_SYS_CLOCK_XTAL32M);
+  if (result != E_NO_ERROR) {
+    return result;
+  }
+
+<% } else if (isSystemClockSetTo("SYS_OSC Mux", "MUX", "ERTCO")) { %>
+  /* SYS_OSC Mux: Clock Source is set to ERTCO. */
+  result = MXC_SYS_Clock_Select(MXC_SYS_CLOCK_XTAL32K);
+  if (result != E_NO_ERROR) {
+    return result;
+  }
+
+<% } else if (isSystemClockSetTo("SYS_OSC Mux", "MUX", "INRO")) { %>
+  /* SYS_OSC Mux: Clock Source is set to INRO. */
+  result = MXC_SYS_Clock_Select(MXC_SYS_CLOCK_LIRC8K);
+  if (result != E_NO_ERROR) {
+    return result;
+  }
+
+<% } else if (isSystemClockSetTo("SYS_OSC Mux", "MUX", "HSO")) { %>
+  /* SYS_OSC Mux: Clock Source is set to HSO. */
+  result = MXC_SYS_Clock_Select(MXC_SYS_CLOCK_HIRC96);
+  if (result != E_NO_ERROR) {
+    return result;
+  }
+
+<% } else if (isSystemClockSetTo("SYS_OSC Mux", "MUX", "OBRC")) { %>
+  /* SYS_OSC Mux: Clock Source is set to OBRC. */
+  result = MXC_SYS_Clock_Select(MXC_SYS_CLOCK_HIRC8);
+  if (result != E_NO_ERROR) {
+    return result;
+  }
+
+<% } else if (isSystemClockSetTo("SYS_OSC Mux", "MUX", "LPO")) { %>
+  /* SYS_OSC Mux: Clock Source is set to LPO. */
+  result = MXC_SYS_Clock_Select(MXC_SYS_CLOCK_HIRC);
+  if (result != E_NO_ERROR) {
+    return result;
+  }
+
+<% } else if (isSystemClockSet("SYS_OSC Mux", "MUX")) { %>
+/* SYS_OSC Mux: Clock Source is set to <%= getClockSettingDesc("SYS_OSC Mux", "MUX") %>. */
+  result = MXC_SYS_Clock_Select(MXC_SYS_CLOCK_<%= getClockSetting("SYS_OSC Mux", "MUX") %>);
+  if (result != E_NO_ERROR) {
+    return result;
+  }
+
+<% } %>
+<% if (isSystemClockSet("PRESCALER", "DIV")) { %>
+  /* PRESCALER: Divider Value is set to <%= getClockSettingDesc("PRESCALER", "DIV") %>. */
+  MXC_SYS_Clock_Div(MXC_SYS_SYSTEM_DIV_<%= getClockSetting("PRESCALER", "DIV") %>);
+
+<% } %>
+<% if (isPeripheralClockSetTo("AUDIO", "ENABLE", "TRUE")) { %>
+  /* AUDIO: Enable the Component Clock. */
+  MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_AUDIO);
+
+<% } %>
+<% if (isPeripheralClockSetTo("BLE", "ENABLE", "TRUE")) { %>
+  /* Bluetooth: Enable the Component Clock. */
+  MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_BTLE);
+
+<% } %>
+<% if (isSystemClockSetTo("CM4 (CPU1)", "ENABLE", "TRUE")) { %>
+  /* CM4 (CPU1): Enable the Component Clock. */
+  /* Cortex-M4 Core 1 is enabled when Start_Core1() is called. */
+
+<% } %>
+<% if (isPeripheralClockSetTo("DMA0", "DMA0_ENABLE", "TRUE")) { %>
+  /* DMA0: Enable the Component Clock. */
+  MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_DMA);
+
+<% } %>
+<% if (isPeripheralClockSetTo("DMA1", "DMA1_ENABLE", "TRUE")) { %>
+  /* DMA1: Enable the Component Clock. */
+  MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_DMA1);
+
+<% } %>
+<% if (isPeripheralClockSetTo("HTMR0", "HTMR0_ENABLE", "TRUE")) { %>
+  /* HTIMER0: Enable the Component Clock. */
+  MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_HTMR0);
+
+<% } %>
+<% if (isPeripheralClockSetTo("HTMR1", "HTMR1_ENABLE", "TRUE")) { %>
+  /* HTIMER1: Enable the Component Clock. */
+  MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_HTMR1);
+
+<% } %>
+<% if (isPeripheralClockSetTo("USBHS", "ENABLE", "TRUE")) { %>
+  /* High-Speed USB: Enable the Component Clock. */
+  MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_USB);
+
+<% } %>
+<% if (isPeripheralClockSetTo("PT0", "ENABLE", "TRUE") || %>
+<%     isPeripheralClockSetTo("PT1", "ENABLE", "TRUE") || %>
+<%     isPeripheralClockSetTo("PT2", "ENABLE", "TRUE") || %>
+<%     isPeripheralClockSetTo("PT3", "ENABLE", "TRUE") || %>
+<%     isPeripheralClockSetTo("PT4", "ENABLE", "TRUE") || %>
+<%     isPeripheralClockSetTo("PT5", "ENABLE", "TRUE") || %>
+<%     isPeripheralClockSetTo("PT6", "ENABLE", "TRUE") || %>
+<%     isPeripheralClockSetTo("PT7", "ENABLE", "TRUE") || %>
+<%     isPeripheralClockSetTo("PT8", "ENABLE", "TRUE") || %>
+<%     isPeripheralClockSetTo("PT9", "ENABLE", "TRUE") || %>
+<%     isPeripheralClockSetTo("PT10", "ENABLE", "TRUE") || %>
+<%     isPeripheralClockSetTo("PT11", "ENABLE", "TRUE") || %>
+<%     isPeripheralClockSetTo("PT12", "ENABLE", "TRUE") || %>
+<%     isPeripheralClockSetTo("PT13", "ENABLE", "TRUE") || %>
+<%     isPeripheralClockSetTo("PT14", "ENABLE", "TRUE") || %>
+<%     isPeripheralClockSetTo("PT15", "ENABLE", "TRUE")) { %>
+  /* PT0-15: Enable the Component Clock. */
+  MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_PT);
+
+<% } %>
+<% if (isPeripheralClockSetTo("SDHC", "ENABLE", "TRUE")) { %>
+  /* SDHC: Enable the Component Clock. */
+  MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_SDHC);
+
+<% } %>
+<% if (isSystemClockSet("HSO_DIV_2_4", "DIV")) { %>
+  /* HSO_DIV_2_4: Divider Value is set to <%= getClockSettingDesc("HSO_DIV_2_4", "DIV") %>. */
+  MXC_SDHC_Set_Clock_Config(<%= getClockSetting("HSO_DIV_2_4", "DIV") %>);
+
+<% } %>
+<% if (isPeripheralClockSetTo("TPU", "ENABLE", "TRUE")) { %>
+  /* TPU: Enable the Component Clock. */
+  MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_TPU);
+
+<% } %>
+<%~ include("../adc_sd10_config.c.eta", { ...it, instance: "ADC", clock: "PeripheralClock", enable: "ENABLE" }) %>
+<%~ include("../owm_config.c.eta", { ...it, instance: "OWM", enable: "ENABLE" }) %>
+<%~ include("../spi_config.c.eta", { ...it, instance: "SPI0", enable: "ENABLE" }) %>
+<%~ include("../spi_config.c.eta", { ...it, instance: "SPI1", clock: "PeripheralClock", enable: "SPI1_ENABLE" }) %>
+<%~ include("../spi_config.c.eta", { ...it, instance: "SPI2", clock: "PeripheralClock", enable: "SPI2_ENABLE" }) %>
+<%~ include("../uart_config.c.eta", { ...it, instance: "UART0", enable: "UART0_ENABLE", mux: "UART0_MUX", clock_default: "PCLK" }) %>
+<%~ include("../uart_config.c.eta", { ...it, instance: "UART1", enable: "UART1_ENABLE", mux: "UART1_MUX", clock_default: "PCLK" }) %>
+<%~ include("../uart_config.c.eta", { ...it, instance: "UART2", enable: "UART2_ENABLE", mux: "UART2_MUX", clock_default: "PCLK" }) %>
+<%~ include("../tmr_config.c.eta", { ...it, instance: "TMR0", enable: "TMR0_ENABLE", clock_default: "PCLK" }) %>
+<%~ include("../tmr_config.c.eta", { ...it, instance: "TMR1", enable: "TMR1_ENABLE", clock_default: "PCLK" }) %>
+<%~ include("../tmr_config.c.eta", { ...it, instance: "TMR2", enable: "TMR2_ENABLE", clock_default: "PCLK" }) %>
+<%~ include("../tmr_config.c.eta", { ...it, instance: "TMR3", enable: "TMR3_ENABLE", clock_default: "PCLK" }) %>
+<%~ include("../tmr_config.c.eta", { ...it, instance: "TMR4", enable: "TMR4_ENABLE", clock_default: "PCLK" }) %>
+<%~ include("../tmr_config.c.eta", { ...it, instance: "TMR5", enable: "TMR5_ENABLE", clock_default: "PCLK" }) %>
+<%~ include("../i2c_config.c.eta", { ...it, instance: "I2C0", clock: "PeripheralClock", enable: "I2C0_ENABLE" }) %>
+<%~ include("../i2c_config.c.eta", { ...it, instance: "I2C1", clock: "PeripheralClock", enable: "I2C1_ENABLE" }) %>
+<%~ include("../i2c_config.c.eta", { ...it, instance: "I2C2", clock: "PeripheralClock", enable: "I2C2_ENABLE" }) %>
+<%~ include("../wdt_config.c.eta", { ...it, instance: "WDT0", enable: "WDT0_ENABLE" }) %>
+<%~ include("../wdt_config.c.eta", { ...it, instance: "WDT1", enable: "WDT1_ENABLE" }) %>
+<%~ include("../wdt_config.c.eta", { ...it, instance: "WDT2", enable: "WDT2_ENABLE" }) %>
+<%~ include("../rtc_config.c.eta", { ...it, instance: "RTC", output_clocknode: "SQWOUT", output_ctrl: "SQWOUT" }) %>
+<%~ include("../trng_config.c.eta", { ...it, instance: "TRNG", enable: "TRNG_ENABLE"}) %>
+<% if (modifiesSysClk()) { %>
+  /* Update the System Core Clock as core clock settings have changed. */
+  SystemCoreClockUpdate();
+
+<% } %>

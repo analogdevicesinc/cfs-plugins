@@ -15,3 +15,5 @@
 
 %>
 <%~ include("../i2s_globals.h.eta", { ...it, instance: "I2S0" }) %>
+<%~ include("../can_globals.h.eta", { ...it, instance: "CAN0" }) %>
+<%~ include("../can_globals.h.eta", { ...it, instance: "CAN1" }) %>

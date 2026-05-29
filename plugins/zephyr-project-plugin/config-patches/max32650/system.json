@@ -8,6 +8,16 @@
     "Cortex-M4": 120000000,
     "SYS_OSC": 120000000,
     "SYS_CLK": 120000000,
-    "POWER SEQ": 8000
-  }
+    "POWER SEQ": 8000,
+    "SFLC": 120000000,
+    "FIC": 120000000
+  },
+  "ClockNodes": [
+    {
+      "Name": "FLC",
+      "Control": "SFLC_ENABLE",
+      "Value": "TRUE",
+      "Enabled": true
+    }
+  ]
 }

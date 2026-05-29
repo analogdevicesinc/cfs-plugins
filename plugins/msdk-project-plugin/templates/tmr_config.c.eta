@@ -154,7 +154,12 @@ function getTmrClockSource(ctrl) {
       src = "EXT";
       break;
     case "EXT_CLK1":
+    case "HF_EXT_CLK":
+    case "LP_EXT_CLK":
       src = "EXT";
+      break;
+    case "CLK_32KHZ":
+      src = "32K";
       break;
   }
   return src;
@@ -198,7 +203,11 @@ function getTmrBitMode(unit) {
       .mode = MXC_TMR_MODE_<%= getTmrMode("A") %>,
 <%   if (!isUsingOldTmr()) { %>
       .bitMode = MXC_TMR_BIT_MODE_<%= getTmrBitMode("A") %>,
+<%   if (it.datamodel.Name === "MAX32672" && getTmrClockSource(it.muxa) == "AON_CLK") { %>
+      .clock = MXC_TMR_APB_CLK,
+<%   } else { %>
       .clock = MXC_TMR_<%= getTmrClockSource(it.muxa) %>_CLK,
+<%   } %>
 <%   } %>
       .cmp_cnt = <%= getTmrCompare("A") %>U, /* compare value */
       .pol = <%= getTmrPolarity("A") %> /* polarity */
@@ -261,7 +270,12 @@ function getTmrBitMode(unit) {
     /* Initialize the peripheral. */
     result = MXC_TMR_Init(MXC_<%= it.msdk_instance ?? it.instance %>,
                           &<%= it.instance.toLowerCase() %>_config_b,
+<%   if (it.datamodel.Name === "MAX32662") { %>
+                          false,
+                          MAP_A);
+<%   } else { %>
                           false);
+<%   } %>
     if (result != E_NO_ERROR) {
       return result;
     }

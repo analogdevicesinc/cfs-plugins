@@ -1,5 +1,5 @@
 /*
- * Generated C representation of hello_world_model_f32. Do not modify.
+ * Generated C representation of hello_world_model_f32 on Wed Apr 29 11:32:29 2026. Do not modify.
 
 Model summary:
 --------------
@@ -33,7 +33,15 @@ Subgraph 0 "main": Inputs: 1, Outputs: 1, Operators: 1, Tensors: 10
 
 */
 
+#define HELLO_WORLD_MODEL_F32_LEN (3164)
+/* Arena size for hello_world_model_f32 (estimated)*/
+#define HELLO_WORLD_MODEL_F32_ARENA_SIZE (2888)
+#define HELLO_WORLD_MODEL_F32_INPUT_0_WIDTH (4)
+#define HELLO_WORLD_MODEL_F32_INPUT_0_LEN (1)
+#define HELLO_WORLD_MODEL_F32_OUTPUT_0_WIDTH (4)
+#define HELLO_WORLD_MODEL_F32_OUTPUT_0_LEN (1)
 #define HELLO_WORLD_MODEL_F32_NUM_OPERATORS (1)
+
 
 #if defined(__cplusplus)
 #pragma GCC diagnostic push
@@ -47,6 +55,7 @@ TfLiteStatus adi_resolve_ops_hello_world_model_f32 (tflite::MicroMutableOpResolv
 #warning TensorFlow Lite Micro sources require C++ for full functionality
 #endif /* __cplusplus */
 
-extern const unsigned int hello_world_model_f32_len;
+extern unsigned char hello_world_model_f32_arena[] __attribute__((aligned(16)));
+
 extern const unsigned char hello_world_model_f32[] __attribute__((aligned(16)));
 

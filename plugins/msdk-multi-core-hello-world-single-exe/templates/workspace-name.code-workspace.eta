@@ -1,0 +1,20 @@
+{
+  "folders": [
+    {
+      "path": ".cfs"
+    },
+    {
+      "path": "m4-0"
+    },
+    {
+      "path": "m4-1"
+    }
+  ],
+  "settings": {
+    "cfs.configureWorkspace": "Yes",
+    "cfs.project.target": "<%= it.soc %>",
+    "terminal.integrated.defaultProfile.windows": "CFS Terminal",
+    "terminal.integrated.defaultProfile.osx": "CFS Terminal",
+    "terminal.integrated.defaultProfile.linux": "CFS Terminal"
+  }
+}

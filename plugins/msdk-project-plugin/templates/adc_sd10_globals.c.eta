@@ -13,13 +13,6 @@
  *
  */
 
-// Is the monitor being used?
-function adcMonitorEnabled(idx) {
-  let chLoLimitEnable = getPeriConfigValue(it.instance, `CH_LO_LIMIT_EN_IDX${idx.toString()}`, "FALSE");
-  let chHiLimitEnable = getPeriConfigValue(it.instance, `CH_HI_LIMIT_EN_IDX${idx.toString()}`, "FALSE");
-  return chLoLimitEnable === "TRUE" || chHiLimitEnable === "TRUE";
-}
-
 // Get the scale for the monitor.
 function getAdcScale() {
   return getPeriConfigValue(it.instance, "SCALE", "1");
@@ -46,6 +39,9 @@ function getAdcMonitorChannel(idx) {
     }
   } else {
     switch (channel) {
+      case "VDDB_DIV4":
+        channel = "VDDB";
+        break;
       case "VDDIO_DIV4":
         channel = "VDDIO";
         break;
@@ -69,6 +65,9 @@ function getAdcMonitorLoThreshold(idx) {
 function getAdcMonitorHiThreshold(idx) {
   return getPeriConfigValue(it.instance, `CH_HI_LIMIT_IDX${idx.toString()}`, "0");
 }
+%>
+<%
+  eval(this.render("templates/adc_sd10_common.js"));
 %>
 <% if (getAssignedPeripheral(it.instance) && %>
 <%     (adcMonitorEnabled(0) || adcMonitorEnabled(1) || adcMonitorEnabled(2) || adcMonitorEnabled(3))) { %>

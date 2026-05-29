@@ -39,7 +39,16 @@ function getSpiMode() {
 // Return the number of targets used for this instance.
 // Not used in v2 of the API.
 function getSpiNumTargets() {
-  return getPeriConfigValue(it.instance, "NUM_TARGETS", "0");
+  // In target mode, the device does not drive any chip selects.
+  if (getPeriConfigValue(it.instance, "DIRECTION", "TARGET") === "TARGET") {
+    return "0";
+  }
+
+  // Count the number of CS pins physically mapped to this peripheral instance.
+  const csCount = it.cfsconfig.Pins
+    .filter(p => p.Peripheral === it.instance && getSignal(p)?.Name.startsWith("CS"))
+    .length;
+  return String(csCount || 1);
 }
 
 // Return a mask of the polarity of the chip select pins.
@@ -102,11 +111,24 @@ function getSpiAPIVersion() {
 // Return the interrupt mask for any enabled interrupts.
 function getSpiIntMask() {
   let ie_table;
-  if (it.datamodel.Name === "MAX32650") {
+  if (it.datamodel.Name === "MAX32650" || it.datamodel.Name === "MAX32660") {
     ie_table = [
       { ctrl: "TX_THD_IE",    value: "MXC_F_SPI_INT_EN_TX_LEVEL" },
       { ctrl: "TX_EM_IE",     value: "MXC_F_SPI_INT_EN_TX_EMPTY" },
       { ctrl: "RX_THD_IE",    value: "MXC_F_SPI_INT_EN_RX_LEVEL" },
+      { ctrl: "RX_FULL_IE",   value: "MXC_F_SPI_INT_EN_RX_FULL" },
+      { ctrl: "FAULT_IE",     value: "MXC_F_SPI_INT_EN_FAULT" },
+      { ctrl: "ABORT_IE",     value: "MXC_F_SPI_INT_EN_ABORT" },
+      { ctrl: "TX_OV_IE",     value: "MXC_F_SPI_INT_EN_TX_OVR" },
+      { ctrl: "TX_UN_IE",     value: "MXC_F_SPI_INT_EN_TX_UND" },
+      { ctrl: "RX_OV_IE",     value: "MXC_F_SPI_INT_EN_RX_OVR" },
+      { ctrl: "RX_UN_IE",     value: "MXC_F_SPI_INT_EN_RX_UND" }
+    ];
+  } else if (it.datamodel.Name === "MAX32666") {
+    ie_table = [
+      { ctrl: "TX_THD_IE",    value: "MXC_F_SPI_INT_EN_TX_THRESH" },
+      { ctrl: "TX_EM_IE",     value: "MXC_F_SPI_INT_EN_TX_EMPTY" },
+      { ctrl: "RX_THD_IE",    value: "MXC_F_SPI_INT_EN_RX_THRESH" },
       { ctrl: "RX_FULL_IE",   value: "MXC_F_SPI_INT_EN_RX_FULL" },
       { ctrl: "FAULT_IE",     value: "MXC_F_SPI_INT_EN_FAULT" },
       { ctrl: "ABORT_IE",     value: "MXC_F_SPI_INT_EN_ABORT" },
@@ -135,7 +157,7 @@ function getSpiIntMask() {
       { ctrl: "CSD_IE",       value: "MXC_F_SPI_INTEN_TSD" },
       { ctrl: "CTRL_DONE_IE", value: "MXC_F_SPI_INTEN_CONT_DONE" }
     ]);
-  }  else if (it.datamodel.Name === "MAX32650") {
+  }  else if (it.datamodel.Name === "MAX32650" || it.datamodel.Name === "MAX32660" || it.datamodel.Name === "MAX32666") {
     ie_table.push.apply(ie_table, [
       { ctrl: "CSA_IE",       value: "MXC_F_SPI_INT_EN_SSA" },
       { ctrl: "CSD_IE",       value: "MXC_F_SPI_INT_EN_SSD" },
@@ -176,7 +198,7 @@ function getSpiIntMask() {
      * clocked on.
 <%   } %>
      */
-<%  if (it.datamodel.Name !== "MAX32650" && it.datamodel.Name !== "MAX32670") { %>
+<%  if (!["MAX32650", "MAX32660", "MAX32666", "MAX32670", "MAX32672", "MAX32675C"].includes(it.datamodel.Name)) { %>
     mxc_spi_pins_t <%= it.instance.toLowerCase() %>_pins_dummy = { 0 };
 <%  } %>
 <%   if (getSpiAPIVersion() == 2) { %>
@@ -214,9 +236,12 @@ function getSpiIntMask() {
                           <%= getSpiMode() === "QUAD" ? 1 : 0 %>, /* 1 for quad mode, 0 otherwise */
                           <%= getSpiNumTargets() %>, /* number of targets */
                           <%= getSpiPolarityMask() %>U, /* polarity mask */
-<%  if (it.datamodel.Name !== "MAX32650" && it.datamodel.Name !== "MAX32670") { %>
+<%  if (!["MAX32650", "MAX32660", "MAX32666", "MAX32670", "MAX32672", "MAX32675C"].includes(it.datamodel.Name)) { %>
                           <%= getSpiFreq() %>, /* frequency */
                           <%= it.instance.toLowerCase() %>_pins_dummy);
+<%  } else if (it.datamodel.Name === "MAX32666"){ %>
+                          <%= getSpiFreq() %>, /* frequency */
+                          MAP_A); /*dummy*/
 <%  } else { %>
                           <%= getSpiFreq() %>); /* frequency */
 <%  } %>

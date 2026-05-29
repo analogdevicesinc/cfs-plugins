@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024-2025 Analog Devices, Inc.
+ * Copyright (c) 2024-2026 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ if (it.cfsconfig.Package.toUpperCase() === "CTBGA") {
       ]
     },
     { datamodel: "DMA", enable: "ENABLE", zephyr: "dma0" },
+    { datamodel: "FLC0", zephyr: "flc0" },
     { datamodel: "I2C0", enable: "I2C0_ENABLE", zephyr: "i2c0",
       pins: [
           { signal: "SCL", pin: "H7", name: "i2c0_scl_p0_10"},
@@ -63,6 +64,7 @@ if (it.cfsconfig.Package.toUpperCase() === "CTBGA") {
           { signal: "IOA", pin: "C7", name: "lptmr0b_ioa_p2_4"}
       ],
       subnode: () => getAssignedPeripheral("LPTMR0").Config?.MODE_A === "COMPARE" ? "counter" : "pwm",
+      subnode_boilerplate: () => getAssignedPeripheral("LPTMR0").Config?.MODE_A === "PWM" ? ['compatible = "adi,max32-pwm"', '#pwm-cells = <3>'] : [],
       pins_node: () => getAssignedPeripheral("LPTMR0").Config?.MODE_A === "COMPARE" ? undefined : "subnode",
       config: [
           { name: "prescaler", type: "int", control: "CLKDIV_A", cfg_default: "1"}
@@ -72,6 +74,7 @@ if (it.cfsconfig.Package.toUpperCase() === "CTBGA") {
           { signal: "IOA", pin: "D7", name: "lptmr1b_ioa_p2_5"}
       ],
       subnode: () => getAssignedPeripheral("LPTMR1").Config?.MODE_A === "COMPARE" ? "counter" : "pwm",
+      subnode_boilerplate: () => getAssignedPeripheral("LPTMR1").Config?.MODE_A === "PWM" ? ['compatible = "adi,max32-pwm"', '#pwm-cells = <3>'] : [],
       pins_node: () => getAssignedPeripheral("LPTMR1").Config?.MODE_A === "COMPARE" ? undefined : "subnode",
       config: [
           { name: "prescaler", type: "int", control: "CLKDIV_A", cfg_default: "1"}
@@ -112,6 +115,7 @@ if (it.cfsconfig.Package.toUpperCase() === "CTBGA") {
     },
     { datamodel: "RTC", zephyr: "rtc_counter" },
     { datamodel: "SPI0", enable: "ENABLE", zephyr: "spi0",
+      dependent_nodes: () => it.cfsconfig.BoardName.toLowerCase() === "evkit_v1" ? ["spi0_cs0_flash"] : (it.cfsconfig.BoardName.toLowerCase() === "fthr" ? ["spi0_cs1_flash"] : undefined),
       pins: [
           { signal: "MISO", pin: "G7", name: "spi0_miso_p0_6"},
           { signal: "MOSI", pin: "G8", name: "spi0_mosi_p0_5"},
@@ -248,7 +252,8 @@ if (it.cfsconfig.Package.toUpperCase() === "CTBGA") {
           { name: "data-bits", type: "int", control: "CHAR_SIZE", cfg_default: "5"}
       ]},
     { datamodel: "WDT0", enable: "ENABLE", zephyr: "wdt0", clock_mux: "MUX", clock_default: "PCLK"},
-    { datamodel: "LPWDT0", enable: "ENABLE", zephyr: "wdt1", clock_mux: "MUX", clock_default: "IBRO"}
+    { datamodel: "LPWDT0", enable: "ENABLE", zephyr: "wdt1", clock_mux: "MUX", clock_default: "IBRO"},
+    { datamodel: "WUT", zephyr: "wut0", zephyrVersionMin: "4.3.0" }
   ];
 
 } else {
@@ -262,6 +267,7 @@ if (it.cfsconfig.Package.toUpperCase() === "CTBGA") {
           { signal: "AIN0", pin: "F6", name: "ain0_p2_0"}
       ]},
     { datamodel: "DMA", enable: "ENABLE", zephyr: "dma0" },
+    { datamodel: "FLC0", zephyr: "flc0" },
     { datamodel: "I2C0", enable: "I2C0_ENABLE", zephyr: "i2c0",
       pins: [
           { signal: "SDA", pin: "A5", name: "i2c0_sda_p0_11"},
@@ -276,6 +282,7 @@ if (it.cfsconfig.Package.toUpperCase() === "CTBGA") {
       pins: [
       ],
       subnode: () => getAssignedPeripheral("LPTMR0").Config?.MODE_A === "COMPARE" ? "counter" : "pwm",
+      subnode_boilerplate: () => getAssignedPeripheral("LPTMR0").Config?.MODE_A === "PWM" ? ['compatible = "adi,max32-pwm"', '#pwm-cells = <3>'] : [],
       pins_node: () => getAssignedPeripheral("LPTMR0").Config?.MODE_A === "COMPARE" ? undefined : "subnode",
       config: [
           { name: "prescaler", type: "int", control: "CLKDIV_A", cfg_default: "1"}
@@ -284,6 +291,7 @@ if (it.cfsconfig.Package.toUpperCase() === "CTBGA") {
       pins: [
       ],
       subnode: () => getAssignedPeripheral("LPTMR1").Config?.MODE_A === "COMPARE" ? "counter" : "pwm",
+      subnode_boilerplate: () => getAssignedPeripheral("LPTMR1").Config?.MODE_A === "PWM" ? ['compatible = "adi,max32-pwm"', '#pwm-cells = <3>'] : [],
       pins_node: () => getAssignedPeripheral("LPTMR1").Config?.MODE_A === "COMPARE" ? undefined : "subnode",
       config: [
           { name: "prescaler", type: "int", control: "CLKDIV_A", cfg_default: "1"}
@@ -408,10 +416,19 @@ if (it.cfsconfig.Package.toUpperCase() === "CTBGA") {
           { name: "data-bits", type: "int", control: "CHAR_SIZE", cfg_default: "5"}
       ]},
     { datamodel: "WDT0", enable: "ENABLE", zephyr: "wdt0", clock_mux: "MUX", clock_default: "PCLK"},
-    { datamodel: "LPWDT0", enable: "ENABLE", zephyr: "wdt1", clock_mux: "MUX", clock_default: "IBRO"}
+    { datamodel: "LPWDT0", enable: "ENABLE", zephyr: "wdt1", clock_mux: "MUX", clock_default: "IBRO"},
+    { datamodel: "WUT", zephyr: "wut0", zephyrVersionMin: "4.3.0" }
   ];
 
 }
+
+// Filter peripheralData based on zephyrVersionMin/zephyrVersionMax and packages fields.
+// Entries outside the supported range or package are removed and later added to unsupported_in_dts.
+const { supported, unsupported } = filterByZephyrVersion(peripheralData);
+
+// Replace peripheralData with only the supported peripherals so the template
+// does not generate code for peripherals filtered out by version constraints.
+peripheralData = supported;
 
 unsupported_in_dts = [
     {datamodel: "ADC", diag: "The clock divider for ADC is not currently supported in devicetree.", ctrl: "DIV"},
@@ -430,6 +447,9 @@ unsupported_in_dts = [
     {clocknode: "LPM Mux", diag: "Setting the LPM Mux is not currently supported in devicetree.", ctrl: "MUX", value: "SYS_CLK_DIV_2_ISO"}
 ];
 
+// Add filtered-out peripherals to unsupported_in_dts
+unsupported_in_dts.push(...buildUnsupportedVersionEntries(unsupported));
+
 function mapClockName(clock) {
     if (clock === "EXT_CLK") {
         return "extclk";
@@ -447,7 +467,7 @@ function mapClockName(clock) {
 
 function getClocksUsed() {
     let clocksUsed = new Set();
-    for (const peri of peripheralData) {
+    for (const peri of supported) {
         if (peri.clock_mux && isPeripheralClockSetTo(peri.datamodel, peri.enable, "TRUE")) {
             const clockName = mapClockName(getPeripheralClockSetting(peri.datamodel, peri.clock_mux, peri.clock_default));
             if (clockName) {

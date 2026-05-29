@@ -35,7 +35,7 @@
       "CoreId": "CM4",
       "ProjectId": "CM4",
       "PluginId": "com.analog.project.zephyr.plugin",
-      "PluginVersion": "1.0.0",
+      "PluginVersion": "^1.1.0",
       "FirmwarePlatform": "zephyr",
       "ExternallyManaged": false,
       "Partitions": [
@@ -44,7 +44,7 @@
           "StartAddress": "0x10000000",
           "Size": 3080192,
           "IsOwner": true,
-          "Access": "R",
+          "Access": "R/X",
           "Config": {
             "CHOSEN": "code-partition"
           }
@@ -75,7 +75,7 @@
           "StartAddress": "0x10300000",
           "Size": 262144,
           "IsOwner": true,
-          "Access": "R",
+          "Access": "R/W",
           "Config": {
             "CHOSEN": "littlefs"
           }
@@ -123,11 +123,21 @@
             "CHAR_SIZE": "8",
             "STOP_BITS": "1"
           }
+        },
+        {
+          "Name": "FLC0",
+          "Signals": [],
+          "Config": {}
+        },
+        {
+          "Name": "FLC1",
+          "Signals": [],
+          "Config": {}
         }
       ],
       "PlatformConfig": {
         "ProjectName": "m4",
-        "ZephyrVersion": "4.2.0",
+        "ZephyrVersion": "4.3.0",
         "ZephyrBoardName": "max32690evkit/max32690/m4",
         "EnableCoreDump": true
       },

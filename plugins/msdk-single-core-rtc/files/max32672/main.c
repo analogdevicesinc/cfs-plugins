@@ -2,7 +2,7 @@
  *
  * Copyright (C) 2022-2023 Maxim Integrated Products, Inc. (now owned by 
  * Analog Devices, Inc.),
- * Copyright (C) 2023-2024 Analog Devices, Inc.
+ * Copyright (C) 2023-2026 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,10 @@
  * @file        main.c
  * @brief       Configures and starts the RTC and demonstrates the use of the alarms.
  * @details     The RTC is enabled and the sub-second alarm set to trigger every 250 ms.
- *              P2.22 (LED D1) is toggled each time the sub-second alarm triggers.  The
- *              time-of-day alarm is set to 10 seconds.  When the time-of-day alarm
- *              triggers, the rate of the sub-second alarm is switched to 500 ms.  The
- *              time-of-day alarm is then rearmed for another 10 sec.  Pressing SW3 will
+ *              P0.22 (LED D1) is toggled each time the sub-second alarm triggers.  The
+ *              time-of-day alarm is set to 5 seconds.  When the time-of-day alarm
+ *              triggers, the rate of the sub-second alarm is switched to 1000 ms.  The
+ *              time-of-day alarm is then rearmed for another 5 sec.  Pressing SW3 will
  *              output the current value of the RTC to the console UART.
  */
 
@@ -146,6 +146,10 @@ void printTime(void)
 // *****************************************************************************
 int main(void)
 {
+    if (MXC_RTC_Stop() != E_NO_ERROR) {
+        printf("Failed RTC_Stop\n");
+    }
+
     printf("\n*************************** RTC Example ****************************\n\n");
     printf("The RTC is enabled and the sub-second alarm set to trigger every %d ms.\n",
            SUBSECOND_MSEC_0);
@@ -165,45 +169,8 @@ int main(void)
     PB_RegisterCallback(0, (pb_callback)buttonHandler);
 
     // Turn LED off initially
-    LED_On(LED_ALARM);
-    LED_On(LED_TODA);
-
-    // Initialize RTC
-    if (MXC_RTC_Init(0, 0) != E_NO_ERROR) {
-        printf("Failed RTC Initialization\n");
-        printf("Example Failed\n");
-
-        while (1) {}
-    }
-
-    // Set Time of Day Alarm
-    if (MXC_RTC_DisableInt(MXC_RTC_INT_EN_LONG) == E_BUSY) {
-        return E_BUSY;
-    } else if (MXC_RTC_SetTimeofdayAlarm(TIME_OF_DAY_SEC) != E_NO_ERROR) {
-        printf("Failed RTC_SetTimeofdayAlarm\n");
-        printf("Example Failed\n");
-
-        while (1) {}
-    } else if (MXC_RTC_EnableInt(MXC_RTC_INT_EN_LONG) == E_BUSY) {
-        return E_BUSY;
-    }
-
-    // Set Sub-Second Alarm
-    if (MXC_RTC_DisableInt(MXC_RTC_INT_EN_SHORT) == E_BUSY) {
-        return E_BUSY;
-    } else if (MXC_RTC_SetSubsecondAlarm(MSEC_TO_RSSA(SUBSECOND_MSEC_0)) != E_NO_ERROR) {
-        printf("Failed RTC_SetSubsecondAlarm\n");
-        printf("Example Failed\n");
-
-        while (1) {}
-    } else if (MXC_RTC_EnableInt(MXC_RTC_INT_EN_SHORT) == E_BUSY) {
-        return E_BUSY;
-    }
-
-    // Enable Square Wave output
-    if (MXC_RTC_SquareWaveStart(MXC_RTC_F_512HZ) == E_BUSY) {
-        return E_BUSY;
-    }
+    LED_Off(LED_ALARM);
+    LED_Off(LED_TODA);
 
     // Start RTC
     if (MXC_RTC_Start() != E_NO_ERROR) {

@@ -17,11 +17,7 @@ import path from "path";
 import {
   CfsCodeGenerationService,
   CfsConfig,
-  CfsEtaCodeGenerator,
-  CfsEtaProjectGenerator,
   CfsFeatureScope,
-  CfsJsonProjectConfig,
-  CfsJsonSystemConfig,
   CfsPluginInfo,
   CfsPluginProperty,
   CfsProject,
@@ -33,8 +29,14 @@ import {
   CfsSystemConfigService,
   ConfiguredProject,
   SocControl
-} from "cfs-plugins-api";
+} from "cfs-types";
 import { PropertyProvider } from "./services/property-provider.js";
+import {
+  CfsEtaCodeGenerator,
+  CfsEtaProjectGenerator,
+  CfsJsonProjectConfig,
+  CfsJsonSystemConfig
+} from "cfs-plugins-sdk";
 
 class MsdkProjectPlugin
   implements

@@ -1,0 +1,234 @@
+  "Projects": [
+    {
+      "CoreId": "CM4-0",
+      "ProjectId": "CM4-0",
+      "FirmwarePlatform": "zephyr",
+      "PluginId": "com.analog.project.zephyr.plugin",
+      "PluginVersion": "^1.1.0",
+      "ExternallyManaged": false,
+      "PlatformConfig": {
+        "ProjectName": "m4-0",
+        "ZephyrVersion": "4.3.0",
+        "ZephyrBoardName": "max32666fthr/max32666/cpu0",
+        "EnableCoreDump": true
+      },
+      "Family": "Cortex-M",
+      "Partitions": [
+        {
+          "Name": "m4_flash",
+          "StartAddress": "0x10000000",
+          "Size": 983040,
+          "IsOwner": true,
+          "Access": "R/X",
+          "Config": {
+            "CHOSEN": "code-partition"
+          }
+        },
+        {
+          "Name": "coredump_partition",
+          "StartAddress": "0x100F0000",
+          "Size": 65536,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "CHOSEN": "coredump-partition",
+            "LABEL": "coredump"
+          }
+        },
+        {
+          "Name": "m4_sram",
+          "StartAddress": "0x20000000",
+          "Size": 573440,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "CHOSEN": "sram"
+          }
+        }
+      ],
+      "Peripherals": [
+        {
+          "Name": "CM4-0 SysTick",
+          "Signals": [],
+          "Config": {
+            "ENABLE": "TRUE",
+            "TICKS_PER_SEC": "10000"
+          }
+        },
+        {
+          "Name": "GPIO0",
+          "Signals": [
+            {
+              "Name": "P0.29",
+              "Config": {
+                "MODE": "OUT",
+                "PWR": "VDDIO",
+                "POLARITY": "LOW",
+                "DT_NAME": "led_1",
+                "PHANDLE": "led1",
+                "ALIAS": "ledred",
+                "DS": "0"
+              }
+            },
+            {
+              "Name": "P0.30",
+              "Config": {
+                "MODE": "OUT",
+                "PWR": "VDDIO",
+                "POLARITY": "LOW",
+                "DT_NAME": "led_2",
+                "PHANDLE": "led2",
+                "ALIAS": "ledblue",
+                "DS": "0"
+              }
+            },
+            {
+              "Name": "P0.31",
+              "Config": {
+                "MODE": "OUT",
+                "PWR": "VDDIO",
+                "POLARITY": "LOW",
+                "DT_NAME": "led_3",
+                "PHANDLE": "led3",
+                "ALIAS": "ledgreen",
+                "DS": "0"
+              }
+            }
+          ],
+          "Config": {}
+        },
+        {
+          "Name": "GPIO1",
+          "Signals": [
+            {
+              "Name": "P1.10",
+              "Config": {
+                "MODE": "IN",
+                "PWR": "VDDIO",
+                "PS": "WEAK_PU",
+                "POLARITY": "LOW",
+                "DT_NAME": "pb1",
+                "PHANDLE": "pb1",
+                "INPUT_CODE": "INPUT_KEY_0",
+                "ALIAS": "sw0"
+              }
+            }
+          ],
+          "Config": {}
+        },
+        {
+          "Name": "UART1",
+          "Signals": [
+            {
+              "Name": "CTS",
+              "Config": {}
+            },
+            {
+              "Name": "RTS",
+              "Config": {}
+            },
+            {
+              "Name": "RX",
+              "Config": {
+                "PWR": "VDDIO",
+                "PS": "WEAK_PU"
+              }
+            },
+            {
+              "Name": "TX",
+              "Config": {
+                "PWR": "VDDIO"
+              }
+            }
+          ],
+          "Config": {
+            "PARITY": "DISABLED",
+            "CHAR_SIZE": "8",
+            "STOP_BITS": "1",
+            "HW_FLOW_CTRL": "DISABLED",
+            "CHOSEN": "",
+            "BAUD": "115200"
+          }
+        },
+        {
+          "Name": "FLC0",
+          "Signals": [],
+          "Config": {}
+        },
+        {
+          "Name": "FLC1",
+          "Signals": [],
+          "Config": {}
+        }
+      ]
+    },
+    {
+      "CoreId": "CM4-1",
+      "ProjectId": "CM4-1",
+      "FirmwarePlatform": "",
+      "PluginId": "",
+      "PluginVersion": "",
+      "ExternallyManaged": true,
+      "Family": "Cortex-M",
+      "Partitions": [],
+      "Peripherals": []
+    }
+  ],
+  "Pins": [
+    {
+      "Pin": "E5",
+      "Peripheral": "UART1",
+      "Signal": "RX"
+    },
+    {
+      "Pin": "E6",
+      "Peripheral": "UART1",
+      "Signal": "TX"
+    },
+    {
+      "Pin": "H6",
+      "Peripheral": "GPIO0",
+      "Signal": "P0.29"
+    },
+    {
+      "Pin": "J6",
+      "Peripheral": "GPIO0",
+      "Signal": "P0.30"
+    },
+    {
+      "Pin": "K5",
+      "Peripheral": "GPIO0",
+      "Signal": "P0.31"
+    },
+    {
+      "Pin": "H3",
+      "Peripheral": "GPIO1",
+      "Signal": "P1.10"
+    }
+  ],
+  "ClockNodes": [
+    {
+      "Name": "UART0/1/2",
+      "Control": "UART1_ENABLE",
+      "Value": "TRUE",
+      "Enabled": true
+    }
+  ],
+  "ClockFrequencies": {
+    "ERTCO_CLK": 32768,
+    "32KOUT": 32768,
+    "POWER SEQUENCER": 8000,
+    "WAKE_UP": 32768,
+    "INRO": 8000,
+    "PCLK": 48000000,
+    "CPU0": 96000000,
+    "ERTCO_OSC": 32768,
+    "ERTCO_OUT": 32768,
+    "HSO": 96000000,
+    "SYS_OSC": 96000000,
+    "SYS_CLK": 96000000,
+    "ERTCO": 32768,
+    "UART0": 48000000,
+    "UART1": 48000000,
+    "UART2": 48000000
+  }

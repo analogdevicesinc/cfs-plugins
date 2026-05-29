@@ -24,7 +24,12 @@ function getUartClock() {
   let clock_enum = "MXC_UART_APB_CLK";
   switch (clock) {
     case "AOD_CLK":
-      clock_enum = "MXC_UART_AOD_CLK";
+    case "AON_CLK":
+      if (it.datamodel.Name === "MAX32675C") {
+        clock_enum = "MXC_UART_APB_CLK";
+      } else {
+        clock_enum = "MXC_UART_AOD_CLK";
+      }
       break;
     case "ERFO":
       clock_enum = "MXC_UART_ERFO_CLK";
@@ -35,6 +40,7 @@ function getUartClock() {
     case "EXT":
     case "EXT_CLK1":
     case "EXT_CLK2":
+    case "P0.12 AF2":
       clock_enum = "MXC_UART_EXT_CLK";
       break;
     case "INRO":
@@ -153,7 +159,7 @@ function getUARTDmaRx() {
 // Return the interrupt mask for any enabled interrupts.
 function getUartIntMask() {
   let ie_table;
-  if (it.datamodel.Name === "MAX32657" || it.datamodel.Name === "MAX32658") {
+  if (it.datamodel.Name === "MAX32657" || it.datamodel.Name === "MAX32658" || it.datamodel.Name === "MAX32662") {
     ie_table = [
       { ctrl: "RX_FRAME_ERROR_IE", value: "MXC_F_UART_INTEN_RX_FERR" },
       { ctrl: "RX_PARTY_ERROR_IE", value: "MXC_F_UART_INTEN_RX_PAR" },
@@ -161,10 +167,14 @@ function getUartIntMask() {
       { ctrl: "RX_OVERRUN_IE",     value: "MXC_F_UART_INTEN_RX_OV" },
       { ctrl: "RX_THD_IE",         value: "MXC_F_UART_INTEN_RX_THD" },
       { ctrl: "TX_ONE_BYTE_IE",    value: "MXC_F_UART_INTEN_TX_OB" },
-      { ctrl: "TX_HALF_EMPTY_IE",  value: "MXC_F_UART_INTEN_TX_THD" },
       { ctrl: "RX_FULL_IE",        value: "MXC_F_UART_INTEN_RX_FULL" }
     ];
-  } else if (it.datamodel.Name === "MAX32650" || it.datamodel.Name === "MAX32660" || it.datamodel.Name === "MAX32666") {
+    if (it.datamodel.Name === "MAX32662") {
+      ie_table.push({ ctrl: "TX_HALF_EMPTY_IE",  value: "MXC_F_UART_INTEN_TX_HE" });
+    } else {
+      ie_table.push({ ctrl: "TX_HALF_EMPTY_IE",  value: "MXC_F_UART_INTEN_TX_THD" });
+    }
+  } else if (it.datamodel.Name === "MAX32650" || it.datamodel.Name === "MAX32660") {
     ie_table = [
       { ctrl: "RX_FRAME_ERROR_IE", value: "MXC_F_UART_INT_EN_RX_FRAME_ERROR" },
       { ctrl: "RX_PARTY_ERROR_IE", value: "MXC_F_UART_INT_EN_RX_PARITY_ERROR" },
@@ -175,6 +185,19 @@ function getUartIntMask() {
       { ctrl: "TX_THD_IE",         value: "MXC_F_UART_INT_EN_TX_FIFO_LVL" },
       { ctrl: "BREAK_IE",          value: "MXC_F_UART_INT_EN_BREAK" },
       { ctrl: "RX_TO_IE",          value: "MXC_F_UART_INT_EN_RX_TO" },
+      { ctrl: "LAST_BREAK_IE",     value: "MXC_F_UART_INT_EN_LAST_BREAK" }
+    ];
+  } else if (it.datamodel.Name === "MAX32666") {
+    ie_table = [
+      { ctrl: "RX_FRAME_ERROR_IE", value: "MXC_F_UART_INT_EN_RX_FRAME_ERROR" },
+      { ctrl: "RX_PARTY_ERROR_IE", value: "MXC_F_UART_INT_EN_RX_PARITY_ERROR" },
+      { ctrl: "CTS_IE",            value: "MXC_F_UART_INT_EN_CTS_CHANGE" },
+      { ctrl: "RX_OVERRUN_IE",     value: "MXC_F_UART_INT_EN_RX_OVERRUN" },
+      { ctrl: "RX_THD_IE",         value: "MXC_F_UART_INT_EN_RX_FIFO_THRESH" },
+      { ctrl: "TX_ONE_BYTE_IE",    value: "MXC_F_UART_INT_EN_TX_FIFO_ALMOST_EMPTY" },
+      { ctrl: "TX_THD_IE",         value: "MXC_F_UART_INT_EN_TX_FIFO_THRESH" },
+      { ctrl: "BREAK_IE",          value: "MXC_F_UART_INT_EN_BREAK" },
+      { ctrl: "RX_TO_IE",          value: "MXC_F_UART_INT_EN_RX_TIMEOUT" },
       { ctrl: "LAST_BREAK_IE",     value: "MXC_F_UART_INT_EN_LAST_BREAK" }
     ];
   } else {

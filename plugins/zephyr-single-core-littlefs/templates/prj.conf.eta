@@ -24,10 +24,7 @@
 <%~ include("@normalizeSoc", it) %>
 
 # fs_dirent structures are big.
-CONFIG_MAIN_STACK_SIZE=4096
-
-# Let __ASSERT do its job
-CONFIG_DEBUG=y
+CONFIG_MAIN_STACK_SIZE=16384
 
 CONFIG_LOG=y
 CONFIG_LOG_MODE_MINIMAL=y
@@ -50,18 +47,15 @@ CONFIG_THREAD_NAME=y
 CONFIG_DEBUG_THREAD_INFO=y
 CONFIG_THREAD_ANALYZER=y
 
-<% if (["MAX32690", "MAX32657", "MAX32658"].includes(it.projectInflectionPoint(it.soc))) { %>
+<% if (["MAX32650", "MAX32657", "MAX32658", "MAX32660", "MAX32670", "MAX32690"].includes(it.projectInflectionPoint(it.soc))) { %>
 # Enable Zephyr core dump support
 CONFIG_DEBUG_COREDUMP=y
 CONFIG_DEBUG_COREDUMP_BACKEND_FLASH_PARTITION=y
 CONFIG_DEBUG_COREDUMP_MEMORY_DUMP_THREADS=y
 CONFIG_SMP=n
 CONFIG_PRINTK=y
-CONFIG_LOG=y
 
 CONFIG_HEAP_MEM_POOL_SIZE=8192
-CONFIG_MAIN_STACK_SIZE=16384
-
 
 # Enable flash support
 CONFIG_FLASH=y

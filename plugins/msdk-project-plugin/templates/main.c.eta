@@ -1,11 +1,17 @@
 <%~ include("@copyrightHeader", it) %>
+<%
+function getCoreSuffix() {
+  if (it.soc.toLowerCase() === "max32666" && it.coreId === "CM4-1") {
+    return "_core1";
+  }
+  return "";
+}
+%>
 
-<% if (['max32650', 'max32655', 'max32657', 'max32658', 'max32670', 'max32690', 'max78000', 'max78002'].includes(it.soc.toLowerCase())) { %>
 /* Include global variables and configurations for the SoC.
 */
-#include "../soc_init.h"
+#include "../soc_init<%= getCoreSuffix() %>.h"
 
-<% } %>
-int main(void) {
+int main<%= getCoreSuffix() %>(void) {
   return 0;
 }

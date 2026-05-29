@@ -5,7 +5,7 @@
       "StartAddress": "0x10000000",
       "Size": 262144,
       "IsOwner": true,
-      "Access": "R",
+      "Access": "R/X",
       "Config": {}
     },
     {

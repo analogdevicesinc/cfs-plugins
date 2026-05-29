@@ -26,6 +26,13 @@ function modifiesSysClk() {
     return result;
   }
 
+  <% } else if (isSystemClockSetTo("SYS_OSC Mux", "MUX", "IPO PRESCALER")) { %>
+  /* SYS_OSC Mux: Clock Source is set to IPO. */
+  result = MXC_SYS_Clock_Select(MXC_SYS_CLOCK_IPO);
+  if (result != E_NO_ERROR) {
+    return result;
+  }
+
 <% } else if (isSystemClockSet("SYS_OSC Mux", "MUX")) { %>
   /* SYS_OSC Mux: Clock Source is set to <%= getClockSettingDesc("SYS_OSC Mux", "MUX") %>. */
   result = MXC_SYS_Clock_Select(MXC_SYS_CLOCK_<%= getClockSetting("SYS_OSC Mux", "MUX") %>);
@@ -52,11 +59,20 @@ function modifiesSysClk() {
   MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_AES);
 
 <% } %>
-<% if (isSystemClockSetTo("AES/AES KEY/TRNG", "AES_KEY_ENABLE", "TRUE")) { %>
-  /* AES/AES KEY/TRNG: Enable the AES Clock. */
-  MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_AES);
+<% if (isPeripheralClockSetTo("DMA", "ENABLE", "TRUE")) { %>
+  /* DMA: Enable the Component Clock. */
+  MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_DMA);
 
 <% } %>
+<% if (isPeripheralClockSetTo("PT0", "ENABLE", "TRUE") || %>
+<%     isPeripheralClockSetTo("PT1", "ENABLE", "TRUE") || %>
+<%     isPeripheralClockSetTo("PT2", "ENABLE", "TRUE") || %>
+<%     isPeripheralClockSetTo("PT3", "ENABLE", "TRUE")) { %>
+  /* PT0-3: Enable the Component Clock. */
+  MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_PT);
+
+<% } %>
+<%~ include("../adc_sar12_config.c.eta", { ...it, instance: "ADC", enable: "ENABLE", mux: "MUX", div: "DIV", clock_default: "SYS_OSC" }) %>
 <%~ include("../spi_config.c.eta", { ...it, instance: "SPI0", clock: "PeripheralClock", enable: "SPI0_ENABLE" }) %>
 <%~ include("../spi_config.c.eta", { ...it, instance: "SPI1", clock: "PeripheralClock", enable: "SPI1_ENABLE" }) %>
 <%~ include("../uart_config.c.eta", { ...it, instance: "UART0", enable: "UART0_ENABLE", mux: "UART0_MUX", clock_default: "PCLK" }) %>
@@ -64,13 +80,14 @@ function modifiesSysClk() {
 <%~ include("../tmr_config.c.eta", { ...it, instance: "TMR0", enable: "TMR0_ENABLE", muxa: "TMR0a_MUX", muxb: "TMR0b_MUX", clock_default: "PCLK" }) %>
 <%~ include("../tmr_config.c.eta", { ...it, instance: "TMR1", enable: "TMR1_ENABLE", muxa: "TMR1a_MUX", muxb: "TMR1b_MUX", clock_default: "PCLK" }) %>
 <%~ include("../tmr_config.c.eta", { ...it, instance: "TMR2", enable: "TMR2_ENABLE", muxa: "TMR2a_MUX", muxb: "TMR2b_MUX", clock_default: "PCLK" }) %>
-<%~ include("../tmr_config.c.eta", { ...it, instance: "LPTMR0", msdk_instance: "TMR3", enable: "ENABLE", muxa: "MUX", clock_default: "IBRO" }) %>
+<%~ include("../tmr_config.c.eta", { ...it, instance: "LPTMR0", msdk_instance: "TMR3", enable: "ENABLE", muxa: "MUX", clock_default: "AOD_CLK" }) %>
 <%~ include("../i2c_config.c.eta", { ...it, instance: "I2C0", clock: "PeripheralClock", enable: "I2C0_ENABLE" }) %>
 <%~ include("../i2c_config.c.eta", { ...it, instance: "I2C1", clock: "PeripheralClock", enable: "I2C1_ENABLE" }) %>
 <%~ include("../wdt_config.c.eta", { ...it, instance: "WDT0", enable: "ENABLE", mux: "MUX", clock_default: "PCLK" }) %>
 <%~ include("../rtc_config.c.eta", { ...it, instance: "RTC", output_clocknode: "32KCAL", output_ctrl: "32KCAL" }) %>
-<%~ include("../i2s_config.c.eta", { ...it, instance: "I2S0", enable: "ENABLE" }) %>
+<%~ include("../i2s_config.c.eta", { ...it, instance: "I2S", enable: "ENABLE" }) %>
 <%~ include("../trng_config.c.eta", { ...it, instance: "TRNG", enable: "TRNG_ENABLE"}) %>
+<%~ include("../can_config.c.eta", { ...it, instance: "CAN", enable: "ENABLE"}) %>
 <% if (modifiesSysClk()) { %>
   /* Update the System Core Clock as core clock settings have changed. */
   SystemCoreClockUpdate();

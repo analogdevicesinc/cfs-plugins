@@ -52,16 +52,6 @@ function modifiesSysClk() {
   MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_BTLE);
 
 <% } %>
-<% if (isPeripheralClockSetTo("CAN0", "CAN0_ENABLE", "TRUE")) { %>
-  /* CAN0/1: Enable the CAN0 Clock. */
-  MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_CAN0);
-
-<% } %>
-<% if (isPeripheralClockSetTo("CAN1", "CAN1_ENABLE", "TRUE")) { %>
-  /* CAN0/1: Enable the CAN1 Clock. */
-  MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_CAN1);
-
-<% } %>
 <% if (isPeripheralClockSetTo("CTB", "CTB_ENABLE", "TRUE")) { %>
   /* CTB/TRNG: Enable the CTB Clock. */
   MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_CRYPTO);
@@ -105,31 +95,23 @@ function modifiesSysClk() {
   /* High-Speed USB: Enable the Component Clock. */
   MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_USB);
 
-<% } %>
-<% if (isPeripheralClockSetTo("USBHS", "USB_MUX", "SYS_CLK_DIV_10")) { %>
+<%   if (getPeripheralClockSetting("USBHS", "USB_MUX", "SYS_CLK_DIV_10") === "SYS_CLK_DIV_10") { %>
   /* High-Speed USB: Clock Source for USB PHY is set to SYS_CLK divided by 10. */
   result = MXC_USB_SetClockSource(MXC_USB_CLOCK_SYS_DIV_10);
   if (result != E_NO_ERROR) {
     return result;
   }
 
-<% } %>
-<% if (isPeripheralClockSetTo("USBHS", "USB_MUX", "ERFO")) { %>
-  /* High-Speed USB: Clock Source for USB PHY is set to ERFO (External RF Osc.). */
-  result = MXC_USB_SetClockSource(MXC_USB_CLOCK_ERFO);
-  if (result != E_NO_ERROR) {
-    return result;
-  }
-
-<% } %>
-<% if (isPeripheralClockSetTo("USBHS", "USB_MUX", "USBCLKEXT")) { %>
+<%   } %>
+<%   if (isPeripheralClockSetTo("USBHS", "USB_MUX", "USBCLKEXT")) { %>
   /* High-Speed USB: Clock Source for USB PHY is set to USBCLKEXT on P0.27. */
   result = MXC_USB_SetClockSource(MXC_USB_CLOCK_EXTCLK);
   if (result != E_NO_ERROR) {
     return result;
   }
 
-<% } %>
+<%   } %>
+<% }   /* end if "High-Speed USB", "ENABLE", "TRUE"*/  %>
 <% if (isSystemClockSetTo("EMCC", "ENABLE", "TRUE")) { %>
   /* EMCC: Enable the Component Clock. */
   MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_SYSCACHE);
@@ -232,6 +214,8 @@ function modifiesSysClk() {
 <%~ include("../i2s_config.c.eta", { ...it, instance: "I2S0", enable: "ENABLE" }) %>
 <%~ include("../trng_config.c.eta", { ...it, instance: "TRNG", enable: "TRNG_ENABLE"}) %>
 <%~ include("../owm_config.c.eta", { ...it, instance: "OWM", enable: "ENABLE" }) %>
+<%~ include("../can_config.c.eta", { ...it, instance: "CAN0", enable: "CAN0_ENABLE"}) %>
+<%~ include("../can_config.c.eta", { ...it, instance: "CAN1", enable: "CAN1_ENABLE"}) %>
 <% if (isPeripheralClockSetTo("USBHS", "ENABLE", "TRUE")) { %>
   /* Lock the clock configuration for USB. */
   MXC_USB_LockClockSource(true);

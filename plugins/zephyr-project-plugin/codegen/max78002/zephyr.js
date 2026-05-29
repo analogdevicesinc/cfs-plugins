@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024-2025 Analog Devices, Inc.
+ * Copyright (c) 2024-2026 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -237,8 +237,17 @@ peripheralData = [
           { name: "data-bits", type: "int", control: "CHAR_SIZE", cfg_default: "5"}
       ]},
     { zephyr: "wdt0", datamodel: "WDT0", enable: "ENABLE", clock_mux: "MUX", clock_default: "PCLK"},
-    { zephyr: "wdt1", datamodel: "LPWDT0", enable: "ENABLE", clock_mux: "MUX", clock_default: "IBRO"}
+    { zephyr: "wdt1", datamodel: "LPWDT0", enable: "ENABLE", clock_mux: "MUX", clock_default: "IBRO"},
+    { zephyr: "wut0", datamodel: "WUT", zephyrVersionMin: "4.3.0"}
 ];
+
+// Filter peripheralData based on zephyrVersionMin/zephyrVersionMax.
+// Entries outside the supported range are removed and later added to unsupported_in_dts.
+const { supported, unsupported } = filterByZephyrVersion(peripheralData);
+
+// Replace peripheralData with only the supported peripherals so the template
+// does not generate code for peripherals filtered out by version constraints.
+peripheralData = supported;
 
 unsupported_in_dts = [
   {datamodel: "AES", diag: "The Advanced Encryption Standard is not currently supported in devicetree.", ctrl: "AES_ENABLE", value: "TRUE"},
@@ -260,7 +269,6 @@ unsupported_in_dts = [
   {datamodel: "SIMO", diag: "The Single Inductor Multiple Output Power Supply peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
   {datamodel: "USBHS", clocknode: "High-Speed USB", diag: "The High-Speed USB peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
   {datamodel: "USBHS", clocknode: "High-Speed USB DIV", diag: "The High-Speed USB peripheral is not currently supported in devicetree.", ctrl: "DIV", value: "10"},
-  {datamodel: "WUT", diag: "The Wake-Up Timer peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
   {datamodel: "RTC", clocknode: "SQWOUT", diag: "Enabling SQWOUT from the RTC is not currently supported in devicetree.", ctrl: "SQWOUT", value: "1HZ"},
   {datamodel: "RTC", clocknode: "SQWOUT", diag: "Enabling SQWOUT from the RTC is not currently supported in devicetree.", ctrl: "SQWOUT", value: "512HZ"},
   {datamodel: "RTC", clocknode: "SQWOUT", diag: "Enabling SQWOUT from the RTC is not currently supported in devicetree.", ctrl: "SQWOUT", value: "4KHZ"},
@@ -270,6 +278,8 @@ unsupported_in_dts = [
   {clocknode: "LPM Mux", diag: "Setting the LPM Mux is not currently supported in devicetree.", ctrl: "MUX", value: "SYS_CLK_DIV_2_ISO"}
 ];
 
+// Add filtered-out peripherals to unsupported_in_dts
+unsupported_in_dts.push(...buildUnsupportedVersionEntries(unsupported));
 
 function mapClockName(clock) {
     if (clock === "P0.3") {
@@ -294,7 +304,7 @@ function mapClockName(clock) {
 
 function getClocksUsed() {
     let clocksUsed = new Set();
-    for (const peri of peripheralData) {
+    for (const peri of supported) {
         if (peri.clock_mux && isPeripheralClockSetTo(peri.datamodel, peri.enable, "TRUE")) {
             const clockName = mapClockName(getPeripheralClockSetting(peri.datamodel, peri.clock_mux, peri.clock_default));
             if (clockName) {

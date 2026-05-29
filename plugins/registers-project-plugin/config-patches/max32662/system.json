@@ -1,0 +1,10 @@
+{
+  "ClockFrequencies": {
+    "PCLK": 50000000,
+    "INRO": 8000,
+    "SYS_OSC": 100000000,
+    "SYS_CLK": 100000000,
+    "IPO": 100000000,
+    "IPO PRESCALER": 100000000
+  }
+}

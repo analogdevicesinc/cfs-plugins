@@ -21,18 +21,3 @@
 		};
 	};
 };
-
-<% if (["max32672"].includes(it.soc.toLowerCase())) { %>
-&flash1 {
-	partitions {
-		compatible = "fixed-partitions";
-		#address-cells = <1>;
-		#size-cells = <1>;
-
-		lfs1_partition: partition@0 {
-			/* This partition is not chosen. */
-			reg = <0x0 DT_SIZE_K(512)>;
-		};
-	};
-};
-<% } %>

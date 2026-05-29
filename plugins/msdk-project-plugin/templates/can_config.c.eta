@@ -1,0 +1,227 @@
+<%
+/**
+ * Copyright (c) 2025 Analog Devices, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+// Return the CAN bit segments (For Classic CAN)
+function getCANBitSegments() {
+  const seg1_tq = getPeriConfigValue(it.instance, "TSEG1", "15");
+  const seg2_tq = getPeriConfigValue(it.instance, "TSEG2", "7");
+  const sjw = getPeriConfigValue(it.instance, "SJW", "3");
+  return "MXC_CAN_BIT_SEGMENTS(" + seg1_tq + ", " + seg2_tq + ", " + sjw + ")";
+}
+
+// Return the CAN bitrate selection
+function getCANBitrateSel() {
+  return getPeriConfigValue(it.instance, "FD_EN", "FALSE") === "TRUE" ? "MXC_CAN_BITRATE_SEL_FD_DATA" : "MXC_CAN_BITRATE_SEL_NOMINAL";
+}
+
+// Return the hardware acceptance filter scheme
+function getCANAFM() {
+  return getPeriConfigValue(it.instance, "AFM", "SINGLE");
+}
+
+// Return the message ID used for the CAN message filter (Single filter)
+function getCANSingleFilterID() {
+  return getPeriConfigValue(it.instance, "FILTER_ID_SINGLE", "0");
+}
+
+// Return the message ID used for the CAN message filter (Dual filter 1)
+function getCANDual1FilterID() {
+  return getPeriConfigValue(it.instance, "FILTER_ID_DUAL_1", "0");
+}
+
+// Return the message ID used for the CAN message filter (Dual filter 2)
+function getCANDual2FilterID() {
+  return getPeriConfigValue(it.instance, "FILTER_ID_DUAL_2", "0");
+}
+
+// Return the length of the CAN message ID (11 bits or 29 bits) for the single filter
+function getCANSingleFilterIDLength() {
+  return getPeriConfigValue(it.instance, "FILTER_ID_LENGTH_SINGLE", "STD") === "EXT" ? "EXT" : "STD";
+}
+
+// Return the length of the CAN message ID (11 bits or 29 bits) for the Dual filter 1
+function getCANDual1FilterIDLength() {
+  return getPeriConfigValue(it.instance, "FILTER_ID_LENGTH_DUAL_1", "STD") === "EXT" ? "EXT" : "STD";
+}
+
+// Return the length of the CAN message ID (11 bits or 29 bits) for the Dual filter 2
+function getCANDual2FilterIDLength() {
+  return getPeriConfigValue(it.instance, "FILTER_ID_LENGTH_DUAL_2", "STD") === "EXT" ? "EXT" : "STD";
+}
+
+// Get the filter configuration for single filter
+function getCANSingleFilterConfig() {
+  const filterType = getPeriConfigValue(it.instance, "FILTER_TYPE_SINGLE", "EXACT");
+  const filterIDLength = getCANSingleFilterIDLength();
+  return "MXC_CAN_FILT_CFG_" + filterType + "_ADD" + " | " +
+         "MXC_CAN_FILT_CFG_SINGLE_" + filterIDLength + "_ID";
+}
+
+// Get the filter configuration for dual filter 1
+function getCANDual1FilterConfig() {
+  const filterType = getPeriConfigValue(it.instance, "FILTER_TYPE_DUAL_1", "EXACT");
+  const filterIDLength = getCANDual1FilterIDLength();
+  return "MXC_CAN_FILT_CFG_" + filterType + "_ADD" + " | " +
+         "MXC_CAN_FILT_CFG_DUAL1_" + filterIDLength + "_ID";
+}
+
+// Get the filter configuration for dual filter 2
+function getCANDual2FilterConfig() {
+  const filterType = getPeriConfigValue(it.instance, "FILTER_TYPE_DUAL_2", "EXACT");
+  const filterIDLength = getCANDual2FilterIDLength();
+  return "MXC_CAN_FILT_CFG_" + filterType + "_ADD" + " | " +
+         "MXC_CAN_FILT_CFG_DUAL2_" + filterIDLength + "_ID";
+}
+
+// Return the mask for maskable filter type. 1 = match, 0 = dont care. (Single filter)
+function getCANSingleFilterMask() {
+  return getPeriConfigValue(it.instance, "FILTER_MATCH_MASK_SINGLE", "0");
+}
+
+// Return the mask for maskable filter type. 1 = match, 0 = dont care. (Dual filter 1)
+function getCANDual1FilterMask() {
+  return getPeriConfigValue(it.instance, "FILTER_MATCH_MASK_DUAL_1", "0");
+}
+
+// Return the mask for maskable filter type. 1 = match, 0 = dont care. (Dual filter 2)
+function getCANDual2FilterMask() {
+  return getPeriConfigValue(it.instance, "FILTER_MATCH_MASK_DUAL_2", "0");
+}
+
+// Return the interrupt mask for any enabled interrupts in INTFL register.
+function getCANIntMask() {
+  const cfg = getAssignedPeripheral(it.instance).Config;
+  const ie_table = [
+    { ctrl: "DOR_IE",       value: "MXC_F_CAN_INTEN_DOR" },
+    { ctrl: "BERR_IE",      value: "MXC_F_CAN_INTEN_BERR" },
+    { ctrl: "TX_IE",        value: "MXC_F_CAN_INTEN_TX" },
+    { ctrl: "RX_IE",        value: "MXC_F_CAN_INTEN_RX" },
+    { ctrl: "ERPSV_IE",     value: "MXC_F_CAN_INTEN_ERPSV" },
+    { ctrl: "ERWARN_IE",    value: "MXC_F_CAN_INTEN_ERWARN" },
+    { ctrl: "AL_IE",        value: "MXC_F_CAN_INTEN_AL" },
+    { ctrl: "WU_IE",        value: "MXC_F_CAN_INTEN_WU" }
+  ];
+  let arg = "";
+  for (ie of ie_table) {
+    if (cfg?.[ie.ctrl] === "TRUE") {
+      if (arg !== "")
+        arg += " | ";
+      arg += ie.value;
+    }
+  }
+  return arg;
+}
+
+// Return the interrupt mask for any enabled interrupts in extended INTFL register.
+function getCANExtIntMask() {
+  const cfg = getAssignedPeripheral(it.instance).Config;
+  const ie_table = [
+    { ctrl: "RX_THD_IE",    value: "MXC_F_CAN_EINTEN_RX_THD" },
+    { ctrl: "RX_TO_IE",     value: "MXC_F_CAN_EINTEN_RX_TO" }
+  ];
+  let arg = "";
+  for (ie of ie_table) {
+    if (cfg?.[ie.ctrl] === "TRUE") {
+      if (arg !== "")
+        arg += " | ";
+      arg += ie.value;
+    }
+  }
+  return arg;
+}
+%>
+<%
+  eval(this.render("templates/can_common.js"));
+%>
+<% if (isUnassignedPeripheralClockSetTo(it.instance, it.enable, "TRUE")) { %>
+  /* The <%= it.instance %> peripheral is enabled on the clock canvas but is
+   * not assigned to any core. In order to generate configuration code, please
+   * assign the peripheral to a core.
+   */
+
+<% } else if (getAssignedPeripheral(it.instance)) { %>
+  { /* Configure <%= it.instance %>.
+<%   if (getPeripheralDescription(it.instance)) { %>
+     * This peripheral is used for <%= getPeripheralDescription(it.instance) %>.
+<%   } %>
+<%   if (!isPeripheralClockSetTo(it.instance, it.enable, "TRUE")) { %>
+     * Note: This peripheral was not enabled on the clock configuration canvas.
+     * Nonetheless, as a result of the following configuration, the peripheral will be
+     * clocked on.
+<%   } %>
+     */
+
+    /* Initialize the peripheral. */
+    result = MXC_CAN_Init(<%= getCANPeripheralIndex() %>U,
+                          MXC_CAN_OBJ_CFG_TX_RTR_RX_DATA,
+                          <%= getCANUnitCallback() %>,
+<%   if (it.datamodel.Name === "MAX32690") { %>
+                          <%= getCANObjCallback() %>);
+<%   } else if (it.datamodel.Name === "MAX32662") { %>
+                          <%= getCANObjCallback() %>,
+                          0U /*dummy*/);
+<%   } %>
+    if (result != E_NO_ERROR) {
+      return result;
+    }
+
+    /* Set the CAN bit rate. */
+    result = MXC_CAN_SetBitRate(<%= getCANPeripheralIndex() %>U,
+                                <%= getCANBitrateSel() %>,
+                                <%= getPeriConfigValue(it.instance, "BITRATE", "500000") %>U,
+                                <%= getCANBitSegments() %>);
+    if (result != E_NO_ERROR) {
+      return result;
+    }
+
+    /* Set the CAN acceptance filter. */
+<%   if (getCANAFM() === "SINGLE") { %>
+    result = MXC_CAN_ObjectSetFilter(<%= getCANPeripheralIndex() %>U,
+                                     <%= getCANSingleFilterConfig() %>,
+                                     <%= getCANSingleFilterID() %>U,
+                                     <%= getCANSingleFilterMask() %>U);
+    if (result != E_NO_ERROR) {
+      return result;
+    }
+<%   } else if (getCANAFM() === "DUAL") { %>
+    result = MXC_CAN_ObjectSetFilter(<%= getCANPeripheralIndex() %>U,
+                                     <%= getCANDual1FilterConfig() %>,
+                                     <%= getCANDual1FilterID() %>U,
+                                     <%= getCANDual1FilterMask() %>U);
+    if (result != E_NO_ERROR) {
+      return result;
+    }
+
+    result = MXC_CAN_ObjectSetFilter(<%= getCANPeripheralIndex() %>U,
+                                     <%= getCANDual2FilterConfig() %>,
+                                     <%= getCANDual2FilterID() %>U,
+                                     <%= getCANDual2FilterMask() %>U);
+    if (result != E_NO_ERROR) {
+      return result;
+    }
+<%   } %>
+
+<%   if (getCANIntMask() !== "" || getCANExtIntMask() !== "") { %>
+    /* Enable interrupts. */
+    result = MXC_CAN_EnableInt(<%= getCANPeripheralIndex() %>U,
+                               <%= getCANIntMask() === "" ? "0U" : getCANIntMask() %>,
+                               <%= getCANExtIntMask() === "" ? "0U" : getCANExtIntMask() %>);
+    if (result != E_NO_ERROR) {
+      return result;
+    }
+
+<%   } %>
+  }
+
+<% } %>

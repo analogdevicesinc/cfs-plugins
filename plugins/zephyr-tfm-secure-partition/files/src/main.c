@@ -9,18 +9,9 @@
 
 #include "dummy_partition.h"
 
-// Zephelin profiler includes
-#ifdef CONFIG_ZPL
-#include <zpl.h>
-#endif
-
 int main(void)
 {
 	uint8_t digest[32];
-
-#ifdef CONFIG_ZPL
-	zpl_init();
-#endif
 
 	for (int key = 0; key < 6; key++) {
 		psa_status_t status = dp_secret_digest(key, digest, sizeof(digest));

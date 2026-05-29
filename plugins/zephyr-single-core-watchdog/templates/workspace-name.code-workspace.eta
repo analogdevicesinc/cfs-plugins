@@ -4,7 +4,7 @@
       "path": ".cfs"
     },
     {
-      "path": "<%= it.soc.toLowerCase() === 'max32657' || it.soc.toLowerCase() === 'max32658' ? 'm33' : 'm4' %>"
+      "path": "<%= it.soc.toLowerCase() === 'max32657' || it.soc.toLowerCase() === 'max32658' ? 'm33' : it.soc.toLowerCase() === 'max32666' ? 'm4-0' : 'm4' %>"
     }
   ],
   "settings": {

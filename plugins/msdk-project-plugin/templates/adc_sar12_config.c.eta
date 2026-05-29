@@ -16,21 +16,30 @@
 // Return the ADC clock source enum.
 function getADCClock() {
   const clock = getPeripheralClockSetting(it.instance, it.mux, it.clock_default);
-  let clock_enum = "SYS_OSC";
+  let clock_enum = "CLK_SYS_OSC";
   switch (clock) {
     case "ADC_CLK_EXT":
-      clock_enum = "EXT";
+    case "EXT_CLK1":
+      clock_enum = "CLK_EXT";
       break;
     case "ERFO":
+      clock_enum = it.datamodel.Name === "MAX32662" ? "CLK_ADC2" : "CLK_" + clock;
+      break;
     case "IBRO":
-      clock_enum = clock;
+      clock_enum = it.datamodel.Name === "MAX32662" ? "CLK_ADC1" : "CLK_" + clock;
       break;
     case "SYS_CLK":
       if (it.datamodel.Name === "MAX78002") {
-      clock_enum = "HCLK";
+      clock_enum = "CLK_HCLK";
       } else {
-      clock_enum = "SYS_OSC";
+      clock_enum = "CLK_SYS_OSC";
       }
+      break;
+    case "SYS_OSC":
+      clock_enum = it.datamodel.Name === "MAX32662" ? "HCLK" : "CLK_HCLK";
+      break;
+    case "HF_EXT_CLK":
+      clock_enum = "CLK_ADC0";
       break;
   }
   return clock_enum;
@@ -49,7 +58,17 @@ function getADCTrigSel() {
       sel = "P0_10";
       break;
     case "AIN_TRIG_B":
-      sel = "P1_0";
+      sel = it.datamodel.Name === "MAX32672" ? "P0_22" : "P1_0";
+      break;
+    case "AIN_TRIG_D":
+      if (it.datamodel.Name === "MAX32672") {
+        // On MAX32672 TRIG_D can be on P0_29 - pins 18, 25 or C5 (depending on the package), or TRIG_D can be on P1_4 - pins 21 or B5
+        if (getAssignedSignal("ADC", "TRIG_D", "18") != undefined || getAssignedSignal("ADC", "TRIG_D", "25") != undefined || getAssignedSignal("ADC", "TRIG_D", "C5") != undefined) {
+          sel = "P0_29";
+        } else if (getAssignedSignal("ADC", "TRIG_D", "21") != undefined || getAssignedSignal("ADC", "TRIG_D", "B5") != undefined) {
+          sel = "P1_4";
+        }
+      }
       break;
     case "ADC_HW_TRIG_A":
       sel = "P1_12";
@@ -59,6 +78,12 @@ function getADCTrigSel() {
       break;
     case "ADC_HW_TRIG_C":
       sel = it.datamodel.Name === "MAX78002" ? "P1_14" : "P2_15";
+      break;
+    case "ADC_TRIG_D":
+      sel = "P0_9";
+      break;
+    case "ADC_TRIG_E":
+      sel = "P0_0";
       break;
     case "THERM_RDY":
       sel = "TEMP_SENS";
@@ -99,8 +124,12 @@ function getADCChannel(slot) {
       return "MXC_ADC_CH_VDDA_DIV2";
     case "TEMP":
       return it.datamodel.Name === "MAX78002" ? "MXC_ADC_CH_TEMP_SENSOR" : "MXC_ADC_CH_TEMP_SENS";
+    case "VCORE":
+      return it.datamodel.Name === "MAX32662" ? "MXC_ADC_CH_VCOREA" : "MXC_ADC_CH_VCORE";
     case "VCORE_A":
       return "MXC_ADC_CH_VCOREA";
+    case "VDDIO_4":
+      return "MXC_ADC_CH_VDDIO_DIV4";
     case "VDD3A_4":
       // There is no MSDK enum for this.
       return "18 /* VDD3A/4 */";
@@ -176,7 +205,7 @@ function addDMAComments() {
 
     /* Initialize the peripheral. */
     mxc_adc_req_t <%= it.instance.toLowerCase() %>_config = {
-      .clock = MXC_ADC_CLK_<%= getADCClock() %>,
+      .clock = MXC_ADC_<%= getADCClock() %>,
       .clkdiv = MXC_ADC_CLKDIV_<%= getADCDiv() %>,
       .cal = MXC_ADC_<%= getPeriConfigValue(it.instance, "SKIP_CAL", "FALSE") === "TRUE" ? "SKIP_CAL" : "EN_CAL" %>,
       .ref = MXC_ADC_REF_<%= getPeriConfigValue(it.instance, "REF_TRIM", "INT_1V25") %>,

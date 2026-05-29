@@ -3,11 +3,22 @@
     {
       "Name": "m4_flash",
       "StartAddress": "0x10000000",
-      "Size": 3145728,
+      "Size": 3080192,
       "IsOwner": true,
-      "Access": "R",
+      "Access": "R/X",
       "Config": {
         "CHOSEN": "code-partition"
+      }
+    },
+    {
+      "Name": "coredump_partition",
+      "StartAddress": "0x102F0000",
+      "Size": 65536,
+      "IsOwner": true,
+      "Access": "R/W",
+      "Config": {
+        "CHOSEN": "coredump-partition",
+        "LABEL": "coredump"
       }
     },
     {
@@ -29,6 +40,11 @@
         "ENABLE": "TRUE",
         "TICKS_PER_SEC": "10000"
       }
+    },
+    {
+      "Name": "FLC",
+      "Signals": [],
+      "Config": {}
     }
   ]
 }

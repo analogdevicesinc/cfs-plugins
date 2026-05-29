@@ -14,11 +14,17 @@ Universal instructions on building, flashing, and debugging this project can be 
 
 ## Required Connections
 
+If using the MAX32672EVKIT:
 -   Connect a USB cable between the PC and the CN1 (USB/PWR) connector.
 -   Connect pins JP10(RX_SEL) and JP11(TX_SEL) to RX0 and TX0  header.
 -   Open an terminal application on the PC and connect to the EV kit's console UART at 115200, 8-N-1.
 -   Close jumpers JP4 and JP5 (I2C0_PU).
 -   Connect I2C0 (SCL - P0.6, SDA - P0.7) to I2C bus.
+
+If using the MAX32672FTHR:
+-   Connect a USB cable between the PC and the J4 connector.
+-   Open a terminal application on the PC and connect to the FTHR's console UART at 115200, 8-N-1.
+-   Connect I2C2 (SCL - P0.18, SDA - P0.19) to I2C bus.
 
 ## Expected Output
 
@@ -30,7 +36,7 @@ The Console UART of the device will output these messages:
 This example finds the addresses of any I2C Target devices connected to the
 same bus as I2C0 (SCL - P0.6, SDA - P0.7). Enable I2C0 pullup resistors
 by connecting jumpers JP4 and JP5.
--->I2C Controller Initialization Complete
+
 -->Scanning started
 .........................................................................
 Found target ID 080; 0x50

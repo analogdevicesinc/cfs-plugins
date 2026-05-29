@@ -3,11 +3,22 @@
     {
       "Name": "m4_flash",
       "StartAddress": "0x10000000",
-      "Size": 458752,
+      "Size": 393216,
       "IsOwner": true,
-      "Access": "R",
+      "Access": "R/X",
       "Config": {
         "CHOSEN": "code-partition"
+      }
+    },
+    {
+      "Name": "coredump_partition",
+      "StartAddress": "0x10060000",
+      "Size": 65536,
+      "IsOwner": true,
+      "Access": "R/W",
+      "Config": {
+        "CHOSEN": "coredump-partition",
+        "LABEL": "coredump"
       }
     },
     {
@@ -39,6 +50,99 @@
         "ENABLE": "TRUE",
         "TICKS_PER_SEC": "10000"
       }
+    },
+    {
+      "Name": "SPI0",
+      "Signals": [
+        {
+          "Name": "CS0",
+          "Config": {}
+        },
+        {
+          "Name": "CS1",
+          "Config": {}
+        },
+        {
+          "Name": "CS2",
+          "Config": {}
+        },
+        {
+          "Name": "MISO",
+          "Config": {}
+        },
+        {
+          "Name": "MOSI",
+          "Config": {
+            "PWR": "VDDIO"
+          }
+        },
+        {
+          "Name": "SCK",
+          "Config": {
+            "PWR": "VDDIO"
+          }
+        },
+        {
+          "Name": "SDIO2",
+          "Config": {}
+        },
+        {
+          "Name": "SDIO3",
+          "Config": {}
+        }
+      ],
+      "Config": {
+        "FREQ": "15000000"
+      }
+    },
+    {
+      "Name": "SPI1",
+      "Signals": [
+        {
+          "Name": "CS0",
+          "Config": {}
+        },
+        {
+          "Name": "CS1",
+          "Config": {}
+        },
+        {
+          "Name": "CS2",
+          "Config": {}
+        },
+        {
+          "Name": "MISO",
+          "Config": {}
+        },
+        {
+          "Name": "MOSI",
+          "Config": {
+            "PWR": "VDDIO"
+          }
+        },
+        {
+          "Name": "SCK",
+          "Config": {
+            "PWR": "VDDIO"
+          }
+        },
+        {
+          "Name": "SDIO2",
+          "Config": {}
+        },
+        {
+          "Name": "SDIO3",
+          "Config": {}
+        }
+      ],
+      "Config": {
+        "FREQ": "15000000"
+      }
+    },
+    {
+      "Name": "FLC0",
+      "Signals": [],
+      "Config": {}
     }
   ]
 }

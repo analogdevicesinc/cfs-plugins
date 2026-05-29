@@ -226,29 +226,53 @@ define stackInfo
     printf "=== Additional System Information ===\n"
     # Determine active stack pointer and saved PC offset
     set $lr_value = $lr
-    set $saved_pc_offset = 24
 
-    if (($lr_value & 0x4) == 0)
-        set $stackptr = $msp
+    # Check if we're in an exception handler (LR has EXC_RETURN pattern 0xFFFFFFxx)
+    if (($lr_value & 0xFFFFFF00) == 0xFFFFFF00)
+        # In exception handler - use EXC_RETURN to determine stack
+        printf "In exception context (EXC_RETURN: 0x%08X)\n", $lr_value
+        if (($lr_value & 0x4) == 0)
+            set $stackptr = $msp
+            printf "Using MSP: 0x%08X\n", $stackptr
+        else
+            set $stackptr = $psp
+            printf "Using PSP: 0x%08X\n", $stackptr
+        end
+
+        set $thread_mode = 0
     else
-        set $stackptr = $psp
+        printf "In thread mode (LR: 0x%08X)\n", $lr_value
+        if ($control & 0x2)
+            set $stackptr = $psp
+            printf "CONTROL.SPSEL=1: using PSP 0x%08X\n", $stackptr
+        else
+            set $stackptr = $msp
+            printf "CONTROL.SPSEL=0: using MSP 0x%08X\n", $stackptr
+        end
+
+        set $thread_mode = 1
     end
 
     if ($stackptr == 0)
         printf "Error: Stack pointer is invalid (0x%08X).\n", $stackptr
-        return
-    end
-
-    # Extract saved PC from stack
-    set $saved_pc = *((unsigned int *)($stackptr + $saved_pc_offset))
-
-    if $mmfsr != 0 || $bfsr != 0 || $ufsr != 0 || $hfsr != 0 
-        printf "Fault occurred at PC: 0x%08X\n", $saved_pc
-        list *$saved_pc
-        info line *$saved_pc
-        x/i $saved_pc
     else
-        printf "No fault detected. PC: 0x%08X\n", $saved_pc
+        if $thread_mode
+            set $saved_pc = $pc
+        else
+            # when an exception fires, the cpu automatically pushes 8 registers onto the stack (the exception frame)
+            # $stackptr+24 points to the PC that was saved when the exception was taken (the instruction that was
+            # executing when the fault occurred)
+            set $saved_pc = *((unsigned int *)($stackptr + 24))
+        end
+
+        if $mmfsr != 0 || $bfsr != 0 || $ufsr != 0 || $hfsr != 0 
+            printf "Fault occurred at PC: 0x%08X\n", $saved_pc
+            list *$saved_pc
+            info line *$saved_pc
+            x/i $saved_pc
+        else
+            printf "No fault detected. PC: 0x%08X\n", $saved_pc
+        end
     end
 
     printf "Stack Trace:\n"

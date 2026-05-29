@@ -1,22 +1,23 @@
-  "Projects": [
+"Projects": [
     {
       "CoreId": "CM4",
       "ProjectId": "CM4",
       "PluginId": "com.analog.project.msdk.plugin",
-      "PluginVersion": "1.1.0",
+      "PluginVersion": "^1.2.0",
       "FirmwarePlatform": "MSDK",
       "ExternallyManaged": false,
       "PlatformConfig": {
         "ProjectName": "m4",
         "MsdkBoardName": "EvKit_V1"
       },
+      "Family": "Cortex-M",
       "Partitions": [
         {
           "Name": "FLASH",
           "StartAddress": "0x10000000",
           "Size": 524288,
           "IsOwner": true,
-          "Access": "R",
+          "Access": "R/X",
           "Config": {}
         },
         {
@@ -93,7 +94,8 @@
                 "PWR": "VDDIO",
                 "DS": "0"
               }
-            }],
+            }
+          ],
           "Config": {}
         },
         {
@@ -117,6 +119,11 @@
             }
           ],
           "Config": {}
+        },
+        {
+          "Name": "DMA",
+          "Signals": [],
+          "Config": {}
         }
       ]
     },
@@ -128,6 +135,7 @@
       "FirmwarePlatform": "undefined",
       "ExternallyManaged": true,
       "PlatformConfig": {},
+      "Family": "RISC-V",
       "Partitions": [],
       "Peripherals": []
     }
@@ -176,6 +184,12 @@
       "Control": "UART0_MUX",
       "Value": "IBRO",
       "Enabled": true
+    },
+    {
+      "Name": "DMA",
+      "Control": "ENABLE",
+      "Value": "TRUE",
+      "Enabled": true
     }
   ],
   "ClockFrequencies": {
@@ -184,6 +198,7 @@
     "SYS_OSC": 60000000,
     "SYS_CLK": 60000000,
     "Cortex-M4": 60000000,
+    "DMA": 60000000,
     "FLC0": 1000000,
     "UART0": 7372800,
     "UART1": 30000000,

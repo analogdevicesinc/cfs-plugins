@@ -1,6 +1,6 @@
 /**
  *
- * Copyright (c) 2025 Analog Devices, Inc.
+ * Copyright (c) 2025-2026 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { expect } from "chai";
-import { GenericPlugin } from "cfs-plugins-api/src/generic/cfs-generic-plugin.js";
-import type { CfsPluginInfo } from "cfs-plugins-api";
+import { GenericPlugin } from "cfs-plugins-sdk";
+import type { CfsPluginInfo } from "cfs-types";
 import { fileExists, isDebug } from "../../utilities/test-utilities.js";
 import { joinPath } from "../../utilities/path-utilities.js";
 import {
@@ -29,7 +29,8 @@ describe("Unit test for Zephyr Single Core Dining Philosophers", () => {
   let plugin: GenericPlugin;
   let pluginInfo: CfsPluginInfo;
   const cfsWorkspace = {
-    location: "tests/unit-tests/plugins/zephyr-single-core-dining-philosophers/data",
+    location:
+      "tests/unit-tests/plugins/zephyr-single-core-dining-philosophers/data",
     workspacePluginId: "test-plugin-id",
     workspacePluginVersion: "1.0.0",
     workspaceName: "max32690-workspace",
@@ -51,7 +52,8 @@ describe("Unit test for Zephyr Single Core Dining Philosophers", () => {
 
   before(async () => {
     try {
-      const filePath = "plugins/zephyr-single-core-dining-philosophers/.cfsplugin";
+      const filePath =
+        "plugins/zephyr-single-core-dining-philosophers/.cfsplugin";
       const absolutePath = path.resolve(filePath);
       const fileContent = await fs.readFile(absolutePath, "utf-8");
       pluginInfo = JSON.parse(fileContent) as CfsPluginInfo;

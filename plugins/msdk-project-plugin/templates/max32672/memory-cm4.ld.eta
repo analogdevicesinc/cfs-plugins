@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 2025 Analog Devices, Inc.
+ * Copyright (c) 2025-2026 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,3 +13,9 @@
  *
  */
 %>
+<% if (!getProject()?.Partitions.find(p => getPartitionName(p, "NAME_OVERRIDE") === "FLASH")) { %>
+    FLASH       (rx)  : ORIGIN = 0x00000000, LENGTH = 0x00000000 /* Section not defined. */
+<% } %>
+<% if (!getProject()?.Partitions.find(p => getPartitionName(p, "NAME_OVERRIDE") === "SRAM")) { %>
+    SRAM       (rwx)  : ORIGIN = 0x00000000, LENGTH = 0x00000000 /* Section not defined. */
+<% } %>

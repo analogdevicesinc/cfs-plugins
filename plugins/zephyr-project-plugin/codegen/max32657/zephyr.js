@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024-2025 Analog Devices, Inc.
+ * Copyright (c) 2024-2026 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,13 @@
 peripheralData = [
     { datamodel: "DMA0", enable: "ENABLE", zephyr: "dma0" },
     { datamodel: "DMA1", enable: "ENABLE", zephyr: "dma1" },
-    { datamodel: "I3C0", enable: "ENABLE", zephyr: "i3c0",
+    { datamodel: "I3C0", enable: "ENABLE", zephyr: "i3c0", zephyrVersionMin: "4.3.0",
       pins: [
           { signal: "SCL", pin: "A1", name: "i3c_scl_p0_0"},
           { signal: "SDA", pin: "A2", name: "i3c_sda_p0_1"},
           { signal: "PUR", pin: "B6", name: "i3c_pur_p0_8"}
       ]},
-    { datamodel: "RTC", zephyr: "rtc_counter", clocknode: "CLK_32KHZ Mux", clock_mux: "MUX", clock_default: "INRO_DIV_4" },
+    { datamodel: "RTC", zephyr: "rtc_counter", clocknode: "CLK_32KHZ Mux", clock_mux: "MUX", clock_default: "INRO_DIV_4", zephyrVersionMin: "4.3.0" },
     { datamodel: "SPI0", enable: "ENABLE", zephyr: "spi0",
       pins: [
           { signal: "MOSI", pin: "A4", name: "spi0_mosi_p0_2"},
@@ -111,9 +111,17 @@ peripheralData = [
           { name: "data-bits", type: "int", control: "CHAR_SIZE", cfg_default: "5"}
       ]},
     { datamodel: "WDT", enable: "ENABLE", zephyr: "wdt0", clock_mux: "MUX", clock_default: "PCLK" },
-    { datamodel: "WUT0", zephyr: "wut0", clocknode: "CLK_32KHZ Mux", clock_mux: "MUX", clock_default: "INRO_DIV_4" },
-    { datamodel: "WUT1", zephyr: "wut1", clocknode: "CLK_32KHZ Mux", clock_mux: "MUX", clock_default: "INRO_DIV_4" }
+    { datamodel: "WUT0", zephyr: "wut0", clocknode: "CLK_32KHZ Mux", clock_mux: "MUX", clock_default: "INRO_DIV_4", zephyrVersionMin: "4.3.0" },
+    { datamodel: "WUT1", zephyr: "wut1", clocknode: "CLK_32KHZ Mux", clock_mux: "MUX", clock_default: "INRO_DIV_4", zephyrVersionMin: "4.3.0" }
 ];
+
+// Filter peripheralData based on zephyrVersionMin/zephyrVersionMax.
+// Entries outside the supported range are removed and later added to unsupported_in_dts.
+const { supported, unsupported } = filterByZephyrVersion(peripheralData);
+
+// Replace peripheralData with only the supported peripherals so the template
+// does not generate code for peripherals filtered out by version constraints.
+peripheralData = supported;
 
 unsupported_in_dts = [
     { clocknode: "ERFO Mux", diag: "Bypass of the ERFO is not currently supported in devicetree.", ctrl: "MUX", value: "ERFO_CLK" },
@@ -125,6 +133,9 @@ unsupported_in_dts = [
     { datamodel: "BLE", diag: "The Bluetooth Low Energy peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE" },
     { datamodel: "CRC", diag: "The Cyclic Redundancy Check peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE" }
 ];
+
+// Add filtered-out peripherals to unsupported_in_dts
+unsupported_in_dts.push(...buildUnsupportedVersionEntries(unsupported));
 
 function mapClockName(clock) {
     if (clock === "CLK_EXT") {
@@ -141,7 +152,7 @@ function mapClockName(clock) {
 
 function getClocksUsed() {
     let clocksUsed = new Set();
-    for (const peri of peripheralData) {
+    for (const peri of supported) {
         if (peri.clock_mux && isPeripheralClockSetTo(peri.datamodel, peri.enable, "TRUE")) {
             const clockName = mapClockName(getPeripheralClockSetting(peri.datamodel, peri.clock_mux, peri.clock_default));
             if (clockName) {

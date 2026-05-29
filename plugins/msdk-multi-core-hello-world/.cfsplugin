@@ -2,54 +2,58 @@
   "pluginName": "MSDK Multicore Hello World",
   "pluginDescription": "Multicore MSDK Hello World template.",
   "pluginId": "com.analog.multicore.msdk.helloworld",
-  "pluginVersion": "1.0.2",
+  "pluginVersion": "1.1.0",
+  "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "MSDK",
   "supportedSocs": [
     {
       "name": "MAX32655",
-      "dataModel": "max32655-ctbga.json",
       "board": "EvKit_V1",
-      "package": "ctbga"
+      "package": "ctbga",
+      "dataModelVersion": "^1.3.628"
     },
     {
       "name": "MAX32655",
-      "dataModel": "max32655-ctbga.json",
       "board": "FTHR",
-      "package": "ctbga"
+      "package": "ctbga",
+      "dataModelVersion": "^1.3.628"
     },
     {
       "name": "MAX32690",
-      "dataModel": "max32690-tqfn.json",
       "board": "EvKit_V1",
-      "package": "tqfn"
+      "package": "tqfn",
+      "dataModelVersion": "^1.3.628"
     },
     {
       "name": "MAX32690",
-      "dataModel": "max32690-wlp.json",
       "board": "AD-APARD32690-SL",
-      "package": "wlp"
+      "package": "wlp",
+      "dataModelVersion": "^1.3.628"
     },
     {
       "name": "MAX32690",
-      "dataModel": "max32690-tqfn.json",
       "board": "FTHR",
-      "package": "tqfn"
+      "package": "tqfn",
+      "dataModelVersion": "^1.3.628"
     },
     {
       "name": "MAX78000",
       "board": "EvKit_V1",
-      "package": "ctbga"
+      "package": "ctbga",
+      "dataModelVersion": "^1.3.628"
     },
     {
       "name": "MAX78000",
       "board": "FTHR",
-      "package": "ctbga"
+      "package": "ctbga",
+      "dataModelVersion": "^1.3.628"
     },
     {
       "name": "MAX78002",
       "board": "EvKit_V1",
-      "package": "csbga"
+      "package": "csbga",
+      "dataModelVersion": "^1.3.628"
     }
   ],
   "features": {

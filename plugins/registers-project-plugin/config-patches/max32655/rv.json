@@ -5,7 +5,7 @@
       "StartAddress": "0x10040000",
       "Size": 262144,
       "IsOwner": true,
-      "Access": "R",
+      "Access": "R/X",
       "Config": {
         "NAME_OVERRIDE": "FLASH"
       }

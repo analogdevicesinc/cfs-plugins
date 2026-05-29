@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 2025 Analog Devices, Inc.
+ * Copyright (c) 2025-2026 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ MEMORY {
 <%~ include("./" + it.msdkInflectionPoint(it.cfsconfig.Soc).toLowerCase() + "/memory-" + getProject()?.CoreId.toLowerCase() + ".ld.eta", it) %>
 <% for (const region of getProject()?.Partitions ?? []) { %>
 <%   if (region.IsOwner) { %>
-    <%= getName(region).padEnd(maxNameLength(), " ") %> <%= ("(" + region.Access.toLowerCase().replace(/\//g, "") + ")").padEnd(5, " ") %> : ORIGIN = <%= region.StartAddress %>, LENGTH = 0x<%= region.Size.toString(16).padStart(8, "0") %> /* <%= getName(region).padEnd(maxNameLength(), " ") %> */
+    <%= getName(region).padEnd(Math.max(maxNameLength(), 11), " ") %> <%= ("(" + region.Access.toLowerCase().replace(/\//g, "") + ")").padEnd(5, " ") %> : ORIGIN = <%= region.StartAddress %>, LENGTH = 0x<%= region.Size.toString(16).padStart(8, "0") %> /* <%= getName(region).padEnd(maxNameLength(), " ") %> */
 <%   } %>
 <% } %>
 }

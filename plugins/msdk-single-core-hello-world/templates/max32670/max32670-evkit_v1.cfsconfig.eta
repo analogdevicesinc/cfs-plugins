@@ -3,7 +3,7 @@
       "CoreId": "CM4",
       "ProjectId": "CM4",
       "PluginId": "com.analog.project.msdk.plugin",
-      "PluginVersion": "1.1.0",
+      "PluginVersion": "^1.2.0",
       "FirmwarePlatform": "MSDK",
       "ExternallyManaged": false,
       "PlatformConfig": {
@@ -15,7 +15,7 @@
           "StartAddress": "0x10000000",
           "Size": 393216,
           "IsOwner": true,
-          "Access": "R",
+          "Access": "R/X",
           "Config": {}
         },
         {
@@ -49,18 +49,17 @@
             {
               "Name": "RX",
               "Config": {
-                "PWR": "VDDIO",
                 "PS": "WEAK_PU"
               }
             },
             {
               "Name": "TX",
               "Config": {
-                "PWR": "VDDIO"
               }
             }
           ],
           "Config": {
+            "TX_RX_MODES": "TX_RX",
             "PARITY": "DISABLED",
             "CHAR_SIZE": "8",
             "STOP_BITS": "1",
@@ -81,7 +80,6 @@
               "Name": "P0.22",
               "Config": {
                 "MODE": "OUT",
-                "PWR": "VDDIO",
                 "DS": "0"
               }
             },
@@ -89,7 +87,6 @@
               "Name": "P0.23",
               "Config": {
                 "MODE": "OUT",
-                "PWR": "VDDIO",
                 "DS": "0"
               }
             },
@@ -97,9 +94,34 @@
               "Name": "P0.21",
               "Config": {
                 "MODE": "IN",
-                "PWR": "VDDIO",
-                "PS": "STRONG_PU"
+                "PS": "WEAK_PU"
               }
+            }
+          ],
+          "Config": {}
+        },
+        {
+          "Name": "MISC",
+          "Signals": [
+            {
+              "Name": "EXT_CLK1",
+              "Config": {}
+            },
+            {
+              "Name": "EXT_CLK2",
+              "Config": {}
+            },
+            {
+              "Name": "RSTN",
+              "Config": {}
+            },
+            {
+              "Name": "SWDCLK",
+              "Config": {}
+            },
+            {
+              "Name": "SWDIO",
+              "Config": {}
             }
           ],
           "Config": {}
@@ -112,6 +134,16 @@
       "Pin": "3",
       "Peripheral": "GPIO0",
       "Signal": "P0.22"
+    },
+    {
+      "Pin": "4",
+      "Peripheral": "MISC",
+      "Signal": "SWDIO"
+    },
+    {
+      "Pin": "5",
+      "Peripheral": "MISC",
+      "Signal": "SWDCLK"
     },
     {
       "Pin": "12",

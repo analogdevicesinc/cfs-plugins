@@ -36,7 +36,7 @@ limitations under the License.
 #pragma GCC diagnostic pop
 
 // ADI Generated model header
-#include "hello_world_model_f32.hpp"
+#include "adi_tflm.hpp"
 
 int RunFloat32Model() {
   const tflite::Model* model = ::tflite::GetModel(hello_world_model_f32);
@@ -47,13 +47,10 @@ int RunFloat32Model() {
   tflite::MicroMutableOpResolver<HELLO_WORLD_MODEL_F32_NUM_OPERATORS> op_resolver;
   TF_LITE_ENSURE_STATUS(adi_resolve_ops_hello_world_model_f32(op_resolver));
 
-  // Arena size just a round number. The exact arena usage can be determined
-  // using the RecordingMicroInterpreter.
-  constexpr int kTensorArenaSize = 3000;
-  uint8_t tensor_arena[kTensorArenaSize];
-
-  tflite::MicroInterpreter interpreter(model, op_resolver, tensor_arena,
-                                       kTensorArenaSize);
+  tflite::MicroInterpreter interpreter(model, 
+                                       op_resolver, 
+                                       hello_world_model_f32_arena,
+                                       HELLO_WORLD_MODEL_F32_ARENA_SIZE);
   TF_LITE_ENSURE_STATUS(interpreter.AllocateTensors());
 
   // Check if the predicted output is within a small range of the

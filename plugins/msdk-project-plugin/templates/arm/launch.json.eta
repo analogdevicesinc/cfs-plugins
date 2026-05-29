@@ -67,14 +67,7 @@
         "tbreak _exit",
         "set remotetimeout 60"
       ],
-      "preLaunchTask": "CFS: build",
-      "overrideLaunchCommands": [
-        "monitor halt",
-        "monitor reset",
-        "-target-download"
-      ],
-      "overrideResetCommands": ["monitor reset"],
-      "overrideRestartCommands": ["monitor reset"]
+      "preLaunchTask": "CFS: build"
     }
   ]
 }

@@ -1,7 +1,7 @@
 {
   "Copyright": "Copyright (c) <%= new Date().getFullYear() %> Analog Devices, Inc.  All rights reserved. This software is proprietary to Analog Devices, Inc. and its licensors.",
-  "DataModelVersion": "1.1.0",
-  "DataModelSchemaVersion": "1.1.0",
+  "SchemaVersion": "2.1.0",
+  "DataModelVersion": "^1.1.0",
   "Timestamp": "<%= new Date().toISOString() %>",
   "Soc": "<%= it.soc %>",
   "Package": "<%= it.package %>",
@@ -13,9 +13,105 @@
       "CoreId": "FX",
       "ProjectId": "FX",
       "PluginId": "com.analog.project.sharcfx.plugin",
-      "PluginVersion": "1.0.0",
+      "PluginVersion": "^1.1.0",
       "ExternallyManaged": false,
-      "Partitions": [],
+      "Partitions": [
+        {
+          "Name": "L1_code_fx",
+          "StartAddress": "0x282C0000",
+          "Size": 65536,
+          "DisplayUnit": "KB",
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "NAME_OVERRIDE": "L1_code",
+            "KERNEL": "RWX",
+            "USER": "ILLEGAL",
+            "CACHEABILITY": "NC",
+            "BUFFERABLE": "TRUE",
+            "SHAREABILITY": "NS",
+            "SECTIONS": ".DispatchVector.text .ResetHandler.literal .ResetHandler.text .DispatchHandler.literal .DispatchHandler.text .ResetVector.text .L1.literal .L1.text",
+            "STACK": "FALSE",
+            "HEAP": "FALSE"
+          }
+        },
+        {
+          "Name": "L1_data_fx",
+          "StartAddress": "0x28240000",
+          "Size": 524288,
+          "DisplayUnit": "KB",
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "NAME_OVERRIDE": "L1_data",
+            "KERNEL": "RWX",
+            "USER": "ILLEGAL",
+            "CACHEABILITY": "NC",
+            "BUFFERABLE": "TRUE",
+            "SHAREABILITY": "NS",
+            "SECTIONS": ".L1.rodata .L1.data .L1.noload .L1.bss",
+            "STACK": "TRUE",
+            "HEAP": "TRUE"
+          }
+        },
+        {
+          "Name": "L2_boot_noload",
+          "StartAddress": "0x201fe000",
+          "Size": 8192,
+          "DisplayUnit": "KB",
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "NAME_OVERRIDE": "",
+            "SECTIONS": ".L2_boot.noload",
+            "KERNEL": "RWX",
+            "USER": "ILLEGAL",
+            "CACHEABILITY": "WB",
+            "ALLOCATE": "RW",
+            "SHAREABILITY": "NS",
+            "STACK": "FALSE",
+            "HEAP": "FALSE"
+          }
+        },
+        {
+          "Name": "L2_ram_fx",
+          "StartAddress": "<%= ["adsp-sc834", "adsp-sc834w"].includes(it.soc.toLowerCase()) ? "0x20120000" : "0x20020000" %>",
+          "Size": <%= ["adsp-sc834", "adsp-sc834w"].includes(it.soc.toLowerCase()) ? "909312" : "1957888" %>,
+          "DisplayUnit": "KB",
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "NAME_OVERRIDE": "",
+            "SECTIONS": ".icc.data .L2.rodata .rodata .L2.literal .literal .L2.text .text .L2.data .data .L2.noload .noload .L2.bss .bss",
+            "KERNEL": "RWX",
+            "USER": "ILLEGAL",
+            "CACHEABILITY": "WB",
+            "ALLOCATE": "RW",
+            "SHAREABILITY": "NS",
+            "STACK": "FALSE",
+            "HEAP": "FALSE"
+          }
+        },
+        {
+          "Name": "L3_ram_fx",
+          "StartAddress": "0x80000000",
+          "Size": 268435456,
+          "DisplayUnit": "MB",
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "NAME_OVERRIDE": "",
+            "KERNEL": "RWX",
+            "USER": "ILLEGAL",
+            "SECTIONS": ".L3.rodata .L3.literal .L3.text .L3.data .L3.noload .L3.bss",
+            "SHAREABILITY": "NS",
+            "CACHEABILITY": "WB",
+            "ALLOCATE": "RW",
+            "STACK": "FALSE",
+            "HEAP": "FALSE"
+          }
+        }
+      ],
       "Peripherals": [],
       "PlatformConfig": {
         "ProjectName": "sfx"
@@ -25,9 +121,54 @@
       "CoreId": "CM33",
       "ProjectId": "CM33",
       "PluginId": "com.analog.project.sharcfx.plugin",
-      "PluginVersion": "1.0.0",
+      "PluginVersion": "^1.1.0",
       "ExternallyManaged": false,
-      "Partitions": [],
+      "Partitions": [
+        {
+          "Name": "L1_code_arm",
+          "StartAddress": "0x28A80000",
+          "Size": 65536,
+          "DisplayUnit": "KB",
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "NAME_OVERRIDE": "L1_IRAM"
+          }
+        },
+        {
+          "Name": "L1_data_arm",
+          "StartAddress": "0x28AC0000",
+          "Size": 131072,
+          "DisplayUnit": "KB",
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "NAME_OVERRIDE": "L1_DRAM"
+          }
+        },
+        {
+          "Name": "L2_ram_arm",
+          "StartAddress": "<%= ["adsp-sc834", "adsp-sc834w"].includes(it.soc.toLowerCase()) ? "0x20100000" : "0x20000000" %>",
+          "Size": 131072,
+          "DisplayUnit": "KB",
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "NAME_OVERRIDE": "L2_SRAM"
+          }
+        },
+        {
+          "Name": "L3_ram_arm",
+          "StartAddress": "0x90000000",
+          "Size": 268435456,
+          "DisplayUnit": "MB",
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "NAME_OVERRIDE": "L3_SDRAM"
+          }
+        }
+      ],
       "Peripherals": [],
       "PlatformConfig": {
         "ProjectName": "m33"

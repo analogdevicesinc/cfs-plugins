@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 2024-2025 Analog Devices, Inc.
+ * Copyright (c) 2024-2026 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,15 +22,6 @@ let unsupported_in_dts;
 // Include processor-specific code
 eval(this.render("codegen/"  + it.zephyrInflectionPoint(it.cfsconfig.Soc).toLowerCase() +  "/zephyr.js"));
 
-const pull_map = {
-  "STRONG_PU" : "GPIO_PULL_UP",
-  "PU"        : "GPIO_PULL_UP",
-  "WEAK_PU"   : "MAX32_GPIO_WEAK_PULL_UP",
-  "STRONG_PD" : "GPIO_PULL_DOWN",
-  "PD"        : "GPIO_PULL_DOWN",
-  "WEAK_PD"   : "MAX32_GPIO_WEAK_PULL_DOWN"
-}
-
 const pull_map_peripheral = {
   "STRONG_PU" : "pull-up",
   "PU"        : "pull-up",
@@ -40,31 +31,55 @@ const pull_map_peripheral = {
   "WEAK_PD"   : "pull-down"
 }
 
+const chips_with_only_one_pull_level = ["MAX32660", "MAX32662", "MAX32670", "MAX32672", "MAX32675C"]
+
+function pullResistorValue(value, chip) {
+  switch (value)
+  {
+    case "STRONG_PU":
+    case "PU":
+      return "GPIO_PULL_UP";
+    case "STRONG_PD":
+    case "PD":
+      return "GPIO_PULL_DOWN";
+    case "WEAK_PU":
+      return chips_with_only_one_pull_level.includes(chip) ? "GPIO_PULL_UP": "MAX32_GPIO_WEAK_PULL_UP";
+    case "WEAK_PD":
+      return chips_with_only_one_pull_level.includes(chip) ? "GPIO_PULL_DOWN": "MAX32_GPIO_WEAK_PULL_DOWN";    
+  }
+  return "";
+}
+
+const sortedPins = sortedConfigurablePins();
+
 function getUnmappedPins() {
-  return it.cfsconfig.Pins.filter(pin => {
+  return sortedPins.filter(pin => {
     // Only worry about signals that are assigned to this project, or not
     // assigned at all and we are the primary project.
+    if ((!getAssignedProjectForPeripheral(pin.Peripheral)) && isPrimaryProject() && getPeripheral(pin.Peripheral)?.Assignable !== false) {
+      return true; // Not assigned (orphan).
+    }
+    // For remaining pins, skip GPIO and common MISC clock/debug signals;
+    // only non-GPIO/non-MISC-CLK/SWD signals are candidates for warnings.
+    if (pin.Peripheral.startsWith("GPIO") || (pin.Peripheral === "MISC" && (pin.Signal.includes("CLK") || pin.Signal.includes("SWD")))) {
+      return false;
+    }
+    const dm_signal = getSignal(pin);
+    if (dm_signal.PinMuxSlot == 0) {
+      // Don't emit a warning about signals with pin mux slot 0, as that's
+      // the default anyway.
+      return false;
+    }
     const peri = getAssignedPeripheral(pin.Peripheral);
     const signal = peri?.Signals?.find(s => s.Name === pin.Signal);
-    if (signal || (!getAssignedProjectForPin(pin) && isPrimaryProject())) {
-      if (pin.Peripheral.startsWith("GPIO") || (pin.Peripheral === "MISC" && (pin.Signal.includes("CLK") || pin.Signal.includes("SWD")))) {
-        return false;
-      } else {
-        const dm_signal = getSignal(pin);
-        if (dm_signal.PinMuxSlot == 0) {
-          // Don't emit a warning about signals with pin mux slot 0, as that's
-          // the default anyway.
-          return false;
-        } else {
-          const periData = peripheralData.find(p => p.datamodel === pin.Peripheral);
-          if (periData?.pins) {
-            return !periData.pins.find(s => pin.Signal === s.signal);
-          }
-        }
+    if (signal) {
+      const periData = peripheralData.find(p => p.datamodel === pin.Peripheral);
+      if (periData?.pins && periData.pins.find(s => pin.Signal === s.signal && pin.Pin === s.pin)) {
+        return false; // Supported by Zephyr.
       }
-      return true;
+      return true; // Not supported by Zephyr.
     }
-    return false;
+    return false; // Signal not found.
   });
 }
 
@@ -137,6 +152,7 @@ function zephyrClock(peripheral, clock) {
       return "IBRO_DIV8";
     case "APBCLK":
     case "SYS_CLK":
+    case "SYS_OSC":
       // SYS_CLK isn't really PCLK, but that's how Zephyr treats it.
       return "PCLK";
     case "AOD_CLK":
@@ -146,6 +162,7 @@ function zephyrClock(peripheral, clock) {
       }
       return "AODCLK";
     case "7MCLK":
+    case "OBRC":
       return "IBRO";
     case "PRESCALED IPO":
       return "IPO";
@@ -153,7 +170,9 @@ function zephyrClock(peripheral, clock) {
     case "LPTMR1_CLK":
     case "EXT_CLK1":
     case "EXT_CLK2":
+    case "LP_EXT_CLK":
     case "ADC_CLK_EXT":
+    case "HF_EXT_CLK":
       // The external clocks are just tracked as EXTCLK.
       return "EXTCLK";
     case "CLK_32KHZ":
@@ -180,6 +199,10 @@ function showWarning(peripheral) {
       }
     }
   } else {
+    if (!peripheral.ctrl) {
+      // No clock control to check - just show the warning if the peripheral is assigned.
+      return !!getAssignedPeripheral(peripheral.datamodel);
+    }
     if (peripheral.value) {
       return isPeripheralClockSetTo(peripheral.datamodel, peripheral.ctrl, peripheral.value);
     }
@@ -304,6 +327,40 @@ function getVssel(pin, signal_config) {
 
   return signal_config?.PWR ?? "VDDIO";
 }
+
+// Get the Devicetree node label that corresponds to the Zephelin UART.
+function getZephelinUartDevicetreeNodeLabel() {
+  const datamodelName = getZephelinPort();
+  return peripheralData.find(p => p.datamodel === datamodelName)?.zephyr;
+}
+
+function swdIsAssignedStrictly_P00_P01() {
+  for (const pin of sortedPins) {
+    if (getPin(pin)?.Label === "P0.0") {
+       if (pin.Signal !== "SWDIO") {
+         // P0.0 is used for a signal distinct from SWD
+         return false;
+       }
+    } else if (getPin(pin)?.Label === "P0.1") {
+       if (pin.Signal !== "SWDCLK") {
+          // P0.1 is used for a signal distinct from SWD
+          return false;
+       }
+    } else if (pin.Signal === "SWDIO" || pin.Signal === "SWDCLK") {
+       // SWD signal is assigned to the wrong pin
+       return false;
+    }
+  }
+  return true;  
+}
+
+function swdIsAssignedProperly() {
+  if (it.datamodel.Name === "MAX32660" || (it.datamodel.Name === "MAX32670" && (it.cfsconfig.Package || "").toUpperCase() === "TQFN")) {
+    return swdIsAssignedStrictly_P00_P01(sortedPins);
+  }
+  return true;  
+}
+
 %>
 <%~ include("@copyrightHeader", it) %>
 
@@ -361,10 +418,8 @@ function getVssel(pin, signal_config) {
 <% for (const region of it.datamodel.Cores.find(c => c.Id === it.coreId)?.Memory ?? []) { %>
 <%   if (getRegionProperty(region, 'Type') === "Flash" && getProjectPartitionsStartingInRegion(region).length > 0) { %>
 &<%= region.Name %> {
-<%     if (it.datamodel.Name === "MAX32657" || it.datamodel.Name === "MAX32658") { %>
 	/* First remove partitions from base devicetree to avoid conflicts. */
 	/delete-node/ partitions;
-<%     } %>
 	partitions {
 		compatible = "fixed-partitions";
 		#address-cells = <1>;
@@ -392,11 +447,13 @@ function getVssel(pin, signal_config) {
 /* GPIO Configuration
 */
 
-<% if (it.cfsconfig.Pins.find(p => getAssignedPinSignal(p)?.Config?.MODE)) { %>
+<% if (sortedPins.find(p => getAssignedPinSignal(p)?.Config?.MODE)) { %>
 / {
-<%   if (it.cfsconfig.Pins.find(p => getAssignedPinSignal(p)?.Config?.MODE === "IN")) { %>
+<%   if (sortedPins.find(p => getAssignedPinSignal(p)?.Config?.MODE === "IN")) { %>
 	buttons {
-<%     for (const pin of it.cfsconfig.Pins) { %>
+		compatible = "gpio-keys";
+
+<%     for (const pin of sortedPins) { %>
 <%       const config = getAssignedPinSignal(pin)?.Config; %>
 <%       if (config?.MODE === "IN") { %>
 		<%= config.PHANDLE %>: <%= config.DT_NAME %> {
@@ -405,7 +462,7 @@ function getVssel(pin, signal_config) {
 <%         } %>
 			gpios = <&<%=getPin(pin).GPIOName.toLowerCase() %> <%= getPin(pin).GPIOPin %> (GPIO_ACTIVE_<%= config.POLARITY %> | MAX32_GPIO_VSEL_<%= getVssel(pin, config) %>
 <%         if (config.PS && config.PS !== "DIS") { %>
- | <%= pull_map[config.PS] %>
+ | <%= pullResistorValue(config.PS, it.datamodel.Name) %>
 <%         } %>
 )>;
 			zephyr,code = <<%= config.INPUT_CODE %>>;
@@ -415,9 +472,11 @@ function getVssel(pin, signal_config) {
 	};
 
 <%   } %>
-<%   if (it.cfsconfig.Pins.find(p => getAssignedPinSignal(p)?.Config?.MODE === "OUT")) { %>
+<%   if (sortedPins.find(p => getAssignedPinSignal(p)?.Config?.MODE === "OUT")) { %>
 	leds {
-<%     for (const pin of it.cfsconfig.Pins) { %>
+		compatible = "gpio-leds";
+
+<%     for (const pin of sortedPins) { %>
 <%       const config = getAssignedPinSignal(pin)?.Config; %>
 <%       if (config?.MODE === "OUT") { %>
 		<%= config.PHANDLE %>: <%= config.DT_NAME %> {
@@ -430,10 +489,10 @@ function getVssel(pin, signal_config) {
 <%     } %>
 	};
 <%   } %>
-<%   if (it.cfsconfig.Pins.find(p => getAssignedPinSignal(p)?.Config?.ALIAS)) { %>
+<%   if (sortedPins.find(p => getAssignedPinSignal(p)?.Config?.ALIAS)) { %>
 
 	aliases {
-<%     for (pin of it.cfsconfig.Pins.filter(p => getAssignedPinSignal(p)?.Config?.ALIAS)) { %>
+<%     for (const pin of sortedPins.filter(p => getAssignedPinSignal(p)?.Config?.ALIAS)) { %>
 		<%= getAssignedPinSignal(pin).Config.ALIAS %> = &<%= getAssignedPinSignal(pin).Config.PHANDLE %>;
 <%     } %>
 	};
@@ -468,7 +527,7 @@ function getVssel(pin, signal_config) {
 <%         if (config) { %>
 &<%= pin.name %> {
 	power-source = <MAX32_VSEL_<%= config.PWR ?? "VDDIO" %>>;
-<%           if (it.datamodel.Name !== "MAX32657" && it.datamodel.Name !== "MAX32658" && !peri.datamodel.includes("UART")) { %>
+<%           if (it.datamodel.Name !== "MAX32657" && it.datamodel.Name !== "MAX32658" && it.datamodel.Name !== "MAX32670" && !peri.datamodel.includes("UART")) { %>
 <%             if (config.PS === "WEAK_PU") { %>
 	#warning Weak pull-up is not supported here in Zephyr. Using strong pull-up instead.
 <%             } else if (config.PS === "WEAK_PD") { %>
@@ -487,6 +546,7 @@ function getVssel(pin, signal_config) {
 <%       } %>
 <%     } %>
 &<%= peri.zephyr %> {
+<%     let peri_is_enabled = false; %>
 <%     if (getAssignedPeripheral(peri.datamodel)) { %>
 <%       if (getPeripheralDescription(peri.datamodel)) { %>
 	/* This peripheral is used for <%= getPeripheralDescription(peri.datamodel) %>.
@@ -509,6 +569,7 @@ function getVssel(pin, signal_config) {
 <%         } %>
 <%       } %>
 <%       if (!peri.enable || isPeripheralClockSetTo(peri.datamodel, peri.enable, "TRUE")) { %>
+<%         peri_is_enabled = true; %>
 	status = "okay";
 <%       } else { %>
 	/* This peripheral is assigned but not enabled in the clock canvas. */
@@ -516,6 +577,9 @@ function getVssel(pin, signal_config) {
 <%       } %>
 <%       if (peri.subnode?.()) { %>
 	<%= peri.subnode() %> {
+<%         for (const line of peri.subnode_boilerplate?.() ?? []) { %>
+		<%= line %>;
+<%         } %>
 <%         if (peri.pins && peri.pins_node?.() === "subnode") { %>
 		pinctrl-0 = <<%= peri.pins.filter(p => getAssignedSignal(peri.datamodel, p.signal, p.pin)).map(p => '&' + p.name).join(' ') %>>;
 		pinctrl-names = "default";
@@ -529,7 +593,7 @@ function getVssel(pin, signal_config) {
 		<%= cfg.name %> = <%= getConfigValue(peri, cfg) %>;
 <%           } %>
 <%         } %>
-		status = "<%= (!peri.enable || isPeripheralClockSetTo(peri.datamodel, peri.enable, "TRUE")) ? "okay" : "disabled" %>";
+		status = "<%= peri_is_enabled ? "okay" : "disabled" %>";
 	};
 <%       } %>
 <%     } else { %>
@@ -551,7 +615,19 @@ function getVssel(pin, signal_config) {
 <%     } %>
 };
 
+<%     for (const dependent of peri.dependent_nodes?.() ?? []) { %>
+&<%= dependent %> {
+	/* This node is dependent on <%= peri.zephyr %>.
+	 */
+	status = "<%= peri_is_enabled ? "okay" : "disabled" %>";
+};
+<%     } %>
+
 <%   } %>
+<% } %>
+<% if (!swdIsAssignedProperly()) { %>
+#error SWDIO and SWDCLK must be assigned to P0.0 and P0.1 respectively, or else it might be impossible to upload a new version of the firmware.
+
 <% } %>
 /* Clock Configuration and Initialization
 */
@@ -696,13 +772,19 @@ function getVssel(pin, signal_config) {
 /* Zephelin Configuration
 */
 
+<%   if (getZephelinTraceInterface() === "UART") { %>
+<%     if (getZephelinUartDevicetreeNodeLabel()) { %>
 / {
 	chosen {
-		zephyr,tracing-uart = &uart<%= getZephelinPortNum() %>;
+		zephyr,tracing-uart = &<%= getZephelinUartDevicetreeNodeLabel() %>;
 	};
 };
+<%     } else { %>
+#error Couldn't find the correspondence between "<%= getZephelinPort() %>" and Devicetree node label.
+<%     } %>
+<%   } %>
 <% } %>
-<% if (unsupported_in_dts?.find(p => showWarning(p)) || getUnmappedPins().length > 0) { %>
+<% if (unsupported_in_dts?.find(p => showWarning(p)) || getUnmappedPins().length > 0 || unconfigurableSignals() || unsupportedByDataModelSignals()) { %>
 /* Warnings
 */
 <%   for (const peri of unsupported_in_dts) { %>
@@ -712,9 +794,15 @@ function getVssel(pin, signal_config) {
 <%   } %>
 <%   for (const pin of getUnmappedPins()) { %>
 <%     if (!getAssignedProjectForPin(pin)) { %>
-#warning <%= getPin(pin).Label %> (<%= pin.Pin %>) not mapped to <%= pin.Peripheral %>_<%= pin.Signal %> as signal is not assigned to a project.
+#warning <%= getPin(pin).Label %> (<%= pin.Pin %>) is not mapped to <%= pin.Peripheral %>_<%= pin.Signal %> as peripheral is not assigned to a project.
 <%     } else { %>
-#warning <%= getPin(pin).Label %> (<%= pin.Pin %>) not mapped to <%= pin.Peripheral %>_<%= pin.Signal %> as peripheral is not currently supported.
+#warning <%= getPin(pin).Label %> (<%= pin.Pin %>) is not mapped to <%= pin.Peripheral %>_<%= pin.Signal %> as the peripheral or signal is not currently supported.
 <%     } %>
+<%   } %>
+<%   if (unconfigurableSignals()) { %>
+#warning The following pins are fixed-function and were not configured: <%= unconfigurableSignals() %>.   
+<%   } %>
+<%   if (unsupportedByDataModelSignals()) { %>
+#warning The following pins are not supported in CFS: <%= unsupportedByDataModelSignals() %>.   
 <%   } %>
 <% } %>

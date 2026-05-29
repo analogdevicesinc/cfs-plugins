@@ -44,11 +44,6 @@ function modifiesSysClk() {
   MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_AES);
 
 <% } %>
-<% if (isPeripheralClockSetTo("CRC", "CRC_ENABLE", "TRUE")) { %>
-  /* AES/CRC/TRNG: Enable the CRC Clock. */
-  MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_CRC);
-
-<% } %>
 <% if (isPeripheralClockSetTo("DMA", "ENABLE", "TRUE")) { %>
   /* DMA: Enable the Component Clock. */
   MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_DMA);
@@ -129,6 +124,7 @@ function modifiesSysClk() {
 <%~ include("../trng_config.c.eta", { ...it, instance: "TRNG", enable: "TRNG_ENABLE"}) %>
 <%~ include("../i2s_config.c.eta", { ...it, instance: "I2S", enable: "ENABLE" }) %>
 <%~ include("../owm_config.c.eta", { ...it, instance: "OWM", enable: "ENABLE" }) %>
+<%~ include("../crc_config.c.eta", { ...it, instance: "CRC", enable: "CRC_ENABLE"}) %>
 <% if (modifiesSysClk()) { %>
   /* Update the System Core Clock as core clock settings have changed. */
   SystemCoreClockUpdate();
