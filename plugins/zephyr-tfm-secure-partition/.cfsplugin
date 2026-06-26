@@ -2,7 +2,7 @@
   "pluginName": "TF-M Secure Partition",
   "pluginDescription": "Zephyr TF-M secure partition template.",
   "pluginId": "com.analog.zephyr.tfmsecurepartition",
-  "pluginVersion": "1.1.0",
+  "pluginVersion": "1.2.0",
   "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "zephyr",

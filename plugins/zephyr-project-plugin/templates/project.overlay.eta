@@ -464,6 +464,9 @@ function swdIsAssignedProperly() {
 <%         if (config.PS && config.PS !== "DIS") { %>
  | <%= pullResistorValue(config.PS, it.datamodel.Name) %>
 <%         } %>
+<%         if (config.WAKEUP_EN === "TRUE") { %>
+ | <%= "MAX32_GPIO_WAKEUP_EN" %>
+<%         } %>
 )>;
 			zephyr,code = <<%= config.INPUT_CODE %>>;
 		};

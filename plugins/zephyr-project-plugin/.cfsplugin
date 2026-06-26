@@ -2,7 +2,7 @@
   "pluginName": "Zephyr Project Plugin",
   "pluginId": "com.analog.project.zephyr.plugin",
   "pluginDescription": "Manually configure and create Zephyr projects.",
-  "pluginVersion": "1.1.0",
+  "pluginVersion": "1.2.0",
   "schemaVersion": "1.2.0",
   "pluginApiVersion": 1,
   "author": "Analog Devices, Inc.",
@@ -405,7 +405,7 @@
         },
         {
           "Id": "PHANDLE",
-          "Description": "phandle Identifier",
+          "Description": "Phandle Identifier",
           "Hint": "${String:gpio_} ${Node:Name} + lwr ${String:[.-]} ${String:_} replace",
           "Type": "text",
           "Pattern": "[_a-zA-Z][_a-zA-Z0-9]*",
@@ -426,6 +426,25 @@
           "Type": "text",
           "Pattern": "([a-z][a-z0-9-]*)?",
           "Condition": "${Node:Name} ${String:P[0-9]\\.[0-9]+} match"
+        },
+        {
+          "Id": "WAKEUP_EN",
+          "Description": "GPIO Wakeup",
+          "EnumValues": [
+            {
+              "Id": "FALSE",
+              "Description": "Disable",
+              "Value": 0
+            },
+            {
+              "Id": "TRUE",
+              "Description": "Enable",
+              "Value": 1
+            }
+          ],
+          "Hint": "FALSE",
+          "Type": "enum",
+          "Condition": "${Control:MODE} ${String:IN} = ${Node:Name} ${String:P[0-9]\\.[0-9]+} match &"
         }
       ],
       "modifiedControls": [

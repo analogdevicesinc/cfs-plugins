@@ -1,9 +1,11 @@
+<%~ include("@normalizeSoc", it) %>
+<% const isWalleye = ["MAX32657", "MAX32658"].includes(it.projectInflectionPoint(it.soc)); %>
 {
   "version": 1,
   "packages": [
     {
       "name": "zephyr",
-      "version": "4.3.0"
+      "version": "<%= isWalleye ? '4.4.0-b.1' : '4.3.0' %>"
     },
     {
       "name": "msdk",
@@ -15,7 +17,7 @@
     },
     {
       "name": "cfs_base_plugins",
-      "version": "^2.2.0"
+      "version": "<%= isWalleye ? '^2.2.1' : '^2.2.0' %>"
     }
   ]
 }

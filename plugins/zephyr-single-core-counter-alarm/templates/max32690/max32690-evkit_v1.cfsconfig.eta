@@ -50,15 +50,6 @@
         "ZephyrBoardName": "max32690evkit/max32690/m4",
         "EnableCoreDump": true
       },
-      "Profiling": {
-        "Zephelin": {
-          "Enabled": false,
-          "AIEnabled": false,
-          "Format": "TEXT",
-          "Interface": "UART",
-          "Port": 2
-        }
-      },
       "Partitions": [
         {
           "Name": "m4_flash",

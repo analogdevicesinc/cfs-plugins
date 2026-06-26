@@ -2,7 +2,7 @@
   "pluginName": "Zephyr Single Core TensorFlow AI Model",
   "pluginDescription": "Single Core Zephyr TensorFlow Lite Micro (TFLM) template.",
   "pluginId": "com.analog.zephyr.workspace.tflm",
-  "pluginVersion": "1.1.0",
+  "pluginVersion": "1.2.0",
   "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "zephyr",

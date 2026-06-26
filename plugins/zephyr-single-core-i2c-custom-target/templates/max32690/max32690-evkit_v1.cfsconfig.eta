@@ -168,15 +168,6 @@
         "ZephyrVersion": "4.3.0",
         "ZephyrBoardName": "max32690evkit/max32690/m4",
         "EnableCoreDump": true
-      },
-      "Profiling" : {
-        "Zephelin": {
-          "Enabled": false,
-          "AIEnabled": false,
-          "Format": "TEXT",
-          "Interface": "UART",
-          "Port": 2
-        }
       }
     },
     {

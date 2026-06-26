@@ -1,0 +1,124 @@
+{
+  "pluginName": "Zephyr Single Core PM GPIO Wakeup",
+  "pluginDescription": "Demonstrates using GPIO to wake up the system from low power states on MAX32 SoCs.",
+  "pluginId": "com.analog.zephyr.workspace.pm.gpio.wakeup",
+  "pluginVersion": "1.0.0",
+  "schemaVersion": "1.2.0",
+  "author": "Analog Devices, Inc.",
+  "firmwarePlatform": "zephyr",
+  "supportedSocs": [
+    {
+      "name": "MAX32657",
+      "board": "EvKit_V1",
+      "package": "wlp",
+      "dataModelVersion": "^1.3.628"
+    },
+    {
+      "name": "MAX32658",
+      "board": "EvKit_V1",
+      "package": "wlp",
+      "dataModelVersion": "^1.3.628"
+    }
+  ],
+  "features": {
+    "workspace": {
+      "files": [
+        {
+          "src": "files/.vscode/c_cpp_properties.json",
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : ['max32666'].includes(context.soc.toLowerCase()) ? 'm4-0': 'm4'}/.vscode/c_cpp_properties.json"
+        },
+        {
+          "src": "files/CMakeLists.txt",
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : ['max32666'].includes(context.soc.toLowerCase()) ? 'm4-0': 'm4'}/CMakeLists.txt"
+        },
+        {
+          "src": "files/README.rst",
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : ['max32666'].includes(context.soc.toLowerCase()) ? 'm4-0': 'm4'}/README.rst"
+        },
+        {
+          "src": "files/sample.yaml",
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : ['max32666'].includes(context.soc.toLowerCase()) ? 'm4-0': 'm4'}/sample.yaml"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/fault-analyzer.json",
+          "dst": ".cfs/gdb_toolbox/configs/fault-analyzer.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/memory-dump.json",
+          "dst": ".cfs/gdb_toolbox/configs/memory-dump.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/register-dump.json",
+          "dst": ".cfs/gdb_toolbox/configs/register-dump.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/thread-analyzer.json",
+          "dst": ".cfs/gdb_toolbox/configs/thread-analyzer.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/crash-cause-zephyr.json",
+          "dst": ".cfs/gdb_toolbox/configs/crash-cause-zephyr.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/heap-analyzer.json",
+          "dst": ".cfs/gdb_toolbox/configs/heap-analyzer.json"
+        },
+        {
+          "src": "files/gdb_toolbox/gdb/fault-analyzer-arm.gdb",
+          "dst": ".cfs/gdb_toolbox/gdb/fault-analyzer-arm.gdb"
+        },
+        {
+          "src": "files/gdb_toolbox/gdb/thread-analyzer.gdb",
+          "dst": ".cfs/gdb_toolbox/gdb/thread-analyzer.gdb"
+        },
+        {
+          "src": "files/gdb_toolbox/gdb/crash-cause-zephyr.gdb",
+          "dst": ".cfs/gdb_toolbox/gdb/crash-cause-zephyr.gdb"
+        },
+        {
+          "src": "files/gdb_toolbox/gdb/heap-analyzer.gdb",
+          "dst": ".cfs/gdb_toolbox/gdb/heap-analyzer.gdb"
+        }
+      ],
+      "templates": [
+        {
+          "src": "templates/.cfsconfig.eta",
+          "dst": ".cfs/${context.soc.toLowerCase()}-${context.package.toLowerCase()}.cfsconfig",
+          "condition": "${context.soc.toLowerCase().startsWith('max')}"
+        },
+        {
+          "src": "templates/.cfsdependencies.eta",
+          "dst": ".cfs/.cfsdependencies"
+        },
+        {
+          "src": "templates/workspace-name.code-workspace.eta",
+          "dst": "${context.workspaceName}.code-workspace"
+        },
+        {
+          "src": "templates/.vscode/settings.json.eta",
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : ['max32666'].includes(context.soc.toLowerCase()) ? 'm4-0': 'm4'}/.vscode/settings.json"
+        },
+        {
+          "src": "templates/prj.conf.eta",
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : ['max32666'].includes(context.soc.toLowerCase()) ? 'm4-0': 'm4'}/prj.conf"
+        },
+        {
+          "src": "templates/main.c.eta",
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : ['max32666'].includes(context.soc.toLowerCase()) ? 'm4-0': 'm4'}/src/main.c"
+        },
+        {
+          "src": "templates/.vscode/launch.json.eta",
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : ['max32666'].includes(context.soc.toLowerCase()) ? 'm4-0': 'm4'}/.vscode/launch.json"
+        },
+        {
+          "src": "templates/ozone-project.jdebug.eta",
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33/m33' : ['max32666'].includes(context.soc.toLowerCase()) ? 'm4-0/m4-0': 'm4/m4'}.jdebug"
+        },
+        {
+          "src": "templates/pm_gpio_wakeup.overlay.eta",
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : ['max32666'].includes(context.soc.toLowerCase()) ? 'm4-0': 'm4'}/boards/pm_gpio_wakeup.overlay"
+        }
+      ]
+    }
+  }
+}

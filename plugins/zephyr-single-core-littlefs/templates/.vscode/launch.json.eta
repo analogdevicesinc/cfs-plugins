@@ -1,4 +1,8 @@
 <%~ include("@normalizeSoc", it) %>
+<% const isWalleye = ["MAX32657", "MAX32658"].includes(it.projectInflectionPoint(it.soc)); %>
+<% const gdbPath = isWalleye ? '${cfs:tool.path.arm.zephyr.eabi.toolchain.debuggerPath}-py' : '${config:cfs.sdk.path}/Tools/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb-py'; %>
+<% const gdbOsx = isWalleye ? '${cfs:tool.path.arm.zephyr.eabi.toolchain.debuggerPath}' : '${config:cfs.sdk.path}/Tools/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb'; %>
+<% const objdumpPath = isWalleye ? '${cfs:tool.path.arm.zephyr.eabi.toolchain.paths}/arm-zephyr-eabi-objdump' : '${config:cfs.sdk.path}/Tools/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-objdump'; %>
 {
   "configurations": [
     {
@@ -11,15 +15,15 @@
       "servertype": "openocd",
       "serverpath": "${config:cfs.openocd.path}/bin/openocd",
       "linux": {
-        "gdbPath": "${config:cfs.sdk.path}/Tools/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb-py",
-        "objdumpPath": "${config:cfs.sdk.path}/Tools/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-objdump"
+        "gdbPath": "<%~ gdbPath %>",
+        "objdumpPath": "<%~ objdumpPath %>"
       },
       "windows": {
-        "gdbPath": "${config:cfs.sdk.path}/Tools/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb-py.exe",
-        "objdumpPath": "${config:cfs.sdk.path}/Tools/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-objdump.exe"
+        "gdbPath": "<%~ gdbPath %>",
+        "objdumpPath": "<%~ objdumpPath %>"
       },
       "osx": {
-        "gdbPath": "${config:cfs.sdk.path}/Tools/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb"
+        "gdbPath": "<%~ gdbOsx %>"
       },
       "svdPath": "${config:cfs.cmsis.svdFile}",
       "searchDir": ["${config:cfs.openocd.path}/share/openocd/scripts"],
@@ -48,17 +52,17 @@
       "servertype": "jlink",
       "linux": {
         "serverpath": "${command:cfs.jlink.setJlinkPath}/JLinkGDBServerCLExe",
-        "gdbPath": "${config:cfs.sdk.path}/Tools/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb-py",
-        "objdumpPath": "${config:cfs.sdk.path}/Tools/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-objdump"
+        "gdbPath": "<%~ gdbPath %>",
+        "objdumpPath": "<%~ objdumpPath %>"
       },
       "windows": {
         "serverpath": "${command:cfs.jlink.setJlinkPath}/JLinkGDBServerCL.exe",
-        "gdbPath": "${config:cfs.sdk.path}/Tools/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb-py.exe",
-        "objdumpPath": "${config:cfs.sdk.path}/Tools/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-objdump.exe"
+        "gdbPath": "<%~ gdbPath %>",
+        "objdumpPath": "<%~ objdumpPath %>"
       },
       "osx": {
         "serverpath": "${command:cfs.jlink.setJlinkPath}/JLinkGDBServerCLExe",
-        "gdbPath": "${config:cfs.sdk.path}/Tools/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb"
+        "gdbPath": "<%~ gdbOsx %>"
       },
       "device": "${config:cfs.jlink.device}",
       "interface": "swd",
@@ -84,15 +88,15 @@
       "servertype": "openocd",
       "serverpath": "${config:cfs.openocd.path}/bin/openocd",
       "linux": {
-        "gdbPath": "${config:cfs.sdk.path}/Tools/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb-py",
-        "objdumpPath": "${config:cfs.sdk.path}/Tools/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-objdump"
+        "gdbPath": "<%~ gdbPath %>",
+        "objdumpPath": "<%~ objdumpPath %>"
       },
       "windows": {
-        "gdbPath": "${config:cfs.sdk.path}/Tools/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb-py.exe",
-        "objdumpPath": "${config:cfs.sdk.path}/Tools/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-objdump.exe"
+        "gdbPath": "<%~ gdbPath %>",
+        "objdumpPath": "<%~ objdumpPath %>"
       },
       "osx": {
-        "gdbPath": "${config:cfs.sdk.path}/Tools/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb"
+        "gdbPath": "<%~ gdbOsx %>"
       },
       "device": "${config:cfs.jlink.device}",
       "interface": "swd",
@@ -117,15 +121,15 @@
       "request": "launch",
       "servertype": "external",
       "linux": {
-        "gdbPath": "${config:cfs.sdk.path}/Tools/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb-py",
-        "objdumpPath": "${config:cfs.sdk.path}/Tools/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-objdump"
+        "gdbPath": "<%~ gdbPath %>",
+        "objdumpPath": "<%~ objdumpPath %>"
       },
       "windows": {
-        "gdbPath": "${config:cfs.sdk.path}/Tools/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb-py.exe",
-        "objdumpPath": "${config:cfs.sdk.path}/Tools/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-objdump.exe"
+        "gdbPath": "<%~ gdbPath %>",
+        "objdumpPath": "<%~ objdumpPath %>"
       },
       "osx": {
-        "gdbPath": "${config:cfs.sdk.path}/Tools/zephyr-sdk/arm-zephyr-eabi/bin/arm-zephyr-eabi-gdb"
+        "gdbPath": "<%~ gdbOsx %>"
       },
       "gdbTarget": "localhost: ${config:cfs.coreDump.gdbServerPort}",
       "svdPath": "${config:cfs.cmsis.svdFile}",

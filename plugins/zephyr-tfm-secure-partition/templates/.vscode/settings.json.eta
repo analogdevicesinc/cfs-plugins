@@ -18,6 +18,7 @@ function getZephyrBoardName() {
   "cfs.openocd.interface": "interface/cmsis-dap.cfg",
   "cfs.openocd.target": "target/<%= it.openocdInflectionPoint(it.soc).toLowerCase() %>.cfg",
   "cfs.project.target": "<%= it.projectInflectionPoint(it.soc) %>",
+  "cfs.project.toolchain.id": "arm.zephyr.eabi.toolchain",
   "cfs.project.firmwarePlatform": "Zephyr",
   "cfs.jlink.device": "<%= it.jlinkInflectionPoint(it.soc) %>"
 }

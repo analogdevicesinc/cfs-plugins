@@ -2,7 +2,7 @@
   "pluginName": "Zephyr Single Core TensorFlow AI Inference Profiling",
   "pluginDescription": "Single Core Zephyr TensorFlow Lite Micro (TFLM) Profiling",
   "pluginId": "com.analog.zephyr.workspace.tflm.prof",
-  "pluginVersion": "1.0.1",
+  "pluginVersion": "1.0.2",
   "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "zephyr",
@@ -12,24 +12,30 @@
       "board": "EvKit_V1",
       "package": "wlp",
       "dataModelVersion": "^1.3.628",
-      "cores": [ "CM33" ]
+      "cores": [
+        "CM33"
+      ]
     },
     {
       "name": "MAX32690",
       "board": "EvKit_V1",
       "package": "tqfn",
       "dataModelVersion": "^1.3.628",
-      "cores": [ "CM4" ]
+      "cores": [
+        "CM4"
+      ]
     },
     {
       "name": "MAX78002",
       "board": "EvKit_V1",
       "package": "csbga",
       "dataModelVersion": "^1.3.628",
-      "cores": [ "CM4" ]
+      "cores": [
+        "CM4"
+      ]
     }
   ],
-  "aiGenCommand" : "build --target MAX32690.CM4 --model ./files/model.tflite --output-path ./files/src/adi_tflm/",
+  "aiGenCommand": "build --target MAX32690.CM4 --model ./files/model.tflite --output-path ./files/src/adi_tflm/",
   "features": {
     "aiprof": {},
     "workspace": {

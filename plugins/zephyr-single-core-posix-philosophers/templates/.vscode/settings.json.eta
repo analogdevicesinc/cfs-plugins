@@ -17,5 +17,6 @@
 <% if (['MAX32657', 'MAX32658', 'MAX32690'].includes(it.soc)) { %>
   "cfs.coreDump.gdbServerPort": "<%= it.coreDump() %>",<% } %>
 
+  "cfs.project.toolchain.id": "arm.zephyr.eabi.toolchain",
   "cfs.project.firmwarePlatform": "Zephyr"
 }

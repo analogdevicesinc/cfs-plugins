@@ -75,6 +75,17 @@ export class PropertyProvider
           secure
         );
       }
+
+      const zephyrVersionProp = properties.find(
+        (property) => property.id === "ZephyrVersion",
+      );
+      if (
+        zephyrVersionProp &&
+        (soc.toLowerCase() === "max32657" || soc.toLowerCase() === "max32658")
+      ) {
+        zephyrVersionProp.default = "4.4.0";
+        zephyrVersionProp.enum?.push({ label: "4.4.0", value: "4.4.0" });
+      }
     }
     return properties;
   }

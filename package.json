@@ -3,7 +3,7 @@
   "publisher": "analogdevices",
   "description": "Plugins for CodeFusion Studio",
   "author": "Analog Devices, Inc.",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "private": true,
   "scripts": {
     "build": "yarn ws:plugins build",
