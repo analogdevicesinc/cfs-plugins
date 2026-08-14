@@ -15,7 +15,7 @@
         {
           "Name": "m4_flash",
           "StartAddress": "0x10000000",
-          "Size": 524288,
+          "Size": 458752,
           "IsOwner": true,
           "Access": "R/X",
           "Config": {
@@ -23,9 +23,21 @@
           }
         },
         {
+          "Name": "coredump_partition",
+          "StartAddress": "0x10070000",
+          "Size": 65536,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "CHOSEN": "coredump-partition",
+            "LABEL": "coredump"
+          }
+        },
+        {
           "Name": "m4_sram",
-          "StartAddress": "0x20008000",
-          "Size": 32768,
+          "StartAddress": "0x20000000",
+          "Size": 131072,
+          "DisplayUnit": "KB",
           "IsOwner": true,
           "Access": "R/W",
           "Config": {
@@ -141,6 +153,11 @@
               }
             }
           ],
+          "Config": {}
+        },
+        {
+          "Name": "FLC0",
+          "Signals": [],
           "Config": {}
         }
       ]

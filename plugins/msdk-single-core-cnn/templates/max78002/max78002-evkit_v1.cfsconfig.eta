@@ -11,21 +11,21 @@
         "MsdkBoardName": "EvKit_V1"
       },
       "AIModels": [
-          {
-               "Name": "Izer1",
-               "Files" : {
-                   "NetworkConfig": "./m4/cats-dogs-hwc-no-fifo.yaml",
-                   "Model" : "./m4/ai85-catsdogs-qat8-q.pth.tar"
-               },
-               "Target": {
-                   "Core": "CM4",
-                   "Accelerator": "CNN"
-               },
-               "Backend" : {
-                   "Name" : "izer"
-               },
-               "Enabled": true
-          }
+        {
+          "Name": "Izer1",
+          "Files": {
+            "NetworkConfig": "./m4/cats-dogs-hwc-no-fifo.yaml",
+            "Model": "./m4/ai85-catsdogs-qat8-q.pth.tar"
+          },
+          "Target": {
+            "Core": "CM4",
+            "Accelerator": "CNN"
+          },
+          "Backend": {
+            "Name": "izer"
+          },
+          "Enabled": true
+        }
       ],
       "Partitions": [
         {
@@ -39,7 +39,15 @@
         {
           "Name": "SRAM",
           "StartAddress": "0x20000000",
-          "Size": 393216,
+          "Size": 393208,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {}
+        },
+        {
+          "Name": "SHARED",
+          "StartAddress": "0x2005FFF8",
+          "Size": 8,
           "IsOwner": true,
           "Access": "R/W",
           "Config": {}
@@ -140,7 +148,16 @@
       "FirmwarePlatform": "undefined",
       "ExternallyManaged": true,
       "PlatformConfig": {},
-      "Partitions": [],
+      "Partitions": [
+        {
+          "Name": "SHARED",
+          "StartAddress": "0x2005FFF8",
+          "Size": 8,
+          "IsOwner": false,
+          "Access": "R/W",
+          "Config": {}
+        }
+      ],
       "Peripherals": []
     }
   ],

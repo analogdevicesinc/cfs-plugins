@@ -1,0 +1,228 @@
+   "Projects": [
+    {
+      "CoreId": "CM4",
+      "ProjectId": "CM4",
+      "PluginId": "com.analog.project.msdk.plugin",
+      "PluginVersion": "^1.2.0",
+      "FirmwarePlatform": "MSDK",
+      "ExternallyManaged": false,
+      "PlatformConfig": {
+        "ProjectName": "m4"
+      },
+      "Partitions": [
+        {
+          "Name": "FLASH",
+          "StartAddress": "0x10000000",
+          "Size": 1048576,
+          "IsOwner": true,
+          "Access": "R/X",
+          "Config": {}
+        },
+        {
+          "Name": "SRAM",
+          "StartAddress": "0x20000000",
+          "Size": 163840,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {}
+        },
+        {
+          "Name": "ECC_Check_Bits",
+          "StartAddress": "0x20028000",
+          "Size": 40960,
+          "IsOwner": true,
+          "Access": "R",
+          "Config": {}
+        }
+      ],
+      "Peripherals": [
+        {
+          "Name": "CM4 SysTick",
+          "Signals": [],
+          "Config": {
+            "ENABLE": "FALSE"
+          }
+        },
+        {
+          "Name": "UART0",
+          "Signals": [
+            {
+              "Name": "CTS",
+              "Config": {}
+            },
+            {
+              "Name": "RTS",
+              "Config": {}
+            },
+            {
+              "Name": "RX",
+              "Config": {
+                "PS": "PU"
+              }
+            },
+            {
+              "Name": "TX",
+              "Config": {}
+            }
+          ],
+          "Config": {
+            "PARITY": "DISABLED",
+            "CHAR_SIZE": "8",
+            "STOP_BITS": "1",
+            "HW_FLOW_CTRL": "DISABLED",
+            "RX_FRAME_ERROR_IE": "FALSE",
+            "CTS_IE": "FALSE",
+            "RX_OVERRUN_IE": "FALSE",
+            "RX_THD_IE": "FALSE",
+            "TX_ONE_BYTE_IE": "FALSE",
+            "TX_HALF_EMPTY_IE": "FALSE",
+            "BAUD": "115200"
+          }
+        },
+        {
+          "Name": "GPIO0",
+          "Signals": [
+            {
+              "Name": "P0.3",
+              "Config": {
+                "MODE": "OUT",
+                "DS": "0"
+              }
+            },
+            {
+              "Name": "P0.4",
+              "Config": {
+                "MODE": "OUT",
+                "DS": "0"
+              }
+            },
+            {
+              "Name": "P0.10",
+              "Config": {
+                "MODE": "IN",
+                "PS": "PU"
+              }
+            }
+          ],
+          "Config": {}
+        },
+        {
+          "Name": "SPI1",
+          "Signals": [
+            {
+              "Name": "CS0",
+              "Config": {}
+            },
+            {
+              "Name": "MISO",
+              "Config": {}
+            },
+            {
+              "Name": "MOSI",
+              "Config": {}
+            },
+            {
+              "Name": "SCK",
+              "Config": {}
+            }
+          ],
+          "Config": {
+            "MODE": "FOUR_WIRE",
+            "DIRECTION": "CONTROLLER",
+            "WORD_SIZE": "16",
+            "PHASE_POL_MODE": "0",
+            "CS0_POLARITY": "ACTIVE_LOW",
+            "TX_THD_IE": "FALSE",
+            "TX_EM_IE": "FALSE",
+            "RX_THD_IE": "FALSE",
+            "RX_FULL_IE": "FALSE",
+            "FAULT_IE": "FALSE",
+            "TX_OV_IE": "FALSE",
+            "TX_UN_IE": "FALSE",
+            "RX_OV_IE": "FALSE",
+            "RX_UN_IE": "FALSE",
+            "FREQ": "100000",
+            "CTRL_DONE_IE": "FALSE"
+          }
+        }
+      ]
+    }
+  ],
+  "Pins": [
+    {
+      "Pin": "7",
+      "Peripheral": "GPIO0",
+      "Signal": "P0.3"
+    },
+    {
+      "Pin": "8",
+      "Peripheral": "GPIO0",
+      "Signal": "P0.4"
+    },
+    {
+      "Pin": "19",
+      "Peripheral": "UART0",
+      "Signal": "RX"
+    },
+    {
+      "Pin": "20",
+      "Peripheral": "UART0",
+      "Signal": "TX"
+    },
+    {
+      "Pin": "21",
+      "Peripheral": "GPIO0",
+      "Signal": "P0.10"
+    },
+    {
+      "Pin": "25",
+      "Peripheral": "SPI1",
+      "Signal": "MISO"
+    },
+    {
+      "Pin": "26",
+      "Peripheral": "SPI1",
+      "Signal": "MOSI"
+    },
+    {
+      "Pin": "27",
+      "Peripheral": "SPI1",
+      "Signal": "SCK"
+    }
+  ],
+  "ClockNodes": [
+    {
+      "Name": "UART0/1/2",
+      "Control": "UART0_ENABLE",
+      "Value": "TRUE",
+      "Enabled": true
+    },
+    {
+      "Name": "SPI0/1",
+      "Control": "SPI1_ENABLE",
+      "Value": "TRUE",
+      "Enabled": true
+    },
+    {
+      "Name": "SPI0/1",
+      "Control": "SPI0_ENABLE",
+      "Value": "TRUE",
+      "Enabled": true
+    }
+  ],
+  "ClockFrequencies": {
+    "PCLK": 50000000,
+    "INRO": 80000,
+    "SYS_OSC": 100000000,
+    "SYS_CLK": 100000000,
+    "IPO": 100000000,
+    "PRESCALED IPO": 100000000,
+    "Cortex-M4": 100000000,
+    "FLC0/1": 100000000,
+    "SPI0": 50000000,
+    "SPI1": 50000000,
+    "UART0": 50000000,
+    "UART1": 50000000,
+    "UART2": 50000000,
+    "POWER SEQ": 80000
+  }

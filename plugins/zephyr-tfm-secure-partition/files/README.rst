@@ -35,15 +35,7 @@ Building and Running
 
 This sample can be built with or without CONFIG_TFM_IPC, since it contains code for both.
 
-On Target
-=========
-
-Refer to :zephyr:code-sample:`tfm_ipc` for detailed instructions.
-
-On QEMU
-=======
-
-Refer to :zephyr:code-sample:`tfm_ipc` for detailed instructions.
+Press **Pristine Build** and then **Flash** directly in the CodeFusion Studio (CFS) tool.
 
 Sample Output
 =============

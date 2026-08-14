@@ -2,7 +2,7 @@
   "name": "Interrupt Status (ARM)",
   "description": "Analyzes IRQ and system handlers in the target application.",
   "version": "1.0.0",
-  "core": "arm",
+  "arch": "arm",
   "commands": [
     {
       "command": "source {defaultScriptsDirectory}/interrupt-status-arm.gdb",

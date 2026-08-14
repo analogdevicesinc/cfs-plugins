@@ -12,11 +12,7 @@
       "@services/*": ["./unit-tests/Services/*"]
     }
   },
-  "include": [
-    "unit-tests/**/*.ts",
-    "unit-tests/**/*.js",
-    "../node_modules/cfs-data-models/**/*.json"
-  ],
+  "include": ["unit-tests/**/*.ts", "unit-tests/**/*.js"],
   "ts-node": {
     "esm": true,
     "transpileOnly": true

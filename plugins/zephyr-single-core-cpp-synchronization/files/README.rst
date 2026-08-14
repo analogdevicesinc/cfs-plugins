@@ -25,8 +25,8 @@ Sample Output
 
 .. code-block:: console
 
-     Create semaphore 0x001042b0
-     Create semaphore 0x001042c4
+     Create semaphore 0x200019f8
+     Create semaphore 0x20001a0c
      main: Hello World!
      coop_thread_entry: Hello World!
      main: Hello World!
@@ -49,4 +49,3 @@ Sample Output
 
      <repeats endlessly>
 
-Exit QEMU by pressing :kbd:`CTRL+A` :kbd:`x`.

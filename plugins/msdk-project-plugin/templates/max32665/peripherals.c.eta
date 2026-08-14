@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 2024-2025 Analog Devices, Inc.
+ * Copyright (c) 2024-2026 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,12 +12,6 @@
  * limitations under the License.
  *
  */
-
-
-function modifiesSysClk() {
-  return (isSystemClockSet("SYS_OSC Mux", "MUX") || isSystemClockSet("PRESCALER", "DIV"));
-}
-
 %>
 <% if (isSystemClockSetTo("SYS_OSC Mux", "MUX", "ERFO")) { %>
   /* SYS_OSC Mux: Clock Source is set to ERFO. */
@@ -171,8 +165,3 @@ function modifiesSysClk() {
 <%~ include("../wdt_config.c.eta", { ...it, instance: "WDT2", enable: "WDT2_ENABLE" }) %>
 <%~ include("../rtc_config.c.eta", { ...it, instance: "RTC", output_clocknode: "SQWOUT", output_ctrl: "SQWOUT" }) %>
 <%~ include("../trng_config.c.eta", { ...it, instance: "TRNG", enable: "TRNG_ENABLE"}) %>
-<% if (modifiesSysClk()) { %>
-  /* Update the System Core Clock as core clock settings have changed. */
-  SystemCoreClockUpdate();
-
-<% } %>

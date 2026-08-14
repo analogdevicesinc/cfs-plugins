@@ -1,0 +1,298 @@
+   "Pins": [
+    {
+      "Pin": "3",
+      "Peripheral": "SPI0",
+      "Signal": "MISO"
+    },
+    {
+      "Pin": "4",
+      "Peripheral": "SPI0",
+      "Signal": "SCK"
+    },
+    {
+      "Pin": "5",
+      "Peripheral": "SPI0",
+      "Signal": "MOSI"
+    },
+    {
+      "Pin": "7",
+      "Peripheral": "GPIO0",
+      "Signal": "P0.7"
+    },
+    {
+      "Pin": "8",
+      "Peripheral": "GPIO0",
+      "Signal": "P0.8"
+    },
+    {
+      "Pin": "9",
+      "Peripheral": "GPIO0",
+      "Signal": "P0.9"
+    },
+    {
+      "Pin": "14",
+      "Peripheral": "GPIO0",
+      "Signal": "P0.14"
+    },
+    {
+      "Pin": "15",
+      "Peripheral": "UART2",
+      "Signal": "RX"
+    },
+    {
+      "Pin": "16",
+      "Peripheral": "UART2",
+      "Signal": "TX"
+    },
+    {
+      "Pin": "60",
+      "Peripheral": "GPIO4",
+      "Signal": "P4.0"
+    },
+    {
+      "Pin": "67",
+      "Peripheral": "GPIO2",
+      "Signal": "P2.12"
+    }
+  ],
+  "ClockNodes": [
+    {
+      "Name": "UART0/2",
+      "Control": "UART2_ENABLE",
+      "Value": "TRUE",
+      "Enabled": true
+    },
+    {
+      "Name": "UART0/2",
+      "Control": "UART2_MUX",
+      "Value": "IBRO",
+      "Enabled": true
+    },
+    {
+      "Name": "SYS_OSC Mux",
+      "Control": "MUX",
+      "Value": "IPO",
+      "Enabled": true
+    },
+    {
+      "Name": "SPI0",
+      "Control": "SPI0_ENABLE",
+      "Value": "TRUE",
+      "Enabled": true
+    }
+  ],
+  "Projects": [
+    {
+      "CoreId": "CM4",
+      "ProjectId": "CM4",
+      "PluginId": "com.analog.project.msdk.plugin",
+      "PluginVersion": "^1.2.0",
+      "FirmwarePlatform": "msdk",
+      "ExternallyManaged": false,
+      "PlatformConfig": {
+        "ProjectName": "m4"
+      },
+      "Partitions": [
+        {
+          "Name": "FLASH",
+          "StartAddress": "0x10000000",
+          "Size": 3407872,
+          "IsOwner": true,
+          "Access": "R/X",
+          "Config": {}
+        },
+        {
+          "Name": "SRAM",
+          "StartAddress": "0x20000000",
+          "Size": 1048576,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {}
+        }
+      ],
+      "Peripherals": [
+        {
+          "Name": "CM4 SysTick",
+          "Signals": [],
+          "Config": {
+            "ENABLE": "FALSE"
+          }
+        },
+        {
+          "Name": "UART2",
+          "Signals": [
+            {
+              "Name": "CTS",
+              "Config": {}
+            },
+            {
+              "Name": "RTS",
+              "Config": {}
+            },
+            {
+              "Name": "RX",
+              "Config": {
+                "PWR": "VDDIO",
+                "PS": "WEAK_PU"
+              }
+            },
+            {
+              "Name": "TX",
+              "Config": {
+                "PWR": "VDDIO"
+              }
+            }
+          ],
+          "Config": {
+            "PARITY": "DISABLED",
+            "PARITY_MD": "MARK",
+            "CHAR_SIZE": "8",
+            "STOP_BITS": "1",
+            "HW_FLOW_CTRL": "DISABLED",
+            "RX_FRAME_ERROR_IE": "FALSE",
+            "RX_OVERRUN_IE": "FALSE",
+            "RX_THD_IE": "FALSE",
+            "TX_ONE_BYTE_IE": "FALSE",
+            "TX_HALF_EMPTY_IE": "FALSE",
+            "BAUD": "115200"
+          }
+        },
+        {
+          "Name": "GPIO0",
+          "Signals": [
+            {
+              "Name": "P0.7",
+              "Config": {
+                "MODE": "OUT",
+                "PWR": "VDDIO",
+                "DS": "0"
+              }
+            },
+            {
+              "Name": "P0.8",
+              "Config": {
+                "MODE": "OUT",
+                "PWR": "VDDIO",
+                "DS": "0"
+              }
+            },
+            {
+              "Name": "P0.9",
+              "Config": {
+                "MODE": "OUT",
+                "PWR": "VDDIO",
+                "DS": "0"
+              }
+            },
+            {
+              "Name": "P0.14",
+              "Config": {
+                "MODE": "OUT",
+                "PWR": "VDDIO",
+                "DS": "0"
+              }
+            }
+          ],
+          "Config": {}
+        },
+        {
+          "Name": "GPIO2",
+          "Signals": [
+            {
+              "Name": "P2.12",
+              "Config": {
+                "MODE": "OUT",
+                "PWR": "VDDIO",
+                "DS": "0"
+              }
+            }
+          ],
+          "Config": {}
+        },
+        {
+          "Name": "GPIO4",
+          "Signals": [
+            {
+              "Name": "P4.0",
+              "Config": {
+                "MODE": "IN",
+                "PS": "PU"
+              }
+            }
+          ],
+          "Config": {}
+        },
+        {
+          "Name": "SPI0",
+          "Signals": [
+            {
+              "Name": "CS1",
+              "Config": {}
+            },
+            {
+              "Name": "MISO",
+              "Config": {
+                "PWR": "VDDIO"
+              }
+            },
+            {
+              "Name": "MOSI",
+              "Config": {
+                "PWR": "VDDIO"
+              }
+            },
+            {
+              "Name": "SCK",
+              "Config": {
+                "PWR": "VDDIO"
+              }
+            }
+          ],
+          "Config": {
+            "MODE": "FOUR_WIRE",
+            "DIRECTION": "CONTROLLER",
+            "WORD_SIZE": "16",
+            "PHASE_POL_MODE": "0",
+            "CS1_POLARITY": "ACTIVE_LOW",
+            "TX_THD_IE": "FALSE",
+            "TX_EM_IE": "FALSE",
+            "RX_THD_IE": "FALSE",
+            "RX_FULL_IE": "FALSE",
+            "FAULT_IE": "FALSE",
+            "CTRL_DONE_IE": "FALSE",
+            "TX_OV_IE": "FALSE",
+            "TX_UN_IE": "FALSE",
+            "RX_OV_IE": "FALSE",
+            "RX_UN_IE": "FALSE",
+            "FREQ": "100000"
+          }
+        }
+      ]
+    },
+    {
+      "CoreId": "RV",
+      "ProjectId": "RV",
+      "PluginId": "",
+      "PluginVersion": "",
+      "FirmwarePlatform": "",
+      "ExternallyManaged": true,
+      "Partitions": [],
+      "Peripherals": []
+    }
+  ],
+  "ClockFrequencies": {
+    "SYS_CLK_DIV_2": 60000000,
+    "Cortex-M4": 120000000,
+    "FLC0/1": 120000000,
+    "SYS_OSC": 120000000,
+    "IBRO": 7372800,
+    "SYS_CLK": 120000000,
+    "IPO": 120000000,
+    "PCLK": 60000000,
+    "SPI0": 60000000,
+    "UART0": 60000000,
+    "UART2": 7372800
+  }
+
+
+

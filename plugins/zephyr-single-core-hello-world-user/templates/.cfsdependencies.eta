@@ -1,0 +1,23 @@
+<%~ include("@normalizeSoc", it) %>
+<% const isWalleye = ["MAX32657", "MAX32658"].includes(it.projectInflectionPoint(it.soc)); %>
+{
+  "version": 1,
+  "packages": [
+    {
+      "name": "zephyr",
+      "version": "<%= isWalleye ? '4.4.0-b.1' : '4.3.0' %>"
+    },
+    {
+      "name": "cfs_base_data_models",
+      "version": "^2.3.0"
+    },
+    {
+      "name": "cfs_base_plugins",
+      "version": "^2.3.0"
+    },
+    {
+      "name": "gperf",
+      "version": "3.1.0"
+    }
+  ]
+}

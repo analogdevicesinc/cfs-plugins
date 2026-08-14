@@ -1,5 +1,6 @@
 <%~ include("@sharcfxBoardName", it) %>
 <%~ include("@normalizeSoc", it) %>
+<% const openocdBoard = it.sharcfxBoardNameInflectionPoint(it.soc).toLowerCase(); %>
 {
   "C_Cpp.default.forcedInclude": [
     "${workspaceFolder}/build/project_defines.h"
@@ -11,7 +12,6 @@
   "cfs.configureWorkspace": "Yes",
   "cfs.project.firmwarePlatform": "SHARC-FX",
   "cfs.project.toolchain.id": "xtensa-sharcfx",
-  "cfs.openocd.board": "board/<%= it.board.toLowerCase().replace(/somcrr-/g, "").replace(/-/g, "_") %>.cfg",
-  "cfs.openocd.target": "target/<%= it.openocdInflectionPoint(it.soc).toLowerCase() %>.cfg",
+  "cfs.openocd.board": "board/<%= openocdBoard %>_<%= it.getSharcFxBoardName() %>.cfg",
   "cfs.openocd.interface": "interface/ice2000.cfg"
 }

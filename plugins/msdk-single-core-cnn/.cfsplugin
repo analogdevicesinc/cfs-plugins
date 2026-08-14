@@ -2,7 +2,7 @@
   "pluginName": "MSDK Single Core PyTorch AI Model using CNN",
   "pluginDescription": "Single Core MSDK PyTorch using M4 + CNN Accelerator template.",
   "pluginId": "com.analog.singlecore.msdk.cnn",
-  "pluginVersion": "1.2.0",
+  "pluginVersion": "1.3.0",
   "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "MSDK",

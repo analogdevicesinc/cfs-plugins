@@ -30,7 +30,7 @@
       "Name": "SYS_OSC Mux",
       "Control": "MUX",
       "Value": "IPO",
-      "Enabled": false
+      "Enabled": true
     }
   ],
   "Projects": [
@@ -128,15 +128,12 @@
     }
   ],
   "ClockFrequencies": {
-    "SYS_CLK_DIV_2": 60000000,
     "Cortex-M4": 120000000,
     "FLC0/1": 120000000,
     "SYS_OSC": 120000000,
     "IBRO": 7372800,
     "SYS_CLK": 120000000,
     "IPO": 120000000,
-    "PCLK": 60000000,
-    "ICC": 60000000,
     "UART0": 7372800,
     "UART1": 60000000,
     "UART2": 60000000

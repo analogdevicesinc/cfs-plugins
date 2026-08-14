@@ -164,7 +164,7 @@ void philosopher(void *id, void *unused1, void *unused2)
 		print_phil_state(my_id, "   HOLDING ONE FORK   ", 0);
 		take(my_fork2);
 
-		delay = get_random_delay(my_id, 25);
+		delay = get_random_delay(my_id, 100);
 		print_phil_state(my_id, "  EATING  [ %s%d ms ] ", delay);
 		k_msleep(delay);
 
@@ -172,7 +172,7 @@ void philosopher(void *id, void *unused1, void *unused2)
 		print_phil_state(my_id, "   DROPPED ONE FORK   ", 0);
 		drop(my_fork1);
 
-		delay = get_random_delay(my_id, 25);
+		delay = get_random_delay(my_id, 100);
 		print_phil_state(my_id, " THINKING [ %s%d ms ] ", delay);
 		k_msleep(delay);
 	}

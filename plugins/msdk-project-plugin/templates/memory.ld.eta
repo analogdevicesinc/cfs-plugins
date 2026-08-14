@@ -32,4 +32,9 @@ MEMORY {
 <% } %>
 }
 
+<% if (["max78000", "max78002"].includes(it.cfsconfig.Soc.toLowerCase())) { %>
+__shared_origin = ORIGIN(SHARED);
+__shared_length = LENGTH(SHARED);
+
+<% } %>
 INCLUDE <%= getLdBaseName() %>.sects.ld

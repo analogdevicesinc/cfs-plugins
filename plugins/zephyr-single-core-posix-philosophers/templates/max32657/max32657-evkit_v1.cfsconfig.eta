@@ -101,22 +101,20 @@
             {
               "Name": "RX",
               "Config": {
-                "PWR": "VDDIO",
                 "PS": "WEAK_PU"
               }
             },
             {
               "Name": "TX",
               "Config": {
-                "PWR": "VDDIO"
               }
             }
           ],
           "Config": {
+            "TX_RX_MODES": "TX_RX",
             "CHOSEN": "console,shell-uart,bt-c2h-uart",
             "BAUD": "115200",
             "PARITY": "DISABLED",
-            "HW_FLOW_CTRL": "DISABLED",
             "CHAR_SIZE": "8",
             "STOP_BITS": "1"
           }
@@ -128,7 +126,7 @@
               "Name": "P0.12",
               "Config": {
                 "MODE": "IN",
-                "PS": "STRONG_PU",
+                "PS": "WEAK_PU",
                 "POLARITY": "LOW",
                 "DT_NAME": "pb1",
                 "PHANDLE": "pb1",

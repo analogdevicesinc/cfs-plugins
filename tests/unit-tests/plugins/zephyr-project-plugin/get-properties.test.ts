@@ -502,12 +502,21 @@ describe("Extended getProperties method for zephyr project plugin", () => {
       tmrBMuxIds.forEach((id) => {
         const control = tmrControls.find((c) => c.Id === id);
         expect(control).to.exist;
-        expect(control?.EnumValues).to.have.lengthOf(1);
-        expect(control?.EnumValues?.[0]).to.deep.include({
+        // 4 original data model values (marked Inactive) + 1 plugin-added value
+        expect(control?.EnumValues).to.have.lengthOf(5);
+
+        // The original data model values should be marked as Inactive
+        const inactiveValues = control?.EnumValues?.filter((v) => v.Inactive);
+        expect(inactiveValues).to.have.lengthOf(4);
+
+        // The plugin-added 32BIT option should be present and active
+        const activeValue = control?.EnumValues?.find((v) => v.Id === "32BIT");
+        expect(activeValue).to.deep.include({
           Id: "32BIT",
           Description: "N/A - 32-bit Mode",
           Value: 4,
         });
+        expect(activeValue).to.not.have.property("Inactive");
       });
     });
 

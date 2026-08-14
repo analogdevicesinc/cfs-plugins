@@ -3,7 +3,7 @@
   "publisher": "analogdevices",
   "description": "Plugins for CodeFusion Studio",
   "author": "Analog Devices, Inc.",
-  "version": "2.2.1",
+  "version": "2.3.0",
   "private": true,
   "scripts": {
     "build": "yarn ws:plugins build",
@@ -49,7 +49,7 @@
     "plugins"
   ],
   "resolutions": {
-    "cfs-types@npm:^2.2.0": "https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-types&tag=V2.2.0"
+    "cfs-types@npm:^2.3.0": "https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-types&tag=V2.3.0"
   },
   "packageManager": "yarn@4.13.0"
 }

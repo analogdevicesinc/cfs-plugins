@@ -2,7 +2,7 @@
   "pluginName": "Zephyr Single Core I2C Custom Target",
   "pluginDescription": "Single core Zephyr template for configuring a custom I2C Target interface.",
   "pluginId": "com.analog.zephyr.workspace.i2c.custom.target",
-  "pluginVersion": "1.1.0",
+  "pluginVersion": "1.2.0",
   "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "zephyr",
@@ -84,10 +84,6 @@
         {
           "src": "files/README.rst",
           "dst": "${['max32666'].includes(context.soc.toLowerCase()) ? 'm4-0': 'm4'}/README.rst"
-        },
-        {
-          "src": "files/sample.yaml",
-          "dst": "${['max32666'].includes(context.soc.toLowerCase()) ? 'm4-0': 'm4'}/sample.yaml"
         },
         {
           "src": "files/gdb_toolbox/configs/fault-analyzer.json",

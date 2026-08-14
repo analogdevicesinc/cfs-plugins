@@ -26,3 +26,31 @@ By default, ``CONFIG_PM``, ``CONFIG_PM_DEVICE`` and ``CONFIG_PM_DEVICE_RUNTIME``
 
 Deferred logging is disabled in this sample to ensure that the system does not schedule
 deferred work which could wake the system up while it is in a low power state.
+
+Sample Output
+*************
+
+The MAX32657/8 declares four CPU power states (``runtime-idle``, ``standby``,
+``suspend-to-ram`` and ``soft-off``), but ``soft-off`` is disabled
+by default. The sample therefore steps through the three enabled states:
+``RUNTIME_IDLE``, ``STANDBY`` and ``SUSPEND_TO_RAM``.
+
+Example output on the MAX32657 EVKIT:
+
+.. code-block:: console
+
+   *** Booting Zephyr OS build g429df005b7bb ***
+   Button gpio@8000 pin 12
+   Device ready: max32657evkit
+
+
+   Press the user button to wakeup device from deepsleep mode:
+   Entering PM state RUNTIME_IDLE
+   Entering PM state STANDBY
+   Entering PM state SUSPEND_TO_RAM
+   Entering PM state RUNTIME_IDLE
+   Entering PM state STANDBY
+   Entering PM state SUSPEND_TO_RAM
+   Entering PM state RUNTIME_IDLE
+   Entering PM state STANDBY
+   Entering PM state SUSPEND_TO_RAM

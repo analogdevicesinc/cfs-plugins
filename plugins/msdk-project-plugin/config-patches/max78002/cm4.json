@@ -17,6 +17,14 @@
       "Access": "R/W",
       "Config": {
       }
+    },
+    {
+      "Name": "SHARED",
+      "StartAddress": "0x2004FFF8",
+      "Size": 8,
+      "IsOwner": true,
+      "Access": "R/W",
+      "Config": {}
     }
   ],
   "Peripherals": [

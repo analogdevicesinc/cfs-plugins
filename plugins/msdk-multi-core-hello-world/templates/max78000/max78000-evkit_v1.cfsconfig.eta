@@ -26,6 +26,14 @@
           "IsOwner": true,
           "Access": "R/W",
           "Config": {}
+        },
+        {
+          "Name": "SHARED",
+          "StartAddress": "0x2001BFF8",
+          "Size": 8,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {}
         }
       ],
       "Peripherals": [
@@ -122,20 +130,27 @@
         {
           "Name": "RV_SRAM",
           "StartAddress": "0x20010000",
-          "Size": 49152,
+          "Size": 49144,
           "IsOwner": true,
           "Access": "R/W",
           "Config": {
             "NAME_OVERRIDE": "SRAM2"
           }
+        },
+        {
+          "Name": "SHARED",
+          "StartAddress": "0x2001BFF8",
+          "Size": 8,
+          "IsOwner": false,
+          "Access": "R/W",
+          "Config": {}
         }
       ],
       "Peripherals": [
         {
           "Name": "RV mtime",
           "Signals": [],
-          "Config": {
-          }
+          "Config": {}
         },
         {
           "Name": "GPIO0",
@@ -155,7 +170,8 @@
                 "PWR": "VDDIO",
                 "DS": "0"
               }
-            }],
+            }
+          ],
           "Config": {}
         },
         {

@@ -96,14 +96,12 @@
             {
               "Name": "RX",
               "Config": {
-                "PWR": "VDDIO",
                 "PS": "WEAK_PU"
               }
             },
             {
               "Name": "TX",
               "Config": {
-                "PWR": "VDDIO"
               }
             }
           ],

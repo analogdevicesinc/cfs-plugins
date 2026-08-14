@@ -12,12 +12,6 @@
  * limitations under the License.
  *
  */
-
-
-function modifiesSysClk() {
-  return (isSystemClockSet("SYS_OSC Mux", "MUX") || isSystemClockSet("PRESCALER", "DIV"));
-}
-
 %>
 <% if (isSystemClockSetTo("SYS_OSC Mux", "MUX", "CLK_EXT")) { %>
   /* SYS_OSC Mux: Clock Source is set to External Clock on P0.3. */
@@ -107,8 +101,3 @@ function modifiesSysClk() {
 <%~ include("../rtc_config.c.eta", { ...it, instance: "RTC", enable_clocknode: "SQWOUT", enable: "ENABLE", output_clocknode: "SQWOUT Mux", output_ctrl: "MUX" }) %>
 <%~ include("../trng_config.c.eta", { ...it, instance: "TRNG", enable: "ENABLE"}) %>
 <%~ include("../crc_config.c.eta", { ...it, instance: "CRC", enable: "ENABLE"}) %>
-<% if (modifiesSysClk()) { %>
-  /* Update the System Core Clock as core clock settings have changed. */
-  SystemCoreClockUpdate();
-
-<% } %>

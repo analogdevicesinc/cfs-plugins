@@ -16,7 +16,10 @@
 import { expect } from "chai";
 import fg from "fast-glob";
 import type { CfsWorkspace } from "cfs-types";
-import { fileExists } from "../utilities/test-utilities.js";
+import {
+  fileExists,
+  validateGeneratedFileContent,
+} from "../utilities/test-utilities.js";
 import { joinPath } from "../utilities/path-utilities.js";
 
 export class WorkspaceValidationService {
@@ -30,8 +33,6 @@ export class WorkspaceValidationService {
     workspace: CfsWorkspace,
     expectedFiles: string[],
   ) {
-    console.log(`Validating ${expectedFiles.length} files...`);
-
     for (const expectedFile of expectedFiles) {
       const actualFilePath = joinPath(
         workspace.location,
@@ -43,11 +44,17 @@ export class WorkspaceValidationService {
         actualFileExists,
         `File ${expectedFile} does not exist in workspace at ${actualFilePath}`,
       ).to.be.true;
+
+      await validateGeneratedFileContent(actualFilePath);
     }
 
     const workspacePath = joinPath(workspace.location, workspace.workspaceName);
     const actualFiles = await fg("**/*", { cwd: workspacePath, dot: true });
-    const actualFolders = await fg("**/*", { cwd: workspacePath, dot: true, onlyDirectories: true });
+    const actualFolders = await fg("**/*", {
+      cwd: workspacePath,
+      dot: true,
+      onlyDirectories: true,
+    });
 
     const expectedFileSet = new Set(
       expectedFiles.map((f) => f.replace(/\\/g, "/")),
@@ -65,7 +72,9 @@ export class WorkspaceValidationService {
         expectedFolderSet.add(parts.slice(0, i).join("/"));
       }
     }
-    const unexpectedFolders = actualFolders.filter((f) => !expectedFolderSet.has(f));
+    const unexpectedFolders = actualFolders.filter(
+      (f) => !expectedFolderSet.has(f),
+    );
     expect(
       unexpectedFolders,
       `Unexpected folders found in workspace:\n${unexpectedFolders.join("\n")}`,
@@ -87,7 +96,11 @@ export class WorkspaceValidationService {
   ): Promise<void> {
     const workspacePath = joinPath(workspace.location, workspace.workspaceName);
 
-    const allFilesAndFolders = await fg("**/*", { cwd: workspacePath, dot: true, onlyFiles: false });
+    const allFilesAndFolders = await fg("**/*", {
+      cwd: workspacePath,
+      dot: true,
+      onlyFiles: false,
+    });
 
     const coreFiles = allFilesAndFolders.filter((f) =>
       f.startsWith(`${expectedCoreDir}/`),

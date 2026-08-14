@@ -1,8 +1,8 @@
 {
   "pluginName": "Zephyr Single Core Counter Alarm",
-  "pluginDescription": "Single Core Zephyr Counter Alarm template.",
+  "pluginDescription": "Demonstrate an alarm application using the counter API where the delay doubles after each trigger.",
   "pluginId": "com.analog.zephyr.workspace.counter.alarm",
-  "pluginVersion": "1.1.0",
+  "pluginVersion": "1.2.0",
   "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "zephyr",
@@ -20,8 +20,38 @@
       "dataModelVersion": "^1.3.628"
     },
     {
+      "name": "MAX32657",
+      "board": "EvKit_V1",
+      "package": "wlp",
+      "dataModelVersion": "^1.3.628"
+    },
+    {
+      "name": "MAX32658",
+      "board": "EvKit_V1",
+      "package": "wlp",
+      "dataModelVersion": "^1.3.628"
+    },
+    {
+      "name": "MAX32666",
+      "board": "EvKit_V1",
+      "package": "ctbga",
+      "dataModelVersion": "^1.0.628"
+    },
+    {
+      "name": "MAX32666",
+      "board": "FTHR",
+      "package": "ctbga",
+      "dataModelVersion": "^1.0.628"
+    },
+    {
       "name": "MAX32672",
       "board": "EvKit_V1",
+      "package": "tqfn40",
+      "dataModelVersion": "^1.0.628"
+    },
+    {
+      "name": "MAX32672",
+      "board": "FTHR",
       "package": "tqfn40",
       "dataModelVersion": "^1.0.628"
     },
@@ -42,6 +72,18 @@
       "board": "FTHR",
       "package": "tqfn",
       "dataModelVersion": "^1.3.628"
+    },
+    {
+      "name": "MAX78000",
+      "board": "EvKit_V1",
+      "package": "ctbga",
+      "dataModelVersion": "^1.3.628"
+    },
+    {
+      "name": "MAX78000",
+      "board": "FTHR",
+      "package": "ctbga",
+      "dataModelVersion": "^1.3.628"
     }
   ],
   "features": {
@@ -49,20 +91,11 @@
       "files": [
         {
           "src": "files/.vscode/c_cpp_properties.json",
-          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm4'}/.vscode/c_cpp_properties.json"
-        },
-        {
-          "src": "files/max32672evkit_max32672_m4.overlay",
-          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm4'}/boards/max32672evkit_max32672_m4.overlay",
-          "condition": "${['max32672'].includes(context.soc.toLowerCase())}"
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : ['max32666'].includes(context.soc.toLowerCase()) ? 'm4-0': 'm4'}/.vscode/c_cpp_properties.json"
         },
         {
           "src": "files/README.rst",
-          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm4'}/README.rst"
-        },
-        {
-          "src": "files/sample.yaml",
-          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm4'}/sample.yaml"
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : ['max32666'].includes(context.soc.toLowerCase()) ? 'm4-0': 'm4'}/README.rst"
         },
         {
           "src": "files/gdb_toolbox/configs/fault-analyzer.json",
@@ -112,8 +145,7 @@
       "templates": [
         {
           "src": "templates/.cfsconfig.eta",
-          "dst": ".cfs/${context.soc.toLowerCase()}-${context.package.toLowerCase()}.cfsconfig",
-          "condition": "${['max32650', 'max32655', 'max32657', 'max32658', 'max32670', 'max32690', 'max78000', 'max78002'].includes(context.soc.toLowerCase())}"
+          "dst": ".cfs/${context.soc.toLowerCase()}-${context.package.toLowerCase()}.cfsconfig"
         },
         {
           "src": "templates/workspace-name.code-workspace.eta",
@@ -121,27 +153,27 @@
         },
         {
           "src": "templates/.vscode/settings.json.eta",
-          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm4'}/.vscode/settings.json"
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : ['max32666'].includes(context.soc.toLowerCase()) ? 'm4-0': 'm4'}/.vscode/settings.json"
         },
         {
           "src": "templates/prj.conf.eta",
-          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm4'}/prj.conf"
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : ['max32666'].includes(context.soc.toLowerCase()) ? 'm4-0': 'm4'}/prj.conf"
         },
         {
           "src": "templates/.vscode/launch.json.eta",
-          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm4'}/.vscode/launch.json"
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : ['max32666'].includes(context.soc.toLowerCase()) ? 'm4-0': 'm4'}/.vscode/launch.json"
         },
         {
           "src": "templates/ozone-project.jdebug.eta",
-          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm4'}/${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm4'}.jdebug"
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33/m33' : ['max32666'].includes(context.soc.toLowerCase()) ? 'm4-0/m4-0': 'm4/m4'}.jdebug"
         },
         {
           "src": "templates/CMakeLists.txt.eta",
-          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm4'}/CMakeLists.txt"
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : ['max32666'].includes(context.soc.toLowerCase()) ? 'm4-0': 'm4'}/CMakeLists.txt"
         },
         {
           "src": "templates/main.c.eta",
-          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm4'}/src/main.c"
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : ['max32666'].includes(context.soc.toLowerCase()) ? 'm4-0': 'm4'}/src/main.c"
         }
       ]
     }

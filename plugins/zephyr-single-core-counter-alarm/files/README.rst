@@ -19,20 +19,10 @@ Requirements
 
 This sample requires the support of a timer IP compatible with alarm setting.
 
-References
-**********
-
-- :zephyr:board:`disco_l475_iot1`
-
 Building and Running
 ********************
 
- .. zephyr-app-commands::
-    :zephyr-app: samples/drivers/counter/alarm
-    :host-os: unix
-    :board: disco_l475_iot1
-    :goals: run
-    :compact:
+Press **Pristine Build** and then **Flash** directly in the CodeFusion Studio (CFS) tool.
 
 Sample Output
 =============

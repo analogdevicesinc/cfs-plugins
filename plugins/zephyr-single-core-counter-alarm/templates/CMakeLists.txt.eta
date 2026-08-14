@@ -2,12 +2,6 @@
 # SPDX-License-Identifier: Apache-2.0
 
 cmake_minimum_required(VERSION 3.20.0)
-<% if (["max32672"].includes(it.soc.toLowerCase())) { %>
-
-# Automatically include all .overlay files under boards/
-file(GLOB BOARD_OVERLAYS "boards/*.overlay")
-set(DTC_OVERLAY_FILE "${BOARD_OVERLAYS}")
-<% } %>
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(counter)
 

@@ -1,0 +1,119 @@
+{
+  "pluginName": "Zephyr Single Core LVGL Basic",
+  "pluginDescription": "Display a 'Hello World' and react to user input using LVGL.",
+  "pluginId": "com.analog.zephyr.workspace.lvgl.basic",
+  "pluginVersion": "1.0.0",
+  "schemaVersion": "1.2.0",
+  "author": "Analog Devices, Inc.",
+  "firmwarePlatform": "zephyr",
+  "supportedSocs": [
+    {
+      "name": "MAX32672",
+      "board": "EvKit_V1",
+      "package": "tqfn40",
+      "dataModelVersion": "^1.0.628"
+    }, 
+    {
+      "name": "MAX32690",
+      "board": "EvKit_V1",
+      "package": "tqfn",
+      "dataModelVersion": "^1.3.628"
+    }
+  ],
+  "features": {
+    "workspace": {
+      "files": [
+        {
+          "src": "files/.vscode/c_cpp_properties.json",
+          "dst": "m4/.vscode/c_cpp_properties.json"
+        },
+        {
+          "src": "files/src/main.c",
+          "dst": "m4/src/main.c"
+        },
+        {
+          "src": "files/CMakeLists.txt",
+          "dst": "m4/CMakeLists.txt"
+        },
+        {
+          "src": "files/README.rst",
+          "dst": "m4/README.rst"
+        },
+        {
+          "src": "files/Kconfig",
+          "dst": "m4"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/fault-analyzer.json",
+          "dst": ".cfs/gdb_toolbox/configs/fault-analyzer.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/memory-dump.json",
+          "dst": ".cfs/gdb_toolbox/configs/memory-dump.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/register-dump.json",
+          "dst": ".cfs/gdb_toolbox/configs/register-dump.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/thread-analyzer.json",
+          "dst": ".cfs/gdb_toolbox/configs/thread-analyzer.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/crash-cause-zephyr.json",
+          "dst": ".cfs/gdb_toolbox/configs/crash-cause-zephyr.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/heap-analyzer.json",
+          "dst": ".cfs/gdb_toolbox/configs/heap-analyzer.json"
+        },
+        {
+          "src": "files/gdb_toolbox/gdb/fault-analyzer-arm.gdb",
+          "dst": ".cfs/gdb_toolbox/gdb/fault-analyzer-arm.gdb"
+        },
+        {
+          "src": "files/gdb_toolbox/gdb/thread-analyzer.gdb",
+          "dst": ".cfs/gdb_toolbox/gdb/thread-analyzer.gdb"
+        },
+        {
+          "src": "files/gdb_toolbox/gdb/crash-cause-zephyr.gdb",
+          "dst": ".cfs/gdb_toolbox/gdb/crash-cause-zephyr.gdb"
+        },
+        {
+          "src": "files/gdb_toolbox/gdb/heap-analyzer.gdb",
+          "dst": ".cfs/gdb_toolbox/gdb/heap-analyzer.gdb"
+        }
+      ],
+      "templates": [
+        {
+          "src": "templates/.cfsconfig.eta",
+          "dst": ".cfs/${context.soc.toLowerCase()}-${context.package.toLowerCase()}.cfsconfig"
+        },
+        {
+          "src": "templates/.cfsdependencies.eta",
+          "dst": ".cfs/.cfsdependencies"
+        },
+        {
+          "src": "templates/workspace-name.code-workspace.eta",
+          "dst": "${context.workspaceName}.code-workspace"
+        },
+        {
+          "src": "templates/.vscode/settings.json.eta",
+          "dst": "m4/.vscode/settings.json"
+        },
+        {
+          "src": "templates/prj.conf.eta",
+          "dst": "m4/prj.conf"
+        },
+        {
+          "src": "templates/.vscode/launch.json.eta",
+          "dst": "m4/.vscode/launch.json"
+        },
+        {
+          "src": "templates/ozone-project.jdebug.eta",
+          "dst": "m4/m4.jdebug"
+        }
+      ]
+    }
+  }
+}

@@ -26,6 +26,14 @@
           "IsOwner": true,
           "Access": "R/W",
           "Config": {}
+        },
+        {
+          "Name": "SHARED",
+          "StartAddress": "0x2004FFF8",
+          "Size": 8,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {}
         }
       ],
       "Peripherals": [
@@ -122,12 +130,20 @@
         {
           "Name": "RV_SRAM",
           "StartAddress": "0x20040000",
-          "Size": 65536,
+          "Size": 65528,
           "IsOwner": true,
           "Access": "R/W",
           "Config": {
             "NAME_OVERRIDE": "SRAM5"
           }
+        },
+        {
+          "Name": "SHARED",
+          "StartAddress": "0x2004FFF8",
+          "Size": 8,
+          "IsOwner": false,
+          "Access": "R/W",
+          "Config": {}
         }
       ],
       "Peripherals": [

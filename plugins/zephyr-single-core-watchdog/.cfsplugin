@@ -2,7 +2,7 @@
   "pluginName": "Zephyr Single Core Watchdog",
   "pluginDescription": "Single Core Watchdog template demonstrating board reset using the Watchdog driver.",
   "pluginId": "com.analog.zephyr.workspace.watchdog",
-  "pluginVersion": "1.2.0",
+  "pluginVersion": "1.3.0",
   "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "zephyr",
@@ -96,10 +96,6 @@
         {
           "src": "files/README.rst",
           "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : ['max32666'].includes(context.soc.toLowerCase()) ? 'm4-0': 'm4'}/README.rst"
-        },
-        {
-          "src": "files/sample.yaml",
-          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : ['max32666'].includes(context.soc.toLowerCase()) ? 'm4-0': 'm4'}/sample.yaml"
         },
         {
           "src": "files/gdb_toolbox/configs/fault-analyzer.json",

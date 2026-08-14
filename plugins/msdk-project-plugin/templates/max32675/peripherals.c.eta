@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 2024-2025 Analog Devices, Inc.
+ * Copyright (c) 2024-2026 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,12 +12,6 @@
  * limitations under the License.
  *
  */
-
-
-function modifiesSysClk() {
-  return (isSystemClockSet("SYS_OSC Mux", "MUX") || isSystemClockSet("PRESCALER", "DIV"));
-}
-
 %>
 <% if (isSystemClockSetTo("SYS_OSC Mux", "MUX", "EXT_CLK1")) { %>
   /* SYS_OSC Mux: Clock Source is set to External Clock on P0.12. */
@@ -64,7 +58,7 @@ function modifiesSysClk() {
 <%~ include("../spi_config.c.eta", { ...it, instance: "SPI0", clock: "PeripheralClock", enable: "SPI0_ENABLE" }) %>
 <%~ include("../spi_config.c.eta", { ...it, instance: "SPI1", clock: "PeripheralClock", enable: "SPI1_ENABLE" }) %>
 <%~ include("../spi_config.c.eta", { ...it, instance: "SPI2", clock: "PeripheralClock", enable: "SPI2_ENABLE" }) %>
-<%~ include("../uart_config.c.eta", { ...it, instance: "LPUART0", msdk_instance: "UART3", enable: "ENABLE", mux: "MUX", clock_default: "EXT_CLK2" }) %>
+<%~ include("../uart_config.c.eta", { ...it, instance: "LPUART0", msdk_instance: "UART3", enable: "ENABLE", mux: "MUX", clock_default: "AOD_CLK" }) %>
 <%~ include("../uart_config.c.eta", { ...it, instance: "UART0", enable: "UART0_ENABLE", mux: "UART0_MUX", clock_default: "PCLK" }) %>
 <%~ include("../uart_config.c.eta", { ...it, instance: "UART1", enable: "UART1_ENABLE", mux: "UART1_MUX", clock_default: "PCLK" }) %>
 <%~ include("../uart_config.c.eta", { ...it, instance: "UART2", enable: "UART2_ENABLE", mux: "UART2_MUX", clock_default: "PCLK" }) %>
@@ -80,8 +74,3 @@ function modifiesSysClk() {
 <%~ include("../wdt_config.c.eta", { ...it, instance: "WDT0", enable: "WDT0_ENABLE", mux: "WDT0_MUX", clock_default: "PCLK" }) %>
 <%~ include("../wdt_config.c.eta", { ...it, instance: "WDT1", enable: "WDT1_ENABLE", mux: "WDT1_MUX", clock_default: "PCLK" }) %>
 <%~ include("../crc_config.c.eta", { ...it, instance: "CRC", enable: "CRC_ENABLE"}) %>
-<% if (modifiesSysClk()) { %>
-  /* Update the System Core Clock as core clock settings have changed. */
-  SystemCoreClockUpdate();
-
-<% } %>

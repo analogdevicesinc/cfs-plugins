@@ -13,8 +13,6 @@
   "cfs.openocd.target": "target/<%= it.openocdInflectionPoint(it.soc).toLowerCase() %>.cfg",
   "cfs.environment": <%= it.configureEnvVariables() %>,
   "cfs.coreDump.address": "<%= it.coreDumpAddress(it.soc) %>",
-
-  "cfs.coreDump.gdbServerPort": "<%= it.coreDump() %>",
   "cfs.project.toolchain.id": "arm.zephyr.eabi.toolchain",
   "cfs.project.firmwarePlatform": "Zephyr"
 }

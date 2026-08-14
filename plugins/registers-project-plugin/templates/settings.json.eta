@@ -14,7 +14,7 @@
   "cfs.debugPath": "${workspaceFolder}/build/",
   "cfs.project.firmwarePlatform": "RegistersOnly",
 
-<% if (it.coreId === "CM4" || it.coreId === "CM33") { %>
+<% if (it.coreId.startsWith("CM")) { %>
   "cfs.openocd.target": "target/<%= it.openocdInflectionPoint(it.soc).toLowerCase() %>.cfg",
   "cfs.openocd.interface": "interface/cmsis-dap.cfg",
 <% } else if (it.coreId === "RV") { %>

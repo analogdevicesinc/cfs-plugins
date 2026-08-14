@@ -2,7 +2,7 @@
   "pluginName": "SHARC-FX Single Core with TFLM",
   "pluginDescription": "SHARC-FX (core 1) and TensorFlow Lite Micro template.",
   "pluginId": "com.analog.sharcfx.tflm.example",
-  "pluginVersion": "1.1.0",
+  "pluginVersion": "1.2.0",
   "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "SHARC-FX",
@@ -24,12 +24,6 @@
       "dataModelVersion": "^1.3.355"
     },
     {
-      "name": "ADSP-21834",
-      "board": "",
-      "package": "bga_ed",
-      "dataModelVersion": "^1.3.355"
-    },
-    {
       "name": "ADSP-21834W",
       "board": "ADSP21834W-EV-SOM",
       "package": "bga_ed",
@@ -38,12 +32,6 @@
     {
       "name": "ADSP-21834W",
       "board": "EV-SOMCRR-EZKIT",
-      "package": "bga_ed",
-      "dataModelVersion": "^1.3.355"
-    },
-    {
-      "name": "ADSP-21834W",
-      "board": "",
       "package": "bga_ed",
       "dataModelVersion": "^1.3.355"
     },
@@ -60,12 +48,6 @@
       "dataModelVersion": "^1.3.355"
     },
     {
-      "name": "ADSP-21835",
-      "board": "",
-      "package": "bga_ed",
-      "dataModelVersion": "^1.3.355"
-    },
-    {
       "name": "ADSP-21835W",
       "board": "ADSP21835W-EV-SOM",
       "package": "bga_ed",
@@ -74,12 +56,6 @@
     {
       "name": "ADSP-21835W",
       "board": "EV-SOMCRR-EZKIT",
-      "package": "bga_ed",
-      "dataModelVersion": "^1.3.355"
-    },
-    {
-      "name": "ADSP-21835W",
-      "board": "",
       "package": "bga_ed",
       "dataModelVersion": "^1.3.355"
     },
@@ -96,12 +72,6 @@
       "dataModelVersion": "^1.3.355"
     },
     {
-      "name": "ADSP-21836",
-      "board": "",
-      "package": "bga_ed",
-      "dataModelVersion": "^1.3.355"
-    },
-    {
       "name": "ADSP-21836W",
       "board": "ADSP21836W-EV-SOM",
       "package": "bga_ed",
@@ -110,12 +80,6 @@
     {
       "name": "ADSP-21836W",
       "board": "EV-SOMCRR-EZKIT",
-      "package": "bga_ed",
-      "dataModelVersion": "^1.3.355"
-    },
-    {
-      "name": "ADSP-21836W",
-      "board": "",
       "package": "bga_ed",
       "dataModelVersion": "^1.3.355"
     },
@@ -132,12 +96,6 @@
       "dataModelVersion": "^1.3.355"
     },
     {
-      "name": "ADSP-21837",
-      "board": "",
-      "package": "bga_ed",
-      "dataModelVersion": "^1.3.355"
-    },
-    {
       "name": "ADSP-21837W",
       "board": "ADSP21837W-EV-SOM",
       "package": "bga_ed",
@@ -146,12 +104,6 @@
     {
       "name": "ADSP-21837W",
       "board": "EV-SOMCRR-EZKIT",
-      "package": "bga_ed",
-      "dataModelVersion": "^1.3.355"
-    },
-    {
-      "name": "ADSP-21837W",
-      "board": "",
       "package": "bga_ed",
       "dataModelVersion": "^1.3.355"
     },
@@ -168,12 +120,6 @@
       "dataModelVersion": "^1.3.355"
     },
     {
-      "name": "ADSP-SC834",
-      "board": "",
-      "package": "bga_ed",
-      "dataModelVersion": "^1.3.355"
-    },
-    {
       "name": "ADSP-SC834W",
       "board": "ADSPSC834W-EV-SOM",
       "package": "bga_ed",
@@ -182,12 +128,6 @@
     {
       "name": "ADSP-SC834W",
       "board": "EV-SOMCRR-EZKIT",
-      "package": "bga_ed",
-      "dataModelVersion": "^1.3.355"
-    },
-    {
-      "name": "ADSP-SC834W",
-      "board": "",
       "package": "bga_ed",
       "dataModelVersion": "^1.3.355"
     },
@@ -204,12 +144,6 @@
       "dataModelVersion": "^1.3.355"
     },
     {
-      "name": "ADSP-SC835",
-      "board": "",
-      "package": "bga_ed",
-      "dataModelVersion": "^1.3.355"
-    },
-    {
       "name": "ADSP-SC835W",
       "board": "ADSPSC835W-EV-SOM",
       "package": "bga_ed",
@@ -218,12 +152,6 @@
     {
       "name": "ADSP-SC835W",
       "board": "EV-SOMCRR-EZKIT",
-      "package": "bga_ed",
-      "dataModelVersion": "^1.3.355"
-    },
-    {
-      "name": "ADSP-SC835W",
-      "board": "",
       "package": "bga_ed",
       "dataModelVersion": "^1.3.355"
     }

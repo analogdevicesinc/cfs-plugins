@@ -1,0 +1,213 @@
+  "Projects": [
+    {
+      "CoreId": "CM4",
+      "ProjectId": "CM4",
+      "PluginId": "com.analog.project.zephyr.plugin",
+      "PluginVersion": "^1.1.0",
+      "FirmwarePlatform": "zephyr",
+      "ExternallyManaged": false,
+      "PlatformConfig": {
+        "ProjectName": "m4",
+        "ZephyrVersion": "4.3.0",
+        "ZephyrBoardName": "max78000evkit/max78000/m4"
+      },
+      "Partitions": [
+        {
+          "Name": "m4_flash",
+          "StartAddress": "0x10000000",
+          "Size": 458752,
+          "IsOwner": true,
+          "Access": "R/X",
+          "Config": {
+            "CHOSEN": "code-partition"
+          }
+        },
+        {
+          "Name": "coredump_partition",
+          "StartAddress": "0x10070000",
+          "Size": 65536,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "CHOSEN": "coredump-partition",
+            "LABEL": "coredump"
+          }
+        },
+        {
+          "Name": "m4_sram",
+          "StartAddress": "0x20000000",
+          "Size": 131072,
+          "DisplayUnit": "KB",
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "CHOSEN": "sram"
+          }
+        }
+      ],
+      "Peripherals": [
+        {
+          "Name": "CM4 SysTick",
+          "Signals": [],
+          "Config": {
+            "ENABLE": "TRUE",
+            "TICKS_PER_SEC": "10000"
+          }
+        },
+        {
+          "Name": "UART0",
+          "Signals": [
+            {
+              "Name": "CTS",
+              "Config": {}
+            },
+            {
+              "Name": "RTS",
+              "Config": {}
+            },
+            {
+              "Name": "RX",
+              "Config": {
+                "PWR": "VDDIO",
+                "PS": "WEAK_PU"
+              }
+            },
+            {
+              "Name": "TX",
+              "Config": {
+                "PWR": "VDDIO"
+              }
+            }
+          ],
+          "Config": {
+            "PARITY": "DISABLED",
+            "CHAR_SIZE": "8",
+            "STOP_BITS": "1",
+            "HW_FLOW_CTRL": "DISABLED",
+            "CHOSEN": "console,shell-uart",
+            "BAUD": "115200"
+          }
+        },
+        {
+          "Name": "ADC",
+          "Signals": [
+            {
+              "Name": "AIN0",
+              "Config": {
+                "PWR": "VDDIO"
+              }
+            },
+            {
+              "Name": "AIN1",
+              "Config": {
+                "PWR": "VDDIO"
+              }
+            },
+            {
+              "Name": "AIN2",
+              "Config": {}
+            },
+            {
+              "Name": "AIN3",
+              "Config": {}
+            },
+            {
+              "Name": "AIN4",
+              "Config": {}
+            },
+            {
+              "Name": "AIN5",
+              "Config": {}
+            },
+            {
+              "Name": "AIN6",
+              "Config": {}
+            },
+            {
+              "Name": "AIN7",
+              "Config": {}
+            }
+          ],
+          "Config": {}
+        },
+        {
+          "Name": "FLC0",
+          "Signals": [],
+          "Config": {}
+        }
+      ]
+    },
+    {
+      "CoreId": "RV",
+      "ProjectId": "RV",
+      "PluginId": "",
+      "PluginVersion": "",
+      "FirmwarePlatform": "undefined",
+      "ExternallyManaged": true,
+      "PlatformConfig": {},
+      "Partitions": [],
+      "Peripherals": []
+    }
+  ],
+  "Pins": [
+    {
+      "Pin": "D7",
+      "Peripheral": "ADC",
+      "Signal": "AIN0"
+    },
+    {
+      "Pin": "E8",
+      "Peripheral": "ADC",
+      "Signal": "AIN1"
+    },
+    {
+      "Pin": "J9",
+      "Peripheral": "UART0",
+      "Signal": "RX"
+    },
+    {
+      "Pin": "H9",
+      "Peripheral": "UART0",
+      "Signal": "TX"
+    }
+  ],
+  "ClockNodes": [
+    {
+      "Name": "UART0/1/2",
+      "Control": "UART0_ENABLE",
+      "Value": "TRUE",
+      "Enabled": true
+    },
+    {
+      "Name": "UART0/1/2",
+      "Control": "UART0_MUX",
+      "Value": "IBRO",
+      "Enabled": true
+    },
+    {
+      "Name": "ADC",
+      "Control": "ENABLE",
+      "Value": "TRUE",
+      "Enabled": true
+    },
+    {
+      "Name": "SYS_OSC Mux",
+      "Control": "MUX",
+      "Value": "IPO",
+      "Enabled": true
+    }
+  ],
+  "ClockFrequencies": {
+    "SYS_CLK_DIV_2": 50000000,
+    "IBRO": 7372800,
+    "IPO": 100000000,
+    "SYS_OSC": 100000000,
+    "SYS_CLK": 100000000,
+    "PCLK": 50000000,
+    "ADC": 6250000,
+    "Cortex-M4": 100000000,
+    "FLC0": 1000000,
+    "UART0": 7372800,
+    "UART1": 50000000,
+    "UART2": 50000000
+  }

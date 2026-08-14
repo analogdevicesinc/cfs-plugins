@@ -46,11 +46,17 @@ Clone the `codefusion-studio` repository alongside this one:
 
 #### Configuration
 
-1. **Update `plugins/package.json`** — replace the remote URL for `cfs-plugins-sdk` with a portal pointing to your local checkout:
+1. **Update `plugins/package.json`** — replace the remote URLs for `cfs-plugins-sdk` and `cfs-data-models` with portals pointing to your local checkout:
 
    ```json
    "dependencies": {
      "cfs-plugins-sdk": "portal:../../codefusion-studio/packages/cfs-plugins-sdk"
+   }
+   ```
+
+   ```json
+   "devDependencies": {
+     "cfs-data-models": "portal:../../codefusion-studio/packages/cfs-data-models"
    }
    ```
 

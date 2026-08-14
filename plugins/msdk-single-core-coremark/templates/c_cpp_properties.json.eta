@@ -1,0 +1,139 @@
+<%~ include("@msdkComponents", it) %>
+<%~ include("@msdkBoardName", it) %>
+<%~ include("@normalizeSoc", it) %>
+{
+  "env": {
+    "cfs.msdk.path": ""
+  },
+  "configurations": [
+    {
+      "name": "Win32",
+      "includePath": [
+        "${default}",
+        "${workspaceFolder}",
+        "${workspaceFolder}/**",
+        "${env:cfs.msdk.path}/Libraries/Boards/<%= it.msdkInflectionPoint(it.soc) %>/<%= it.getMsdkBoardName() %>/Include",
+        "${env:cfs.msdk.path}/Libraries/MiscDrivers",
+        "${env:cfs.msdk.path}/Libraries/MiscDrivers/LED",
+        "${env:cfs.msdk.path}/Libraries/MiscDrivers/PushButton",
+        "${env:cfs.msdk.path}/Libraries/MiscDrivers/Display",
+        "${env:cfs.msdk.path}/Libraries/MiscDrivers/Display/fonts/",
+        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Include/<%= it.msdkInflectionPoint(it.soc) %>/",
+<% for (component of it.getMsdkComponents(it.soc)) { %>
+        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/<%= component %>",
+<% } %>
+        "${env:cfs.msdk.path}/Libraries/CMSIS/Device/Maxim/<%= it.msdkInflectionPoint(it.soc) %>/Include",
+        "${env:cfs.msdk.path}/Libraries/CMSIS/5.9.0/Core/Include",
+        "${env:cfs.msdk.path}/Libraries/Coremark"
+      ],
+      "defines": [
+        "${config:cfs.project.board}",
+        "TARGET=<%= it.msdkInflectionPoint(it.soc) %>",
+        "__GNUC__"
+      ],
+      "intelliSenseMode": "gcc-arm",
+      "compilerPath": "${config:cfs.toolchain.armAArch32GCC.path}/bin/arm-none-eabi-gcc.exe",
+      "browse": {
+        "path": [
+          "${default}",
+          "${workspaceFolder}",
+          "${workspaceFolder}/**",
+          "${env:cfs.msdk.path}/Libraries/CMSIS/Device/Maxim/<%= it.msdkInflectionPoint(it.soc) %>/Source",
+          "${env:cfs.msdk.path}/Libraries/Boards/<%= it.msdkInflectionPoint(it.soc) %>/<%= it.getMsdkBoardName() %>/Source",
+          "${env:cfs.msdk.path}/Libraries/MiscDrivers",
+          "${env:cfs.msdk.path}/Libraries/MiscDrivers/LED",
+          "${env:cfs.msdk.path}/Libraries/MiscDrivers/PushButton",
+          "${env:cfs.msdk.path}/Libraries/MiscDrivers/Display",
+          "${env:cfs.msdk.path}/Libraries/MiscDrivers/Display/fonts/",
+          "${env:cfs.msdk.path}/Libraries/CMSIS/Device/Maxim/<%= it.msdkInflectionPoint(it.soc) %>/Source/GCC",
+          "${env:cfs.msdk.path}/Libraries/Coremark"
+        ]
+      }
+    },
+    {
+      "name": "Linux",
+      "includePath": [
+        "${default}",
+        "${env:cfs.msdk.path}/Libraries/Boards/<%= it.msdkInflectionPoint(it.soc) %>/<%= it.getMsdkBoardName() %>/Include",
+        "${env:cfs.msdk.path}/Libraries/MiscDrivers",
+        "${env:cfs.msdk.path}/Libraries/MiscDrivers/LED",
+        "${env:cfs.msdk.path}/Libraries/MiscDrivers/PushButton",
+        "${env:cfs.msdk.path}/Libraries/MiscDrivers/Display",
+        "${env:cfs.msdk.path}/Libraries/MiscDrivers/Display/fonts/",
+        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Include/<%= it.msdkInflectionPoint(it.soc) %>/",
+<% for (component of it.getMsdkComponents(it.soc)) { %>
+        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/<%= component %>",
+<% } %>
+        "${env:cfs.msdk.path}/Libraries/CMSIS/Device/Maxim/<%= it.msdkInflectionPoint(it.soc) %>/Include",
+        "${env:cfs.msdk.path}/Libraries/CMSIS/5.9.0/Core/Include",
+        "${env:cfs.msdk.path}/Libraries/Coremark"
+      ],
+      "defines": [
+        "${config:cfs.project.board}",
+        "TARGET=<%= it.msdkInflectionPoint(it.soc) %>",
+        "__GNUC__"
+      ],
+      "intelliSenseMode": "gcc-arm",
+      "compilerPath": "${config:cfs.toolchain.armAArch32GCC.path}/bin/arm-none-eabi-gcc",
+      "browse": {
+        "path": [
+          "${default}",
+          "${workspaceFolder}",
+          "${workspaceFolder}/**",
+          "${env:cfs.msdk.path}/Libraries/CMSIS/Device/Maxim/<%= it.msdkInflectionPoint(it.soc) %>/Source",
+          "${env:cfs.msdk.path}/Libraries/Boards/<%= it.msdkInflectionPoint(it.soc) %>/<%= it.getMsdkBoardName() %>/Source",
+          "${env:cfs.msdk.path}/Libraries/MiscDrivers",
+          "${env:cfs.msdk.path}/Libraries/MiscDrivers/LED",
+          "${env:cfs.msdk.path}/Libraries/MiscDrivers/PushButton",
+          "${env:cfs.msdk.path}/Libraries/MiscDrivers/Display",
+          "${env:cfs.msdk.path}/Libraries/MiscDrivers/Display/fonts/",
+          "${env:cfs.msdk.path}/Libraries/CMSIS/Device/Maxim/<%= it.msdkInflectionPoint(it.soc) %>/Source/GCC",
+          "${env:cfs.msdk.path}/Libraries/Coremark"
+        ]
+      }
+    },
+    {
+      "name": "Mac",
+      "includePath": [
+        "${default}",
+        "${env:cfs.msdk.path}/Libraries/Boards/<%= it.msdkInflectionPoint(it.soc) %>/<%= it.getMsdkBoardName() %>/Include",
+        "${env:cfs.msdk.path}/Libraries/MiscDrivers",
+        "${env:cfs.msdk.path}/Libraries/MiscDrivers/LED",
+        "${env:cfs.msdk.path}/Libraries/MiscDrivers/PushButton",
+        "${env:cfs.msdk.path}/Libraries/MiscDrivers/Display",
+        "${env:cfs.msdk.path}/Libraries/MiscDrivers/Display/fonts/",
+        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Include/<%= it.msdkInflectionPoint(it.soc) %>/",
+<% for (component of it.getMsdkComponents(it.soc)) { %>
+        "${env:cfs.msdk.path}/Libraries/PeriphDrivers/Source/<%= component %>",
+<% } %>
+        "${env:cfs.msdk.path}/Libraries/CMSIS/Device/Maxim/<%= it.msdkInflectionPoint(it.soc) %>/Include",
+        "${env:cfs.msdk.path}/Libraries/CMSIS/5.9.0/Core/Include",
+        "${env:cfs.msdk.path}/Libraries/Coremark"
+      ],
+      "defines": [
+        "${config:cfs.project.board}",
+        "TARGET=<%= it.msdkInflectionPoint(it.soc) %>",
+        "__GNUC__"
+      ],
+      "intelliSenseMode": "gcc-arm",
+      "compilerPath": "${config:cfs.toolchain.armAArch32GCC.path}/bin/arm-none-eabi-gcc",
+      "browse": {
+        "path": [
+          "${default}",
+          "${workspaceFolder}",
+          "${workspaceFolder}/**",
+          "${env:cfs.msdk.path}/Libraries/CMSIS/Device/Maxim/<%= it.msdkInflectionPoint(it.soc) %>/Source",
+          "${env:cfs.msdk.path}/Libraries/Boards/<%= it.msdkInflectionPoint(it.soc) %>/<%= it.getMsdkBoardName() %>/Source",
+          "${env:cfs.msdk.path}/Libraries/MiscDrivers",
+          "${env:cfs.msdk.path}/Libraries/MiscDrivers/LED",
+          "${env:cfs.msdk.path}/Libraries/MiscDrivers/PushButton",
+          "${env:cfs.msdk.path}/Libraries/MiscDrivers/Display",
+          "${env:cfs.msdk.path}/Libraries/MiscDrivers/Display/fonts/",
+          "${env:cfs.msdk.path}/Libraries/CMSIS/Device/Maxim/<%= it.msdkInflectionPoint(it.soc) %>/Source/GCC",
+          "${env:cfs.msdk.path}/Libraries/Coremark"
+        ]
+      }
+    }
+  ],
+  "version": 4
+}

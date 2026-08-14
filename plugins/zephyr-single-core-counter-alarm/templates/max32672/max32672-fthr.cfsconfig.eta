@@ -1,0 +1,215 @@
+  "Projects": [
+    {
+      "CoreId": "CM4",
+      "ProjectId": "CM4",
+      "PluginId": "com.analog.project.zephyr.plugin",
+      "PluginVersion": "^1.1.0",
+      "FirmwarePlatform": "zephyr",
+      "ExternallyManaged": false,
+      "PlatformConfig": {
+        "ProjectName": "m4",
+        "ZephyrVersion": "4.3.0",
+        "BuildSystem": "ninja",
+        "ZephyrBoardName": "max32672fthr"
+      },
+      "Partitions": [
+        {
+          "Name": "m4_flash",
+          "StartAddress": "0x10000000",
+          "Size": 983040,
+          "IsOwner": true,
+          "Access": "R/X",
+          "Config": {
+            "CHOSEN": "code-partition"
+          }
+        },
+        {
+          "Name": "coredump_partition",
+          "StartAddress": "0x100f0000",
+          "Size": 65536,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "CHOSEN": "coredump-partition",
+            "LABEL": "coredump"
+          }
+        },
+        {
+          "Name": "m4_sram",
+          "StartAddress": "0x20000000",
+          "Size": 204800,
+          "IsOwner": true,
+          "Access": "R/W",
+          "Config": {
+            "CHOSEN": "sram"
+          }
+        }
+      ],
+      "Peripherals": [
+        {
+          "Name": "CM4 SysTick",
+          "Signals": [],
+          "Config": {
+            "ENABLE": "TRUE",
+            "TICKS_PER_SEC": "10000"
+          }
+        },
+        {
+          "Name": "UART0",
+          "Signals": [
+            {
+              "Name": "CTS",
+              "Config": {}
+            },
+            {
+              "Name": "RTS",
+              "Config": {}
+            },
+            {
+              "Name": "RX",
+              "Config": {
+                "PS": "PU"
+              }
+            },
+            {
+              "Name": "TX",
+              "Config": {
+              }
+            }
+          ],
+          "Config": {
+            "PARITY": "DISABLED",
+            "CHAR_SIZE": "8",
+            "STOP_BITS": "1",
+            "HW_FLOW_CTRL": "DISABLED",
+            "CHOSEN": "console,shell-uart",
+            "BAUD": "115200"
+          }
+        },
+        {
+          "Name": "GPIO0",
+          "Signals": [
+            {
+              "Name": "P0.3",
+              "Config": {
+                "MODE": "OUT",
+                "POLARITY": "LOW",
+                "DT_NAME": "led_1",
+                "PHANDLE": "led1",
+                "ALIAS": "led0",
+                "DS": "0"
+              }
+            },
+            {
+              "Name": "P0.4",
+              "Config": {
+                "MODE": "OUT",
+                "POLARITY": "LOW",
+                "DT_NAME": "led_2",
+                "PHANDLE": "led2",
+                "ALIAS": "led1",
+                "DS": "0"
+              }
+            },
+            {
+              "Name": "P0.10",
+              "Config": {
+                "MODE": "IN",
+                "PS": "PU",
+                "POLARITY": "LOW",
+                "DT_NAME": "pb1",
+                "PHANDLE": "pb1",
+                "INPUT_CODE": "INPUT_KEY_0",
+                "ALIAS": "sw0"
+              }
+            }
+          ],
+          "Config": {}
+        },
+        {
+          "Name": "TMR0",
+          "Signals": [
+            {
+              "Name": "IA",
+              "Config": {}
+            },
+            {
+              "Name": "OA",
+              "Config": {}
+            }
+          ],
+          "Config": {
+            "CONFIGURATION": "SINGLE_32BIT",
+            "MODE_A": "COMPARE",
+            "CLKDIV_A": "1"
+          }
+        },
+        {
+          "Name": "FLC1",
+          "Signals": [],
+          "Config": {}
+        }
+      ]
+    }
+  ],
+  "Pins": [
+    {
+      "Pin": "7",
+      "Peripheral": "GPIO0",
+      "Signal": "P0.3"
+    },
+    {
+      "Pin": "8",
+      "Peripheral": "GPIO0",
+      "Signal": "P0.4"
+    },
+    {
+      "Pin": "21",
+      "Peripheral": "GPIO0",
+      "Signal": "P0.10"
+    },
+    {
+      "Pin": "19",
+      "Peripheral": "UART0",
+      "Signal": "RX"
+    },
+    {
+      "Pin": "20",
+      "Peripheral": "UART0",
+      "Signal": "TX"
+    }
+  ],
+  "ClockNodes": [
+    {
+      "Name": "UART0/1/2",
+      "Control": "UART0_ENABLE",
+      "Value": "TRUE",
+      "Enabled": true
+    },
+    {
+      "Name": "TMR0/1/2/3",
+      "Control": "TMR0_ENABLE",
+      "Value": "TRUE",
+      "Enabled": true
+    }
+  ],
+  "ClockFrequencies": {
+    "INRO": 80000,
+    "IBRO": 7372800,
+    "SYS_OSC": 100000000,
+    "SYS_CLK": 100000000,
+    "IPO": 100000000,
+    "PRESCALED IPO": 100000000,
+    "Cortex-M4": 100000000,
+    "FLC0/1": 100000000,
+    "TMR0a": 50000000,
+    "TMR0b": 50000000,
+    "TMR1a": 50000000,
+    "TMR1b": 50000000,
+    "TMR2a": 50000000,
+    "TMR2b": 50000000,
+    "TMR3a": 50000000,
+    "TMR3b": 50000000,
+    "UART0": 7372800,
+    "POWER SEQ": 80000
+  }

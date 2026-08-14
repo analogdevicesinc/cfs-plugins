@@ -2,7 +2,7 @@
   "pluginName": "Zephyr Single Core Basic Thread Manipulation",
   "pluginDescription": "Spawn multiple threads that blink LEDs and print information to the console.",
   "pluginId": "com.analog.zephyr.workspace.basic.threads",
-  "pluginVersion": "1.0.0",
+  "pluginVersion": "1.1.0",
   "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "zephyr",
@@ -92,10 +92,6 @@
         {
           "src": "files/README.rst",
           "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : ['max32666'].includes(context.soc.toLowerCase()) ? 'm4-0': 'm4'}/README.rst"
-        },
-        {
-          "src": "files/sample.yaml",
-          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : ['max32666'].includes(context.soc.toLowerCase()) ? 'm4-0': 'm4'}/sample.yaml"
         },
         {
           "src": "files/gdb_toolbox/configs/fault-analyzer.json",

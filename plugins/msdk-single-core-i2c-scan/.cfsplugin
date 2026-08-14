@@ -2,7 +2,7 @@
   "pluginName": "MSDK Single Core I2C Scan",
   "pluginDescription": "Single Core MSDK I2C Scan template demonstrating how to use the I2C controller to scan and detect connected I2C target devices.",
   "pluginId": "com.analog.singlecore.msdk.i2c.scan",
-  "pluginVersion": "1.1.0",
+  "pluginVersion": "1.2.0",
   "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "MSDK",

@@ -20,7 +20,7 @@
       "debuggerArgs": ["-l", "50"],
       "configFiles": [
         "${config:cfs.openocd.interface}",
-        "${config:cfs.openocd.target}"
+        "${config:cfs.openocd.board}"
       ],
       "openOCDLaunchCommands": ["adapter speed 23000"],
       "preLaunchCommands": [

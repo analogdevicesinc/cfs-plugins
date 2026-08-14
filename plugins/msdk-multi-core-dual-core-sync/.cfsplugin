@@ -2,7 +2,7 @@
   "pluginName": "MSDK Dual Core Sync",
   "pluginDescription": "MSDK template demonstrating dual-core synchronization between ARM and RISC-V using hardware semaphores.",
   "pluginId": "com.analog.multicore.msdk.dual.core.sync",
-  "pluginVersion": "1.1.0",
+  "pluginVersion": "1.2.0",
   "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "MSDK",

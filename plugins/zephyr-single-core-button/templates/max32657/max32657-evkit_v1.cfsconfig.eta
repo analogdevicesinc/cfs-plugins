@@ -101,14 +101,12 @@
             {
               "Name": "RX",
               "Config": {
-                "PWR": "VDDIO",
                 "PS": "WEAK_PU"
               }
             },
             {
               "Name": "TX",
               "Config": {
-                "PWR": "VDDIO"
               }
             }
           ],
@@ -128,7 +126,7 @@
               "Name": "P0.12",
               "Config": {
                 "MODE": "IN",
-                "PS": "STRONG_PU",
+                "PS": "WEAK_PU",
                 "POLARITY": "LOW",
                 "DT_NAME": "pb1",
                 "PHANDLE": "pb1",

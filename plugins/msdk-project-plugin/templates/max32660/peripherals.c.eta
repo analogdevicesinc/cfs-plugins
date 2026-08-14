@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 2024-2025 Analog Devices, Inc.
+ * Copyright (c) 2024-2026 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,12 +12,6 @@
  * limitations under the License.
  *
  */
-
-
-function modifiesSysClk() {
-  return (isSystemClockSet("SYS_OSC Mux", "MUX") || isSystemClockSet("PRESCALER", "DIV"));
-}
-
 %>
 <% if (isSystemClockSetTo("SYS_OSC Mux", "MUX", "INRO")) { %>
   /* SYS_OSC Mux: Clock Source is set to INRO. */
@@ -87,8 +81,3 @@ function modifiesSysClk() {
 <%~ include("../i2c_config.c.eta", { ...it, instance: "I2C1", clock: "PeripheralClock", enable: "I2C1_ENABLE" }) %>
 <%~ include("../wdt_config.c.eta", { ...it, instance: "WDT0" }) %>
 <%~ include("../rtc_config.c.eta", { ...it, instance: "RTC", output_clocknode: "32KCAL", output_ctrl: "32KCAL" }) %>
-<% if (modifiesSysClk()) { %>
-  /* Update the System Core Clock as core clock settings have changed. */
-  SystemCoreClockUpdate();
-
-<% } %>

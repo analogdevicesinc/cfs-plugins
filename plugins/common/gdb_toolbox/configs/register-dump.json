@@ -2,7 +2,7 @@
   "name": "Dump Registers",
   "description": "Dumps the current state of the registers into a log file.",
   "version": "1.0.0",
-  "core": ["arm", "riscv", "xtensa"],
+  "arch": ["arm", "riscv", "xtensa"],
   "commands": [
     {
       "command": "info registers",

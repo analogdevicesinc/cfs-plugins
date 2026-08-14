@@ -2,7 +2,7 @@
   "pluginName": "MSDK Multicore Hello World",
   "pluginDescription": "Multicore MSDK Hello World template.",
   "pluginId": "com.analog.multicore.msdk.helloworld",
-  "pluginVersion": "1.1.0",
+  "pluginVersion": "1.2.0",
   "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "MSDK",

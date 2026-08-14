@@ -48,6 +48,7 @@
       "ExternallyManaged": false,
       "PlatformConfig": {
         "ProjectName": "m4",
+        "ZephyrVersion": "4.3.0",
         "ZephyrBoardName": "apard32690/max32690/m4",
         "EnableCoreDump": true
       },
@@ -155,11 +156,6 @@
         },
         {
           "Name": "FLC0",
-          "Signals": [],
-          "Config": {}
-        },
-        {
-          "Name": "FLC1",
           "Signals": [],
           "Config": {}
         }

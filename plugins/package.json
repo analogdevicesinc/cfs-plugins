@@ -1,7 +1,7 @@
 {
   "name": "plugins",
   "packageManager": "yarn@4.2.2",
-  "version": "2.2.1",
+  "version": "2.3.0",
   "type": "module",
   "scripts": {
     "lint": "eslint . --ext ts ",
@@ -11,10 +11,10 @@
     "genai": "node genai.js"
   },
   "dependencies": {
-    "cfs-plugins-sdk": "https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-plugins-sdk&tag=V2.2.0"
+    "cfs-plugins-sdk": "https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-plugins-sdk&tag=V2.3.0"
   },
   "devDependencies": {
-    "cfs-data-models": "https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-data-models&tag=V2.2.0",
+    "cfs-data-models": "https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-data-models&tag=V2.3.0",
     "fast-glob": "^3.3.3"
   }
 }

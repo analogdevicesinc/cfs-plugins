@@ -21,6 +21,9 @@ Press **Pristine Build** and then **Flash** directly in the CodeFusion Studio (C
 Sample Output
 =============
 
+**Note:** The console output below is from ``max32690evkit``. On other
+boards, the board name in the output will match the selected target board.
+
 .. code-block:: console
 
   thread_a: Hello World from cpu 0 on max32690evkit!
@@ -30,4 +33,3 @@ Sample Output
   thread_a: Hello World from cpu 0 on max32690evkit!
   thread_b: Hello World from cpu 0 on max32690evkit!
 
-Exit QEMU by pressing :kbd:`CTRL+A` :kbd:`x`.

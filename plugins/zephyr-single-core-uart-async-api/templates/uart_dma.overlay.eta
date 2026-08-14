@@ -1,0 +1,74 @@
+<%
+  const lowerSoc   = it.soc.toLowerCase();
+  const lowerBoard = (it.board || "").toLowerCase();
+ 
+  const dmaBindingMap = {
+    "max32650": "max32650_dma.h",
+    "max32655": "max32655_dma.h",
+    "max32657": "max32657_dma.h",
+    "max32658": "max32657_dma.h",
+    "max32660": "max32660_dma.h",
+    "max32662": "max32662_dma.h",
+    "max32666": "max32666_dma.h",
+    "max32670": "max32670_dma.h",
+    "max32672": "max32672_dma.h",
+    "max32675c": "max32675_dma.h",
+    "max32690": "max32690_dma.h",
+    "max78000": "max78000_dma.h",
+    "max78002": "max78002_dma.h"
+  };
+ 
+  const dmaHeader = dmaBindingMap[lowerSoc];
+ 
+  const isMAX32690Evkit = (lowerSoc === "max32690" && lowerBoard === "evkit_v1");
+
+  const isMax32666 = (lowerSoc === "max32666");
+ 
+  const uartNode = isMax32666
+  ? "uart1"
+  : (isMAX32690Evkit ? "uart2" : "uart0");
+
+  const isMax32657_32658 = (lowerSoc === "max32657" || lowerSoc === "max32658");
+
+  const isMax78 = (lowerSoc === "max78000" || lowerSoc === "max78002");
+
+  const dmaID = isMax32657_32658 ? "dma1" : "dma0";
+
+  let txSlot;
+  let rxSlot;
+
+  if (isMax32657_32658) {
+    txSlot = "MAX32_DMA_SLOT_UART_TX";
+    rxSlot = "MAX32_DMA_SLOT_UART_RX";
+  } else if (isMax78) {
+    txSlot = "MAX78_DMA_SLOT_UART0_TX";
+    rxSlot = "MAX78_DMA_SLOT_UART0_RX";  
+  } else {
+    if (uartNode === "uart2") {
+      txSlot = "MAX32_DMA_SLOT_UART2_TX";
+      rxSlot = "MAX32_DMA_SLOT_UART2_RX";
+    } else if (uartNode === "uart1") {
+      txSlot = "MAX32_DMA_SLOT_UART1_TX";
+      rxSlot = "MAX32_DMA_SLOT_UART1_RX";
+    } else {
+      txSlot = "MAX32_DMA_SLOT_UART0_TX";
+      rxSlot = "MAX32_DMA_SLOT_UART0_RX";
+    }
+  }
+
+%>
+/**
+ * This file was generated using Analog Devices CodeFusion Studio.
+ * https://github.com/analogdevicesinc/codefusion-studio
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright (c) 2026 Analog Devices, Inc.
+ */
+
+#include <zephyr/dt-bindings/dma/<%= dmaHeader %>>
+
+&<%= uartNode %> {
+	dmas = <&<%= dmaID %> 1 <%= txSlot %>>, <&<%= dmaID %> 0 <%= rxSlot %>>;
+	dma-names = "tx", "rx";
+	status = "okay";
+};

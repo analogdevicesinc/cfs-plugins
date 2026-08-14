@@ -2,7 +2,7 @@
   "pluginName": "Zephyr Project Plugin",
   "pluginId": "com.analog.project.zephyr.plugin",
   "pluginDescription": "Manually configure and create Zephyr projects.",
-  "pluginVersion": "1.2.0",
+  "pluginVersion": "1.3.0",
   "schemaVersion": "1.2.0",
   "pluginApiVersion": 1,
   "author": "Analog Devices, Inc.",
@@ -401,7 +401,8 @@
           "Hint": "${String:gpio_} ${Node:Name} + lwr ${String:[.-]} ${String:_} replace",
           "Type": "text",
           "Pattern": "[_a-zA-Z][_a-zA-Z0-9]*",
-          "Condition": "${Node:Name} ${String:P[0-9]\\.[0-9]+} match"
+          "Condition": "${Node:Name} ${String:P[0-9]\\.[0-9]+} match",
+          "Scope": "${ProjectId} ${String: zephyr dtnames } + ${Control:MODE} +"
         },
         {
           "Id": "PHANDLE",
@@ -409,7 +410,8 @@
           "Hint": "${String:gpio_} ${Node:Name} + lwr ${String:[.-]} ${String:_} replace",
           "Type": "text",
           "Pattern": "[_a-zA-Z][_a-zA-Z0-9]*",
-          "Condition": "${Node:Name} ${String:P[0-9]\\.[0-9]+} match"
+          "Condition": "${Node:Name} ${String:P[0-9]\\.[0-9]+} match",
+          "Scope": "${ProjectId} ${String: zephyr phandles} +"
         },
         {
           "Id": "INPUT_CODE",
@@ -425,7 +427,8 @@
           "Hint": "${String:alias-} ${Node:Name} + lwr ${String:[_.]} ${String:-} replace",
           "Type": "text",
           "Pattern": "([a-z][a-z0-9-]*)?",
-          "Condition": "${Node:Name} ${String:P[0-9]\\.[0-9]+} match"
+          "Condition": "${Node:Name} ${String:P[0-9]\\.[0-9]+} match",
+          "Scope": "${ProjectId} ${String: zephyr aliases} +"
         },
         {
           "Id": "WAKEUP_EN",
@@ -444,7 +447,8 @@
           ],
           "Hint": "FALSE",
           "Type": "enum",
-          "Condition": "${Control:MODE} ${String:IN} = ${Node:Name} ${String:P[0-9]\\.[0-9]+} match &"
+          "Condition": "${Control:MODE} ${String:IN} = ${Node:Name} ${String:P[0-9]\\.[0-9]+} match &",
+          "partRegexp": "MAX3265[78]"
         }
       ],
       "modifiedControls": [
@@ -1214,7 +1218,7 @@
       "BOOST": {
         "supportedControls": []
       },
-      "CAN[01]": {
+      "CAN[01]?": {
         "supportedControls": []
       },
       "CLCD": {
@@ -1352,7 +1356,8 @@
             "Description": "Alias",
             "Hint": "endpoint_alias",
             "Type": "text",
-            "Pattern": "[_a-zA-Z][_a-zA-Z0-9]*"
+            "Pattern": "[_a-zA-Z][_a-zA-Z0-9]*",
+            "Scope": "${ProjectId} ${String: zephyr phandles} +"
           },
           {
             "Id": "INT_PRIORITY",
@@ -1372,7 +1377,8 @@
             "Description": "Alias",
             "Hint": "endpoint_alias",
             "Type": "text",
-            "Pattern": "[_a-zA-Z][_a-zA-Z0-9]*"
+            "Pattern": "[_a-zA-Z][_a-zA-Z0-9]*",
+            "Scope": "${ProjectId} ${String: zephyr phandles} +"
           },
           {
             "Id": "INT_LINE_DEST",

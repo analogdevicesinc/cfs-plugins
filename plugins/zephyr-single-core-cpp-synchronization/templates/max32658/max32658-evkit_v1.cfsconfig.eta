@@ -33,13 +33,13 @@
       "CoreId": "CM33",
       "ProjectId": "CM33",
       "PluginId": "com.analog.project.zephyr.plugin",
-      "PluginVersion": "^1.1.0",
+      "PluginVersion": "^1.2.0",
       "FirmwarePlatform": "zephyr",
       "ExternallyManaged": false,
       "PlatformConfig": {
         "ProjectName": "m33",
-        "ZephyrVersion": "4.3.0",
-        "ZephyrBoardName": "max32657evkit/max32657"
+        "ZephyrVersion": "4.4.0",
+        "ZephyrBoardName": "max32658evkit/max32658"
       },
       "Partitions": [
         {
@@ -101,14 +101,12 @@
             {
               "Name": "RX",
               "Config": {
-                "PWR": "VDDIO",
                 "PS": "WEAK_PU"
               }
             },
             {
               "Name": "TX",
               "Config": {
-                "PWR": "VDDIO"
               }
             }
           ],
@@ -117,7 +115,6 @@
             "CHOSEN": "console,shell-uart,bt-c2h-uart",
             "BAUD": "115200",
             "PARITY": "DISABLED",
-            "HW_FLOW_CTRL": "DISABLED",
             "CHAR_SIZE": "8",
             "STOP_BITS": "1"
           }

@@ -2,7 +2,7 @@
   "pluginName": "MSDK Single Core Library Use",
   "pluginDescription": "Demonstrates how to link static libraries to an application.",
   "pluginId": "com.analog.singlecore.msdk.library.use",
-  "pluginVersion": "1.0.2",
+  "pluginVersion": "1.1.0",
   "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "MSDK",

@@ -7,7 +7,7 @@
   "Package": "<%= it.package %>",
   "Pins": [],
   "ClockNodes": [],
-  "BoardName": "ev_som",
+  "BoardName": "<%= it.board || '' %>",
   "Projects": [
     {
       "CoreId": "FX",

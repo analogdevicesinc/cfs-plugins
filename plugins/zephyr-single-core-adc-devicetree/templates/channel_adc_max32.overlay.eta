@@ -1,0 +1,48 @@
+<%
+  const lowerSoc   = it.soc.toLowerCase();
+  const lowerBoard = (it.board || "").toLowerCase();
+
+  const is10bitSoc      = ["max32655", "max32665", "max32666", "max32680", "max78000"].includes(lowerSoc);
+  const isMax78000Fthr  = (lowerSoc === "max78000" && lowerBoard === "fthr");
+  const isMax32672      = (lowerSoc === "max32672");
+
+  const adcChan0 = isMax32672 ? 6 : (isMax78000Fthr ? 3 : 0);
+  const adcChan1 = isMax32672 ? 7 : (isMax78000Fthr ? 4 : 1);
+
+  const adcResolution = is10bitSoc ? 10 : 12;
+%>
+/**
+ * This file was generated using Analog Devices CodeFusion Studio.
+ * https://github.com/analogdevicesinc/codefusion-studio
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ * Copyright (c) 2026 Analog Devices, Inc.
+ */
+
+/ {
+	zephyr,user {
+		io-channels = <&adc <%= adcChan0 %>>, <&adc <%= adcChan1 %>>;
+	};
+};
+
+&adc {
+
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	channel@<%= adcChan0 %> {
+		reg = <<%= adcChan0 %>>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,resolution = <<%= adcResolution %>>;
+	};
+
+	channel@<%= adcChan1 %> {
+		reg = <<%= adcChan1 %>>;
+		zephyr,gain = "ADC_GAIN_1";
+		zephyr,reference = "ADC_REF_INTERNAL";
+		zephyr,acquisition-time = <ADC_ACQ_TIME_DEFAULT>;
+		zephyr,resolution = <<%= adcResolution %>>;
+	};
+};

@@ -57,14 +57,12 @@
             {
               "Name": "RX",
               "Config": {
-                "PWR": "VDDIO",
                 "PS": "PU"
               }
             },
             {
               "Name": "TX",
               "Config": {
-                "PWR": "VDDIO"
               }
             }
           ],
@@ -84,7 +82,6 @@
               "Name": "P0.3",
               "Config": {
                 "MODE": "OUT",
-                "PWR": "VDDIO",
                 "POLARITY": "LOW",
                 "DT_NAME": "led_1",
                 "PHANDLE": "led1",
@@ -96,7 +93,6 @@
               "Name": "P0.4",
               "Config": {
                 "MODE": "OUT",
-                "PWR": "VDDIO",
                 "POLARITY": "LOW",
                 "DT_NAME": "led_2",
                 "PHANDLE": "led2",
@@ -108,7 +104,6 @@
               "Name": "P0.10",
               "Config": {
                 "MODE": "IN",
-                "PWR": "VDDIO",
                 "PS": "PU",
                 "POLARITY": "LOW",
                 "DT_NAME": "pb1",

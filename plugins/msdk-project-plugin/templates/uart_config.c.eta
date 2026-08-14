@@ -54,6 +54,9 @@ function getUartClock() {
     case "PCLK":
       clock_enum = "MXC_UART_APB_CLK";
       break;
+    case "OBRC":
+      clock_enum = "MXC_UART_IBRO_CLK";
+      break;
   }
   return clock_enum;
 }

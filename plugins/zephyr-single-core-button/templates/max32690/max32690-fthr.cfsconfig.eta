@@ -109,14 +109,6 @@
           "Name": "UART0",
           "Signals": [
             {
-              "Name": "CTS",
-              "Config": {}
-            },
-            {
-              "Name": "RTS",
-              "Config": {}
-            },
-            {
               "Name": "RX",
               "Config": {
                 "PWR": "VDDIO",
@@ -134,7 +126,6 @@
             "CHOSEN": "console,shell-uart",
             "BAUD": "115200",
             "PARITY": "DISABLED",
-            "HW_FLOW_CTRL": "DISABLED",
             "CHAR_SIZE": "8",
             "STOP_BITS": "1"
           }

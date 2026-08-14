@@ -2,7 +2,7 @@
   "pluginName": "Zephyr Single Core PM GPIO Wakeup",
   "pluginDescription": "Demonstrates using GPIO to wake up the system from low power states on MAX32 SoCs.",
   "pluginId": "com.analog.zephyr.workspace.pm.gpio.wakeup",
-  "pluginVersion": "1.0.0",
+  "pluginVersion": "1.1.0",
   "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "zephyr",
@@ -34,10 +34,6 @@
         {
           "src": "files/README.rst",
           "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : ['max32666'].includes(context.soc.toLowerCase()) ? 'm4-0': 'm4'}/README.rst"
-        },
-        {
-          "src": "files/sample.yaml",
-          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : ['max32666'].includes(context.soc.toLowerCase()) ? 'm4-0': 'm4'}/sample.yaml"
         },
         {
           "src": "files/gdb_toolbox/configs/fault-analyzer.json",

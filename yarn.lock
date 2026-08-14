@@ -939,21 +939,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cfs-data-models@https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-data-models&tag=V2.2.0":
-  version: 2.2.0
-  resolution: "cfs-data-models@https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-data-models&commit=1647646bc4e565ada32d59143f90b3a15e054009"
-  checksum: 10c0/2e9e09fb6ba5d74ec166908bc8494a1c53e04e858655c90b04219b6111f0609e4566784a31d0f5c5e725d1ad87a02d8393da5fd3d0a5275e09eea9504c435317
+"cfs-data-models@https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-data-models&tag=V2.3.0":
+  version: 2.3.0
+  resolution: "cfs-data-models@https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-data-models&commit=303ada66afe73bf28743969f15727a5742afaaa9"
+  checksum: 10c0/cdcc833e4ff90f55125533875cc2fc4589deda6a985efc760a017e920695c13ff4fb5b2ecfe9657635896d08ec7280def6ecf1ca5cdcc79baa28079e8594c20f
   languageName: node
   linkType: hard
 
-"cfs-plugins-sdk@https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-plugins-sdk&tag=V2.2.0":
+"cfs-plugins-sdk@https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-plugins-sdk&tag=V2.3.0":
   version: 1.0.0
-  resolution: "cfs-plugins-sdk@https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-plugins-sdk&commit=1647646bc4e565ada32d59143f90b3a15e054009"
+  resolution: "cfs-plugins-sdk@https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-plugins-sdk&commit=303ada66afe73bf28743969f15727a5742afaaa9"
   dependencies:
-    cfs-types: "npm:^2.2.0"
+    cfs-types: "npm:^2.3.0"
     eta: "npm:^3.5.0"
     fast-glob: "npm:^3.3.3"
-  checksum: 10c0/a2509331afa3f8b2f953d42b3c8592fc3e1c7ecbe58af81d195792aeb774927d92603bd8f62e5190847ce95ccb58c96d0a1b03d56f4c117cd99b607fc961eecc
+  checksum: 10c0/da42d7c61d059a3a07cc4555f092084ee454572a4e82888927b75e358ec97a48c1eac382c239b7ce8d9ac01c99f3172e807f678e7bb5cfa00211cd306a38b2b0
   languageName: node
   linkType: hard
 
@@ -991,10 +991,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"cfs-types@https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-types&tag=V2.2.0":
-  version: 2.2.0
-  resolution: "cfs-types@https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-types&commit=1647646bc4e565ada32d59143f90b3a15e054009"
-  checksum: 10c0/fe12cdad4e3367271ff1c27344d4fa2f0811b98dd04845f7bfdceaea61aa45fa03814fab620d20d9de7824ec69ee690cbac78d9139394346775fd22dd28dfe8d
+"cfs-types@https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-types&tag=V2.3.0":
+  version: 2.3.0
+  resolution: "cfs-types@https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-types&commit=303ada66afe73bf28743969f15727a5742afaaa9"
+  checksum: 10c0/5813f52ca93944a3ac57d808b7399bc2d294afbf4560ab1b265e2e4f2f528231172eda31a77d1dc69a43f43200cf888ad2d13af32e152faf1d144076508a79c9
   languageName: node
   linkType: hard
 
@@ -2483,8 +2483,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "plugins@workspace:plugins"
   dependencies:
-    cfs-data-models: "https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-data-models&tag=V2.2.0"
-    cfs-plugins-sdk: "https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-plugins-sdk&tag=V2.2.0"
+    cfs-data-models: "https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-data-models&tag=V2.3.0"
+    cfs-plugins-sdk: "https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-plugins-sdk&tag=V2.3.0"
     fast-glob: "npm:^3.3.3"
   languageName: unknown
   linkType: soft

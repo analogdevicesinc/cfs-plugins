@@ -26,6 +26,12 @@
       "Control": "ENABLE",
       "Value": "TRUE",
       "Enabled": true
+    },
+    {
+      "Name": "TMR0-5",
+      "Control": "TMR0_ENABLE",
+      "Value": "TRUE",
+      "Enabled": true
     }
   ],
   "Projects": [
@@ -39,7 +45,7 @@
       "PlatformConfig": {
         "ProjectName": "m33",
         "ZephyrVersion": "4.3.0",
-        "ZephyrBoardName": "max32657evkit/max32657"
+        "ZephyrBoardName": "max32658evkit/max32658"
       },
       "Partitions": [
         {
@@ -101,14 +107,12 @@
             {
               "Name": "RX",
               "Config": {
-                "PWR": "VDDIO",
                 "PS": "WEAK_PU"
               }
             },
             {
               "Name": "TX",
               "Config": {
-                "PWR": "VDDIO"
               }
             }
           ],
@@ -117,7 +121,6 @@
             "CHOSEN": "console,shell-uart,bt-c2h-uart",
             "BAUD": "115200",
             "PARITY": "DISABLED",
-            "HW_FLOW_CTRL": "DISABLED",
             "CHAR_SIZE": "8",
             "STOP_BITS": "1"
           }
@@ -153,6 +156,20 @@
           "Config": {}
         },
         {
+          "Name": "TMR0",
+          "Signals": [
+            {
+              "Name": "O",
+              "Config": {}
+            }
+          ],
+          "Config": {
+            "CONFIGURATION": "SINGLE_32BIT",
+            "MODE_A": "COMPARE",
+            "CLKDIV_A": "1"
+          }
+        },
+        {
           "Name": "FLC",
           "Signals": [],
           "Config": {}
@@ -163,18 +180,21 @@
   "ClockFrequencies": {
     "PCLK": 25000000,
     "CLK_4KHZ": 4096,
-    "ERTCO_CLK": 32768,
-    "32KOUT": 32768,
+    "INRO_DIV_4": 32768,
+    "INRO": 131072,
     "Cortex-M4": 50000000,
     "FLC": 50000000,
     "WUT": 32768,
     "RTC": 4096,
     "IPO": 50000000,
-    "ERTCO_OSC": 32768,
-    "ERTCO_OUT": 32768,
     "SYS_OSC": 50000000,
     "SYS_CLK": 50000000,
-    "ERTCO": 32768,
     "CLK_32KHZ": 32768,
+    "TMR0": 25000000,
+    "TMR1": 25000000,
+    "TMR2": 25000000,
+    "TMR3": 25000000,
+    "TMR4": 25000000,
+    "TMR5": 25000000,
     "UART0": 25000000
   }

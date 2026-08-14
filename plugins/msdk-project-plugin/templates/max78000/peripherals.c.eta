@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 2024-2025 Analog Devices, Inc.
+ * Copyright (c) 2024-2026 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,12 +12,6 @@
  * limitations under the License.
  *
  */
-
-
-function modifiesSysClk() {
-  return (isSystemClockSet("SYS_OSC Mux", "MUX") || isSystemClockSet("PRESCALER", "DIV"));
-}
-
 %>
 <% if (isSystemClockSetTo("SYS_OSC Mux", "MUX", "P0.3")) { %>
   /* SYS_OSC Mux: Clock Source is set to External Clock on P0.3. */
@@ -125,8 +119,3 @@ function modifiesSysClk() {
 <%~ include("../i2s_config.c.eta", { ...it, instance: "I2S", enable: "ENABLE" }) %>
 <%~ include("../owm_config.c.eta", { ...it, instance: "OWM", enable: "ENABLE" }) %>
 <%~ include("../crc_config.c.eta", { ...it, instance: "CRC", enable: "CRC_ENABLE"}) %>
-<% if (modifiesSysClk()) { %>
-  /* Update the System Core Clock as core clock settings have changed. */
-  SystemCoreClockUpdate();
-
-<% } %>

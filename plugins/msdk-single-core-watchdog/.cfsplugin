@@ -2,7 +2,7 @@
   "pluginName": "MSDK Single Core Watchdog",
   "pluginDescription": "A demonstration of the windowed features of the watchdog timer.",
   "pluginId": "com.analog.singlecore.msdk.watchdog",
-  "pluginVersion": "1.0.0",
+  "pluginVersion": "1.1.0",
   "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "MSDK",

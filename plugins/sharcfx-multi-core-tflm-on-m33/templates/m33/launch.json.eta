@@ -17,7 +17,7 @@
       ],
       "configFiles": [
         "${config:cfs.openocd.interface}",
-        "${config:cfs.openocd.target}"
+        "${config:cfs.openocd.board}"
       ],
       "gdbTarget": "localhost:50001",
       "showDevDebugOutput": "none",

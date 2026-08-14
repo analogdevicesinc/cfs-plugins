@@ -12,11 +12,19 @@
     {
       "Name": "SRAM",
       "StartAddress": "0x20000000",
-      "Size": 131072,
+      "Size": 65536,
       "IsOwner": true,
       "Access": "R/W",
       "Config": {
       }
+    },
+    {
+      "Name": "SHARED",
+      "StartAddress": "0x2001BFF8",
+      "Size": 8,
+      "IsOwner": true,
+      "Access": "R/W",
+      "Config": {}
     }
   ],
   "Peripherals": [

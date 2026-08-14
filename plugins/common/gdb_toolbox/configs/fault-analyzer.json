@@ -2,7 +2,7 @@
   "name": "Analyze Faults",
   "description": "Analyzes faults and exceptions in the target application.",
   "version": "1.0.0",
-  "core": "arm",
+  "arch": "arm",
   "commands": [
     {
       "command": "source {defaultScriptsDirectory}/fault-analyzer-arm.gdb",

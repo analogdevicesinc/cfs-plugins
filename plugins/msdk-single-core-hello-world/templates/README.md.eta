@@ -1,0 +1,197 @@
+<%
+const soc = it.soc.toLowerCase();
+const board = it.board.toLowerCase();
+
+function ledValue() {
+  switch(soc) {
+    case "max78002":
+      return "GPIO (P2.4 - LED)";
+    case "max78000":
+      return "LED1";
+    case "max32690":
+      return "LED_RED";
+    case "max32672":
+      if (board === "fthr") {
+        return "Red LED";
+      } else {
+        return "GPIO (P0.22 - LED0)";
+      }
+    case "max32666":
+      if (board === "fthr") {
+        return "Red LED";
+      } else {
+        return "GPIO (P1.14 - LED0)";
+      }
+    case "max32662":
+      return "GPIO (P0.14 - LED0)";
+    case "max32660":
+      return "GPIO (P0.13 - Red LED)";
+    case "max32655":
+      return "LED_RED";
+    case "max32650":
+      if (board === "fthr") {
+        return "Red LED";
+      } else {
+        return "GPIO (P2.25 - LED0)";
+      }
+    default:
+      return "LED0";
+  }
+}
+%>
+<%
+function timeOut() {
+  switch(soc) {
+    case "max78002":
+      return "600";
+    default:
+      return "500";
+  }
+}
+%>
+<% 
+function blinkRate() { 
+  return (1000 / (2 * Number(timeOut()))) 
+    .toFixed(2) 
+    .replace(/\.00$/, '');
+} 
+
+%> 
+## Description
+
+A basic getting started program.
+
+This version of Hello_World prints an incrementing count to the console UART and toggles <%= ledValue() %> every <%= timeOut() %> ms.
+
+## Software
+
+### Project Usage
+
+Universal instructions on building, flashing, and debugging this project can be found in the **[MSDK User Guide](https://analogdevicesinc.github.io/msdk/USERGUIDE/)**.
+
+### Project-Specific Build Notes
+
+(None - this project builds as a standard example)
+
+## Required Connections
+
+<% if (soc === "max32650") { %>
+If using the MAX32650EVKIT (EvKit\_V1):
+-   Connect a USB cable between the PC and the CN2 (USB/PWR) connector.
+-   Open a terminal application on the PC and connect to the EV kit's console UART at 115200, 8-N-1.
+
+If using the MAX32650FTHR (FTHR\_APPS\_A):
+-   Connect a USB cable between the PC and the J1 (USB/PWR) connector.
+-   Open a terminal application on the PC and connect to the board's console UART at 115200, 8-N-1.
+<% } %>
+<% if (soc === "max32655") { %>
+If using the MAX32655EVKIT (EvKit\_V1):
+-   Connect a USB cable between the PC and the CN1 (USB/PWR) connector.
+-   Connect pins JP4(RX_SEL) and JP5(TX_SEL) to RX0 and TX0  header.
+-   Open a terminal application on the PC and connect to the EV kit's console UART at 115200, 8-N-1.
+-   Close jumper JP2 (LED0 EN).
+-   Close jumper JP3 (LED1 EN).
+
+If using the MAX32655FTHR (FTHR\_Apps\_P1):
+-   Connect a USB cable between the PC and the J4 (USB/PWR) connector.
+-   Open a terminal application on the PC and connect to the board's console UART at 115200, 8-N-1.
+<% } %>
+<% if (soc === "max32660") { %>
+-   Connect a USB cable between the PC and the J1 (USB/PWR) connector.
+-   Open a terminal application on the PC and connect to the board's console UART at 115200, 8-N-1.
+<% } %>
+<% if (soc === "max32662") { %>
+-   Connect a USB cable between the PC and the CN1 (USB/PWR) connector.
+-   Install headers JP7(RX\_EN) and JP8(TX\_EN).
+-   Open a terminal application on the PC and connect to the EV kit's console UART at 115200, 8-N-1.
+<% } %>
+<% if (soc === "max32666") { %>
+If using the MAX32666EVKIT (EvKit\_V1):
+-   Connect a USB cable between the PC and the CN2 (USB/PWR) connector.
+-   Connect pins JP9(RX_SEL) and JP10(TX_SEL) to RX1 and TX1  header.
+-   Open a terminal application on the PC and connect to the EV kit's console UART at 115200, 8-N-1.
+-   Close jumper JP4 (LED0 EN).
+-   Close jumper JP5 (LED1 EN).
+
+If using the MAX32666FTHR (FTHR):
+-   Connect a USB cable between the PC and the J2 (USB/PWR) connector.
+-   Open a terminal application on the PC and connect to the board's console UART at 115200, 8-N-1.
+<% } %>
+<% if (soc === "max32670") { %>
+-   Connect a USB cable between the PC and the CN1 (USB/PWR) connector.
+-   Select RX0 and TX0 on Headers JP3 and JP4 (UART 0).
+-   Open a terminal application on the PC and connect to the EV kit's console UART at 115200, 8-N-1.
+-   Close jumper JP1 (LED1 EN).
+-   Close jumper JP2 (LED2 EN).
+<% } %>
+<% if (soc === "max32672") { %>
+If using the MAX32672EVKIT (EvKit\_V1):
+-   Connect a USB cable between the PC and the CN1 (USB/PWR) connector.
+-   Select RX0 and TX0 on Headers JP10 and JP11 (UART 0).
+-   Open a terminal application on the PC and connect to the EV kit's console UART at 115200, 8-N-1.
+
+If using the MAX32672FTHR (FTHR):
+-   Connect a USB cable between the PC and the J4 (USB/PWR) connector.
+-   Open a terminal application on the PC and connect to the board's console UART at 115200, 8-N-1.
+<% } %>
+<% if (soc === "max32675c") { %>
+-   Connect a USB cable between the PC and the CN1 (USB/PWR) connector.
+-   Open a terminal application on the PC and connect to the EV kit's console UART at 115200, 8-N-1.
+-   Close jumper JP1 (LED0 EN).
+-   Close jumper JP2 (LED1 EN).
+<% } %>
+<% if (soc === "max32690") { %>
+Connect a MAXPICO or other supported Debug adapter to the SWD Connector.
+-   Note: Debug adapters other than the MAXPICO may not route the UART signals to the SWD connector. On MAX32690FTHR and AD-APARD32690-SL boards, this may limit your ability to access the serial port.
+
+If using the MAX32690EVKIT:
+-   Connect a USB cable between the PC and the CN2 (USB/PWR - UART) connector.
+-   Install JP7(RX_EN) and JP8(TX_EN) headers.
+-   Open a terminal application on the PC and connect to the EV kit's console UART at 115200, 8-N-1.
+-   Close jumper JP5 (LED0 EN).
+-   Close jumper JP6 (LED1 EN).
+
+If using the MAX32690FTHR:
+-   Connect a USB cable between the PC and the J5 (USB/PWR) connector.
+-   Open a terminal application on the PC and connect to the board's console UART at 115200, 8-N-1.
+
+If using the AD-APARD32690-SL:
+-   Connect a USB cable between the PC and the P10 (USB-C) connector.
+-   Open a terminal application on the PC and connect to the MAXPICO's console UART at 115200, 8-N-1.
+<% } %>
+<% if (soc === "max78000") { %>
+If using the MAX78000EVKIT (EvKit\_V1):
+-   Connect a USB cable between the PC and the CN1 (USB/PWR) connector.
+-   Connect pins 1 and 2 (P0_1) of the JH1 (UART 0 EN) header.
+-   Open a terminal application on the PC and connect to the EV kit's console UART at 115200, 8-N-1.
+-   Close jumper JP1 (LED1 EN).
+-   Close jumper JP2 (LED2 EN).
+
+If using the MAX78000FTHR (FTHR\_RevA):
+-   Connect a USB cable between the PC and the CN1 (USB/PWR) connector.
+-   Open a terminal application on the PC and connect to the board's console UART at 115200, 8-N-1.
+<% } %>
+<% if (soc === "max78002") { %>
+-   Connect a MAXPICO or other supported Debug adapter to the SWD Connector.
+-   Connect a USB cable between the PC and the CN2 (USB/UART) connector.
+-   Connect the 5V power cable at (5V IN).
+-   Close jumper (RX - P0.0) and (TX - P0.1) at Headers JP20 (UART 0 EN).
+-   Open a terminal application on the PC and connect to the EV kit's console UART at 115200, 8-N-1.
+-   Close jumper JP44 (LED0 EN).
+-   Close jumper JP45 (LED1 EN).
+<% } %>
+
+## Expected Output
+
+The Console UART of the device will output these messages:
+
+```
+Hello World!
+count = 0
+count = 1
+count = 2
+count = 3
+```
+
+
+You will also observe <%= ledValue() %> blinking at a rate of <%= blinkRate() %>Hz.

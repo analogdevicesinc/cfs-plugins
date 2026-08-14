@@ -13,14 +13,9 @@ This sample implements Zephyr's :zephyr:code-sample:`dining-philosophers` sample
 Building and Running
 ********************
 
-This project outputs to the console. It can be built and executed on QEMU as follows:
+Press **Pristine Build** and then **Flash** directly in the CodeFusion Studio (CFS) tool.
 
-.. zephyr-app-commands::
-   :zephyr-app: samples/posix/philosophers
-   :host-os: unix
-   :board: qemu_riscv64
-   :goals: run
-   :compact:
+This project outputs to the console.
 
 Sample Output
 =============
@@ -34,20 +29,22 @@ Sample Output
    Philosopher 4 [C:-1]  THINKING [ 2200 ms ]
    Philosopher 5 [C:-2]  THINKING [ 1700 ms ]
 
-Exit QEMU by pressing :kbd:`CTRL+A` :kbd:`x`.
-
 Debugging
 *********
 
 Like the original philosophers sample, the POSIX variant also enables
-:kconfig:option:`CONFIG_DEBUG_THREAD_INFO` by default.
+:kconfig:option:`CONFIG_DEBUG_THREAD_INFO` by default, allowing thread information to be
+inspected during a debug session.
 
-.. zephyr-app-commands::
-   :zephyr-app: samples/philosophers
-   :host-os: unix
-   :board: <board_name>
-   :goals: debug
-   :compact:
+CodeFusion Studio (CFS) provides preconfigured debug launch configurations for supported debug
+probes. To start a debug session:
+
+1. Open the **Run and Debug** view.
+
+2. Select an appropriate debug configuration from the configuration drop-down menu. Available
+   options depend on the target board and configured debug probe.
+
+3. Click **Start Debugging** or press **F5**.
 
 Additional Information
 **********************

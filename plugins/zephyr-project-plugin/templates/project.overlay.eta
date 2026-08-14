@@ -508,14 +508,13 @@ function swdIsAssignedProperly() {
 /* Peripheral Configuration
 */
 
-<% if (getProjectPeripherals().find(p => p.Config?.CHOSEN)) { %>
+<% const chosen_peripherals = getProjectPeripherals().filter(p => p.Config?.CHOSEN && peripheralData.find(pd => pd.datamodel === p.Name)); %>
+<% if (chosen_peripherals.length > 0) { %>
 / {
 	chosen {
-<%   for (const peripheral of getProjectPeripherals()) { %>
-<%     if (peripheral.Config?.CHOSEN) { %>
-<%       for (chosen of peripheral.Config.CHOSEN.split(",")) { %>
+<%   for (const peripheral of chosen_peripherals) { %>
+<%     for (chosen of peripheral.Config.CHOSEN.split(",")) { %>
 		zephyr,<%= chosen.trim() %> = &<%= peripheralData.find(p => p.datamodel === peripheral.Name).zephyr %>;
-<%       } %>
 <%     } %>
 <%   } %>
 	};
@@ -772,11 +771,10 @@ function swdIsAssignedProperly() {
 
 <% } /* Number of streams > 0? */  %>
 <% if (isZephelinEnabled()) { %>
-/* Zephelin Configuration
-*/
-
 <%   if (getZephelinTraceInterface() === "UART") { %>
 <%     if (getZephelinUartDevicetreeNodeLabel()) { %>
+/* Zephelin Configuration */
+
 / {
 	chosen {
 		zephyr,tracing-uart = &<%= getZephelinUartDevicetreeNodeLabel() %>;

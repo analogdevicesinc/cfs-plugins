@@ -32,13 +32,7 @@ Your board must:
 Building and Running
 ********************
 
-Build and flash Blinky as follows, changing ``reel_board`` for your board:
-
-.. zephyr-app-commands::
-   :zephyr-app: samples/basic/blinky
-   :board: reel_board
-   :goals: build flash
-   :compact:
+Press **Pristine Build** and then **Flash** directly in the CodeFusion Studio (CFS) tool.
 
 After flashing, the LED starts to blink and messages with the current LED state
 are printed on the console. If a runtime error occurs, the sample exits without

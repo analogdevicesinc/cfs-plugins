@@ -1,8 +1,8 @@
 {
-  "pluginName": "Registers-Only Plugin",
+  "pluginName": "Registers-Only Plugin (Deprecated)",
   "pluginId": "com.analog.project.registers.plugin",
-  "pluginDescription": "Create example baremetal projects which generates configuration code using MMR accesses only.",
-  "pluginVersion": "1.1.0",
+  "pluginDescription": "Creates example baremetal project which generates configuration code using MMR accesses only. This plugin is deprecated and will be removed in a future release.",
+  "pluginVersion": "1.2.0",
   "schemaVersion": "1.2.0",
   "pluginApiVersion": 1,
   "author": "Analog Devices, Inc.",
@@ -63,6 +63,23 @@
     },
     {
       "name": "MAX32662",
+      "package": "wlp",
+      "dataModelVersion": "^1.0.628"
+    },
+    {
+      "name": "MAX32666",
+      "board": "EvKit_V1",
+      "package": "ctbga",
+      "dataModelVersion": "^1.0.628"
+    },
+    {
+      "name": "MAX32666",
+      "board": "FTHR",
+      "package": "ctbga",
+      "dataModelVersion": "^1.0.628"
+    },
+    {
+      "name": "MAX32666",
       "package": "wlp",
       "dataModelVersion": "^1.0.628"
     },

@@ -121,11 +121,6 @@
           "Name": "FLC0",
           "Signals": [],
           "Config": {}
-        },
-        {
-          "Name": "FLC1",
-          "Signals": [],
-          "Config": {}
         }
       ],
       "PlatformConfig": {

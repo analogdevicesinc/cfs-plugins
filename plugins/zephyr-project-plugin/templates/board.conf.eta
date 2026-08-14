@@ -142,6 +142,7 @@ CONFIG_STD_CPP17=y
 CONFIG_TENSORFLOW_LITE_MICRO=y
 CONFIG_MAIN_STACK_SIZE=2048
 CONFIG_REQUIRES_FLOAT_PRINTF=y
+CONFIG_TENSORFLOW_LITE_MICRO_CMSIS_NN_KERNELS=y
 
 <% } %>
 <% if (isZephelinEnabled()) { %>
@@ -152,6 +153,7 @@ CONFIG_ZPL_TRACE_FORMAT_CTF=y
 
 <% if (getZephelinTraceInterface() === "UART") { %>
 CONFIG_ZPL_TRACE_BACKEND_UART=y
+CONFIG_TRACING_SYNC=y
 
 <% /* Preemptively disable settings that interfere with trace capture. */ %>
 # Preemptively disables outputs to console when tracing is enabled and configured to use UART.
@@ -167,6 +169,27 @@ CONFIG_BOOT_BANNER=n
 
 <% } else if (getZephelinTraceInterface() === "USB") { %>
 CONFIG_ZPL_TRACE_BACKEND_USB=y
+CONFIG_TRACING_BACKEND_USB=y
+CONFIG_USB_DEVICE_STACK=y
+CONFIG_USB_DEVICE_STACK_NEXT=y
+CONFIG_USBD_THREAD_STACK_SIZE=4096
+CONFIG_TRACING_ASYNC=y
+
+CONFIG_UDC_MAX32_MAX_QMESSAGES=64
+CONFIG_UDC_MAX32_THREAD_PRIORITY=-5
+CONFIG_UDC_MAX32_THREAD_STACK_SIZE=4096
+
+<% /* Preemptively disable settings that interfere with trace capture. */ %>
+# Preemptively disables outputs to console when tracing is enabled and configured to use UART.
+# Tracing requires exclusive use of the communication channel (e.g. the specific UART interface).
+# If the same channel is used by STDOUT and tracing, the tracing content will be corrupted.
+# It's not currently possible to detect if STDOUT, logging, etc are routed to the same UART instance
+# that's selected for tracing, so they are preemptively disabled to avoid conflicts.
+CONFIG_LOG=n
+CONFIG_PRINTK=n
+CONFIG_EARLY_CONSOLE=n
+CONFIG_STDOUT_CONSOLE=n
+CONFIG_BOOT_BANNER=n
 
 <% } %>
 <% if (isZephelinInstrumentationSubsystemEnabled()) { %>
@@ -174,7 +197,6 @@ CONFIG_INSTRUMENTATION=y
 CONFIG_ZPL_INSTRUMENTATION=y
 CONFIG_INSTRUMENTATION_BACKEND_TRACING_CORE=y
 CONFIG_THREAD_MAX_NAME_LEN=20
-CONFIG_TRACING_SYNC=y
 
 CONFIG_INSTRUMENTATION_MODE_CALLGRAPH_BUFFER_OVERWRITE=n
 CONFIG_INSTRUMENTATION_DYNAMIC_TRIGGER=n

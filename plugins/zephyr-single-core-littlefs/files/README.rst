@@ -69,25 +69,19 @@ Flash memory device
 -------------------
 
 This example should work on any board that provides a "storage"
-partition.  Two tested board targets are described below.
+partition. On these boards the file system is placed in the SoC flash.
 
 You can set ``CONFIG_APP_WIPE_STORAGE`` to force the file system to be
 recreated.
 
+Press **Pristine Build** and then **Flash** directly in the CodeFusion Studio (CFS) tool.
+
 Block device (e.g. SD card)
 ---------------------------
 
-This example has been devised and initially tested on :zephyr:board:`nucleo_h743zi`
-board. It can be also run on any other board with SD/MMC card connected to it.
-
-To build the test:
-
-.. zephyr-app-commands::
-   :zephyr-app: samples/subsys/fs/littlefs
-   :board: nucleo_h743zi
-   :goals: build flash
-   :gen-args: -DCONF_FILE=prj_blk.conf
-   :compact:
+This backend can be run on any board with an SD/MMC card connected to it.
+Build with ``-DCONF_FILE=prj_blk.conf`` to select the block-device storage backend, then
+press **Pristine Build** and **Flash** directly in the CodeFusion Studio (CFS) tool.
 
 At the moment, only two types of block devices are acceptable in this sample: SDMMC and MMC.
 
@@ -104,29 +98,6 @@ following logic:
 * if neither :kconfig:option:`CONFIG_DISK_DRIVER_SDMMC` nor :kconfig:option:`CONFIG_DISK_DRIVER_MMC`
   configurations are defined, the mount point name will not be determined, and an appropriate error
   will appear during the sample build.
-
-NRF52840 Development Kit
-========================
-
-On this device the file system will be placed in the SOC flash.
-
-.. zephyr-app-commands::
-   :zephyr-app: samples/subsys/fs/littlefs
-   :board: nrf52840dk/nrf52840
-   :goals: build
-   :compact:
-
-Particle Xenon
-==============
-
-On this device the file system will be placed on the external SPI NOR
-flash memory.
-
-.. zephyr-app-commands::
-   :zephyr-app: samples/subsys/fs/littlefs
-   :board: particle_xenon
-   :goals: build
-   :compact:
 
 .. note::
 

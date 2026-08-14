@@ -2,7 +2,7 @@
   "pluginName": "MSDK Project Plugin",
   "pluginDescription": "MSDK project and code generation.",
   "pluginId": "com.analog.project.msdk.plugin",
-  "pluginVersion": "1.2.0",
+  "pluginVersion": "1.3.0",
   "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "MSDK",
@@ -38,6 +38,12 @@
     },
     {
       "name": "MAX32657",
+      "board": "EvKit_V1",
+      "package": "wlp",
+      "dataModelVersion": "^1.3.628"
+    },
+    {
+      "name": "MAX32658",
       "board": "EvKit_V1",
       "package": "wlp",
       "dataModelVersion": "^1.3.628"
@@ -508,6 +514,76 @@
           }
         ]
       },
+      "UART0/1/2": {
+        "modifiedControls": [
+          {
+            "Id": "UART0_MUX",
+            "EnumValues": [
+              {
+                "Id": "PCLK",
+                "Description": "PCLK (Peripheral Clock)",
+                "Value": 0
+              },
+              {
+                "Id": "EXT_CLK1",
+                "Description": "External Clock on P0.28",
+                "Value": 1
+              },
+              {
+                "Id": "IBRO",
+                "Description": "IBRO (Internal Baud Rate Osc.)",
+                "Value": 3
+              }
+            ],
+            "Type": "enum",
+            "partRegexp": "MAX32672"
+          },
+          {
+            "Id": "UART1_MUX",
+            "EnumValues": [
+              {
+                "Id": "PCLK",
+                "Description": "PCLK (Peripheral Clock)",
+                "Value": 0
+              },
+              {
+                "Id": "EXT_CLK1",
+                "Description": "External Clock on P0.28",
+                "Value": 1
+              },
+              {
+                "Id": "IBRO",
+                "Description": "IBRO (Internal Baud Rate Osc.)",
+                "Value": 3
+              }
+            ],
+            "Type": "enum",
+            "partRegexp": "MAX32672"
+          },
+          {
+            "Id": "UART2_MUX",
+            "EnumValues": [
+              {
+                "Id": "PCLK",
+                "Description": "PCLK (Peripheral Clock)",
+                "Value": 0
+              },
+              {
+                "Id": "EXT_CLK1",
+                "Description": "External Clock on P0.28",
+                "Value": 1
+              },
+              {
+                "Id": "IBRO",
+                "Description": "IBRO (Internal Baud Rate Osc.)",
+                "Value": 3
+              }
+            ],
+            "Type": "enum",
+            "partRegexp": "MAX32672"
+          }
+        ]
+      },
       "WDT0/1": {
         "modifiedControls": [
           {
@@ -573,7 +649,8 @@
           "Id": "NAME_OVERRIDE",
           "Description": "Memory Region Name Override",
           "Type": "text",
-          "Pattern": "[_a-zA-Z][_a-zA-Z0-9]*"
+          "Pattern": "[_a-zA-Z][_a-zA-Z0-9]*",
+          "Scope": "${ProjectId} ${String: memory regions} +"
         }
       ]
     },
@@ -1594,7 +1671,8 @@
             "Hint": "i2s_raw_data_buffer",
             "Type": "text",
             "Pattern": "[_a-zA-Z][_a-zA-Z0-9]*",
-            "Condition": "${Control:TX_RX_MODE} ${String:RX_ONLY} !="
+            "Condition": "${Control:TX_RX_MODE} ${String:RX_ONLY} !=",
+            "Scope": "${ProjectId} ${String: C identifiers} +"
           },
           {
             "Id": "TX_BUFFER_NAME",
@@ -1602,7 +1680,8 @@
             "Hint": "i2s_tx_buffer",
             "Type": "text",
             "Pattern": "[_a-zA-Z][_a-zA-Z0-9]*",
-            "Condition": "${Control:TX_RX_MODE} ${String:RX_ONLY} !="
+            "Condition": "${Control:TX_RX_MODE} ${String:RX_ONLY} !=",
+            "Scope": "${ProjectId} ${String: C identifiers} +"
           },
           {
             "Id": "RX_BUFFER_NAME",
@@ -1610,7 +1689,8 @@
             "Hint": "i2s_rx_buffer",
             "Type": "text",
             "Pattern": "[_a-zA-Z][_a-zA-Z0-9]*",
-            "Condition": "${Control:TX_RX_MODE} ${String:TX_ONLY} !="
+            "Condition": "${Control:TX_RX_MODE} ${String:TX_ONLY} !=",
+            "Scope": "${ProjectId} ${String: C identifiers} +"
           },
           {
             "Id": "LENGTH",
@@ -1685,7 +1765,8 @@
             "Hint": "i2s0_raw_data_buffer",
             "Type": "text",
             "Pattern": "[_a-zA-Z][_a-zA-Z0-9]*",
-            "Condition": "${Control:TX_RX_MODE} ${String:RX_ONLY} !="
+            "Condition": "${Control:TX_RX_MODE} ${String:RX_ONLY} !=",
+            "Scope": "${ProjectId} ${String: C identifiers} +"
           },
           {
             "Id": "TX_BUFFER_NAME",
@@ -1693,7 +1774,8 @@
             "Hint": "i2s0_tx_buffer",
             "Type": "text",
             "Pattern": "[_a-zA-Z][_a-zA-Z0-9]*",
-            "Condition": "${Control:TX_RX_MODE} ${String:RX_ONLY} !="
+            "Condition": "${Control:TX_RX_MODE} ${String:RX_ONLY} !=",
+            "Scope": "${ProjectId} ${String: C identifiers} +"
           },
           {
             "Id": "RX_BUFFER_NAME",
@@ -1701,7 +1783,8 @@
             "Hint": "i2s0_rx_buffer",
             "Type": "text",
             "Pattern": "[_a-zA-Z][_a-zA-Z0-9]*",
-            "Condition": "${Control:TX_RX_MODE} ${String:TX_ONLY} !="
+            "Condition": "${Control:TX_RX_MODE} ${String:TX_ONLY} !=",
+            "Scope": "${ProjectId} ${String: C identifiers} +"
           },
           {
             "Id": "LENGTH",
@@ -1760,7 +1843,7 @@
           }
         ]
       },
-      "CAN[01]": {
+      "CAN[01]?": {
         "supportedControls": [
           {
             "Id": "SJW"
@@ -1818,13 +1901,15 @@
             "Id": "UNIT_CB",
             "Description": "Unit Event Callback Function Name",
             "Type": "text",
-            "Pattern": "^$|[_a-zA-Z][_a-zA-Z0-9]*"
+            "Pattern": "^$|[_a-zA-Z][_a-zA-Z0-9]*",
+            "Scope": "${ProjectId} ${String: C identifiers} +"
           },
           {
             "Id": "OBJ_CB",
             "Description": "Object Event Callback Function Name",
             "Type": "text",
-            "Pattern": "^$|[_a-zA-Z][_a-zA-Z0-9]*"
+            "Pattern": "^$|[_a-zA-Z][_a-zA-Z0-9]*",
+            "Scope": "${ProjectId} ${String: C identifiers} +"
           },
           {
             "Id": "FILTER_ID_LENGTH_SINGLE",
@@ -1833,12 +1918,12 @@
               {
                 "Id": "STD",
                 "Description": "11-bit Identifier",
-                "Value": "STD"
+                "Value": 0
               },
               {
                 "Id": "EXT",
                 "Description": "29-bit Identifier",
-                "Value": "EXT"
+                "Value": 1
               }
             ],
             "Type": "enum",
@@ -1852,12 +1937,12 @@
               {
                 "Id": "EXACT",
                 "Description": "Exact Match Filter",
-                "Value": "EXACT"
+                "Value": 0
               },
               {
                 "Id": "MASK",
                 "Description": "Maskable Filter",
-                "Value": "MASK"
+                "Value": 1
               }
             ],
             "Type": "enum",
@@ -1891,12 +1976,12 @@
               {
                 "Id": "STD",
                 "Description": "11-bit Identifier",
-                "Value": "STD"
+                "Value": 0
               },
               {
                 "Id": "EXT",
                 "Description": "29-bit Identifier",
-                "Value": "EXT"
+                "Value": 1
               }
             ],
             "Type": "enum",
@@ -1910,12 +1995,12 @@
               {
                 "Id": "EXACT",
                 "Description": "Exact Match Filter",
-                "Value": "EXACT"
+                "Value": 0
               },
               {
                 "Id": "MASK",
                 "Description": "Maskable Filter",
-                "Value": "MASK"
+                "Value": 1
               }
             ],
             "Type": "enum",
@@ -1949,12 +2034,12 @@
               {
                 "Id": "STD",
                 "Description": "11-bit Identifier",
-                "Value": "STD"
+                "Value": 0
               },
               {
                 "Id": "EXT",
                 "Description": "29-bit Identifier",
-                "Value": "EXT"
+                "Value": 1
               }
             ],
             "Type": "enum",
@@ -1968,12 +2053,12 @@
               {
                 "Id": "EXACT",
                 "Description": "Exact Match Filter",
-                "Value": "EXACT"
+                "Value": 0
               },
               {
                 "Id": "MASK",
                 "Description": "Maskable Filter",
-                "Value": "MASK"
+                "Value": 1
               }
             ],
             "Type": "enum",

@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 2024-2025 Analog Devices, Inc.
+ * Copyright (c) 2024-2026 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,12 +12,6 @@
  * limitations under the License.
  *
  */
-
-
-function modifiesSysClk() {
-  return (isSystemClockSet("SYS_OSC Mux", "MUX") || isSystemClockSet("PRESCALER", "DIV"));
-}
-
 %>
 <% if (isSystemClockSetTo("SYS_OSC Mux", "MUX", "CLKEXT")) { %>
   /* SYS_OSC Mux: Clock Source is set to External Clock on P0.23. */
@@ -219,10 +213,5 @@ function modifiesSysClk() {
 <% if (isPeripheralClockSetTo("USBHS", "ENABLE", "TRUE")) { %>
   /* Lock the clock configuration for USB. */
   MXC_USB_LockClockSource(true);
-
-<% } %>
-<% if (modifiesSysClk()) { %>
-  /* Update the System Core Clock as core clock settings have changed. */
-  SystemCoreClockUpdate();
 
 <% } %>

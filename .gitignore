@@ -15,6 +15,8 @@ tsconfig.tsbuildinfo
 
 plugins/dist
 tests/unit-tests/**/data
+!tests/unit-tests/mock_cfs/Data
 .rollup.cache
 plugins/.rollup.cache
 .DS_Store
+**/__pycache__/
