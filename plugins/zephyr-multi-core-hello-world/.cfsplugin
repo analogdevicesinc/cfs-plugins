@@ -1,0 +1,137 @@
+{
+  "pluginName": "Zephyr Multicore Hello World",
+  "pluginDescription": "Multicore Zephyr hello world template.",
+  "pluginId": "com.analog.zephyr.workspace.multicore-hello-world",
+  "pluginVersion": "1.0.0",
+  "schemaVersion": "1.2.0",
+  "author": "Analog Devices, Inc.",
+  "firmwarePlatform": "zephyr",
+  "supportedSocs": [
+  ],
+  "features": {
+    "workspace": {
+      "files": [
+        {
+          "src": "files/m4/src/main.c",
+          "dst": "m4/src/main.c"
+        },
+        {
+          "src": "files/m4/CMakeLists.txt",
+          "dst": "m4/CMakeLists.txt"
+        },
+        {
+          "src": "files/rv32/src/main.c",
+          "dst": "rv32/src/main.c"
+        },
+        {
+          "src": "files/rv32/CMakeLists.txt",
+          "dst": "rv32/CMakeLists.txt"
+        },
+        {
+          "src": "files/m4/.vscode/c_cpp_properties.json",
+          "dst": "m4/.vscode/c_cpp_properties.json"
+        },
+        {
+          "src": "files/rv32/.vscode/c_cpp_properties.json",
+          "dst": "rv32/.vscode/c_cpp_properties.json"
+        },
+        {
+          "src": "files/m4/app.overlay",
+          "dst": "m4/app.overlay"
+        },
+        {
+          "src": "files/rv32/app.overlay",
+          "dst": "rv32/app.overlay"
+        },
+        {
+          "src": "files/README.rst",
+          "dst": "m4/README.rst"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/fault-analyzer.json",
+          "dst": ".cfs/gdb_toolbox/configs/fault-analyzer.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/memory-dump.json",
+          "dst": ".cfs/gdb_toolbox/configs/memory-dump.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/register-dump.json",
+          "dst": ".cfs/gdb_toolbox/configs/register-dump.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/thread-analyzer.json",
+          "dst": ".cfs/gdb_toolbox/configs/thread-analyzer.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/crash-cause-zephyr.json",
+          "dst": ".cfs/gdb_toolbox/configs/crash-cause-zephyr.json"
+        },
+        {
+          "src": "files/gdb_toolbox/configs/heap-analyzer.json",
+          "dst": ".cfs/gdb_toolbox/configs/heap-analyzer.json"
+        },
+        {
+          "src": "files/gdb_toolbox/gdb/fault-analyzer-arm.gdb",
+          "dst": ".cfs/gdb_toolbox/gdb/fault-analyzer-arm.gdb"
+        },
+        {
+          "src": "files/gdb_toolbox/gdb/fault-analyzer-riscv.gdb",
+          "dst": ".cfs/gdb_toolbox/gdb/fault-analyzer-riscv.gdb"
+        },
+        {
+          "src": "files/gdb_toolbox/gdb/thread-analyzer.gdb",
+          "dst": ".cfs/gdb_toolbox/gdb/thread-analyzer.gdb"
+        },
+        {
+          "src": "files/gdb_toolbox/gdb/crash-cause-zephyr.gdb",
+          "dst": ".cfs/gdb_toolbox/gdb/crash-cause-zephyr.gdb"
+        },
+        {
+          "src": "files/gdb_toolbox/gdb/heap-analyzer.gdb",
+          "dst": ".cfs/gdb_toolbox/gdb/heap-analyzer.gdb"
+        }
+      ],
+      "templates": [
+        {
+          "src": "templates/.cfsconfig.eta",
+          "dst": ".cfs/${context.soc.toLowerCase()}-${context.package.toLowerCase()}.cfsconfig",
+          "condition": "${context.soc.toLowerCase().startsWith('max')}"
+        },
+        {
+          "src": "templates/.cfsdependencies.eta",
+          "dst": ".cfs/.cfsdependencies"
+        },
+        {
+          "src": "templates/workspace-name.code-workspace.eta",
+          "dst": "${context.workspaceName}.code-workspace"
+        },
+        {
+          "src": "templates/m4-prj.conf.eta",
+          "dst": "m4/prj.conf"
+        },
+        {
+          "src": "templates/rv32-prj.conf.eta",
+          "dst": "rv32/prj.conf"
+        },
+        {
+          "src": "templates/.vscode/m4-settings.json.eta",
+          "dst": "m4/.vscode/settings.json"
+        },
+        {
+          "src": "templates/.vscode/rv32-settings.json.eta",
+          "dst": "rv32/.vscode/settings.json"
+        },
+        {
+          "src": "templates/.vscode/m4-launch.json.eta",
+          "dst": "m4/.vscode/launch.json"
+        },
+        {
+          "src": "templates/.vscode/rv32-launch.json.eta",
+          "dst": "rv32/.vscode/launch.json",
+          "condition": "${context.soc.toLowerCase() !== 'max32690'}"
+        }
+      ]
+    }
+  }
+}

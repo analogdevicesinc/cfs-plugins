@@ -32,24 +32,27 @@
   ],
   "ClockNodes": [
     {
-      "Type": "Peripheral",
       "Name": "UART0/1/2",
       "Control": "UART0_ENABLE",
       "Value": "TRUE",
       "Enabled": true
     },
     {
-      "Type": "Peripheral",
       "Name": "UART0/1/2",
       "Control": "UART0_MUX",
       "Value": "IBRO",
       "Enabled": true
     },
     {
-      "Type": "Mux",
       "Name": "SYS_OSC Mux",
       "Control": "MUX",
       "Value": "IPO",
+      "Enabled": true
+    },
+    {
+      "Name": "TMR0/1/2/3",
+      "Control": "TMR0_ENABLE",
+      "Value": "TRUE",
       "Enabled": true
     }
   ],
@@ -58,7 +61,7 @@
       "CoreId": "CM4",
       "ProjectId": "CM4",
       "PluginId": "com.analog.project.msdk.plugin",
-      "PluginVersion": "^1.2.0",
+      "PluginVersion": "^1.4.0",
       "FirmwarePlatform": "msdk",
       "ExternallyManaged": false,
       "PlatformConfig": {
@@ -180,6 +183,37 @@
             }
           ],
           "Config": {}
+        },
+        {
+          "Name": "TMR0",
+          "Signals": [
+            {
+              "Name": "IOA",
+              "Config": {}
+            },
+            {
+              "Name": "IOAN",
+              "Config": {}
+            },
+            {
+              "Name": "IOB",
+              "Config": {}
+            },
+            {
+              "Name": "IOBN",
+              "Config": {}
+            }
+          ],
+          "Config": {
+            "CONFIGURATION": "SINGLE_32BIT",
+            "MODE_A": "CONTINUOUS",
+            "CLKDIV_A": "1",
+            "POL_A": "POLARITY_0",
+            "TMRA_WE": "FALSE",
+            "TMR_AB_IE": "FALSE",
+            "COUNT": "0",
+            "COMPARE": "4294967295"
+          }
         }
       ],
 <%~ include("../ai.cfsconfig.eta") %>
@@ -202,6 +236,15 @@
     "IBRO": 7372800,
     "SYS_CLK": 120000000,
     "IPO": 120000000,
+    "PCLK": 60000000,
+    "TMR0a": 60000000,
+    "TMR0b": 60000000,
+    "TMR1a": 60000000,
+    "TMR1b": 60000000,
+    "TMR2a": 60000000,
+    "TMR2b": 60000000,
+    "TMR3a": 60000000,
+    "TMR3b": 60000000,
     "UART0": 7372800,
     "UART1": 60000000,
     "UART2": 60000000

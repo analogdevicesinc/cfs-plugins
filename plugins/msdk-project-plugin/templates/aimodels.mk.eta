@@ -14,8 +14,8 @@ ifndef CFSAI_PATH
 $(error CFSAI_PATH is not set)
 endif
 
-TFLITE_PATH = $(CFSAI_PATH)/lib/cortex-m/tflite-micro
-TFLITE_THIRD_PARTY = $(CFSAI_PATH)/lib/cortex-m/tflite-micro/third_party
+TFLITE_PATH ?= $(CFSAI_PATH)/lib/cortex-m/tflite-micro
+TFLITE_THIRD_PARTY = $(TFLITE_PATH)/third_party
 
 PROJ_LDFLAGS += -L$(CFSAI_PATH)/lib/cortex-m/m4
 PROJ_LIBS += tensorflow-microlite

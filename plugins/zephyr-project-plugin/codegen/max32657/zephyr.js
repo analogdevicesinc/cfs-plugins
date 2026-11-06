@@ -15,6 +15,7 @@
 peripheralData = [
     { datamodel: "DMA0", enable: "ENABLE", zephyr: "dma0" },
     { datamodel: "DMA1", enable: "ENABLE", zephyr: "dma1" },
+    { datamodel: "FLC", zephyr: "flc0" },
     { datamodel: "I3C0", enable: "ENABLE", zephyr: "i3c0", zephyrVersionMin: "4.3.0",
       pins: [
           { signal: "SCL", pin: "A1", name: "i3c_scl_p0_0"},
@@ -115,27 +116,21 @@ peripheralData = [
     { datamodel: "WUT1", zephyr: "wut1", clocknode: "CLK_32KHZ Mux", clock_mux: "MUX", clock_default: "INRO_DIV_4", zephyrVersionMin: "4.3.0" }
 ];
 
-// Filter peripheralData based on zephyrVersionMin/zephyrVersionMax.
-// Entries outside the supported range are removed and later added to unsupported_in_dts.
-const { supported, unsupported } = filterByZephyrVersion(peripheralData);
-
-// Replace peripheralData with only the supported peripherals so the template
-// does not generate code for peripherals filtered out by version constraints.
-peripheralData = supported;
-
-unsupported_in_dts = [
+// Manually added entries: sub-feature and clock-specific warnings.
+const manuallyAddedUnsupportedList = [
     { clocknode: "ERFO Mux", diag: "Bypass of the ERFO is not currently supported in devicetree.", ctrl: "MUX", value: "ERFO_CLK" },
     { clocknode: "ERTCO Mux", diag: "Bypass of the ERTCO is not currently supported in devicetree.", ctrl: "MUX", value: "ERTCO_CLK" },
     { datamodel: "RTC", clocknode: "SQWOUT Mux", diag: "Enabling SQWOUT from the RTC is not currently supported in devicetree.", ctrl: "SQWOUT Mux", value: "CLK_4KHZ" },
     { datamodel: "RTC", clocknode: "SQWOUT Mux", diag: "Enabling SQWOUT from the RTC is not currently supported in devicetree.", ctrl: "SQWOUT Mux", value: "RTC_DIV_8" },
     { datamodel: "RTC", clocknode: "SQWOUT Mux", diag: "Enabling SQWOUT from the RTC is not currently supported in devicetree.", ctrl: "SQWOUT Mux", value: "RTC_DIV_4096" },
-    { datamodel: "AES", diag: "The Advanced Encryption Standard peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE" },
-    { datamodel: "BLE", diag: "The Bluetooth Low Energy peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE" },
-    { datamodel: "CRC", diag: "The Cyclic Redundancy Check peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE" }
 ];
 
-// Add filtered-out peripherals to unsupported_in_dts
-unsupported_in_dts.push(...buildUnsupportedVersionEntries(unsupported));
+// Auto-generated: peripherals not in peripheralData + version-filtered peripherals.
+const { supported, unsupported } = buildUnsupportedZephyrEntries(peripheralData, manuallyAddedUnsupportedList);
+
+// Update peripheralData and unsupported_in_dts
+unsupported_in_dts = unsupported;
+peripheralData = supported;
 
 function mapClockName(clock) {
     if (clock === "CLK_EXT") {

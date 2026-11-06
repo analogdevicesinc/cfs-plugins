@@ -2,7 +2,7 @@
   "pluginName": "Zephyr Single Core ADC Sequence",
   "pluginDescription": "Single Core Zephyr template for configuring and reading ADC channels using sequence mode.",
   "pluginId": "com.analog.zephyr.workspace.adc.sequence",
-  "pluginVersion": "1.2.0",
+  "pluginVersion": "1.3.0",
   "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "zephyr",

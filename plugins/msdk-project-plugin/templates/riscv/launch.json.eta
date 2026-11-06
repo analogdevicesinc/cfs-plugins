@@ -9,13 +9,13 @@
       "runToEntryPoint": "main",
       "servertype": "openocd",
       "linux": {
-        "gdbPath": "${config:cfs.toolchain.riscVGCC.path}/bin/riscv-none-elf-gdb"
+        "gdbPath": "${cfs:tool.path.xpack.riscv.none.elf.toolchain.debuggerPath}"
       },
       "windows": {
-        "gdbPath": "${config:cfs.toolchain.riscVGCC.path}/bin/riscv-none-elf-gdb.exe"
+        "gdbPath": "${cfs:tool.path.xpack.riscv.none.elf.toolchain.debuggerPath}"
       },
       "osx": {
-        "gdbPath": "${config:cfs.toolchain.riscVGCC.path}/bin/riscv-none-elf-gdb"
+        "gdbPath": "${cfs:tool.path.xpack.riscv.none.elf.toolchain.debuggerPath}"
       },
       "serverpath": "${config:cfs.openocd.path}/bin/openocd",
       "svdPath": "${config:cfs.cmsis.svdFile}",

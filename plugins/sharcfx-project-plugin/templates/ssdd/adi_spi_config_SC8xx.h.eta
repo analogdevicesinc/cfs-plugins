@@ -1,0 +1,852 @@
+<%
+/******************************************************************************
+
+ Copyright (c) 2023-2026 Analog Devices.  All Rights Reserved.
+
+ This software is proprietary.  By using this software you agree
+ to the terms of the associated Analog Devices License Agreement.
+ 
+*******************************************************************************/
+%> 
+<% eval(this.render("templates/ssdd/ssdd_common.js")); %>
+<%~ include("@copyrightHeader", it) %> 
+/* This file is generated using the peripheral settings configured using System Planner.
+ * Please do not edit the values here directly.
+ */
+
+/** @addtogroup SPI_Driver
+ *  @{
+ */
+
+/** @defgroup SPI_Driver_Static_Configuration SPI Driver Static Configuration
+ *  @{
+
+  Static Configuration: Using this configuration application can configure the control register
+  parameters upfront which can be set to default before SPI data transfer starts. This configuration
+  has macros which can be configured through adi_spi_config_SC8xx.h file which by default is available
+  with SPI driver. Example project can maintain a copy of it locally for custom configuration.
+
+  Default Static Configuration for SPI(0/1/2/5):
+  SPI5 instance is available only on ADSP-SC84x family of processors.
+  
+  The default configuration for SPI using preload:
+        SPI clock rate : 12.50 MHz
+        SPI0 - Controller, SPI1 - Target, SPI2 - Controller, (ADSP_SC84x)SPI5 - Controller.
+        Rest of the values are power on reset values.
+
+  Specifies the SPI(X)_CLK register Divisor\n
+    ADI_SPI(X)_CFG_CLK_BAUD                   (9ul)-----SPI Clock - 12.5 MHz\n
+
+  Specifies the SPI(X)_Control register Configuration\n
+    ADI_SPI(0)_CFG_TARGET_CONTROLLER          (0x1ul)---SPI 0 Controller\n
+    ADI_SPI(1)_CFG_TARGET_CONTROLLER          (0x0ul)---SPI 1 Target\n
+    ADI_SPI(2)_CFG_TARGET_CONTROLLER          (0x1ul)---SPI 2 Target\n
+    ADI_SPI(5)_CFG_TARGET_CONTROLLER          (0x1ul)---SPI 5 Target\n
+    ADI_SPI(X)_CFG_CLK_PHASE                  (0x1ul)---power on reset value\n
+    ADI_SPI(X)_CFG_CLK_POLARITY               (0x0ul)---power on reset value\n
+    ADI_SPI(X)_CFG_HW_TARGET_SELECT           (0x1ul)---power on reset value\n
+    ADI_SPI(X)_CFG_TRANSFER_SIZE              (0x0ul)---power on reset value\n
+    ADI_SPI(X)_CFG_MSB_LSB                    (0x0ul)---power on reset value\n
+    ADI_SPI(X)_CFG_RXFIFO_REG_WATERMARK       (0x0ul)---power on reset value\n
+    ADI_SPI(X)_CFG_TXFIFO_REG_WATERMARK       (0x0ul)---power on reset value\n
+    ADI_SPI(X)_CFG_OPEN_DRAIN_MODE            (0x0ul)---power on reset value\n
+    ADI_SPI(X)_CFG_TARGET_SELECT_POLARITY     (0x0ul)---power on reset value\n
+    ADI_SPI(X)_CFG_FLOW_CONTROL               (0x0ul)---power on reset value\n
+    ADI_SPI(X)_CFG_FLOW_CONTROL_WATERMARK     (0x0ul)---power on reset value\n
+    ADI_SPI(X)_CFG_FLOW_CONTROL_POLARITY      (0x0ul)---power on reset value\n
+    ADI_SPI(X)_CFG_FLOW_CONTROL_CHANNEL       (0x0ul)---power on reset value\n
+    ADI_SPI(X)_CFG_FASTMODE                   (0x0ul)---power on reset value\n
+    ADI_SPI(X)_CFG_MULTIPLE_I0_MODE           (0x0ul)---power on reset value\n
+    ADI_SPI(X)_CFG_START_ON_COTI              (0x0ul)---power on reset value\n
+    ADI_SPI(X)_CFG_PROTECTED_TGT_SELECT_EN    (0x0ul)---power on reset value\n
+    ADI_SPI(X)_CFG_ENABLE_CITO                (0x0ul)---power on reset value\n
+*/
+
+/*
+ * @file      adi_spi_config_SC8xx.h
+ *
+ * @brief     SPI driver static configuration
+ *
+ * @details   Header File which has the static configuration for SPI instances.
+ *
+ */
+
+#ifndef ADI_SPI_CONFIG_SC8xx_H
+#define ADI_SPI_CONFIG_SC8xx_H
+
+#include <sys/platform.h>
+#include <stdint.h>
+
+#if defined(__ADSPSHARCFX__)
+/*! 0 - Setting this value will enable direct interrupt as default interrupt
+    1 - Setting this value will enable SEC interrupt  */
+<%
+  var _g_sec_int = [
+    getAssignedPeripheral("SPI0") ? getPeriConfigValueBoolAsInt("SPI0", "SEC_INT", "FALSE") : null,
+    getAssignedPeripheral("SPI1") ? getPeriConfigValueBoolAsInt("SPI1", "SEC_INT", "FALSE") : null,
+    getAssignedPeripheral("SPI2") ? getPeriConfigValueBoolAsInt("SPI2", "SEC_INT", "FALSE") : null,
+    getAssignedPeripheral("SPI5") ? getPeriConfigValueBoolAsInt("SPI5", "SEC_INT", "FALSE") : null,
+  ].filter(v => v !== null);
+%> 
+#define ADI_SPI_CONFIG_SEC_INT                        <%= _g_sec_int.length ? _g_sec_int[0] : getPeriConfigValueBoolAsInt("SPI0", "SEC_INT", "FALSE") %>u /* if enabled for ADSP-SC846 Family, only STAT interrupt be through SEC */
+<%
+  if (_g_sec_int.length > 1 && !_g_sec_int.every(v => v === _g_sec_int[0])) {
+%> 
+#error "ADI_SPI_CONFIG_SEC_INT: all assigned SPI instances must have the same SEC_INT setting"
+<% } %> 
+#endif
+
+/*! Number of SPI instances that are enabled */
+#if defined(__ADSPSC835_FAMILY__)
+#define ADI_SPI_CFG_INSTANCES              <%= (getAssignedPeripheral("SPI0") ? 1 : 0) + (getAssignedPeripheral("SPI1") ? 1 : 0) + (getAssignedPeripheral("SPI2") ? 1 : 0) + (getAssignedPeripheral("SPI5") ? 1 : 0) %>u
+#elif defined(__ADSPSC846_FAMILY__)
+#define ADI_SPI_CFG_INSTANCES              <%= (getAssignedPeripheral("SPI0") ? 1 : 0) + (getAssignedPeripheral("SPI1") ? 1 : 0) + (getAssignedPeripheral("SPI2") ? 1 : 0) + (getAssignedPeripheral("SPI5") ? 1 : 0) %>u
+#endif
+
+/*! select/unselect SPI0 Instance */
+#define ADI_SPI0_INSTANCE                             <%= getAssignedPeripheral("SPI0") ? "1" : "0" %>ul
+
+/*! select/unselect SPI1 Instance */
+#define ADI_SPI1_INSTANCE                             <%= getAssignedPeripheral("SPI1") ? "1" : "0" %>ul
+
+/*! select/unselect SPI2 Instance */
+#define ADI_SPI2_INSTANCE                             <%= getAssignedPeripheral("SPI2") ? "1" : "0" %>ul
+
+#if defined(__ADI_HAS_SPI5__)
+/*! select/unselect SPI5 Instance */
+#define ADI_SPI5_INSTANCE                             <%= getAssignedPeripheral("SPI5") ? "1" : "0" %>ul
+#endif
+
+/**************************************************************************************************************/
+/*! This configuration sets the baud rate for the SPI data transfers\n
+    Baud can be calculated as BAUD = (SCLK0_0/SPI_Clock) - 1\n */
+#define ADI_SPI0_CFG_CLK_BAUD                         <%= getPeriConfigValueInt("SPI0", "CLK_BAUD", "9") %>ul
+/**************************************************************************************************************/
+
+/**************************************************************************************************************/
+/*! Controller or Target mode of operation\n
+    SPI Control Register: Bit[1]\n
+    (0) - Target mode\n
+    (1) - Controller mode\n*/
+#define ADI_SPI0_CFG_TARGET_CONTROLLER                     <%= getPeriConfigValueEnum("SPI0", "MODE", "CONTROLLER", {"TARGET":0,"CONTROLLER":1}) %>ul
+
+/*! Configures whether the SPI starts toggling the signal for the SPI clock\n
+    from the start of the first data bit or from the middle of the first data bit\n
+    SPI Control Register: Bit[4]\n
+    (0) - Serial clock pulses at the end of each serial bit transfer\n
+    (1) - Serial clock pulses at the beginning of each serial bit transfer\n*/
+#define ADI_SPI0_CFG_CLK_PHASE                        <%= getPeriConfigValueEnum("SPI0", "CLOCK_PHASE", "BEGINNING", {"END":0,"BEGINNING":1}) %>ul
+
+/*! Configures whether the SPI uses an active-low or active-high signal for the SPI clock\n
+    SPI Control Register: Bit[5]\n
+    (0) - Active-high SPI Clock\n
+    (1) - Active-low  SPI Clock\n*/
+#define ADI_SPI0_CFG_CLK_POLARITY                     <%= getPeriConfigValueEnum("SPI0", "CLOCK_POLARITY", "ACTIVE_HIGH", {"ACTIVE_HIGH":0,"ACTIVE_LOW":1}) %>ul
+
+/*! Configures the SPI to control the assertion/de-assertion of the Target select signal\n
+    SPI Control Register: Bit[6]\n
+    (0) - Target select controlled by software\n
+    (1) - Target select controlled by hardware\n*/
+#define ADI_SPI0_CFG_HW_TARGET_SELECT                  <%= getPeriConfigValueEnum("SPI0", "TARGET_SELECT_MODE", "HARDWARE", {"SOFTWARE":0,"HARDWARE":1}) %>ul
+
+/*! SPI transfer size\n
+    SPI Control Register: Bit[10:9]\n
+    (0)  -  8  bit word\n
+    (1)  -  16 bit word\n
+    (2)  -  32 bit word\n*/
+#define ADI_SPI0_CFG_TRANSFER_SIZE                    <%= getPeriConfigValueEnum("SPI0", "WORD_SIZE", "8_BIT", {"8_BIT":0,"16_BIT":1,"32_BIT":2}) %>ul
+
+/*! SPI transmits/receives LSB or MSB First\n
+    SPI Control Register: Bit[12]\n
+    (0) - MSB transmitted first\n
+    (1) - LSB transmitted first\n*/
+#define ADI_SPI0_CFG_MSB_LSB                          <%= getPeriConfigValueEnum("SPI0", "BIT_ORDER", "MSB_FIRST", {"MSB_FIRST":0,"LSB_FIRST":1}) %>ul
+
+/*! Configure SPI MOSI and MISO pins to behave as open drain outputs\n
+    to prevent bus contention\n
+    SPI Control Register: Bit[3]\n
+    (0) -  Disable\n
+    (1) -  Enable\n*/
+#define ADI_SPI0_CFG_OPEN_DRAIN_MODE                  <%= getPeriConfigValueBoolAsInt("SPI0", "OPEN_DRAIN", "FALSE") %>ul
+
+/*! Configures Target select polarity between transfers\n
+    SPI Control Register: Bit[7]\n
+    (0) - De-assert Target select (high)\n
+    (1) - Assert Target select (low)\n*/
+#define ADI_SPI0_CFG_TARGET_SELECT_POLARITY            <%= getPeriConfigValueEnum("SPI0", "SELECT_POLARITY", "DEASSERT", {"DEASSERT":0,"ASSERT":1}) %>ul
+
+/*! Configures the flow control bit to communicate with slow devices\n
+    SPI Control Register: Bit[13]\n
+    (0) - Disable\n
+    (1) - Enable\n*/
+#define ADI_SPI0_CFG_FLOW_CONTROL                     <%= getPeriConfigValueBoolAsInt("SPI0", "FLOW_CONTROL", "FALSE") %>ul
+
+/*! Configures the watermark for flow control\n
+    SPI Control Register: Bits[17:16]\n
+    (0) - TFIFO empty or RFIFO full\n
+    (1) - TFIFO 75% or more empty, or RFIFO 75% or more full\n
+    (2) - TFIFO 50% or more empty, or RFIFO 50% or more full\n*/
+#define ADI_SPI0_CFG_FLOW_CONTROL_WATERMARK           <%= getPeriConfigValueEnum("SPI0", "FLOW_CONTROL_WATERMARK", "EMPTY_FULL", {"EMPTY_FULL":0,"THRESHOLD_75":1,"THRESHOLD_50":2}) %>ul
+
+/*! Configure the polarity of the ready pin\n
+    SPI Control Register: Bit[15]\n
+    (0) - Active low ready\n
+    (1) - Active High ready\n*/
+#define ADI_SPI0_CFG_FLOW_CONTROL_POLARITY            <%= getPeriConfigValueEnum("SPI0", "FLOW_CONTROL_POLARITY", "ACTIVE_LOW", {"ACTIVE_LOW":0,"ACTIVE_HIGH":1}) %>ul
+
+/*! Configures Flow control for Transmit or Receive channel\n
+    SPI Control Register: Bit[14]\n
+    (0) - Flow control on Rx channel\n
+    (1) - Flow control on Tx channel\n*/
+#define ADI_SPI0_CFG_FLOW_CONTROL_CHANNEL             <%= getPeriConfigValueEnum("SPI0", "FLOW_CONTROL_CHANNEL", "RX_CHANNEL", {"RX_CHANNEL":0,"TX_CHANNEL":1}) %>ul
+
+/*! Enable/Disable fast mode\n
+    SPI Control Register: Bit[18]\n
+    (0) - Disable\n
+    (1) - Enable\n*/
+#define ADI_SPI0_CFG_FASTMODE                         <%= getPeriConfigValueBoolAsInt("SPI0", "FAST_MODE", "FALSE") %>ul
+
+/*! Configure in Default or Dual I/O or Quad I/O mode\n
+    SPI Control Register: Bits[21:20]\n
+    (0) - SPI with MOSI and MISO, single I/O mode\n
+    (1) - Dual I/O mode\n
+    (2) - Quad I/O mode.(Not applicable for SPI0/SPI3)\n*/
+#define ADI_SPI0_CFG_MULTIPLE_I0_MODE                 <%= getPeriConfigValueEnum("SPI0", "IO_MODE", "SPI_MOSI_MISO_SINGLE", {"SPI_MOSI_MISO_SINGLE":0,"DUAL_I_O_MODE":1,"QUAD_I_O_MODE":2}) %>ul
+ 
+/*! configure start on MOSI\n
+    SPI Control Register: Bit[22]\n
+    (0) - Bit 0 on MOSI (for both DIOM and QIOM)\n
+    (1) - Bit 0 on MISO(DIOM) or on D3(QIOM)\n*/
+#define ADI_SPI0_CFG_START_ON_COTI                    <%= getPeriConfigValueEnum("SPI0", "START_ON_COTI", "MOSI", {"MOSI":0,"MISO":1}) %>ul
+
+/*! Enables error detection in case of multi Controller\n
+    environment when SPI is configured as Controller\n
+    SPI Control Register: Bit[2]\n
+    (0) - Disable\n
+    (1) - Enable\n*/
+#define ADI_SPI0_CFG_PROTECTED_TGT_SELECT_EN          <%= getPeriConfigValueBoolAsInt("SPI0", "PROTECTED_SELECT", "FALSE") %>ul
+
+/*! Enable SPI MISO mode. This mode is only applicable for SPI as a Target\n
+    SPI Control Register: Bit[8]\n
+    (0) - Disable\n
+    (1) - Enable\n*/
+#define ADI_SPI0_CFG_ENABLE_CITO                      <%= getPeriConfigValueBoolAsInt("SPI0", "CITO", "FALSE") %>ul
+
+/* Specifies the SPI0 Control register Configuration\n*/
+#define ADI_SPI0_CTL                                  ((ADI_SPI0_CFG_TARGET_CONTROLLER << BITP_SPI_CTL_MODE)|\
+                                                       (ADI_SPI0_CFG_PROTECTED_TGT_SELECT_EN<<BITP_SPI_CTL_PTSE)|\
+                                                       (ADI_SPI0_CFG_OPEN_DRAIN_MODE<<BITP_SPI_CTL_ODM)|\
+                                                       (ADI_SPI0_CFG_CLK_PHASE<<BITP_SPI_CTL_CPHA)|\
+                                                       (ADI_SPI0_CFG_CLK_POLARITY<<BITP_SPI_CTL_CPOL)|\
+                                                       (ADI_SPI0_CFG_HW_TARGET_SELECT<<BITP_SPI_CTL_ATSEL)|\
+                                                       (ADI_SPI0_CFG_TARGET_SELECT_POLARITY<<BITP_SPI_CTL_POLSEL)|\
+                                                       (ADI_SPI0_CFG_ENABLE_CITO<<BITP_SPI_CTL_ECITO)|\
+                                                       (ADI_SPI0_CFG_TRANSFER_SIZE<<BITP_SPI_CTL_SIZE)|\
+                                                       (ADI_SPI0_CFG_MSB_LSB<<BITP_SPI_CTL_LSBF)|\
+                                                       (ADI_SPI0_CFG_FLOW_CONTROL<<BITP_SPI_CTL_FCEN)|\
+                                                       (ADI_SPI0_CFG_FLOW_CONTROL_CHANNEL<<BITP_SPI_CTL_FCCH)|\
+                                                       (ADI_SPI0_CFG_FLOW_CONTROL_POLARITY<<BITP_SPI_CTL_FCPL)|\
+                                                       (ADI_SPI0_CFG_FLOW_CONTROL_WATERMARK<<BITP_SPI_CTL_FCWM)|\
+                                                       (ADI_SPI0_CFG_FASTMODE<<BITP_SPI_CTL_FMODE)|\
+                                                       (ADI_SPI0_CFG_MULTIPLE_I0_MODE<<BITP_SPI_CTL_MIOM)|\
+                                                       (ADI_SPI0_CFG_START_ON_COTI<<BITP_SPI_CTL_SOTI))
+/**************************************************************************************************************/
+
+/**************************************************************************************************************/
+/*! SPI Target select register \n
+    This allows a Target select to be enabled/disabled\n
+    (0) - disables the Target select 1\n
+    (1) - enables the Target select 1\n*/
+#define ADI_SPI0_CTL_TARGET_SELECT_ENABLE_1            <%= getPeriConfigValueBoolAsInt("SPI0", "TARGET_SELECT_ENABLE_1", "FALSE") %>ul
+/*! SPI Target select register \n
+    This allows a Target select to be enabled/disabled\n
+    (0) - disables the Target select 2\n
+    (1) - enables the Target select 2\n*/
+#define ADI_SPI0_CTL_TARGET_SELECT_ENABLE_2            <%= getPeriConfigValueBoolAsInt("SPI0", "TARGET_SELECT_ENABLE_2", "FALSE") %>ul
+/*! SPI Target select register \n
+    This allows a Target select to be enabled/disabled\n
+    (0) - disables the Target select 3\n
+    (1) - enables the Target select 3\n*/
+#define ADI_SPI0_CTL_TARGET_SELECT_ENABLE_3            <%= getPeriConfigValueBoolAsInt("SPI0", "TARGET_SELECT_ENABLE_3", "FALSE") %>ul
+/*! SPI Target select register \n
+    This allows a Target select to be enabled/disabled\n
+    (0) - disables the Target select 4\n
+    (1) - enables the Target select 4\n*/
+#define ADI_SPI0_CTL_TARGET_SELECT_ENABLE_4            <%= getPeriConfigValueBoolAsInt("SPI0", "TARGET_SELECT_ENABLE_4", "FALSE") %>ul
+/*! SPI Target select register \n
+    This allows a Target select to be enabled/disabled\n
+    (0) - disables the Target select 5\n
+    (1) - enables the Target select 5\n*/
+#define ADI_SPI0_CTL_TARGET_SELECT_ENABLE_5            <%= getPeriConfigValueBoolAsInt("SPI0", "TARGET_SELECT_ENABLE_5", "FALSE") %>ul
+/*! SPI Target select register \n
+    This allows a Target select to be enabled/disabled\n
+    (0) - disables the Target select 6\n
+    (1) - enables the Target select 6\n*/
+#define ADI_SPI0_CTL_TARGET_SELECT_ENABLE_6            <%= getPeriConfigValueBoolAsInt("SPI0", "TARGET_SELECT_ENABLE_6", "FALSE") %>ul
+/*! SPI Target select register \n
+    This allows a Target select to be enabled/disabled\n
+    (0) - disables the Target select 7\n
+    (1) - enables the Target select 7\n*/
+#define ADI_SPI0_CTL_TARGET_SELECT_ENABLE_7            <%= getPeriConfigValueBoolAsInt("SPI0", "TARGET_SELECT_ENABLE_7", "FALSE") %>ul
+
+/* Specifies the SPI0 Target select Control register Configuration\n*/
+#define ADI_SPI0_CTL_TARGET_SELECT_ENABLE              ((ADI_SPI0_CTL_TARGET_SELECT_ENABLE_7<<BITP_SPI_TSEL_TSE7)|\
+                                                       (ADI_SPI0_CTL_TARGET_SELECT_ENABLE_6<<BITP_SPI_TSEL_TSE6)|\
+                                                       (ADI_SPI0_CTL_TARGET_SELECT_ENABLE_5<<BITP_SPI_TSEL_TSE5)|\
+                                                       (ADI_SPI0_CTL_TARGET_SELECT_ENABLE_4<<BITP_SPI_TSEL_TSE4)|\
+                                                       (ADI_SPI0_CTL_TARGET_SELECT_ENABLE_3<<BITP_SPI_TSEL_TSE3)|\
+                                                       (ADI_SPI0_CTL_TARGET_SELECT_ENABLE_2<<BITP_SPI_TSEL_TSE2)|\
+                                                       (ADI_SPI0_CTL_TARGET_SELECT_ENABLE_1<<BITP_SPI_TSEL_TSE1))
+/*****************************************************************************************************************/
+
+/**************************************************************************************************************/
+/*! This configuration sets the baud rate for the SPI data transfers\n
+    Baud can be calculated as BAUD = (SCLK0_0/SPI_Clock) - 1\n */
+#define ADI_SPI1_CFG_CLK_BAUD                         <%= getPeriConfigValueInt("SPI1", "CLK_BAUD", "9") %>ul
+/**************************************************************************************************************/
+
+/**************************************************************************************************************/
+/*! Controller or Target mode of operation\n
+    SPI Control Register: Bit[1]\n
+    (0) - Target mode\n
+    (1) - Controller mode\n*/
+#define ADI_SPI1_CFG_TARGET_CONTROLLER                     <%= getPeriConfigValueEnum("SPI1", "MODE", "TARGET", {"TARGET":0,"CONTROLLER":1}) %>ul
+
+/*! Configures whether the SPI starts toggling the signal for the SPI clock\n
+    from the start of the first data bit or from the middle of the first data bit\n
+    SPI Control Register: Bit[4]\n
+    (0) - Serial clock pulses at the end of each serial bit transfer\n
+    (1) - Serial clock pulses at the beginning of each serial bit transfer\n*/
+#define ADI_SPI1_CFG_CLK_PHASE                        <%= getPeriConfigValueEnum("SPI1", "CLOCK_PHASE", "BEGINNING", {"END":0,"BEGINNING":1}) %>ul
+
+/*! Configures whether the SPI uses an active-low or active-high signal for the SPI clock\n
+    SPI Control Register: Bit[5]\n
+    (0) - Active-high SPI Clock\n
+    (1) - Active-low  SPI Clock\n*/
+#define ADI_SPI1_CFG_CLK_POLARITY                     <%= getPeriConfigValueEnum("SPI1", "CLOCK_POLARITY", "ACTIVE_HIGH", {"ACTIVE_HIGH":0,"ACTIVE_LOW":1}) %>ul
+
+/*! Configures the SPI to control the assertion/de-assertion of the Target select signal\n
+    SPI Control Register: Bit[6]\n
+    (0) - Target select controlled by software\n
+    (1) - Target select controlled by hardware\n*/
+#define ADI_SPI1_CFG_HW_TARGET_SELECT                  <%= getPeriConfigValueEnum("SPI1", "TARGET_SELECT_MODE", "HARDWARE", {"SOFTWARE":0,"HARDWARE":1}) %>ul
+
+/*! SPI transfer size\n
+    SPI Control Register: Bit[10:9]\n
+    (0)  -  8  bit word\n
+    (1)  -  16 bit word\n
+    (2)  -  32 bit word\n*/
+#define ADI_SPI1_CFG_TRANSFER_SIZE                    <%= getPeriConfigValueEnum("SPI1", "WORD_SIZE", "8_BIT", {"8_BIT":0,"16_BIT":1,"32_BIT":2}) %>ul
+
+/*! SPI transmits/receives LSB or MSB First\n
+    SPI Control Register: Bit[12]\n
+    (0) - MSB transmitted first\n
+    (1) - LSB transmitted first\n*/
+#define ADI_SPI1_CFG_MSB_LSB                          <%= getPeriConfigValueEnum("SPI1", "BIT_ORDER", "MSB_FIRST", {"MSB_FIRST":0,"LSB_FIRST":1}) %>ul
+
+/*! Configure SPI MOSI and MISO pins to behave as open drain outputs\n
+    to prevent bus contention\n
+    SPI Control Register: Bit[3]\n
+    (0) -  Disable\n
+    (1) -  Enable\n*/
+#define ADI_SPI1_CFG_OPEN_DRAIN_MODE                  <%= getPeriConfigValueBoolAsInt("SPI1", "OPEN_DRAIN", "FALSE") %>ul
+
+/*! Configures Target select polarity between transfers\n
+    SPI Control Register: Bit[7]\n
+    (0) - De-assert Target select (high)\n
+    (1) - Assert Target select (low)\n*/
+#define ADI_SPI1_CFG_TARGET_SELECT_POLARITY            <%= getPeriConfigValueEnum("SPI1", "SELECT_POLARITY", "DEASSERT", {"DEASSERT":0,"ASSERT":1}) %>ul
+
+/*! Configures the flow control bit to communicate with slow devices\n
+    SPI Control Register: Bit[13]\n
+    (0) - Disable\n
+    (1) - Enable\n*/
+#define ADI_SPI1_CFG_FLOW_CONTROL                     <%= getPeriConfigValueBoolAsInt("SPI1", "FLOW_CONTROL", "FALSE") %>ul
+
+/*! Configures the watermark for flow control\n
+    SPI Control Register: Bits[17:16]\n
+    (0) - TFIFO empty or RFIFO full\n
+    (1) - TFIFO 75% or more empty, or RFIFO 75% or more full\n
+    (2) - TFIFO 50% or more empty, or RFIFO 50% or more full\n*/
+#define ADI_SPI1_CFG_FLOW_CONTROL_WATERMARK           <%= getPeriConfigValueEnum("SPI1", "FLOW_CONTROL_WATERMARK", "EMPTY_FULL", {"EMPTY_FULL":0,"THRESHOLD_75":1,"THRESHOLD_50":2}) %>ul
+
+/*! Configure the polarity of the ready pin\n
+    SPI Control Register: Bit[15]\n
+    (0) - Active low ready\n
+    (1) - Active High ready\n*/
+#define ADI_SPI1_CFG_FLOW_CONTROL_POLARITY            <%= getPeriConfigValueEnum("SPI1", "FLOW_CONTROL_POLARITY", "ACTIVE_LOW", {"ACTIVE_LOW":0,"ACTIVE_HIGH":1}) %>ul
+
+/*! Configures Flow control for Transmit or Receive channel\n
+    SPI Control Register: Bit[14]\n
+    (0) - Flow control on Rx channel\n
+    (1) - Flow control on Tx channel\n*/
+#define ADI_SPI1_CFG_FLOW_CONTROL_CHANNEL             <%= getPeriConfigValueEnum("SPI1", "FLOW_CONTROL_CHANNEL", "RX_CHANNEL", {"RX_CHANNEL":0,"TX_CHANNEL":1}) %>ul
+
+/*! Enable/Disable fast mode\n
+    SPI Control Register: Bit[18]\n
+    (0) - Disable\n
+    (1) - Enable\n*/
+#define ADI_SPI1_CFG_FASTMODE                         <%= getPeriConfigValueBoolAsInt("SPI1", "FAST_MODE", "FALSE") %>ul
+
+/*! Configure in Default or Dual I/O or Quad I/O mode\n
+    SPI Control Register: Bits[21:20]\n
+    (0) - SPI with MOSI and MISO, single I/O mode\n
+    (1) - Dual I/O mode\n
+    (2) - Quad I/O mode.(Not applicable for SPI0/SPI3)\n*/
+#define ADI_SPI1_CFG_MULTIPLE_I0_MODE                 <%= getPeriConfigValueEnum("SPI1", "IO_MODE", "SPI_MOSI_MISO_SINGLE", {"SPI_MOSI_MISO_SINGLE":0,"DUAL_I_O_MODE":1,"QUAD_I_O_MODE":2}) %>ul
+ 
+/*! configure start on MOSI\n
+    SPI Control Register: Bit[22]\n
+    (0) - Bit 0 on MOSI (for both DIOM and QIOM)\n
+    (1) - Bit 0 on MISO(DIOM) or on D3(QIOM)\n*/
+#define ADI_SPI1_CFG_START_ON_COTI                    <%= getPeriConfigValueEnum("SPI1", "START_ON_COTI", "MOSI", {"MOSI":0,"MISO":1}) %>ul
+
+/*! Enables error detection in case of multi Controller\n
+    environment when SPI is configured as Controller\n
+    SPI Control Register: Bit[2]\n
+    (0) - Disable\n
+    (1) - Enable\n*/
+#define ADI_SPI1_CFG_PROTECTED_TGT_SELECT_EN          <%= getPeriConfigValueBoolAsInt("SPI1", "PROTECTED_SELECT", "FALSE") %>ul
+
+/*! Enable SPI MISO mode. This mode is only applicable for SPI as a Target\n
+    SPI Control Register: Bit[8]\n
+    (0) - Disable\n
+    (1) - Enable\n*/
+#define ADI_SPI1_CFG_ENABLE_CITO                      <%= getPeriConfigValueBoolAsInt("SPI1", "CITO", "FALSE") %>ul
+
+/* Specifies the SPI1 Control register Configuration\n*/
+#define ADI_SPI1_CTL                                  ((ADI_SPI1_CFG_TARGET_CONTROLLER << BITP_SPI_CTL_MODE)|\
+                                                       (ADI_SPI1_CFG_PROTECTED_TGT_SELECT_EN<<BITP_SPI_CTL_PTSE)|\
+                                                       (ADI_SPI1_CFG_OPEN_DRAIN_MODE<<BITP_SPI_CTL_ODM)|\
+                                                       (ADI_SPI1_CFG_CLK_PHASE<<BITP_SPI_CTL_CPHA)|\
+                                                       (ADI_SPI1_CFG_CLK_POLARITY<<BITP_SPI_CTL_CPOL)|\
+                                                       (ADI_SPI1_CFG_HW_TARGET_SELECT<<BITP_SPI_CTL_ATSEL)|\
+                                                       (ADI_SPI1_CFG_TARGET_SELECT_POLARITY<<BITP_SPI_CTL_POLSEL)|\
+                                                       (ADI_SPI1_CFG_ENABLE_CITO<<BITP_SPI_CTL_ECITO)|\
+                                                       (ADI_SPI1_CFG_TRANSFER_SIZE<<BITP_SPI_CTL_SIZE)|\
+                                                       (ADI_SPI1_CFG_MSB_LSB<<BITP_SPI_CTL_LSBF)|\
+                                                       (ADI_SPI1_CFG_FLOW_CONTROL<<BITP_SPI_CTL_FCEN)|\
+                                                       (ADI_SPI1_CFG_FLOW_CONTROL_CHANNEL<<BITP_SPI_CTL_FCCH)|\
+                                                       (ADI_SPI1_CFG_FLOW_CONTROL_POLARITY<<BITP_SPI_CTL_FCPL)|\
+                                                       (ADI_SPI1_CFG_FLOW_CONTROL_WATERMARK<<BITP_SPI_CTL_FCWM)|\
+                                                       (ADI_SPI1_CFG_FASTMODE<<BITP_SPI_CTL_FMODE)|\
+                                                       (ADI_SPI1_CFG_MULTIPLE_I0_MODE<<BITP_SPI_CTL_MIOM)|\
+                                                       (ADI_SPI1_CFG_START_ON_COTI<<BITP_SPI_CTL_SOTI))
+/**************************************************************************************************************/
+
+/**************************************************************************************************************/
+/*! SPI Target select register \n
+    This allows a Target select to be enabled/disabled\n
+    (0) - disables the Target select 1\n
+    (1) - enables the Target select 1\n*/
+#define ADI_SPI1_CTL_TARGET_SELECT_ENABLE_1            <%= getPeriConfigValueBoolAsInt("SPI1", "TARGET_SELECT_ENABLE_1", "FALSE") %>ul
+/*! SPI Target select register \n
+    This allows a Target select to be enabled/disabled\n
+    (0) - disables the Target select 2\n
+    (1) - enables the Target select 2\n*/
+#define ADI_SPI1_CTL_TARGET_SELECT_ENABLE_2            <%= getPeriConfigValueBoolAsInt("SPI1", "TARGET_SELECT_ENABLE_2", "FALSE") %>ul
+/*! SPI Target select register \n
+    This allows a Target select to be enabled/disabled\n
+    (0) - disables the Target select 3\n
+    (1) - enables the Target select 3\n*/
+#define ADI_SPI1_CTL_TARGET_SELECT_ENABLE_3            <%= getPeriConfigValueBoolAsInt("SPI1", "TARGET_SELECT_ENABLE_3", "FALSE") %>ul
+/*! SPI Target select register \n
+    This allows a Target select to be enabled/disabled\n
+    (0) - disables the Target select 4\n
+    (1) - enables the Target select 4\n*/
+#define ADI_SPI1_CTL_TARGET_SELECT_ENABLE_4            <%= getPeriConfigValueBoolAsInt("SPI1", "TARGET_SELECT_ENABLE_4", "FALSE") %>ul
+/*! SPI Target select register \n
+    This allows a Target select to be enabled/disabled\n
+    (0) - disables the Target select 5\n
+    (1) - enables the Target select 5\n*/
+#define ADI_SPI1_CTL_TARGET_SELECT_ENABLE_5            <%= getPeriConfigValueBoolAsInt("SPI1", "TARGET_SELECT_ENABLE_5", "FALSE") %>ul
+/*! SPI Target select register \n
+    This allows a Target select to be enabled/disabled\n
+    (0) - disables the Target select 6\n
+    (1) - enables the Target select 6\n*/
+#define ADI_SPI1_CTL_TARGET_SELECT_ENABLE_6            <%= getPeriConfigValueBoolAsInt("SPI1", "TARGET_SELECT_ENABLE_6", "FALSE") %>ul
+/*! SPI Target select register \n
+    This allows a Target select to be enabled/disabled\n
+    (0) - disables the Target select 7\n
+    (1) - enables the Target select 7\n*/
+#define ADI_SPI1_CTL_TARGET_SELECT_ENABLE_7            <%= getPeriConfigValueBoolAsInt("SPI1", "TARGET_SELECT_ENABLE_7", "FALSE") %>ul
+
+/* Specifies the SPI1 Target select Control register Configuration\n*/
+#define ADI_SPI1_CTL_TARGET_SELECT_ENABLE              ((ADI_SPI1_CTL_TARGET_SELECT_ENABLE_7<<BITP_SPI_TSEL_TSE7)|\
+                                                       (ADI_SPI1_CTL_TARGET_SELECT_ENABLE_6<<BITP_SPI_TSEL_TSE6)|\
+                                                       (ADI_SPI1_CTL_TARGET_SELECT_ENABLE_5<<BITP_SPI_TSEL_TSE5)|\
+                                                       (ADI_SPI1_CTL_TARGET_SELECT_ENABLE_4<<BITP_SPI_TSEL_TSE4)|\
+                                                       (ADI_SPI1_CTL_TARGET_SELECT_ENABLE_3<<BITP_SPI_TSEL_TSE3)|\
+                                                       (ADI_SPI1_CTL_TARGET_SELECT_ENABLE_2<<BITP_SPI_TSEL_TSE2)|\
+                                                       (ADI_SPI1_CTL_TARGET_SELECT_ENABLE_1<<BITP_SPI_TSEL_TSE1))
+/*****************************************************************************************************************/
+
+/**************************************************************************************************************/
+/*! This configuration sets the baud rate for the SPI data transfers\n
+    Baud can be calculated as BAUD = (SCLK0_0/SPI_Clock) - 1\n */
+#define ADI_SPI2_CFG_CLK_BAUD                         <%= getPeriConfigValueInt("SPI2", "CLK_BAUD", "9") %>ul
+/**************************************************************************************************************/
+
+/**************************************************************************************************************/
+/*! Controller or Target mode of operation\n
+    SPI Control Register: Bit[1]\n
+    (0) - Target mode\n
+    (1) - Controller mode\n*/
+#define ADI_SPI2_CFG_TARGET_CONTROLLER                     <%= getPeriConfigValueEnum("SPI2", "MODE", "CONTROLLER", {"TARGET":0,"CONTROLLER":1}) %>ul
+
+/*! Configures whether the SPI starts toggling the signal for the SPI clock\n
+    from the start of the first data bit or from the middle of the first data bit\n
+    SPI Control Register: Bit[4]\n
+    (0) - Serial clock pulses at the end of each serial bit transfer\n
+    (1) - Serial clock pulses at the beginning of each serial bit transfer\n*/
+#define ADI_SPI2_CFG_CLK_PHASE                        <%= getPeriConfigValueEnum("SPI2", "CLOCK_PHASE", "BEGINNING", {"END":0,"BEGINNING":1}) %>ul
+
+/*! Configures whether the SPI uses an active-low or active-high signal for the SPI clock\n
+    SPI Control Register: Bit[5]\n
+    (0) - Active-high SPI Clock\n
+    (1) - Active-low  SPI Clock\n*/
+#define ADI_SPI2_CFG_CLK_POLARITY                     <%= getPeriConfigValueEnum("SPI2", "CLOCK_POLARITY", "ACTIVE_HIGH", {"ACTIVE_HIGH":0,"ACTIVE_LOW":1}) %>ul
+
+/*! Configures the SPI to control the assertion/de-assertion of the Target select signal\n
+    SPI Control Register: Bit[6]\n
+    (0) - Target select controlled by software\n
+    (1) - Target select controlled by hardware\n*/
+#define ADI_SPI2_CFG_HW_TARGET_SELECT                  <%= getPeriConfigValueEnum("SPI2", "TARGET_SELECT_MODE", "HARDWARE", {"SOFTWARE":0,"HARDWARE":1}) %>ul
+
+/*! SPI transfer size\n
+    SPI Control Register: Bit[10:9]\n
+    (0)  -  8  bit word\n
+    (1)  -  16 bit word\n
+    (2)  -  32 bit word\n*/
+#define ADI_SPI2_CFG_TRANSFER_SIZE                    <%= getPeriConfigValueEnum("SPI2", "WORD_SIZE", "8_BIT", {"8_BIT":0,"16_BIT":1,"32_BIT":2}) %>ul
+
+/*! SPI transmits/receives LSB or MSB First\n
+    SPI Control Register: Bit[12]\n
+    (0) - MSB transmitted first\n
+    (1) - LSB transmitted first\n*/
+#define ADI_SPI2_CFG_MSB_LSB                          <%= getPeriConfigValueEnum("SPI2", "BIT_ORDER", "MSB_FIRST", {"MSB_FIRST":0,"LSB_FIRST":1}) %>ul
+
+/*! Configure SPI MOSI and MISO pins to behave as open drain outputs\n
+    to prevent bus contention\n
+    SPI Control Register: Bit[3]\n
+    (0) -  Disable\n
+    (1) -  Enable\n*/
+#define ADI_SPI2_CFG_OPEN_DRAIN_MODE                  <%= getPeriConfigValueBoolAsInt("SPI2", "OPEN_DRAIN", "FALSE") %>ul
+
+/*! Configures Target select polarity between transfers\n
+    SPI Control Register: Bit[7]\n
+    (0) - De-assert Target select (high)\n
+    (1) - Assert Target select (low)\n*/
+#define ADI_SPI2_CFG_TARGET_SELECT_POLARITY            <%= getPeriConfigValueEnum("SPI2", "SELECT_POLARITY", "DEASSERT", {"DEASSERT":0,"ASSERT":1}) %>ul
+
+/*! Configures the flow control bit to communicate with slow devices\n
+    SPI Control Register: Bit[13]\n
+    (0) - Disable\n
+    (1) - Enable\n*/
+#define ADI_SPI2_CFG_FLOW_CONTROL                     <%= getPeriConfigValueBoolAsInt("SPI2", "FLOW_CONTROL", "FALSE") %>ul
+
+/*! Configures the watermark for flow control\n
+    SPI Control Register: Bits[17:16]\n
+    (0) - TFIFO empty or RFIFO full\n
+    (1) - TFIFO 75% or more empty, or RFIFO 75% or more full\n
+    (2) - TFIFO 50% or more empty, or RFIFO 50% or more full\n*/
+#define ADI_SPI2_CFG_FLOW_CONTROL_WATERMARK           <%= getPeriConfigValueEnum("SPI2", "FLOW_CONTROL_WATERMARK", "EMPTY_FULL", {"EMPTY_FULL":0,"THRESHOLD_75":1,"THRESHOLD_50":2}) %>ul
+
+/*! Configure the polarity of the ready pin\n
+    SPI Control Register: Bit[15]\n
+    (0) - Active low ready\n
+    (1) - Active High ready\n*/
+#define ADI_SPI2_CFG_FLOW_CONTROL_POLARITY            <%= getPeriConfigValueEnum("SPI2", "FLOW_CONTROL_POLARITY", "ACTIVE_LOW", {"ACTIVE_LOW":0,"ACTIVE_HIGH":1}) %>ul
+
+/*! Configures Flow control for Transmit or Receive channel\n
+    SPI Control Register: Bit[14]\n
+    (0) - Flow control on Rx channel\n
+    (1) - Flow control on Tx channel\n*/
+#define ADI_SPI2_CFG_FLOW_CONTROL_CHANNEL             <%= getPeriConfigValueEnum("SPI2", "FLOW_CONTROL_CHANNEL", "RX_CHANNEL", {"RX_CHANNEL":0,"TX_CHANNEL":1}) %>ul
+
+/*! Enable/Disable fast mode\n
+    SPI Control Register: Bit[18]\n
+    (0) - Disable\n
+    (1) - Enable\n*/
+#define ADI_SPI2_CFG_FASTMODE                         <%= getPeriConfigValueBoolAsInt("SPI2", "FAST_MODE", "FALSE") %>ul
+
+/*! Configure in Default or Dual I/O or Quad I/O mode\n
+    SPI Control Register: Bits[21:20]\n
+    (0) - SPI with MOSI and MISO, single I/O mode\n
+    (1) - Dual I/O mode\n
+    (2) - Quad I/O mode.(Not applicable for SPI0/SPI3)\n*/
+#define ADI_SPI2_CFG_MULTIPLE_I0_MODE                 <%= getPeriConfigValueEnum("SPI2", "IO_MODE", "SPI_MOSI_MISO_SINGLE", {"SPI_MOSI_MISO_SINGLE":0,"DUAL_I_O_MODE":1,"QUAD_I_O_MODE":2}) %>ul
+ 
+/*! configure start on MOSI\n
+    SPI Control Register: Bit[22]\n
+    (0) - Bit 0 on MOSI (for both DIOM and QIOM)\n
+    (1) - Bit 0 on MISO(DIOM) or on D3(QIOM)\n*/
+#define ADI_SPI2_CFG_START_ON_COTI                    <%= getPeriConfigValueEnum("SPI2", "START_ON_COTI", "MOSI", {"MOSI":0,"MISO":1}) %>ul
+
+/*! Enables error detection in case of multi Controller\n
+    environment when SPI is configured as Controller\n
+    SPI Control Register: Bit[2]\n
+    (0) - Disable\n
+    (1) - Enable\n*/
+#define ADI_SPI2_CFG_PROTECTED_TGT_SELECT_EN          <%= getPeriConfigValueBoolAsInt("SPI2", "PROTECTED_SELECT", "FALSE") %>ul
+
+/*! Enable SPI MISO mode. This mode is only applicable for SPI as a Target\n
+    SPI Control Register: Bit[8]\n
+    (0) - Disable\n
+    (1) - Enable\n*/
+#define ADI_SPI2_CFG_ENABLE_CITO                      <%= getPeriConfigValueBoolAsInt("SPI2", "CITO", "FALSE") %>ul
+
+/* Specifies the SPI2 Control register Configuration\n*/
+#define ADI_SPI2_CTL                                  ((ADI_SPI2_CFG_TARGET_CONTROLLER << BITP_SPI_CTL_MODE)|\
+                                                       (ADI_SPI2_CFG_PROTECTED_TGT_SELECT_EN<<BITP_SPI_CTL_PTSE)|\
+                                                       (ADI_SPI2_CFG_OPEN_DRAIN_MODE<<BITP_SPI_CTL_ODM)|\
+                                                       (ADI_SPI2_CFG_CLK_PHASE<<BITP_SPI_CTL_CPHA)|\
+                                                       (ADI_SPI2_CFG_CLK_POLARITY<<BITP_SPI_CTL_CPOL)|\
+                                                       (ADI_SPI2_CFG_HW_TARGET_SELECT<<BITP_SPI_CTL_ATSEL)|\
+                                                       (ADI_SPI2_CFG_TARGET_SELECT_POLARITY<<BITP_SPI_CTL_POLSEL)|\
+                                                       (ADI_SPI2_CFG_ENABLE_CITO<<BITP_SPI_CTL_ECITO)|\
+                                                       (ADI_SPI2_CFG_TRANSFER_SIZE<<BITP_SPI_CTL_SIZE)|\
+                                                       (ADI_SPI2_CFG_MSB_LSB<<BITP_SPI_CTL_LSBF)|\
+                                                       (ADI_SPI2_CFG_FLOW_CONTROL<<BITP_SPI_CTL_FCEN)|\
+                                                       (ADI_SPI2_CFG_FLOW_CONTROL_CHANNEL<<BITP_SPI_CTL_FCCH)|\
+                                                       (ADI_SPI2_CFG_FLOW_CONTROL_POLARITY<<BITP_SPI_CTL_FCPL)|\
+                                                       (ADI_SPI2_CFG_FLOW_CONTROL_WATERMARK<<BITP_SPI_CTL_FCWM)|\
+                                                       (ADI_SPI2_CFG_FASTMODE<<BITP_SPI_CTL_FMODE)|\
+                                                       (ADI_SPI2_CFG_MULTIPLE_I0_MODE<<BITP_SPI_CTL_MIOM)|\
+                                                       (ADI_SPI2_CFG_START_ON_COTI<<BITP_SPI_CTL_SOTI))
+/**************************************************************************************************************/
+
+/**************************************************************************************************************/
+/*! SPI Target select register \n
+    This allows a Target select to be enabled/disabled\n
+    (0) - disables the Target select 1\n
+    (1) - enables the Target select 1\n*/
+#define ADI_SPI2_CTL_TARGET_SELECT_ENABLE_1            <%= getPeriConfigValueBoolAsInt("SPI2", "TARGET_SELECT_ENABLE_1", "FALSE") %>ul
+/*! SPI Target select register \n
+    This allows a Target select to be enabled/disabled\n
+    (0) - disables the Target select 2\n
+    (1) - enables the Target select 2\n*/
+#define ADI_SPI2_CTL_TARGET_SELECT_ENABLE_2            <%= getPeriConfigValueBoolAsInt("SPI2", "TARGET_SELECT_ENABLE_2", "FALSE") %>ul
+/*! SPI Target select register \n
+    This allows a Target select to be enabled/disabled\n
+    (0) - disables the Target select 3\n
+    (1) - enables the Target select 3\n*/
+#define ADI_SPI2_CTL_TARGET_SELECT_ENABLE_3            <%= getPeriConfigValueBoolAsInt("SPI2", "TARGET_SELECT_ENABLE_3", "FALSE") %>ul
+/*! SPI Target select register \n
+    This allows a Target select to be enabled/disabled\n
+    (0) - disables the Target select 4\n
+    (1) - enables the Target select 4\n*/
+#define ADI_SPI2_CTL_TARGET_SELECT_ENABLE_4            <%= getPeriConfigValueBoolAsInt("SPI2", "TARGET_SELECT_ENABLE_4", "FALSE") %>ul
+/*! SPI Target select register \n
+    This allows a Target select to be enabled/disabled\n
+    (0) - disables the Target select 5\n
+    (1) - enables the Target select 5\n*/
+#define ADI_SPI2_CTL_TARGET_SELECT_ENABLE_5            <%= getPeriConfigValueBoolAsInt("SPI2", "TARGET_SELECT_ENABLE_5", "FALSE") %>ul
+/*! SPI Target select register \n
+    This allows a Target select to be enabled/disabled\n
+    (0) - disables the Target select 6\n
+    (1) - enables the Target select 6\n*/
+#define ADI_SPI2_CTL_TARGET_SELECT_ENABLE_6            <%= getPeriConfigValueBoolAsInt("SPI2", "TARGET_SELECT_ENABLE_6", "FALSE") %>ul
+/*! SPI Target select register \n
+    This allows a Target select to be enabled/disabled\n
+    (0) - disables the Target select 7\n
+    (1) - enables the Target select 7\n*/
+#define ADI_SPI2_CTL_TARGET_SELECT_ENABLE_7            <%= getPeriConfigValueBoolAsInt("SPI2", "TARGET_SELECT_ENABLE_7", "FALSE") %>ul
+
+/* Specifies the SPI2 Target select Control register Configuration\n*/
+#define ADI_SPI2_CTL_TARGET_SELECT_ENABLE              ((ADI_SPI2_CTL_TARGET_SELECT_ENABLE_7<<BITP_SPI_TSEL_TSE7)|\
+                                                       (ADI_SPI2_CTL_TARGET_SELECT_ENABLE_6<<BITP_SPI_TSEL_TSE6)|\
+                                                       (ADI_SPI2_CTL_TARGET_SELECT_ENABLE_5<<BITP_SPI_TSEL_TSE5)|\
+                                                       (ADI_SPI2_CTL_TARGET_SELECT_ENABLE_4<<BITP_SPI_TSEL_TSE4)|\
+                                                       (ADI_SPI2_CTL_TARGET_SELECT_ENABLE_3<<BITP_SPI_TSEL_TSE3)|\
+                                                       (ADI_SPI2_CTL_TARGET_SELECT_ENABLE_2<<BITP_SPI_TSEL_TSE2)|\
+                                                       (ADI_SPI2_CTL_TARGET_SELECT_ENABLE_1<<BITP_SPI_TSEL_TSE1))
+
+#if defined(__ADI_HAS_SPI5__) /* SPI5 instance is available on ADSP-SC84x family of processors */
+/**************************************************************************************************************/
+/*! This configuration sets the baud rate for the SPI data transfers\n
+    Baud can be calculated as BAUD = (SCLK0_0/SPI_Clock) - 1\n */
+#define ADI_SPI5_CFG_CLK_BAUD                         <%= getPeriConfigValueInt("SPI5", "CLK_BAUD", "9") %>ul
+/**************************************************************************************************************/
+
+/**************************************************************************************************************/
+/*! Controller or Target mode of operation\n
+    SPI Control Register: Bit[1]\n
+    (0) - Target mode\n
+    (1) - Controller mode\n*/
+#define ADI_SPI5_CFG_TARGET_CONTROLLER                     <%= getPeriConfigValueEnum("SPI5", "MODE", "CONTROLLER", {"TARGET":0,"CONTROLLER":1}) %>ul
+
+/*! Configures whether the SPI starts toggling the signal for the SPI clock\n
+    from the start of the first data bit or from the middle of the first data bit\n
+    SPI Control Register: Bit[4]\n
+    (0) - Serial clock pulses at the end of each serial bit transfer\n
+    (1) - Serial clock pulses at the beginning of each serial bit transfer\n*/
+#define ADI_SPI5_CFG_CLK_PHASE                        <%= getPeriConfigValueEnum("SPI5", "CLOCK_PHASE", "BEGINNING", {"END":0,"BEGINNING":1}) %>ul
+
+/*! Configures whether the SPI uses an active-low or active-high signal for the SPI clock\n
+    SPI Control Register: Bit[5]\n
+    (0) - Active-high SPI Clock\n
+    (1) - Active-low  SPI Clock\n*/
+#define ADI_SPI5_CFG_CLK_POLARITY                     <%= getPeriConfigValueEnum("SPI5", "CLOCK_POLARITY", "ACTIVE_HIGH", {"ACTIVE_HIGH":0,"ACTIVE_LOW":1}) %>ul
+
+/*! Configures the SPI to control the assertion/de-assertion of the Target select signal\n
+    SPI Control Register: Bit[6]\n
+    (0) - Target select controlled by software\n
+    (1) - Target select controlled by hardware\n*/
+#define ADI_SPI5_CFG_HW_TARGET_SELECT                  <%= getPeriConfigValueEnum("SPI5", "TARGET_SELECT_MODE", "HARDWARE", {"SOFTWARE":0,"HARDWARE":1}) %>ul
+
+/*! SPI transfer size\n
+    SPI Control Register: Bit[10:9]\n
+    (0)  -  8  bit word\n
+    (1)  -  16 bit word\n
+    (2)  -  32 bit word\n*/
+#define ADI_SPI5_CFG_TRANSFER_SIZE                    <%= getPeriConfigValueEnum("SPI5", "WORD_SIZE", "8_BIT", {"8_BIT":0,"16_BIT":1,"32_BIT":2}) %>ul
+
+/*! SPI transmits/receives LSB or MSB First\n
+    SPI Control Register: Bit[12]\n
+    (0) - MSB transmitted first\n
+    (1) - LSB transmitted first\n*/
+#define ADI_SPI5_CFG_MSB_LSB                          <%= getPeriConfigValueEnum("SPI5", "BIT_ORDER", "MSB_FIRST", {"MSB_FIRST":0,"LSB_FIRST":1}) %>ul
+
+/*! Configure SPI MOSI and MISO pins to behave as open drain outputs\n
+    to prevent bus contention\n
+    SPI Control Register: Bit[3]\n
+    (0) -  Disable\n
+    (1) -  Enable\n*/
+#define ADI_SPI5_CFG_OPEN_DRAIN_MODE                  <%= getPeriConfigValueBoolAsInt("SPI5", "OPEN_DRAIN", "FALSE") %>ul
+
+/*! Configures Target select polarity between transfers\n
+    SPI Control Register: Bit[7]\n
+    (0) - De-assert Target select (high)\n
+    (1) - Assert Target select (low)\n*/
+#define ADI_SPI5_CFG_TARGET_SELECT_POLARITY            <%= getPeriConfigValueEnum("SPI5", "SELECT_POLARITY", "DEASSERT", {"DEASSERT":0,"ASSERT":1}) %>ul
+
+/*! Configures the flow control bit to communicate with slow devices\n
+    SPI Control Register: Bit[13]\n
+    (0) - Disable\n
+    (1) - Enable\n*/
+#define ADI_SPI5_CFG_FLOW_CONTROL                     <%= getPeriConfigValueBoolAsInt("SPI5", "FLOW_CONTROL", "FALSE") %>ul
+
+/*! Configures the watermark for flow control\n
+    SPI Control Register: Bits[17:16]\n
+    (0) - TFIFO empty or RFIFO full\n
+    (1) - TFIFO 75% or more empty, or RFIFO 75% or more full\n
+    (2) - TFIFO 50% or more empty, or RFIFO 50% or more full\n*/
+#define ADI_SPI5_CFG_FLOW_CONTROL_WATERMARK           <%= getPeriConfigValueEnum("SPI5", "FLOW_CONTROL_WATERMARK", "EMPTY_FULL", {"EMPTY_FULL":0,"THRESHOLD_75":1,"THRESHOLD_50":2}) %>ul
+
+/*! Configure the polarity of the ready pin\n
+    SPI Control Register: Bit[15]\n
+    (0) - Active low ready\n
+    (1) - Active High ready\n*/
+#define ADI_SPI5_CFG_FLOW_CONTROL_POLARITY            <%= getPeriConfigValueEnum("SPI5", "FLOW_CONTROL_POLARITY", "ACTIVE_LOW", {"ACTIVE_LOW":0,"ACTIVE_HIGH":1}) %>ul
+
+/*! Configures Flow control for Transmit or Receive channel\n
+    SPI Control Register: Bit[14]\n
+    (0) - Flow control on Rx channel\n
+    (1) - Flow control on Tx channel\n*/
+#define ADI_SPI5_CFG_FLOW_CONTROL_CHANNEL             <%= getPeriConfigValueEnum("SPI5", "FLOW_CONTROL_CHANNEL", "RX_CHANNEL", {"RX_CHANNEL":0,"TX_CHANNEL":1}) %>ul
+
+/*! Enable/Disable fast mode\n
+    SPI Control Register: Bit[18]\n
+    (0) - Disable\n
+    (1) - Enable\n*/
+#define ADI_SPI5_CFG_FASTMODE                         <%= getPeriConfigValueBoolAsInt("SPI5", "FAST_MODE", "FALSE") %>ul
+
+/*! Configure in Default or Dual I/O or Quad I/O mode\n
+    SPI Control Register: Bits[21:20]\n
+    (0) - SPI with MOSI and MISO, single I/O mode\n
+    (1) - Dual I/O mode\n
+    (2) - Quad I/O mode.(Not applicable for SPI0/SPI3)\n*/
+#define ADI_SPI5_CFG_MULTIPLE_I0_MODE                 <%= getPeriConfigValueEnum("SPI5", "IO_MODE", "SPI_MOSI_MISO_SINGLE", {"SPI_MOSI_MISO_SINGLE":0,"DUAL_I_O_MODE":1,"QUAD_I_O_MODE":2}) %>ul
+
+/*! configure start on MOSI\n
+    SPI Control Register: Bit[22]\n
+    (0) - Bit 0 on MOSI (for both DIOM and QIOM)\n
+    (1) - Bit 0 on MISO(DIOM) or on D3(QIOM)\n*/
+#define ADI_SPI5_CFG_START_ON_COTI                    <%= getPeriConfigValueEnum("SPI5", "START_ON_COTI", "MOSI", {"MOSI":0,"MISO":1}) %>ul
+
+/*! Enables error detection in case of multi Controller\n
+    environment when SPI is configured as Controller\n
+    SPI Control Register: Bit[2]\n
+    (0) - Disable\n
+    (1) - Enable\n*/
+#define ADI_SPI5_CFG_PROTECTED_TGT_SELECT_EN          <%= getPeriConfigValueBoolAsInt("SPI5", "PROTECTED_SELECT", "FALSE") %>ul
+
+/*! Enable SPI MISO mode. This mode is only applicable for SPI as a Target\n
+    SPI Control Register: Bit[8]\n
+    (0) - Disable\n
+    (1) - Enable\n*/
+#define ADI_SPI5_CFG_ENABLE_CITO                      <%= getPeriConfigValueBoolAsInt("SPI5", "CITO", "FALSE") %>ul
+
+/* Specifies the SPI5 Control register Configuration\n*/
+#define ADI_SPI5_CTL                                  ((ADI_SPI5_CFG_TARGET_CONTROLLER << BITP_SPI_CTL_MODE)|\
+                                                       (ADI_SPI5_CFG_PROTECTED_TGT_SELECT_EN<<BITP_SPI_CTL_PTSE)|\
+                                                       (ADI_SPI5_CFG_OPEN_DRAIN_MODE<<BITP_SPI_CTL_ODM)|\
+                                                       (ADI_SPI5_CFG_CLK_PHASE<<BITP_SPI_CTL_CPHA)|\
+                                                       (ADI_SPI5_CFG_CLK_POLARITY<<BITP_SPI_CTL_CPOL)|\
+                                                       (ADI_SPI5_CFG_HW_TARGET_SELECT<<BITP_SPI_CTL_ATSEL)|\
+                                                       (ADI_SPI5_CFG_TARGET_SELECT_POLARITY<<BITP_SPI_CTL_POLSEL)|\
+                                                       (ADI_SPI5_CFG_ENABLE_CITO<<BITP_SPI_CTL_ECITO)|\
+                                                       (ADI_SPI5_CFG_TRANSFER_SIZE<<BITP_SPI_CTL_SIZE)|\
+                                                       (ADI_SPI5_CFG_MSB_LSB<<BITP_SPI_CTL_LSBF)|\
+                                                       (ADI_SPI5_CFG_FLOW_CONTROL<<BITP_SPI_CTL_FCEN)|\
+                                                       (ADI_SPI5_CFG_FLOW_CONTROL_CHANNEL<<BITP_SPI_CTL_FCCH)|\
+                                                       (ADI_SPI5_CFG_FLOW_CONTROL_POLARITY<<BITP_SPI_CTL_FCPL)|\
+                                                       (ADI_SPI5_CFG_FLOW_CONTROL_WATERMARK<<BITP_SPI_CTL_FCWM)|\
+                                                       (ADI_SPI5_CFG_FASTMODE<<BITP_SPI_CTL_FMODE)|\
+                                                       (ADI_SPI5_CFG_MULTIPLE_I0_MODE<<BITP_SPI_CTL_MIOM)|\
+                                                       (ADI_SPI5_CFG_START_ON_COTI<<BITP_SPI_CTL_SOTI))
+/**************************************************************************************************************/
+
+/**************************************************************************************************************/
+/*! SPI Target select register \n
+    This allows a Target select to be enabled/disabled\n
+    (0) - disables the Target select 1\n
+    (1) - enables the Target select 1\n*/
+#define ADI_SPI5_CTL_TARGET_SELECT_ENABLE_1            <%= getPeriConfigValueBoolAsInt("SPI5", "TARGET_SELECT_ENABLE_1", "FALSE") %>ul
+/*! SPI Target select register \n
+    This allows a Target select to be enabled/disabled\n
+    (0) - disables the Target select 2\n
+    (1) - enables the Target select 2\n*/
+#define ADI_SPI5_CTL_TARGET_SELECT_ENABLE_2            <%= getPeriConfigValueBoolAsInt("SPI5", "TARGET_SELECT_ENABLE_2", "FALSE") %>ul
+/*! SPI Target select register \n
+    This allows a Target select to be enabled/disabled\n
+    (0) - disables the Target select 3\n
+    (1) - enables the Target select 3\n*/
+#define ADI_SPI5_CTL_TARGET_SELECT_ENABLE_3            <%= getPeriConfigValueBoolAsInt("SPI5", "TARGET_SELECT_ENABLE_3", "FALSE") %>ul
+/*! SPI Target select register \n
+    This allows a Target select to be enabled/disabled\n
+    (0) - disables the Target select 4\n
+    (1) - enables the Target select 4\n*/
+#define ADI_SPI5_CTL_TARGET_SELECT_ENABLE_4            <%= getPeriConfigValueBoolAsInt("SPI5", "TARGET_SELECT_ENABLE_4", "FALSE") %>ul
+/*! SPI Target select register \n
+    This allows a Target select to be enabled/disabled\n
+    (0) - disables the Target select 5\n
+    (1) - enables the Target select 5\n*/
+#define ADI_SPI5_CTL_TARGET_SELECT_ENABLE_5            <%= getPeriConfigValueBoolAsInt("SPI5", "TARGET_SELECT_ENABLE_5", "FALSE") %>ul
+/*! SPI Target select register \n
+    This allows a Target select to be enabled/disabled\n
+    (0) - disables the Target select 6\n
+    (1) - enables the Target select 6\n*/
+#define ADI_SPI5_CTL_TARGET_SELECT_ENABLE_6            <%= getPeriConfigValueBoolAsInt("SPI5", "TARGET_SELECT_ENABLE_6", "FALSE") %>ul
+/*! SPI Target select register \n
+    This allows a Target select to be enabled/disabled\n
+    (0) - disables the Target select 7\n
+    (1) - enables the Target select 7\n*/
+#define ADI_SPI5_CTL_TARGET_SELECT_ENABLE_7            <%= getPeriConfigValueBoolAsInt("SPI5", "TARGET_SELECT_ENABLE_7", "FALSE") %>ul
+
+/* Specifies the SPI5 Target select Control register Configuration\n*/
+#define ADI_SPI5_CTL_TARGET_SELECT_ENABLE              ((ADI_SPI5_CTL_TARGET_SELECT_ENABLE_7<<BITP_SPI_TSEL_TSE7)|\
+                                                       (ADI_SPI5_CTL_TARGET_SELECT_ENABLE_6<<BITP_SPI_TSEL_TSE6)|\
+                                                       (ADI_SPI5_CTL_TARGET_SELECT_ENABLE_5<<BITP_SPI_TSEL_TSE5)|\
+                                                       (ADI_SPI5_CTL_TARGET_SELECT_ENABLE_4<<BITP_SPI_TSEL_TSE4)|\
+                                                       (ADI_SPI5_CTL_TARGET_SELECT_ENABLE_3<<BITP_SPI_TSEL_TSE3)|\
+                                                       (ADI_SPI5_CTL_TARGET_SELECT_ENABLE_2<<BITP_SPI_TSEL_TSE2)|\
+                                                       (ADI_SPI5_CTL_TARGET_SELECT_ENABLE_1<<BITP_SPI_TSEL_TSE1))
+/*****************************************************************************************************************/
+#endif /* #if defined(__ADI_HAS_SPI5__)*/
+#endif /* ADI_SPI_CONFIG_SC8xx_H */
+
+/*@}*/
+
+/*@}*/

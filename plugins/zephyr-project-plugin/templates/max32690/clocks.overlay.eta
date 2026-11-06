@@ -33,3 +33,17 @@
 };
 
 <% } %>
+<% if (isSystemClockSet("P3.5", "P3_5_FREQ") && compareZephyrVersion("4.4.0") >= 0) { %>
+&clk_lptmr0 {
+	clock-frequency = <<%= getClockSetting("P3.5", "P3_5_FREQ") %>>;
+	status = "okay";
+};
+
+<% } %>
+<% if (isSystemClockSet("P3.6", "P3_6_FREQ") && compareZephyrVersion("4.4.0") >= 0) { %>
+&clk_lptmr1 {
+	clock-frequency = <<%= getClockSetting("P3.6", "P3_6_FREQ") %>>;
+	status = "okay";
+};
+
+<% } %>

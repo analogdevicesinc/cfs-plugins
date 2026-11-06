@@ -2,7 +2,7 @@
   "pluginName": "Zephyr Single Core TensorFlow AI Model",
   "pluginDescription": "Single Core Zephyr TensorFlow Lite Micro (TFLM) template.",
   "pluginId": "com.analog.zephyr.workspace.tflm",
-  "pluginVersion": "1.3.0",
+  "pluginVersion": "1.4.0",
   "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "zephyr",
@@ -38,29 +38,12 @@
       "dataModelVersion": "^1.3.628"
     }
   ],
-  "aiGenCommand": "build --target MAX32690.CM4 --model ./files/hello_world_f32.tflite --output-path ./files/src/adi_tflm/ --backend tflm -e Symbol=hello_world_model_f32",
   "features": {
     "workspace": {
       "files": [
         {
           "src": "files/.vscode/c_cpp_properties.json",
           "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm4'}/.vscode/c_cpp_properties.json"
-        },
-        {
-          "src": "files/src/main.cpp",
-          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm4'}/src/main.cpp"
-        },
-        {
-          "src": "files/src/adi_tflm/adi_tflm.hpp",
-          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm4'}/src/adi_tflm/adi_tflm.hpp"
-        },
-        {
-          "src": "files/src/adi_tflm/hello_world_model_f32.cpp",
-          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm4'}/src/adi_tflm/hello_world_model_f32.cpp"
-        },
-        {
-          "src": "files/src/adi_tflm/hello_world_model_f32.hpp",
-          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm4'}/src/adi_tflm/hello_world_model_f32.hpp"
         },
         {
           "src": "files/CMakeLists.txt",
@@ -127,6 +110,10 @@
         {
           "src": "templates/.vscode/settings.json.eta",
           "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm4'}/.vscode/settings.json"
+        },
+        {
+          "src": "templates/main.cpp.eta",
+          "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm4'}/src/main.cpp"
         },
         {
           "src": "templates/prj.conf.eta",

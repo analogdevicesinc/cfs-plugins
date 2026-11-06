@@ -33,12 +33,12 @@
       "CoreId": "CM33",
       "ProjectId": "CM33",
       "PluginId": "com.analog.project.zephyr.plugin",
-      "PluginVersion": "^1.1.0",
+      "PluginVersion": "^1.4.0",
       "FirmwarePlatform": "zephyr",
       "ExternallyManaged": false,
       "PlatformConfig": {
         "ProjectName": "m33",
-        "ZephyrVersion": "4.3.0",
+        "ZephyrVersion": "4.4.0",
         "ZephyrBoardName": "max32657evkit/max32657"
       },
       "Partitions": [
@@ -111,7 +111,6 @@
             }
           ],
           "Config": {
-            "TX_RX_MODES": "TX_RX",
             "CHOSEN": "console,shell-uart,bt-c2h-uart",
             "BAUD": "115200",
             "PARITY": "DISABLED",
@@ -159,7 +158,7 @@
       "Profiling": {
         "Zephelin": {
           "Enabled": true,
-          "Format": "Text",
+          "Format": "TEXT",
           "Interface": "UART",
           "AIEnabled": true,
           "Port": "UART0",

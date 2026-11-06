@@ -1,82 +1,221 @@
 <%~ include("@sharcfxBoardName", it) %>
 <%~ include("@normalizeSoc", it) %>
-{
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "type": "shell",
-      "command": "make -j 8 clean --output-sync=target --no-print-directory TARGET=${config:cfs.project.target} BOARD=${config:cfs.project.board} SFX_PATH=${cfs:tool.path.xtensa-sharcfx} MAKE=make PROJECT=${config:cfs.project.name}",
-      "options": {
-        "cwd": "${workspaceFolder}",
-        "env": {
-          "PATH" : "${config:cfs.sdk.path}/Tools/git/usr/bin;${config:cfs.sdk.path};${cfs:tool.path.xtensa-sharcfx};${cfs:tool.path.xtensa-sharcfx}/Xtensa/XtensaTools/bin;${env:PATH}",
-          "PYTHON_CMD": "none",
-          "CMAKE_PREFIX_PATH": "none",
-          "GIT_EXEC_PATH": "",
-          "ZEPHYR_BASE": "none",
-          "PYTHONHOME": "none",
-          "PYTHONPATH": "",
-          "CFSAI_PATH" : "${config:cfs.sdk.path}/Tools/cfsai"
-        },
-        "shell": {
-          "args": [
-            "/c"
-          ],
-          "executable": "${env:windir}\\System32\\cmd.exe"
-        }
-      },
-      "group": "build",
-      "label": "clean"
-    },
-    {
-      "type": "shell",
-      "command": "make -j 8 tflm_clean --output-sync=target --no-print-directory TARGET=${config:cfs.project.target} BOARD=${config:cfs.project.board} SFX_PATH=${cfs:tool.path.xtensa-sharcfx} MAKE=make PROJECT=${config:cfs.project.name}",
-      "options": {
-        "cwd": "${workspaceFolder}",
-        "env": {
-          "PATH" : "${config:cfs.sdk.path}/Tools/git/usr/bin;${config:cfs.sdk.path};${cfs:tool.path.xtensa-sharcfx};${cfs:tool.path.xtensa-sharcfx}/Xtensa/XtensaTools/bin;${env:PATH}",
-          "PYTHON_CMD": "none",
-          "CMAKE_PREFIX_PATH": "none",
-          "GIT_EXEC_PATH": "",
-          "ZEPHYR_BASE": "none",
-          "PYTHONHOME": "none",
-          "PYTHONPATH": "",
-          "CFSAI_PATH" : "${config:cfs.sdk.path}/Tools/cfsai"
-        },
-        "shell": {
-          "args": [
-            "/c"
-          ],
-          "executable": "${env:windir}\\System32\\cmd.exe"
-        }
-      },
-      "group": "build",
-      "label": "clean TensorFlow Lite library"
-    },
-    {
-      "type": "shell",
-      "command": "make -r -j 8 --output-sync=target --no-print-directory all TARGET=${config:cfs.project.target} BOARD=${config:cfs.project.board} SFX_PATH=${cfs:tool.path.xtensa-sharcfx} MAKE=make PROJECT=${config:cfs.project.name}",
-      "options": {
-        "cwd": "${workspaceFolder}",
-        "env": {
-          "PATH" : "${config:cfs.sdk.path}/Tools/git/usr/bin;${config:cfs.sdk.path};${cfs:tool.path.xtensa-sharcfx};${cfs:tool.path.xtensa-sharcfx}/Xtensa/XtensaTools/bin;${env:PATH}",
-          "PYTHON_CMD": "none",
-          "CMAKE_PREFIX_PATH": "none",
-          "GIT_EXEC_PATH": "",
-          "ZEPHYR_BASE": "none",
-          "PYTHONHOME": "none",
-          "PYTHONPATH": "",
-          "CFSAI_PATH" : "${config:cfs.sdk.path}/Tools/cfsai"
-        },
-        "shell": {
-          "args": [
-            "/c"
-          ],
-          "executable": "${env:windir}\\System32\\cmd.exe"
-        }
-      },
-      "group": "build",
-      "label": "build"
-    }
-  ]
+<%
+const windowsPath = "${config:cfs.sdk.path}/Tools/git/usr/bin;${config:cfs.sdk.path};${cfs:tool.path.xtensa-sharcfx};${cfs:tool.path.xtensa-sharcfx}/Xtensa/XtensaTools/bin;${env:PATH}";
+const linuxPath = "${config:cfs.sdk.path}:${cfs:tool.path.xtensa-sharcfx}:${cfs:tool.path.xtensa-sharcfx}/Xtensa/XtensaTools/bin:${env:PATH}";
+
+const openocdBoard = it.sharcfxBoardNameInflectionPoint(it.soc).toLowerCase();
+const flashBoardConfig = `${openocdBoard.replace("sc", "21")}_${it.getSharcFxBoardName()}.cfg`;
+const outputLdr = "${workspaceFolder}/build/${workspaceFolderBasename}_Core1.ldr";
+const core1Dxe = "${workspaceFolder}/build/${workspaceFolderBasename}.dxe";
+
+const commonEnv = {
+  PYTHON_CMD: "none",
+  CMAKE_PREFIX_PATH: "none",
+  GIT_EXEC_PATH: "",
+  ZEPHYR_BASE: "none",
+  PYTHONHOME: "none",
+  PYTHONPATH: "",
+  CFSAI_PATH: "${config:cfs.sdk.path}/Tools/cfsai",
+};
+
+const flashCommand = [
+  "${cfs:tool.path.xtensa-sharcfx}/elfloader",
+  `-proc ${it.soc}`,
+  "-si-revision any -bspi -fbinary -bcode 1",
+  `-core1=\"${core1Dxe}\"`,
+  `-o \"${outputLdr}\"`,
+  "&& ${cfs:tool.path.xtensa-sharcfx}/cldp",
+  `-proc ${it.soc}`,
+  "-emu ${config:cfs.sfx.flash.emulator}",
+  "-driver \"${config:cfs.sdk.path}/Tools/openocd/share/openocd/scripts/board/flash_algorithms/2183x_flash.dxe\"",
+  `-board ${flashBoardConfig}`,
+  "-openocdroot \"${config:cfs.sdk.path}/Tools/openocd\"",
+  `-verbose`,
+  "-cmd prog",
+  `-file \"${outputLdr}\"`,
+  "-format bin",
+  "-erase ${config:cfs.sfx.flash.eraseMode}",
+  "-offset ${config:cfs.sfx.flash.offset}",
+].join(" ");
+
+const eraseCommand = [
+  "${cfs:tool.path.xtensa-sharcfx}/cldp",
+  `-proc ${it.soc}`,
+  "-emu ${config:cfs.sfx.flash.emulator}",
+  "-driver \"${config:cfs.sdk.path}/Tools/openocd/share/openocd/scripts/board/flash_algorithms/2183x_flash.dxe\"",
+  `-board ${flashBoardConfig}`,
+  "-openocdroot \"${config:cfs.sdk.path}/Tools/openocd\"",
+  "-verbose",
+  "-cmd erase",
+].join(" ");
+
+const windowsOptions = {
+  options: {
+    env: { ...commonEnv, SHELL: "sh.exe", PATH: windowsPath },
+    shell: { executable: "${env:windir}\\System32\\cmd.exe", args: ["/c"] }
+  }
+};
+const linuxOptions = {
+  options: {
+    env: { ...commonEnv, SHELL: "/bin/sh", PATH: linuxPath  }
+  }
+};
+
+function taskEntry(command, label) {
+  return {
+    type: "shell",
+    command,
+    options: { cwd: "${workspaceFolder}", env: commonEnv },
+    windows: windowsOptions,
+    linux: linuxOptions,
+    group: "build",
+    label
+  };
 }
+
+const checkLaunchCommand =
+    "make -r -j 8 --output-sync=target --no-print-directory check_debug " +
+        "TARGET=${config:cfs.project.target} " +
+        "BOARD=${config:cfs.project.board} " +
+        "SFX_PATH=${cfs:tool.path.xtensa-sharcfx} " +
+        "MAKE=make " +
+        "PROJECT=${config:cfs.project.name} " +
+        "ARTIFACT_TYPE=${config:cfs.sfx.artifactType} " +
+        "DEBUG_EXE=\"${config:cfs.programFile}\""
+
+const checkLaunchTask = {
+    label: "debug: check",
+    type: "shell",
+
+    command: `${checkLaunchCommand}`,
+
+    options: {
+        cwd: "${workspaceFolder}",
+        env: commonEnv,
+    },
+
+    windows: windowsOptions,
+    linux: linuxOptions,
+
+    problemMatcher: [],
+};
+
+const xtRunTasks = [
+  {
+    label: "xt-run: start gdbserver",
+    type: "shell",
+    command:
+      `${checkLaunchCommand}  &&` +
+      "${cfs:tool.path.xtensa-sharcfx}/adi_xt-run",
+    args: [
+      "--xtensa-core",
+      "SHARC_FX0",
+      "--program",
+      "${config:cfs.programFile}",
+      "--workspace-folder",
+      "${workspaceFolder}",
+    ],
+    options: {
+      cwd: "${workspaceFolder}",
+      env: commonEnv,
+    },
+    windows: windowsOptions,
+    linux: linuxOptions,
+    presentation: {
+      reveal: "always",
+      panel: "dedicated",
+      clear: true,
+      close: false,
+    },
+    problemMatcher: [],
+  },
+  {
+    label: "xt-run: stop gdbserver",
+    type: "shell",
+    command: "${cfs:tool.path.xtensa-sharcfx}/adi_xt-run",
+    args: [
+      "--stop-only"
+    ],
+    options: {
+      cwd: "${workspaceFolder}"
+    },
+    presentation: {
+      reveal: "silent",
+      panel: "dedicated",
+      close: true
+    },
+    problemMatcher: []
+  },
+  {
+    label: "xt-run: tail stdout",
+    type: "shell",
+    isBackground: true,
+    command: "tail",
+    args: [
+      "-F", "-n", "200",
+      "${workspaceFolder}/.vscode/.xt-run.stdout.log"
+    ],
+    windows: {
+      command: "powershell",
+      args: [
+        "-NoProfile",
+        "-ExecutionPolicy", "Bypass",
+        "-File", "${workspaceFolder}/.vscode/tail-xt-run-stdout.ps1",
+        "-LogPath", "${workspaceFolder}/.vscode/.xt-run.stdout.log"
+      ]
+    },
+    options: {
+      cwd: "${workspaceFolder}"
+    },
+    presentation: {
+      reveal: "always",
+      panel: "dedicated",
+      clear: true,
+      focus: false
+    },
+    runOptions: {
+      instanceLimit: 1
+    },
+    problemMatcher: {
+      pattern: { regexp: "^$", message: 1 },
+      background: {
+        activeOnStart: true,
+        beginsPattern: ".",
+        endsPattern: "^\\x00$"
+      }
+    }
+  }
+];
+
+const tasks = [
+  taskEntry(
+    "make -j 8 clean --output-sync=target --no-print-directory TARGET=${config:cfs.project.target} BOARD=${config:cfs.project.board} SFX_PATH=${cfs:tool.path.xtensa-sharcfx} MAKE=make PROJECT=${config:cfs.project.name} ARTIFACT_TYPE=${config:cfs.sfx.artifactType}",
+    "clean"
+  ),
+  taskEntry(
+    "make -j 8 tflm_clean --output-sync=target --no-print-directory TARGET=${config:cfs.project.target} BOARD=${config:cfs.project.board} SFX_PATH=${cfs:tool.path.xtensa-sharcfx} MAKE=make PROJECT=${config:cfs.project.name} ARTIFACT_TYPE=${config:cfs.sfx.artifactType}",
+    "clean TensorFlow Lite library"
+  ),
+  taskEntry(
+    "make -r -j 8 --output-sync=target --no-print-directory all TARGET=${config:cfs.project.target} BOARD=${config:cfs.project.board} SFX_PATH=${cfs:tool.path.xtensa-sharcfx} MAKE=make PROJECT=${config:cfs.project.name} ARTIFACT_TYPE=${config:cfs.sfx.artifactType}",
+    "build"
+  ),
+  {
+    ...taskEntry(
+      eraseCommand,
+      "erase",
+    )
+  },
+  {
+    ...taskEntry(
+      `${checkLaunchCommand} && ` +
+      flashCommand,
+      "flash",
+    )
+  },
+  checkLaunchTask,
+  ...xtRunTasks
+];
+%>
+<%~ JSON.stringify({ version: "2.0.0", tasks }, null, 2) %>

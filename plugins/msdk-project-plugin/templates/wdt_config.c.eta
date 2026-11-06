@@ -37,6 +37,7 @@ function getWDTClock() {
       clock_enum = "MXC_WDT_ERFO_CLK";
       break;
     case "EXT_CLK1":
+    case "HF_EXT_CLK":
       clock_enum = "MXC_WDT_EXT_CLK";
       break;
     case "IPO":

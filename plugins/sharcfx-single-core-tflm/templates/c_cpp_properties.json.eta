@@ -1,4 +1,3 @@
-<%~ include("@msdkBoardName", it) %>
 <%~ include("@normalizeSoc", it) %>
 <%~ include("@sharcfxUtils", it) %>
 {
@@ -7,11 +6,13 @@
   },
   "configurations": [
     {
-      "name": "Win32",
+      "name": "Default",
       "includePath": [
         "${default}",
         "${workspaceFolder}",
         "${workspaceFolder}/**",
+        "${workspaceFolder}/src/system",
+        "${workspaceFolder}/src/adi_tflm",
         "${env:cfs.project.toolchain.path}/Xtensa/SHARC-FX/include/**",
         "${env:cfs.project.toolchain.path}/Xtensa/SHARC-FX/SHARC_FX0/xtensa-elf/include/**",
         "${env:cfs.project.toolchain.path}/Xtensa/SHARC-FX/SHARC_FX0/xtensa-elf/arch/include/**",
@@ -20,14 +21,32 @@
         "${env:cfs.project.toolchain.path}/Xtensa/SHARC-FX/SHARC_FX0/xtensa-elf/include/xcc/c++/xtensa-elf/**",
         "${env:cfs.project.toolchain.path}/Xtensa/XtensaTools/llvm/lib/clang/15.0.7/include/**",
         "${env:cfs.project.toolchain.path}/Xtensa/XtensaTools/xtensa-elf/include/**",
-        "${workspaceFolder}/../../TFLM/src"
+        "${config:cfs.sdk.path}/Tools/cfsai/lib/sharc-fx/tflite-micro/src",
+        "${config:cfs.sdk.path}/Tools/cfsai/lib/sharc-fx/tflite-micro/src/cces/examples/shared",
+        "${config:cfs.sdk.path}/Tools/cfsai/lib/sharc-fx/tflite-micro/src/tensorflow/lite",
+        "${config:cfs.sdk.path}/Tools/cfsai/lib/sharc-fx/tflite-micro/src/tensorflow/lite/micro",
+        "${config:cfs.sdk.path}/Tools/cfsai/lib/sharc-fx/tflite-micro/src/tensorflow/lite/kernels",
+        "${config:cfs.sdk.path}/Tools/cfsai/lib/sharc-fx/tflite-micro/src/tensorflow/lite/kernels/internal/optimized",
+        "${config:cfs.sdk.path}/Tools/cfsai/lib/sharc-fx/tflite-micro/src/tensorflow/lite/core/api",
+        "${config:cfs.sdk.path}/Tools/cfsai/lib/sharc-fx/tflite-micro/src/tensorflow/lite/core/c",
+        "${config:cfs.sdk.path}/Tools/cfsai/lib/sharc-fx/tflite-micro/src/tensorflow/lite/schema",
+        "${config:cfs.sdk.path}/Tools/cfsai/lib/sharc-fx/tflite-micro/src/third_party",
+        "${config:cfs.sdk.path}/Tools/cfsai/lib/sharc-fx/tflite-micro/src/third_party/kissfft/tools",
+        "${config:cfs.sdk.path}/Tools/cfsai/lib/sharc-fx/tflite-micro/src/third_party/flatbuffers/include",
+        "${config:cfs.sdk.path}/Tools/cfsai/lib/sharc-fx/tflite-micro/src/third_party/gemmlowp",
+        "${config:cfs.sdk.path}/Tools/cfsai/lib/sharc-fx/tflite-micro/src/third_party/gemmlowp/internal",
+        "${config:cfs.sdk.path}/Tools/cfsai/lib/sharc-fx/tflite-micro/src/third_party/gemmlowp/fixedpoint",
+        "${config:cfs.sdk.path}/Tools/cfsai/lib/sharc-fx/tflite-micro/src/third_party/ruy",
+        "${config:cfs.sdk.path}/Tools/cfsai/lib/sharc-fx/tflite-micro/src/third_party/ruy/ruy/profiler",
+        "${config:cfs.sdk.path}/Tools/cfsai/lib/sharc-fx/tflite-micro/src/third_party/kissfft"
       ],
       "defines": [
         "${config:cfs.project.board}",
         "TARGET=<%= it.processorMacro(it.soc) %>",
-        "CORE1"
+        "CORE1",
+        "ENABLE_TFLM_PROFILING"
       ],
-      "intelliSenseMode": "clang-arm64",
+      "intelliSenseMode": "clang-x64",
       "compilerPath": "${env:cfs.project.toolchain.path}/ccfx++",
       "browse": {
         "path": [

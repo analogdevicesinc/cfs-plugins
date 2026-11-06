@@ -1,4 +1,3 @@
-<%~ include("@msdkBoardName", it) %>
 <%~ include("@normalizeSoc", it) %>
 <%~ include("@sharcfxUtils", it) %>
 {
@@ -7,7 +6,7 @@
   },
   "configurations": [
     {
-      "name": "Win32",
+      "name": "Default",
       "includePath": [
         "${default}",
         "${env:cfs.project.toolchain.path}/Xtensa/SHARC-FX/include/**",
@@ -26,37 +25,8 @@
         "TARGET=<%= it.processorMacro(it.soc) %>",
         "CORE1"
       ],
-
       "intelliSenseMode": "clang-arm64",
-      "compilerPath": "${env:cfs.project.toolchain.path}/ccfx++.exe",
-      "browse": {
-        "path": ["${default}", "${workspaceFolder}", "${workspaceFolder}/**"]
-      }
-    },
-    {
-      "name": "Linux",
-      "includePath": ["${default}"],
-      "defines": [
-        "${config:cfs.project.board}",
-        "TARGET=<%= it.msdkInflectionPoint(it.soc) %>",
-        "__GNUC__"
-      ],
-      "intelliSenseMode": "gcc-arm",
-      "compilerPath": "${config:cfs.toolchain.armAArch32GCC.path}/bin/arm-none-eabi-gcc",
-      "browse": {
-        "path": ["${default}", "${workspaceFolder}", "${workspaceFolder}/**"]
-      }
-    },
-    {
-      "name": "Mac",
-      "includePath": ["${default}"],
-      "defines": [
-        "${config:cfs.project.board}",
-        "TARGET=<%= it.msdkInflectionPoint(it.soc) %>",
-        "__GNUC__"
-      ],
-      "intelliSenseMode": "gcc-arm",
-      "compilerPath": "${config:cfs.toolchain.armAArch32GCC.path}/bin/arm-none-eabi-gcc",
+      "compilerPath": "${env:cfs.project.toolchain.path}/ccfx++",
       "browse": {
         "path": ["${default}", "${workspaceFolder}", "${workspaceFolder}/**"]
       }

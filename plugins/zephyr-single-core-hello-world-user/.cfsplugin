@@ -2,7 +2,7 @@
   "pluginName": "Zephyr Single Core Hello World User",
   "pluginDescription": "Print a simple \"Hello World\" from userspace.",
   "pluginId": "com.analog.zephyr.workspace.hello.world.user",
-  "pluginVersion": "1.1.0",
+  "pluginVersion": "1.2.0",
   "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "zephyr",

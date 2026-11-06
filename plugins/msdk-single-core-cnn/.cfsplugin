@@ -2,7 +2,7 @@
   "pluginName": "MSDK Single Core PyTorch AI Model using CNN",
   "pluginDescription": "Single Core MSDK PyTorch using M4 + CNN Accelerator template.",
   "pluginId": "com.analog.singlecore.msdk.cnn",
-  "pluginVersion": "1.3.0",
+  "pluginVersion": "1.4.0",
   "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "MSDK",
@@ -14,7 +14,6 @@
       "dataModelVersion": "^1.3.628"
     }
   ],
-  "aiGenCommand": "build --target MAX78002.CM4.CNN --model ./files/m4/ai85-catsdogs-qat8-q.pth.tar --izer-network-config ./files/m4/cats-dogs-hwc-no-fifo.yaml --output-path ./files/m4/adi_cnn",
   "features": {
     "workspace": {
       "files": [
@@ -29,30 +28,6 @@
         {
           "src": "files/m4/README.md",
           "dst": "m4/README.md"
-        },
-        {
-          "src": "files/m4/adi_cnn/cnn.c",
-          "dst": "m4/src/adi_cnn/cnn.c"
-        },
-        {
-          "src": "files/m4/adi_cnn/cnn.h",
-          "dst": "m4/src/adi_cnn/cnn.h"
-        },
-        {
-          "src": "files/m4/adi_cnn/sampledata.h",
-          "dst": "m4/src/adi_cnn/sampledata.h"
-        },
-        {
-          "src": "files/m4/adi_cnn/sampleoutput.h",
-          "dst": "m4/src/adi_cnn/sampleoutput.h"
-        },
-        {
-          "src": "files/m4/adi_cnn/weights.h",
-          "dst": "m4/src/adi_cnn/weights.h"
-        },
-        {
-          "src": "files/m4/adi_cnn/softmax.c",
-          "dst": "m4/src/adi_cnn/softmax.c"
         },
         {
           "src": "files/m4/ai85-catsdogs-qat8-q.pth.tar",

@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024-2025 Analog Devices, Inc.
+ * Copyright (c) 2024-2026 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ peripheralData = [
           { signal: "AIN6", pin: "G8", name: "ain6_p2_6"},
           { signal: "AIN7", pin: "G9", name: "ain7_p2_7"}
       ]},
-    { zephyr: "flc0", datamodel: "FLC0"},
+    { zephyr: "flc0", datamodel: "FLC0", cores: ["CM4"]},
     { zephyr: "i2c0", datamodel: "I2C0", enable: "I2C0_ENABLE",
       pins: [
           { signal: "SDA", pin: "D6", name: "i2c0_sda_p0_11"},
@@ -232,27 +232,31 @@ peripheralData = [
       { zephyr: "wdt1", datamodel: "LPWDT0", enable: "ENABLE", clock_mux: "MUX", clock_default: "IBRO"}
 ];
 
-unsupported_in_dts = [
-    {datamodel: "AES", diag: "The Advanced Encryption Standard peripheral is not currently supported in devicetree.", ctrl: "AES_ENABLE", value: "TRUE"},
+// Filter peripheralData based on the current core.
+// Entries with a `cores` array are only included if the current core matches.
+const currentCoreId = getProject()?.CoreId;
+if (currentCoreId) {
+    peripheralData = peripheralData.filter(p => !p.cores || p.cores.includes(currentCoreId));
+}
+
+// Manually added entries: sub-feature and clock-specific warnings.
+const manuallyAddedUnsupportedList = [
     {datamodel: "ADC", diag: "The clock divider for ADC is not currently supported in devicetree.", ctrl: "DIV"},
-    {datamodel: "CNN", diag: "The Convolutional Neural Network peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "CRC", diag: "The Cyclic Redundancy Check peripheral is not currently supported in devicetree.", ctrl: "CRC_ENABLE", value: "TRUE"},
-    {datamodel: "I2S", diag: "The Inter-IC Sound Interface peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "LPCMP", diag: "The Low-Power Comparator peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "PCIF", diag: "The Parallel Camera Interface peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "PT0", diag: "The Pulse Train Engines peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "PT1", diag: "The Pulse Train Engines peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "PT2", diag: "The Pulse Train Engines peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "PT3", diag: "The Pulse Train Engines peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "SEMA", diag: "The Semaphore peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
     {datamodel: "RTC", clocknode: "SQWOUT", diag: "Enabling SQWOUT from the RTC is not currently supported in devicetree.", ctrl: "SQWOUT", value: "1HZ"},
     {datamodel: "RTC", clocknode: "SQWOUT", diag: "Enabling SQWOUT from the RTC is not currently supported in devicetree.", ctrl: "SQWOUT", value: "512HZ"},
     {datamodel: "RTC", clocknode: "SQWOUT", diag: "Enabling SQWOUT from the RTC is not currently supported in devicetree.", ctrl: "SQWOUT", value: "4KHZ"},
     {datamodel: "RTC", clocknode: "SQWOUT", diag: "Enabling SQWOUT from the RTC is not currently supported in devicetree.", ctrl: "SQWOUT", value: "32KHZ"},
     {clocknode: "ERTCO Mux", diag: "Bypass of the ERTCO is not currently supported in devicetree.", ctrl: "MUX", value: "ERTCO_CLK"},
     {clocknode: "ERFO Mux", diag: "Bypass of the ERFO is not currently supported in devicetree.", ctrl: "MUX", value: "ERFO_CLK"},
-    {clocknode: "LPM Mux", diag: "Setting the LPM Mux is not currently supported in devicetree.", ctrl: "MUX", value: "SYS_CLK_DIV_2_ISO"}
-  ];
+    {clocknode: "LPM Mux", diag: "Setting the LPM Mux is not currently supported in devicetree.", ctrl: "MUX", value: "SYS_CLK_DIV_2_ISO"},
+];
+
+// Auto-generated: peripherals not in peripheralData + version-filtered peripherals.
+const { supported, unsupported } = buildUnsupportedZephyrEntries(peripheralData, manuallyAddedUnsupportedList);
+
+// Update peripheralData and unsupported_in_dts
+unsupported_in_dts = unsupported;
+peripheralData = supported;
 
 
 function mapClockName(clock) {
@@ -276,7 +280,7 @@ function mapClockName(clock) {
 
 function getClocksUsed() {
     let clocksUsed = new Set();
-    for (const peri of peripheralData) {
+    for (const peri of supported) {
         if (peri.clock_mux && isPeripheralClockSetTo(peri.datamodel, peri.enable, "TRUE")) {
             const clockName = mapClockName(getPeripheralClockSetting(peri.datamodel, peri.clock_mux, peri.clock_default));
             if (clockName) {

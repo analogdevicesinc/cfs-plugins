@@ -2,7 +2,7 @@
   "pluginName": "Zephyr Single Core Hello World C++",
   "pluginDescription": "Print \"Hello World\" to the console in C++.",
   "pluginId": "com.analog.zephyr.workspace.hellocppworld",
-  "pluginVersion": "1.2.0",
+  "pluginVersion": "1.3.0",
   "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "zephyr",

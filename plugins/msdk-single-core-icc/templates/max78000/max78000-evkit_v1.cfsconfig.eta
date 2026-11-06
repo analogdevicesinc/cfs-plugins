@@ -3,14 +3,13 @@
       "CoreId": "CM4",
       "ProjectId": "CM4",
       "PluginId": "com.analog.project.msdk.plugin",
-      "PluginVersion": "^1.2.0",
+      "PluginVersion": "^1.4.0",
       "FirmwarePlatform": "MSDK",
       "ExternallyManaged": false,
       "PlatformConfig": {
         "ProjectName": "m4",
         "MsdkBoardName": "EvKit_V1"
       },
-      "Family": "Cortex-M",
       "Partitions": [
         {
           "Name": "FLASH",
@@ -59,14 +58,14 @@
             {
               "Name": "RX",
               "Config": {
-                "PWR": "VDDIO",
+                "PWR": "VDDIOH",
                 "PS": "WEAK_PU"
               }
             },
             {
               "Name": "TX",
               "Config": {
-                "PWR": "VDDIO"
+                "PWR": "VDDIOH"
               }
             }
           ],
@@ -143,7 +142,6 @@
       "FirmwarePlatform": "undefined",
       "ExternallyManaged": true,
       "PlatformConfig": {},
-      "Family": "RISC-V",
       "Partitions": [
         {
           "Name": "SHARED",

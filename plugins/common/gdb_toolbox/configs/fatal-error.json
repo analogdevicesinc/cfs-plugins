@@ -1,0 +1,27 @@
+{
+  "name": "Analyze Fatal Error",
+  "description": "Displays the fatal error and exception global variables recorded by libadiutil (adi_fatal_error / adi_fatal_exception).",
+  "version": "1.0.0",
+  "arch": "xtensa",
+  "commands": [
+    {
+      "command": "source {defaultScriptsDirectory}/fatal-error-xtensa.gdb",
+      "actions": [
+        {
+          "type": "appendFile",
+          "filePath": "gdb_toolbox/reports/fatal_error.md",
+          "content": "${markdownReport}"
+        },
+        {
+          "type": "log",
+          "message": "Fatal error analysis written to gdb_toolbox/reports/fatal_error.md"
+        },
+        {
+          "type": "showMessage",
+          "level": "info",
+          "message": "Fatal error analysis completed successfully. File saved to gdb_toolbox/reports/fatal_error.md."
+        }
+      ]
+    }
+  ]
+}

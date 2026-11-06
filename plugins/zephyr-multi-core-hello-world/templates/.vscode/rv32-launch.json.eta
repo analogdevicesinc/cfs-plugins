@@ -1,0 +1,45 @@
+<%~ include("@normalizeSoc", it) %>
+<% const gdbPath = '${cfs:tool.path.riscv.zephyr.elf.toolchain.debuggerPath}-py'; %>
+<% const gdbOsx = '${cfs:tool.path.riscv.zephyr.elf.toolchain.debuggerPath}'; %>
+<% const objdumpPath = '${cfs:tool.path.riscv.zephyr.elf.toolchain.paths}/riscv64-zephyr-elf-objdump'; %>
+{
+  "configurations": [
+    {
+      "name": "CFS: Debug with GDB and OpenOCD (RISC-V)",
+      "executable": "${config:cfs.programFile}",
+      "cwd": "${config:cfs.debugPath}",
+      "request": "launch",
+      "type": "cortex-debug",
+      "runToEntryPoint": "main",
+      "servertype": "openocd",
+      "serverpath": "${config:cfs.openocd.path}/bin/openocd",
+      "linux": {
+        "gdbPath": "<%~ gdbPath %>",
+        "objdumpPath": "<%~ objdumpPath %>"
+      },
+      "windows": {
+        "gdbPath": "<%~ gdbPath %>",
+        "objdumpPath": "<%~ objdumpPath %>"
+      },
+      "osx": {
+        "gdbPath": "<%~ gdbOsx %>"
+      },
+      "svdPath": "${config:cfs.cmsis.svdFile}",
+      "searchDir": ["${config:cfs.openocd.path}/share/openocd/scripts"],
+      "configFiles": [
+        "${config:cfs.openocd.interface}",
+        "${config:cfs.openocd.target}"
+      ],
+      "gdbTarget": "localhost:3334",
+      "preLaunchCommands": [
+        "set logging overwrite on",
+        "set logging file debug-riscv.log",
+        "set logging on",
+        "tbreak abort",
+        "tbreak _exit",
+        "set remotetimeout 60"
+      ],
+      "preLaunchTask": "CFS: build"
+    }
+  ]
+}

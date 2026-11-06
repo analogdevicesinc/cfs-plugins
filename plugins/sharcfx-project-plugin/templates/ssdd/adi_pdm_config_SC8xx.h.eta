@@ -1,0 +1,405 @@
+<%
+/*********************************************************************************
+
+Copyright(c) 2022-2026 Analog Devices, Inc. All Rights Reserved.
+
+This software is proprietary.  By using this software you agree
+to the terms of the associated Analog Devices License Agreement.
+
+*********************************************************************************/
+%> 
+<% eval(this.render("templates/ssdd/ssdd_common.js")); %>
+<%~ include("@copyrightHeader", it) %> 
+/* This file is generated using the peripheral settings configured using System Planner.
+ * Please do not edit the values here directly.
+ */
+
+/** @addtogroup PDM_Service
+ *  @{
+ */
+
+/** @defgroup PDM_Service_Static_Configuration PDM Service Static Configuration
+ *  @{
+
+  Static Configuration: Using this configuration application can configure the control register
+  parameters upfront which can be set to default. This configuration has macros which can be configured 
+  through adi_pdm_config.h file which by default is available with PDM service. Example project can maintain 
+  a copy of it locally for custom configuration.
+
+  Default Static Configuration for PDM(0/1): 
+  The default configuration for PDM:
+        bCh01Enable    : 1
+		bCh23Enable    : 1
+		eDecRatio	   : ADI_PDM_DEC_RATIO_64 (=0=64x)
+		bHPFEnable	   : 0
+		eHPFCutOffFreq : ADI_PDM_HPF_CUTOFF_0P00505 (=5=0.00505)
+		eSPTMode	   : ADI_PDM_SPT_MODE_STEREO (=0, Stereo mode)	
+		eSPTDataDelay  : ADI_PDM_SPT_DATA_DELAY_1 (=1, I2S mode)
+		eSPTSlotWidth  : ADI_PDM_SPT_SLOT_WIDTH_32 (=0, 32 bits)
+		eSPTBCLKPol	   : ADI_PDM_SPT_BCLK_POL_RISE (=0, sample on rising edge)
+		eSPTLRCLKPol   : ADI_PDM_SPT_BCLK_POL_NORMAL (=0, normal polarity)
+		uiChSlotMap    : [0, 1, 2, 3] 
+
+  Specifies the PDM(X)_CTL0 register configuration\n
+    ADI_PDM(X)_CTL0_CH01_EN	                  (0x1ul)------channels 0 and 1 are enabled \n
+	ADI_PDM(X)_CTL0_CH23_EN	                  (0x1ul)------channels 2 and 3 are enabled \n
+	ADI_PDM(X)_CTL0_DEC_RATIO	              (0x0ul)------64x decimation ratio \n
+	
+  Specifies the PDM(X)_HPF_CTL register configuration\n
+    ADI_PDM(X)_HPF_CTL_EN	                  (0x1ul)------HPF is enabled \n
+	ADI_PDM(X)_HPF_CTL_FC                 	  (0x5ul)------HPF cutoff = 0.00505 \n
+
+  Specifies the PDM(X)_SP_CTL0 register configuration\n
+    ADI_PDM(X)_SP_CTL0_SAI_MODE 	          (0x0ul)------stereo mode\n
+	ADI_PDM(X)_SP_CTL0_DATA_FORMAT 	          (0x0ul)------I2S mode, delay by 1\n
+	ADI_PDM(X)_SP_CTL0_SLOT_WIDTH 	          (0x0ul)------32 bits\n
+	ADI_PDM(X)_SP_CTL0_BCLK_POL 	          (0x0ul)------capture on rising edge\n
+	ADI_PDM(X)_SP_CTL0_LRCLK_POL 	          (0x0ul)------normal LRCLK polarity\n
+
+  Specifies the PDM(X)_SP_CTL1 register configuration\n
+    ADI_PDM(X)_SP_CTL1_CH0_SLOT 	          (0x0ul)------ch0 slot = 0\n
+	ADI_PDM(X)_SP_CTL1_CH1_SLOT 	          (0x1ul)------ch1 slot = 1\n
+	ADI_PDM(X)_SP_CTL1_CH2_SLOT 	          (0x2ul)------ch2 slot = 2\n
+	ADI_PDM(X)_SP_CTL1_CH3_SLOT 	          (0x3ul)------ch3 slot = 3\n
+
+ */
+
+/**
+ * @file      adi_pdm_config_SC8xx.h
+ *
+ * @brief     PDM service static configuration
+ *
+ * @details   Header File which has the static configuration for PDM instances.
+ *
+ */
+
+#ifndef ADI_PDM_CONFIG_SC8XX_H
+#define ADI_PDM_CONFIG_SC8XX_H
+
+#include <sys/platform.h>
+#include <stdint.h>
+
+/**************************************************************************************************************/
+/*! select/de-select PDM0 Instance */
+#define ADI_PDM0_INSTANCE                     <%= getAssignedPeripheral("PDM0") ? "1" : "0" %>ul
+
+/*! select/de-select PDM1 Instance */
+#define ADI_PDM1_INSTANCE                     <%= getAssignedPeripheral("PDM1") ? "1" : "0" %>ul
+
+/**********************************************************************************************
+ *                                        PDM 0
+ **********************************************************************************************/
+
+/***************************************PDM_CTL0****************************************************************/
+/*!
+   CH01_EN\n
+   (0) -  PDM channels 0 and 1 disabled\n 
+   (1) -  PDM channels 0 and 1 enabled\n
+*/
+#define ADI_PDM0_CTL0_CH01_EN					(<%= getPeriConfigValueBoolAsInt("PDM0", "CTL0_CH01_EN", "FALSE") %>u)
+
+/*!
+   CH23_EN\n
+   (0) -  PDM channels 2 and 3 disabled\n 
+   (1) -  PDM channels 2 and 3 enabled\n
+*/
+#define ADI_PDM0_CTL0_CH23_EN                   (<%= getPeriConfigValueBoolAsInt("PDM0", "CTL0_CH23_EN", "FALSE") %>u)
+
+/*!
+   Decimation Ratio\n
+   (0) -  64x\n
+   (1) -  32x\n
+   (2) -  16x\n
+*/
+#define ADI_PDM0_CTL0_DEC_RATIO                 (<%= getPeriConfigValueEnum("PDM0", "CTL0_DEC_RATIO", "64_X", {"64_X":0,"32_X":1,"16_X":2}) %>u)
+
+/* Sets the PDM_CTL0 value */
+#define ADI_PDM0_CTL0_VALUE                  	((ADI_PDM0_CTL0_CH01_EN<<BITP_PDM_CTL0_CH01_EN)|\
+                                                 (ADI_PDM0_CTL0_CH23_EN<<BITP_PDM_CTL0_CH23_EN)|\
+												 (ADI_PDM0_CTL0_DEC_RATIO<<BITP_PDM_CTL0_DEC_RATIO))
+													
+/**************************************************************************************************************/
+
+/***************************************PDM_HPF_CTL*************************************************************/
+/*!
+   HPF_CTL_EN\n
+   (0) -  high pass filter disabled\n 
+   (1) -  high pass filter enabled\n
+*/
+#define ADI_PDM0_HPF_CTL_EN						(<%= getPeriConfigValueBoolAsInt("PDM0", "HPF_CTL_EN", "FALSE") %>u)
+
+/*!
+   HPF cutoff frequency\n
+   (0) -  reserved\n 
+   (1) -  reserved\n 
+   (2) -  reserved\n
+   (3) -  reserved\n
+   (4) -  reserved\n
+   (5) -  0.00505\n 
+   (6) -  0.00251\n
+   (7) -  0.00125\n
+   (8) -  0.000623\n
+   (9) -  0.000311\n
+   (10) - 0.000155\n 
+   (11) - 0.0000777\n
+   (12) - 0.0000389\n
+   (13) - 0.0000194\n
+   (14) - 0.00000971\n
+   (15) - 0.00000486\n
+*/
+#define ADI_PDM0_HPF_CTL_FC                   	(<%= getPeriConfigValueEnum("PDM0", "HPF_CTL_FC", "0_0000194", {"0_00505":5,"0_00251":6,"0_00125":7,"0_000623":8,"0_000311":9,"0_000155":10,"0_0000777":11,"0_0000389":12,"0_0000194":13,"0_00000971":14,"0_00000486":15}) %>u)
+
+/* Sets the PDM_HPF_CTL value */
+#define ADI_PDM0_HPF_CTL_VALUE                  ((ADI_PDM0_HPF_CTL_EN<<BITP_PDM_HPF_CTL_EN)|\
+                                                 (ADI_PDM0_HPF_CTL_FC<<BITP_PDM_HPF_CTL_FC))
+													
+/**************************************************************************************************************/
+
+/***************************************PDM_SP_CTL0*************************************************************/
+/*!
+   SPORT Mode\n
+   (0) -  Stereo\n
+   (1) -  TDM\n
+*/
+#define ADI_PDM0_SP_CTL0_SAI_MODE				(<%= getPeriConfigValueEnum("PDM0", "SP_CTL0_SAI_MODE", "STEREO", {"STEREO":0,"TDM":1}) %>u)
+
+/*!
+   SPORT data delay\n
+   (0) -  delay by 1\n
+   (1) -  delay by 0\n 
+   (2) -  delay by 8\n 
+   (3) -  delay by 12\n 
+   (4) -  delay by 16\n 
+*/
+#define ADI_PDM0_SP_CTL0_DATA_FORMAT			(<%= getPeriConfigValueEnum("PDM0", "SP_CTL0_DATA_FORMAT", "DELAY_BY_1", {"DELAY_BY_1":0,"DELAY_BY_0":1,"DELAY_BY_8":2,"DELAY_BY_12":3,"DELAY_BY_16":4}) %>u)
+
+/*!
+   SPORT slot width\n
+   (0) -  32 bits\n
+   (1) -  16 bits\n 
+   (2) -  24 bits\n 
+*/
+#define ADI_PDM0_SP_CTL0_SLOT_WIDTH				(<%= getPeriConfigValueEnum("PDM0", "SP_CTL0_SLOT_WIDTH", "32_BITS", {"32_BITS":0,"16_BITS":1,"24_BITS":2}) %>u)
+
+/*!
+   BCLK polarity\n
+   (0) -  capture on rising edge\n
+   (1) -  capture on falling edge\n 
+ */
+#define ADI_PDM0_SP_CTL0_BCLK_POL				(<%= getPeriConfigValueEnum("PDM0", "SP_CTL0_BCLK_POL", "CAPTURE_RISING_EDGE", {"CAPTURE_RISING_EDGE":0,"CAPTURE_FALLING_EDGE":1}) %>u)
+
+/*!
+   LRCLK polarity\n
+   (0) -  normal\n
+   (1) -  inverted\n 
+ */
+#define ADI_PDM0_SP_CTL0_LRCLK_POL				(<%= getPeriConfigValueEnum("PDM0", "SP_CTL0_LRCLK_POL", "NORMAL", {"NORMAL":0,"INVERTED":1}) %>u)
+
+/* Sets the PDM_SP_CTL0 value */
+#define ADI_PDM0_SP_CTL0_VALUE                  ((ADI_PDM0_SP_CTL0_SAI_MODE<<BITP_PDM_SP_CTL0_SAI_MODE)|\
+                                                 (ADI_PDM0_SP_CTL0_DATA_FORMAT<<BITP_PDM_SP_CTL0_DATA_FORMAT)|\
+												 (ADI_PDM0_SP_CTL0_SLOT_WIDTH<<BITP_PDM_SP_CTL0_CH0_SLOT_WIDTH)|\
+												 (ADI_PDM0_SP_CTL0_BCLK_POL<<BITP_PDM_SP_CTL0_BCLK_POL)|\
+												 (ADI_PDM0_SP_CTL0_LRCLK_POL<<BITP_PDM_SP_CTL0_LRCLK_POL))
+													
+/**************************************************************************************************************/
+
+/***************************************PDM_SP_CTL1*************************************************************/
+/*! Specifies whether PDM channel data will be driven on SPORT bus*/
+#define ADI_PDM0_SP_CTL1_CH0_DRV				(<%= getPeriConfigValueBoolAsInt("PDM0", "SP_CTL1_CH0_DRV", "TRUE") %>u)
+
+/*! Specifies the SPORT channel slot for PDM channel 0 */
+#define ADI_PDM0_SP_CTL1_CH0_SLOT				(<%= getPeriConfigValueHex("PDM0", "SP_CTL1_CH0_SLOT", "0x0") %>u)
+
+/*! Specifies whether PDM channel data will be driven on SPORT bus*/
+#define ADI_PDM0_SP_CTL1_CH1_DRV				(<%= getPeriConfigValueBoolAsInt("PDM0", "SP_CTL1_CH1_DRV", "TRUE") %>u)
+
+/*! Specifies the SPORT channel slot for PDM channel 1 */
+#define ADI_PDM0_SP_CTL1_CH1_SLOT				(<%= getPeriConfigValueHex("PDM0", "SP_CTL1_CH1_SLOT", "0x1") %>u)
+
+/*! Specifies whether PDM channel data will be driven on SPORT bus*/
+#define ADI_PDM0_SP_CTL1_CH2_DRV				(<%= getPeriConfigValueBoolAsInt("PDM0", "SP_CTL1_CH2_DRV", "TRUE") %>u)
+
+/*! Specifies the SPORT channel slot for PDM channel 2 */
+#define ADI_PDM0_SP_CTL1_CH2_SLOT				(<%= getPeriConfigValueHex("PDM0", "SP_CTL1_CH2_SLOT", "0x2") %>u)
+
+/*! Specifies whether PDM channel data will be driven on SPORT bus*/
+#define ADI_PDM0_SP_CTL1_CH3_DRV				(<%= getPeriConfigValueBoolAsInt("PDM0", "SP_CTL1_CH3_DRV", "TRUE") %>u)
+
+/*! Specifies the SPORT channel slot for PDM channel 3 */
+#define ADI_PDM0_SP_CTL1_CH3_SLOT				(<%= getPeriConfigValueHex("PDM0", "SP_CTL1_CH3_SLOT", "0x3") %>u)
+
+/* Sets the PDM_SP_CTL1 value */
+#define ADI_PDM0_SP_CTL1_VALUE                  ((ADI_PDM0_SP_CTL1_CH0_DRV<<BITP_PDM_SP_CTL1_CH0_DRV)|\
+												 (ADI_PDM0_SP_CTL1_CH0_SLOT<<BITP_PDM_SP_CTL1_CH0_SLOT)|\
+												 (ADI_PDM0_SP_CTL1_CH1_DRV<<BITP_PDM_SP_CTL1_CH1_DRV)|\
+                                                 (ADI_PDM0_SP_CTL1_CH1_SLOT<<BITP_PDM_SP_CTL1_CH1_SLOT)|\
+												 (ADI_PDM0_SP_CTL1_CH2_DRV<<BITP_PDM_SP_CTL1_CH2_DRV)|\
+												 (ADI_PDM0_SP_CTL1_CH2_SLOT<<BITP_PDM_SP_CTL1_CH2_SLOT)|\
+												 (ADI_PDM0_SP_CTL1_CH3_DRV<<BITP_PDM_SP_CTL1_CH3_DRV)|\
+												 (ADI_PDM0_SP_CTL1_CH3_SLOT<<BITP_PDM_SP_CTL1_CH3_SLOT))
+													
+/**************************************************************************************************************/
+
+/***************************************************************************************************************
+ *                                        PDM 1
+ ***************************************************************************************************************/
+
+
+/***************************************PDM_CTL0****************************************************************/
+/*!
+   CH01_EN\n
+   (0) -  PDM channels 0 and 1 disabled\n 
+   (1) -  PDM channels 0 and 1 enabled\n
+*/
+#define ADI_PDM1_CTL0_CH01_EN					(<%= getPeriConfigValueBoolAsInt("PDM1", "CTL0_CH01_EN", "FALSE") %>u)
+
+/*!
+   CH23_EN\n
+   (0) -  PDM channels 2 and 3 disabled\n 
+   (1) -  PDM channels 2 and 3 enabled\n
+*/
+#define ADI_PDM1_CTL0_CH23_EN                   (<%= getPeriConfigValueBoolAsInt("PDM1", "CTL0_CH23_EN", "FALSE") %>u)
+
+/*!
+   Decimation Ratio\n
+   (0) -  64x\n
+   (1) -  32x\n
+   (2) -  16x\n
+*/
+#define ADI_PDM1_CTL0_DEC_RATIO                 (<%= getPeriConfigValueEnum("PDM1", "CTL0_DEC_RATIO", "64_X", {"64_X":0,"32_X":1,"16_X":2}) %>u)
+
+/* Sets the PDM_CTL0 value */
+#define ADI_PDM1_CTL0_VALUE                  	((ADI_PDM1_CTL0_CH01_EN<<BITP_PDM_CTL0_CH01_EN)|\
+                                                 (ADI_PDM1_CTL0_CH23_EN<<BITP_PDM_CTL0_CH23_EN)|\
+												 (ADI_PDM1_CTL0_DEC_RATIO<<BITP_PDM_CTL0_DEC_RATIO))
+													
+/**************************************************************************************************************/
+
+/***************************************PDM_HPF_CTL*************************************************************/
+/*!
+   HPF_CTL_EN\n
+   (0) -  high pass filter disabled\n 
+   (1) -  high pass filter enabled\n
+*/
+#define ADI_PDM1_HPF_CTL_EN						(<%= getPeriConfigValueBoolAsInt("PDM1", "HPF_CTL_EN", "FALSE") %>u)
+
+/*!
+   HPF cutoff frequency\n
+   (0) -  reserved\n 
+   (1) -  reserved\n 
+   (2) -  reserved\n
+   (3) -  reserved\n
+   (4) -  reserved\n
+   (5) -  0.00505\n 
+   (6) -  0.00251\n
+   (7) -  0.00125\n
+   (8) -  0.000623\n
+   (9) -  0.000311\n
+   (10) - 0.000155\n 
+   (11) - 0.0000777\n
+   (12) - 0.0000389\n
+   (13) - 0.0000194\n
+   (14) - 0.00000971\n
+   (15) - 0.00000486\n
+*/
+#define ADI_PDM1_HPF_CTL_FC                   	(<%= getPeriConfigValueEnum("PDM1", "HPF_CTL_FC", "0_0000194", {"0_00505":5,"0_00251":6,"0_00125":7,"0_000623":8,"0_000311":9,"0_000155":10,"0_0000777":11,"0_0000389":12,"0_0000194":13,"0_00000971":14,"0_00000486":15}) %>u)
+
+/* Sets the PDM_HPF_CTL value */
+#define ADI_PDM1_HPF_CTL_VALUE                  ((ADI_PDM1_HPF_CTL_EN<<BITP_PDM_HPF_CTL_EN)|\
+                                                 (ADI_PDM1_HPF_CTL_FC<<BITP_PDM_HPF_CTL_FC))
+													
+/**************************************************************************************************************/
+
+/***************************************PDM_SP_CTL0*************************************************************/
+/*!
+   SPORT Mode\n
+   (0) -  Stereo\n
+   (1) -  TDM\n
+*/
+#define ADI_PDM1_SP_CTL0_SAI_MODE				(<%= getPeriConfigValueEnum("PDM1", "SP_CTL0_SAI_MODE", "STEREO", {"STEREO":0,"TDM":1}) %>u)
+
+/*!
+   SPORT data delay\n
+   (0) -  delay by 1\n
+   (1) -  delay by 0\n 
+   (2) -  delay by 8\n 
+   (3) -  delay by 12\n 
+   (4) -  delay by 16\n 
+*/
+#define ADI_PDM1_SP_CTL0_DATA_FORMAT			(<%= getPeriConfigValueEnum("PDM1", "SP_CTL0_DATA_FORMAT", "DELAY_BY_1", {"DELAY_BY_1":0,"DELAY_BY_0":1,"DELAY_BY_8":2,"DELAY_BY_12":3,"DELAY_BY_16":4}) %>u)
+
+/*!
+   SPORT slot width\n
+   (0) -  32 bits\n
+   (1) -  16 bits\n 
+   (2) -  24 bits\n 
+*/
+#define ADI_PDM1_SP_CTL0_SLOT_WIDTH				(<%= getPeriConfigValueEnum("PDM1", "SP_CTL0_SLOT_WIDTH", "32_BITS", {"32_BITS":0,"16_BITS":1,"24_BITS":2}) %>u)
+
+/*!
+   BCLK polarity\n
+   (0) -  capture on rising edge\n
+   (1) -  capture on falling edge\n 
+ */
+#define ADI_PDM1_SP_CTL0_BCLK_POL				(<%= getPeriConfigValueEnum("PDM1", "SP_CTL0_BCLK_POL", "CAPTURE_RISING_EDGE", {"CAPTURE_RISING_EDGE":0,"CAPTURE_FALLING_EDGE":1}) %>u)
+
+/*!
+   LRCLK polarity\n
+   (0) -  normal\n
+   (1) -  inverted\n 
+ */
+#define ADI_PDM1_SP_CTL0_LRCLK_POL				(<%= getPeriConfigValueEnum("PDM1", "SP_CTL0_LRCLK_POL", "NORMAL", {"NORMAL":0,"INVERTED":1}) %>u)
+
+/* Sets the PDM_SP_CTL0 value */
+#define ADI_PDM1_SP_CTL0_VALUE                  ((ADI_PDM1_SP_CTL0_SAI_MODE<<BITP_PDM_SP_CTL0_SAI_MODE)|\
+                                                 (ADI_PDM1_SP_CTL0_DATA_FORMAT<<BITP_PDM_SP_CTL0_DATA_FORMAT)|\
+												 (ADI_PDM1_SP_CTL0_SLOT_WIDTH<<BITP_PDM_SP_CTL0_CH0_SLOT_WIDTH)|\
+												 (ADI_PDM1_SP_CTL0_BCLK_POL<<BITP_PDM_SP_CTL0_BCLK_POL)|\
+												 (ADI_PDM1_SP_CTL0_LRCLK_POL<<BITP_PDM_SP_CTL0_LRCLK_POL))
+													
+/**************************************************************************************************************/
+
+/***************************************PDM_SP_CTL1*************************************************************/
+
+/*! Specifies whether PDM channel data will be driven on SPORT bus*/
+#define ADI_PDM1_SP_CTL1_CH0_DRV				(<%= getPeriConfigValueBoolAsInt("PDM1", "SP_CTL1_CH0_DRV", "TRUE") %>u)
+
+/*! Specifies the SPORT channel slot for PDM channel 0 */
+#define ADI_PDM1_SP_CTL1_CH0_SLOT				(<%= getPeriConfigValueHex("PDM1", "SP_CTL1_CH0_SLOT", "0x0") %>u)
+
+/*! Specifies whether PDM channel data will be driven on SPORT bus*/
+#define ADI_PDM1_SP_CTL1_CH1_DRV				(<%= getPeriConfigValueBoolAsInt("PDM1", "SP_CTL1_CH1_DRV", "TRUE") %>u)
+
+/*! Specifies the SPORT channel slot for PDM channel 1 */
+#define ADI_PDM1_SP_CTL1_CH1_SLOT				(<%= getPeriConfigValueHex("PDM1", "SP_CTL1_CH1_SLOT", "0x1") %>u)
+
+/*! Specifies whether PDM channel data will be driven on SPORT bus*/
+#define ADI_PDM1_SP_CTL1_CH2_DRV				(<%= getPeriConfigValueBoolAsInt("PDM1", "SP_CTL1_CH2_DRV", "TRUE") %>u)
+
+/*! Specifies the SPORT channel slot for PDM channel 2 */
+#define ADI_PDM1_SP_CTL1_CH2_SLOT				(<%= getPeriConfigValueHex("PDM1", "SP_CTL1_CH2_SLOT", "0x2") %>u)
+
+/*! Specifies whether PDM channel data will be driven on SPORT bus*/
+#define ADI_PDM1_SP_CTL1_CH3_DRV				(<%= getPeriConfigValueBoolAsInt("PDM1", "SP_CTL1_CH3_DRV", "TRUE") %>u)
+
+/*! Specifies the SPORT channel slot for PDM channel 3 */
+#define ADI_PDM1_SP_CTL1_CH3_SLOT				(<%= getPeriConfigValueHex("PDM1", "SP_CTL1_CH3_SLOT", "0x3") %>u)
+
+/* Sets the PDM_SP_CTL1 value */
+#define ADI_PDM1_SP_CTL1_VALUE                  ((ADI_PDM1_SP_CTL1_CH0_DRV<<BITP_PDM_SP_CTL1_CH0_DRV)|\
+												 (ADI_PDM1_SP_CTL1_CH0_SLOT<<BITP_PDM_SP_CTL1_CH0_SLOT)|\
+												 (ADI_PDM1_SP_CTL1_CH1_DRV<<BITP_PDM_SP_CTL1_CH1_DRV)|\
+                                                 (ADI_PDM1_SP_CTL1_CH1_SLOT<<BITP_PDM_SP_CTL1_CH1_SLOT)|\
+												 (ADI_PDM1_SP_CTL1_CH2_DRV<<BITP_PDM_SP_CTL1_CH2_DRV)|\
+												 (ADI_PDM1_SP_CTL1_CH2_SLOT<<BITP_PDM_SP_CTL1_CH2_SLOT)|\
+												 (ADI_PDM1_SP_CTL1_CH3_DRV<<BITP_PDM_SP_CTL1_CH3_DRV)|\
+												 (ADI_PDM1_SP_CTL1_CH3_SLOT<<BITP_PDM_SP_CTL1_CH3_SLOT))
+													
+/**************************************************************************************************************/
+
+#endif /* ADI_PDM_CONFIG_SC8XX_H */
+
+/*@}*/
+
+/*@}*/

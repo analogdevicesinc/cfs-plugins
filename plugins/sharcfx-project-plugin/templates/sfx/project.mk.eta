@@ -20,12 +20,17 @@
 # variables.  These variables are defined in a file called
 # "Makefile" that is located next to this one.
 
-# For instructions on how to use this system, see
-# https://analogdevicesinc.github.io/msdk/USERGUIDE/#build-system
-
 # **********************************************************
 
 # Add your config here!
+# To use a custom TFLM source location, uncomment and update the path below.
+# TFLM_SRC_ROOT := /path/to/tflite-micro
+
+# Enable TFLM arena reporting, per-operator tracing, and inference cycle statistics.
+# Requires the project to provide a SHARC-FX tflite::GetCurrentTimeTicks()
+# implementation, as the SHARC-FX TFLM example does.
+# 1 = enabled, 0 = disabled. Run a clean build after changing this value.
+ENABLE_TFLM_PROFILING ?= 0
 
 # Add library dependencies
 

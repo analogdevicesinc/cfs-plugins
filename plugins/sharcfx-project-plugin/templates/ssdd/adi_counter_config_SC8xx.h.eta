@@ -1,0 +1,160 @@
+<%
+/*
+ * Copyright (c) 2022-2026 Analog Devices, Inc. All Rights Reserved.
+ * This software is proprietary to Analog Devices, Inc. and its licensors.
+ */
+%> 
+<% eval(this.render("templates/ssdd/ssdd_common.js")); %>
+<%~ include("@copyrightHeader", it) %> 
+/* This file is generated using the peripheral settings configured using System Planner.
+ * Please do not edit the values here directly.
+ */
+
+/** @addtogroup RotaryCounter_Driver
+ *  @{
+ */
+
+ /** @defgroup RotaryCounter_Driver_Static_Configuration Rotary Counter Driver Static Configuration
+ *  @{
+ */
+ 
+/*!
+* @file      adi_counter_config_SC8xx.h
+*
+* @brief     Rotary Counter driver static configuration header file
+*
+* @details
+*            Rotary Counter driver static configuration header file
+*/
+#ifndef ADI_COUNTER_CONFIG_SC8XX_H
+#define ADI_COUNTER_CONFIG_SC8XX_H
+
+#include <sys/platform.h>
+#include <stdint.h>
+
+
+#if defined(__ADSPSHARCFX__) && defined(__ADSPSC835_FAMILY__)
+/*!For ADSP-SC835 family of processors:
+ * Specifies if the SEC interrupts should be used for all Counter instances for SHARC-FX core
+ * If set as 1, SEC interrupt path is enabled for all Counter instances
+ * If set as 0, direct interrupt path is enabled for all Counter instances */
+<%
+  var _g_sec_int = [
+    getAssignedPeripheral("CNT0") ? getPeriConfigValueBoolAsInt("CNT0", "SEC_INT", "TRUE") : null,
+  ].filter(v => v !== null);
+%> 
+#define ADI_COUNTER_CONFIG_SEC_INT       <%= _g_sec_int.length ? _g_sec_int[0] : getPeriConfigValueBoolAsInt("CNT0", "SEC_INT", "TRUE") %>u
+
+#endif /* defined(__ADSPSHARCFX__) && defined(__ADSPSC835_FAMILY__) */
+
+
+/*!COUNTER0 Instance*/
+/*!Select COUNTER0 Instance */
+#define ADI_COUNTER0_INSTANCE                     <%= getAssignedPeripheral("CNT0") ? "1" : "0" %>u
+
+/*!Selects the mode of operation for the Counter
+
+    ADI_CNT_QUAD_ENC_MODE   - Quadrature Encoder Mode
+	
+    ADI_CNT_BIN_ENC_MODE  	- Binary Encoder Mode
+	
+    ADI_CNT_UD_CNT_MODE   	- Up/Down Counter Mode
+	
+    ADI_CNT_DIR_CNT_MODE  	- Direction Counter Mode 
+	
+	ADI_CNT_DIR_TMR_MODE  	- Direction Timer Mode
+	
+*/
+#define ADI_COUNTER0_MODE       ADI_CNT_<%= getPeriConfigValue("CNT0", "MODE", "DIR_TMR_MODE") %> 
+
+/*!Selects the polarity(true=active low/false=active high) of the CDG input of the counter*/
+#define ADI_COUNTER0_CDG_ACTIVE_LOW    <%= getPeriConfigValue("CNT0", "CDG_ACTIVE_LOW", "ACTIVE_HIGH") === "ACTIVE_LOW" ? "true" : "false" %> 
+
+/*!Selects the polarity(true=active low/false=active high) of the CUD input of the counter*/
+#define ADI_COUNTER0_CUD_ACTIVE_LOW  	<%= getPeriConfigValue("CNT0", "CUD_ACTIVE_LOW", "ACTIVE_HIGH") === "ACTIVE_LOW" ? "true" : "false" %> 
+
+/*!Selects the polarity(true=active low/false=active high) of the CZM input of the counter*/
+#define ADI_COUNTER0_CZM_ACTIVE_LOW  	<%= getPeriConfigValue("CNT0", "CZM_ACTIVE_LOW", "ACTIVE_HIGH") === "ACTIVE_LOW" ? "true" : "false" %> 
+
+/*!Use one of the four boundary modes*/
+#define ADI_COUNTER0_ENABLE_BOUNDARY_MODE  <%= getPeriConfigValueBool("CNT0", "ENABLE_BOUNDARY_MODE", "FALSE") %> 
+
+	/*The following fields are valid only if the ADI_COUNTER_ENABLE_BOUNDARY_MODE
+	is set to true. Else, set the following fields to zero*/
+
+	/*!Selects the boundary mode for the Counter
+	
+		ADI_CNT_BND_COMP - boundary comparator mode
+		
+		ADI_CNT_BND_ZERO - boundary compare and zero CNT_COUNTER mode
+		
+		ADI_CNT_BND_CAPT - boundary capture mode  
+		
+		ADI_CNT_BND_AEXT - boundary auto-extend mode   
+	*/
+	#define ADI_COUNTER0_BOUNDARY_MODE  	ADI_CNT_BND_<%= getPeriConfigValue("CNT0", "BOUNDARY_MODE", "COMP") %> 
+
+	/*!The maximum count */
+	#define ADI_COUNTER0_CNT_MAX    <%= getPeriConfigValueInt("CNT0", "CNT_MAX", "0") %>u
+
+	/*!The minimum count*/
+	#define ADI_COUNTER0_CNT_MIN	<%= getPeriConfigValueInt("CNT0", "CNT_MIN", "0") %>u
+	
+/*!Enables the debounce feature of the counter*/	
+#define ADI_COUNTER0_DEBOUNCE_ENABLE <%= getPeriConfigValueBool("CNT0", "DEBOUNCE_ENABLE", "FALSE") %> 
+		/*!Debounce value*/
+		#define ADI_COUNTER0_CNT_DEBOUNCE	<%= getPeriConfigValueInt("CNT0", "CNT_DEBOUNCE", "0") %>u
+		/*Set this field only if ADI_COUNTER0_DEBOUNCE_ENABLE is set to true. Else, set it to zero*/
+
+/*! CZM Zeros Counter Enable */
+#define ADI_COUNTER0_ZMZC_ENABLE				<%= getPeriConfigValueBool("CNT0", "ZMZC_ENABLE", "FALSE") %> 
+
+/*! Disable the CDG and CUD input pins*/
+#define ADI_COUNTER0_INPUTS_DISABLE             <%= getPeriConfigValueBool("CNT0", "INPUTS_DISABLE", "FALSE") %>	
+		
+/*!The following selects the events(interrupts) enabled*/
+
+/*!  Max Count Interrupt Enable */
+#define ADI_COUNTER0_MAXCOUNT_INTERRUPT		<%= getPeriConfigValueBool("CNT0", "MAXCOUNT_INTERRUPT", "FALSE") ? "ENUM_CNT_IMSK_MAXC_UMSK" : "ENUM_CNT_IMSK_MAXC_MSK" %> 
+
+/*!  Min Count Interrupt Enable */
+#define ADI_COUNTER0_MINCOUNT_INTERRUPT		<%= getPeriConfigValueBool("CNT0", "MINCOUNT_INTERRUPT", "FALSE") ? "ENUM_CNT_IMSK_MINC_UMSK" : "ENUM_CNT_IMSK_MINC_MSK" %> 
+
+/*!  Bit 15 Overflow Interrupt Enable */
+#define ADI_COUNTER0_OVERFLOW_BIT15_INTERRUPT	<%= getPeriConfigValueBool("CNT0", "OVERFLOW_BIT15_INTERRUPT", "FALSE") ? "ENUM_CNT_IMSK_COV15_UMSK" : "ENUM_CNT_IMSK_COV15_MSK" %> 
+
+ /*!  Bit 31 Overflow Interrupt Enable */
+#define ADI_COUNTER0_OVERFLOW_BIT31_INTERRUPT	<%= getPeriConfigValueBool("CNT0", "OVERFLOW_BIT31_INTERRUPT", "FALSE") ? "ENUM_CNT_IMSK_COV31_UMSK" : "ENUM_CNT_IMSK_COV31_MSK" %> 
+
+/*!  CNT_CNTR Counts To Zero Interrupt Enable */
+#define ADI_COUNTER0_COUNTTOZERO_INTERRUPT	<%= getPeriConfigValueBool("CNT0", "COUNTTOZERO_INTERRUPT", "FALSE") ? "ENUM_CNT_IMSK_CZERO_UMSK" : "ENUM_CNT_IMSK_CZERO_MSK" %> 
+
+/*!  CZM Pin/Pushbutton Interrupt Enable */
+#define ADI_COUNTER0_CZM_INTERRUPT			<%= getPeriConfigValueBool("CNT0", "CZM_INTERRUPT", "FALSE") ? "ENUM_CNT_IMSK_CZM_UMSK" : "ENUM_CNT_IMSK_CZM_MSK" %> 
+
+/*!  Zero Marker Error Interrupt Enable */
+#define ADI_COUNTER0_ZEROMARKER_ERR_INTERRUPT	<%= getPeriConfigValueBool("CNT0", "ZEROMARKER_ERR_INTERRUPT", "FALSE") ? "ENUM_CNT_IMSK_CZME_UMSK" : "ENUM_CNT_IMSK_CZME_MSK" %> 
+
+
+/*!  Upcount Interrupt Enable */
+#define ADI_COUNTER0_UPCOUNT_INTERRUPT	<%= getPeriConfigValueBool("CNT0", "UPCOUNT_INTERRUPT", "FALSE") ? "ENUM_CNT_IMSK_UC_UMSK" : "ENUM_CNT_IMSK_UC_MSK" %> 
+
+/*!  Downcount Interrupt Enable */
+#define ADI_COUNTER0_DOWNCOUNT_INTERRUPT	<%= getPeriConfigValueBool("CNT0", "DOWNCOUNT_INTERRUPT", "FALSE") ? "ENUM_CNT_IMSK_DC_UMSK" : "ENUM_CNT_IMSK_DC_MSK" %> 
+
+/*This is used internally in the driver. */
+#define ADI_COUNTER0_EVENTS_ENABLED     ADI_COUNTER0_MAXCOUNT_INTERRUPT| \
+										ADI_COUNTER0_MINCOUNT_INTERRUPT| \
+										ADI_COUNTER0_OVERFLOW_BIT15_INTERRUPT| \
+										ADI_COUNTER0_OVERFLOW_BIT31_INTERRUPT| \
+										ADI_COUNTER0_COUNTTOZERO_INTERRUPT| \
+										ADI_COUNTER0_CZM_INTERRUPT| \
+										ADI_COUNTER0_ZEROMARKER_ERR_INTERRUPT| \
+										ADI_COUNTER0_UPCOUNT_INTERRUPT| \
+										ADI_COUNTER0_DOWNCOUNT_INTERRUPT
+
+
+#endif /*ADI_COUNTER_CONFIG_SC8XX_H*/
+
+ /** @} */
+ /** @} */

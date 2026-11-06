@@ -1,0 +1,181 @@
+<%
+/******************************************************************************
+
+ Copyright(c) 2023-2026 Analog Devices, Inc. All Rights Reserved.
+
+ This software is proprietary. By using this software you agree
+ to the terms of the associated Analog Devices License Agreement.
+
+*********************************************************************************/
+%> 
+<% eval(this.render("templates/ssdd/ssdd_common.js")); %>
+<%~ include("@copyrightHeader", it) %> 
+/* This file is generated using the peripheral settings configured using System Planner.
+ * Please do not edit the values here directly.
+ */
+
+/** @addtogroup PDMA_Service
+ *  @{
+ */
+ 
+/** @defgroup PDMA_Service_Static_Configuration PDMA Service Static Configuration
+ *  @{
+ */
+
+/*!
+* @file      adi_pdma_config_SC8xx.h
+*
+* @brief     PDMA Config file
+*
+* @details   This is the file which has macros related to PDMA configuration.
+*/
+
+#ifndef ADI_PDMA_CONFIG_SC8XX_H
+#define ADI_PDMA_CONFIG_SC8XX_H
+
+/*! Below mentioned are the type of ADI_PDMA_MODE based on which ADI_PDMA_LISTDESCRIPTOR can be enabled/disabled.\n
+    ADI_PDMA_STOP_MODE                      	  Disable the macro ADI_PDMA_LISTDESCRIPTOR\n
+    ADI_PDMA_AUTOBUFFER_MODE                      Disable the macro ADI_PDMA_LISTDESCRIPTOR\n
+    ADI_PDMA_DESCRIPTOR_LIST                      Enable the macro ADI_PDMA_LISTDESCRIPTOR\n
+    ADI_PDMA_DESCRIPTOR_LIST_ONDEMAND             Enable the macro ADI_PDMA_LISTDESCRIPTOR\n
+    ADI_PDMA_DESCRIPTOR_ARRAY                     Disable the macro ADI_PDMA_LISTDESCRIPTOR\n
+    ADI_PDMA_DESCRIPTOR_ARRAY_ONDEMAND            Disable the macro ADI_PDMA_LISTDESCRIPTOR\n
+*/
+<%
+  var _g_listdescriptor = [
+    getAssignedPeripheral("DMA0") ? getPeriConfigValueBoolAsInt("DMA0", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA1") ? getPeriConfigValueBoolAsInt("DMA1", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA2") ? getPeriConfigValueBoolAsInt("DMA2", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA3") ? getPeriConfigValueBoolAsInt("DMA3", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA4") ? getPeriConfigValueBoolAsInt("DMA4", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA5") ? getPeriConfigValueBoolAsInt("DMA5", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA6") ? getPeriConfigValueBoolAsInt("DMA6", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA7") ? getPeriConfigValueBoolAsInt("DMA7", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA8") ? getPeriConfigValueBoolAsInt("DMA8", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA9") ? getPeriConfigValueBoolAsInt("DMA9", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA10") ? getPeriConfigValueBoolAsInt("DMA10", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA11") ? getPeriConfigValueBoolAsInt("DMA11", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA12") ? getPeriConfigValueBoolAsInt("DMA12", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA13") ? getPeriConfigValueBoolAsInt("DMA13", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA14") ? getPeriConfigValueBoolAsInt("DMA14", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA15") ? getPeriConfigValueBoolAsInt("DMA15", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA16") ? getPeriConfigValueBoolAsInt("DMA16", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA17") ? getPeriConfigValueBoolAsInt("DMA17", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA18") ? getPeriConfigValueBoolAsInt("DMA18", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA19") ? getPeriConfigValueBoolAsInt("DMA19", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA20") ? getPeriConfigValueBoolAsInt("DMA20", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA21") ? getPeriConfigValueBoolAsInt("DMA21", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA22") ? getPeriConfigValueBoolAsInt("DMA22", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA23") ? getPeriConfigValueBoolAsInt("DMA23", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA24") ? getPeriConfigValueBoolAsInt("DMA24", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA25") ? getPeriConfigValueBoolAsInt("DMA25", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA26") ? getPeriConfigValueBoolAsInt("DMA26", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA27") ? getPeriConfigValueBoolAsInt("DMA27", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA28") ? getPeriConfigValueBoolAsInt("DMA28", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA29") ? getPeriConfigValueBoolAsInt("DMA29", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA30") ? getPeriConfigValueBoolAsInt("DMA30", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA31") ? getPeriConfigValueBoolAsInt("DMA31", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA32") ? getPeriConfigValueBoolAsInt("DMA32", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA33") ? getPeriConfigValueBoolAsInt("DMA33", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA34") ? getPeriConfigValueBoolAsInt("DMA34", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA35") ? getPeriConfigValueBoolAsInt("DMA35", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA36") ? getPeriConfigValueBoolAsInt("DMA36", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA37") ? getPeriConfigValueBoolAsInt("DMA37", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA38") ? getPeriConfigValueBoolAsInt("DMA38", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA39") ? getPeriConfigValueBoolAsInt("DMA39", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA40") ? getPeriConfigValueBoolAsInt("DMA40", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA41") ? getPeriConfigValueBoolAsInt("DMA41", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA42") ? getPeriConfigValueBoolAsInt("DMA42", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA43") ? getPeriConfigValueBoolAsInt("DMA43", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA44") ? getPeriConfigValueBoolAsInt("DMA44", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA45") ? getPeriConfigValueBoolAsInt("DMA45", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA46") ? getPeriConfigValueBoolAsInt("DMA46", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA47") ? getPeriConfigValueBoolAsInt("DMA47", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA48") ? getPeriConfigValueBoolAsInt("DMA48", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA49") ? getPeriConfigValueBoolAsInt("DMA49", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA50") ? getPeriConfigValueBoolAsInt("DMA50", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA51") ? getPeriConfigValueBoolAsInt("DMA51", "LISTDESCRIPTOR", "TRUE") : null,
+    getAssignedPeripheral("DMA52") ? getPeriConfigValueBoolAsInt("DMA52", "LISTDESCRIPTOR", "TRUE") : null,
+  ].filter(v => v !== null);
+%> 
+<%
+  if (_g_listdescriptor.length > 1 && !_g_listdescriptor.every(v => v === _g_listdescriptor[0])) {
+%> 
+#error "ADI_PDMA_LISTDESCRIPTOR: all assigned DMA instances must have the same LISTDESCRIPTOR setting"
+<% } %> 
+<% if (_g_listdescriptor.length ? _g_listdescriptor[0] : getPeriConfigValueBool("DMA0", "LISTDESCRIPTOR", "TRUE")) { %> 
+#define ADI_PDMA_LISTDESCRIPTOR
+<% } %> 
+
+/*! To enable the cache management needed in PDMA service when cache is enabled */
+#if defined(__ADSPSHARCFX__) || defined(__ADSPCORTEXA55__)
+<%
+  var _g_cache_mangement = [
+    getAssignedPeripheral("DMA0") ? getPeriConfigValueBoolAsInt("DMA0", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA1") ? getPeriConfigValueBoolAsInt("DMA1", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA2") ? getPeriConfigValueBoolAsInt("DMA2", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA3") ? getPeriConfigValueBoolAsInt("DMA3", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA4") ? getPeriConfigValueBoolAsInt("DMA4", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA5") ? getPeriConfigValueBoolAsInt("DMA5", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA6") ? getPeriConfigValueBoolAsInt("DMA6", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA7") ? getPeriConfigValueBoolAsInt("DMA7", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA8") ? getPeriConfigValueBoolAsInt("DMA8", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA9") ? getPeriConfigValueBoolAsInt("DMA9", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA10") ? getPeriConfigValueBoolAsInt("DMA10", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA11") ? getPeriConfigValueBoolAsInt("DMA11", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA12") ? getPeriConfigValueBoolAsInt("DMA12", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA13") ? getPeriConfigValueBoolAsInt("DMA13", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA14") ? getPeriConfigValueBoolAsInt("DMA14", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA15") ? getPeriConfigValueBoolAsInt("DMA15", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA16") ? getPeriConfigValueBoolAsInt("DMA16", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA17") ? getPeriConfigValueBoolAsInt("DMA17", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA18") ? getPeriConfigValueBoolAsInt("DMA18", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA19") ? getPeriConfigValueBoolAsInt("DMA19", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA20") ? getPeriConfigValueBoolAsInt("DMA20", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA21") ? getPeriConfigValueBoolAsInt("DMA21", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA22") ? getPeriConfigValueBoolAsInt("DMA22", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA23") ? getPeriConfigValueBoolAsInt("DMA23", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA24") ? getPeriConfigValueBoolAsInt("DMA24", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA25") ? getPeriConfigValueBoolAsInt("DMA25", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA26") ? getPeriConfigValueBoolAsInt("DMA26", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA27") ? getPeriConfigValueBoolAsInt("DMA27", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA28") ? getPeriConfigValueBoolAsInt("DMA28", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA29") ? getPeriConfigValueBoolAsInt("DMA29", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA30") ? getPeriConfigValueBoolAsInt("DMA30", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA31") ? getPeriConfigValueBoolAsInt("DMA31", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA32") ? getPeriConfigValueBoolAsInt("DMA32", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA33") ? getPeriConfigValueBoolAsInt("DMA33", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA34") ? getPeriConfigValueBoolAsInt("DMA34", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA35") ? getPeriConfigValueBoolAsInt("DMA35", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA36") ? getPeriConfigValueBoolAsInt("DMA36", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA37") ? getPeriConfigValueBoolAsInt("DMA37", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA38") ? getPeriConfigValueBoolAsInt("DMA38", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA39") ? getPeriConfigValueBoolAsInt("DMA39", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA40") ? getPeriConfigValueBoolAsInt("DMA40", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA41") ? getPeriConfigValueBoolAsInt("DMA41", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA42") ? getPeriConfigValueBoolAsInt("DMA42", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA43") ? getPeriConfigValueBoolAsInt("DMA43", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA44") ? getPeriConfigValueBoolAsInt("DMA44", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA45") ? getPeriConfigValueBoolAsInt("DMA45", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA46") ? getPeriConfigValueBoolAsInt("DMA46", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA47") ? getPeriConfigValueBoolAsInt("DMA47", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA48") ? getPeriConfigValueBoolAsInt("DMA48", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA49") ? getPeriConfigValueBoolAsInt("DMA49", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA50") ? getPeriConfigValueBoolAsInt("DMA50", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA51") ? getPeriConfigValueBoolAsInt("DMA51", "CACHE_MANGEMENT", "TRUE") : null,
+    getAssignedPeripheral("DMA52") ? getPeriConfigValueBoolAsInt("DMA52", "CACHE_MANGEMENT", "TRUE") : null,
+  ].filter(v => v !== null);
+%> 
+#define ADI_PDMA_CACHE_MANGEMENT   <%= _g_cache_mangement.length ? _g_cache_mangement[0] : getPeriConfigValueBoolAsInt("DMA0", "CACHE_MANGEMENT", "TRUE") %>u
+<%
+  if (_g_cache_mangement.length > 1 && !_g_cache_mangement.every(v => v === _g_cache_mangement[0])) {
+%> 
+#error "ADI_PDMA_CACHE_MANGEMENT: all assigned DMA instances must have the same CACHE_MANGEMENT setting"
+<% } %> 
+#endif
+
+
+#endif /*ADI_PDMA_CONFIG_SC8XX_H*/
+
+/*@}*/
+/*@}*/

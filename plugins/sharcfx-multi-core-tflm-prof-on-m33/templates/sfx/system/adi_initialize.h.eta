@@ -1,0 +1,21 @@
+/*
+** Copyright (C) <%= new Date().getFullYear() %> Analog Devices Inc., All Rights Reserved.
+**
+*/
+
+#ifndef __ADI_COMPONENT_INIT_H__
+#define __ADI_COMPONENT_INIT_H__
+#include <stdint.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/* Declare "adi_initComponents()" */
+int32_t adi_initComponents(void);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* __ADI_COMPONENT_INIT_H__ */

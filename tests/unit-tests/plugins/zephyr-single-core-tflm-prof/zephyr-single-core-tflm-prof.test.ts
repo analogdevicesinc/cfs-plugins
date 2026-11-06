@@ -13,169 +13,70 @@
  *
  */
 
-import { promises as fs } from "node:fs";
-import path from "node:path";
-import { expect } from "chai";
-import { GenericPlugin } from "cfs-plugins-sdk";
-import type { CfsPluginInfo } from "cfs-types";
-import { CodeGenerationService } from "@services/CodeGenerationService.js";
-import { fileExists, isDebug } from "@utilities/test-utilities.js";
-import { joinPath } from "@utilities/path-utilities.js";
+import { runWorkspacePluginSuite } from "@services/WorkspacePluginSuite.js";
 import {
-  validateJsonFile,
-  findJsonFiles,
-} from "@utilities/validate-json.js";
+  loadPluginInfo,
+  zephyrBoardCodeGenFiles,
+  zephyrCoreDir,
+} from "@utilities/test-utilities.js";
 
-describe("Unit test for Zephyr Single Core TFLM Prof", () => {
-  let plugin: GenericPlugin;
-  let pluginInfo: CfsPluginInfo;
-  const cfsWorkspace = {
-    location: "tests/unit-tests/plugins/zephyr-single-core-tflm-prof/data",
-    workspacePluginId: "test-plugin-id",
-    workspacePluginVersion: "1.0.0",
-    workspaceName: "max32690-workspace",
-    coreArchitecture: "m4",
-    copyrightDate: new Date().getFullYear().toString(),
-    dataModelVersion: "1.0.0",
-    dataModelSchemaVersion: "1.0.0",
-    package: "tqfn",
-    timestamp: new Date().toISOString(),
-    board: "evkit_v1",
-    soc: "max32690",
-    projects: [
-      {
-        name: "m4",
-        path: "./m4",
-      },
-    ],
-  };
+const pluginInfo = await loadPluginInfo(
+  "plugins/dist/zephyr-single-core-tflm-prof/.cfsplugin",
+);
 
-  before(async () => {
-    try {
-      const filePath = "plugins/dist/zephyr-single-core-tflm-prof/.cfsplugin";
-      const absolutePath = path.resolve(filePath);
-      const fileContent = await fs.readFile(absolutePath, "utf-8");
-      pluginInfo = JSON.parse(fileContent) as CfsPluginInfo;
-      pluginInfo.pluginPath = absolutePath;
-    } catch (error) {
-      expect.fail(`${error}`);
-    }
-  });
+// Files common to every supported SoC.
+const commonWorkspaceFiles = [
+  ".cfs/.cfsdependencies",
+  ".cfs/.cfsworkspace",
+  ".cfs/ai.cfsaiprof",
+  ".cfs/gdb_toolbox/configs/fault-analyzer.json",
+  ".cfs/gdb_toolbox/configs/memory-dump.json",
+  ".cfs/gdb_toolbox/configs/register-dump.json",
+  ".cfs/gdb_toolbox/gdb/fault-analyzer-arm.gdb",
+  ".cfs/{{soc}}-{{package}}.cfsconfig",
+  "{{core}}/.vscode/c_cpp_properties.json",
+  "{{core}}/.vscode/launch.json",
+  "{{core}}/.vscode/settings.json",
+  "{{core}}/CMakeLists.txt",
+  "{{core}}/README.rst",
+  "{{core}}/dataset.bin",
+  "{{core}}/model.tflite",
+  "{{core}}/prj.conf",
+  "{{core}}/src/main.cpp",
+  "{{core}}/{{core}}.jdebug",
+  "{{workspaceName}}.code-workspace",
+];
 
-  beforeEach(() => {
-    plugin = new GenericPlugin(pluginInfo);
-  });
+// The crash-cause/heap-analyzer/thread-analyzer gdb_toolbox assets are gated on
+// the ['max32657','max32658','max32690'] condition in the manifest, so MAX78002
+// omits them (see the .cfsplugin file conditions).
+const conditionalGdbFiles = [
+  ".cfs/gdb_toolbox/configs/crash-cause-zephyr.json",
+  ".cfs/gdb_toolbox/configs/heap-analyzer.json",
+  ".cfs/gdb_toolbox/configs/thread-analyzer.json",
+  ".cfs/gdb_toolbox/gdb/crash-cause-zephyr.gdb",
+  ".cfs/gdb_toolbox/gdb/heap-analyzer.gdb",
+  ".cfs/gdb_toolbox/gdb/thread-analyzer.gdb",
+];
 
-  afterEach(async () => {
-    if (!isDebug()) {
-      await fs.rm(cfsWorkspace.location, { recursive: true, force: true });
-    }
-  });
+const hasFullGdbToolbox = (soc: string): boolean =>
+  ["max32657", "max32658", "max32690"].includes(soc.toLowerCase());
 
-  it("Should generate a workspace", async () => {
-    await plugin.generateWorkspace(cfsWorkspace).catch((error) => {
-      expect.fail(`${error}`);
-    });
-
-    // Verify the generated project files.
-    const expectedFiles = [
-      ".cfs/max32690-tqfn.cfsconfig",
-      ".cfs/ai.cfsaiprof",
-      "m4/.vscode/settings.json",
-      "m4/src/adi_tflm/adi_tflm.hpp",
-      "m4/src/adi_tflm/model.cpp",
-      "m4/src/adi_tflm/model.hpp",
-      "m4/dataset.bin",
-      "m4/model.tflite",
-    ];
-
-    for (const file of expectedFiles) {
-      const filePath = joinPath(
-        cfsWorkspace.location,
-        cfsWorkspace.workspaceName,
-        file,
-      );
-      const fileExistsInProject = await fileExists(filePath);
-      expect(
-        fileExistsInProject,
-        `File ${file} should exist in the project directory`,
-      ).to.be.true;
-    }
-
-    // Confirm that valid JSON files were generated.
-    const jsonFiles = await findJsonFiles(cfsWorkspace.location);
-    expect(jsonFiles.length).to.be.greaterThan(0, "No JSON files found");
-    for (const file of jsonFiles) {
-      const result = await validateJsonFile(file);
-      expect(result, `Error: '${file}' is not a valid JSON file.`).to.be.true;
-    }
-  });
-
-  it("should generate code with expected files including aimodels.cmake", async () => {
-    await plugin.generateWorkspace(cfsWorkspace).catch((error) => {
-      expect.fail(`${error}`);
-    });
-
-    const actualCfsConfigFile = joinPath(
-      cfsWorkspace.location,
-      cfsWorkspace.workspaceName,
-      ".cfs",
-      `${cfsWorkspace.soc}-${cfsWorkspace.package}.cfsconfig`,
-    );
-    const cfsConfig = JSON.parse(
-      await fs.readFile(actualCfsConfigFile, "utf-8"),
-    );
-
-    const project = cfsConfig.Projects.find(
-      (p: any) => p.PluginId === "com.analog.project.zephyr.plugin",
-    );
-
-    if (!project) {
-      expect.fail("No matching project found in cfsconfig");
-    }
-
-    const socDataModelPath = joinPath(
-      "node_modules",
-      "cfs-data-models",
-      "socs",
-      `${cfsWorkspace.soc}-${cfsWorkspace.package}.json`,
-    );
-    const socDataModel = JSON.parse(
-      await fs.readFile(socDataModelPath, "utf-8"),
-    );
-
-    const codeGenerationPath = joinPath(
-      cfsWorkspace.location,
-      cfsWorkspace.workspaceName,
-    );
-    const codeGenService = new CodeGenerationService();
-
-    const generatedFiles = await codeGenService.runCodeGeneration(
-      {
-        pluginId: project.PluginId,
-        cfsconfig: cfsConfig,
-        projectId: project.ProjectId,
-        coreId: project.CoreId,
-      },
-      socDataModel,
-      codeGenerationPath,
-    );
-
-    // This template ships an AIModels entry for every supported SoC, so
-    // aimodels.cmake must be generated alongside the board conf/overlay
-    // files - a regression here would previously go undetected.
-    const boardFileStem: string =
-      project.PlatformConfig.ZephyrBoardName.split("/").join("_");
-    const expectedCodeGenFiles = [
-      `boards/${boardFileStem}.conf`,
-      `boards/${boardFileStem}.overlay`,
-      "aimodels.cmake",
-    ];
-
-    await codeGenService.validateGeneratedFiles(
-      generatedFiles,
-      expectedCodeGenFiles,
-      joinPath(codeGenerationPath, cfsWorkspace.projects[0].name),
-    );
-  });
+runWorkspacePluginSuite(pluginInfo, {
+  suiteTitle: "Unit test for Zephyr Single Core TFLM Prof",
+  dataDir: "tests/unit-tests/plugins/zephyr-single-core-tflm-prof/data",
+  core: zephyrCoreDir,
+  projectPluginId: "com.analog.project.zephyr.plugin",
+  buildWorkspacePrefix: "tflm-prof",
+  buildable: true,
+  expectedWorkspaceFiles: ({ soc }) =>
+    hasFullGdbToolbox(soc)
+      ? [...commonWorkspaceFiles, ...conditionalGdbFiles]
+      : commonWorkspaceFiles,
+  // This template ships an AIModels entry for every supported SoC, so
+  // aimodels.cmake is generated alongside the board conf/overlay files.
+  expectedCodeGenFiles: (project) => [
+    ...zephyrBoardCodeGenFiles(project),
+    "aimodels.cmake",
+  ],
 });

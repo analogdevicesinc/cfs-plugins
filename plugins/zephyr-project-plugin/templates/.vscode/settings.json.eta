@@ -9,10 +9,15 @@
   "cfs.debugPath": "${workspaceFolder}/build/zephyr",
   "cfs.cmsis.svdFile": "${command:cfs.tool.path.zephyr}/modules/hal/adi/MAX/Libraries/CMSIS/Device/Maxim/<%= it.msdkInflectionPoint(it.soc) %>/Include/<%= it.msdkInflectionPoint(it.soc).toLowerCase() %>.svd",
   "cfs.cmsis.pack": "None",
+<% if (it.coreId === "RV") { %>
+  "cfs.openocd.interface": "interface/ftdi/olimex-arm-usb-ocd-h.cfg",
+  "cfs.openocd.target": "target/<%= it.openocdInflectionPoint(it.soc).toLowerCase() %>_riscv.cfg",
+<% } else { %>
   "cfs.openocd.interface": "interface/cmsis-dap.cfg",
   "cfs.openocd.target": "target/<%= it.openocdInflectionPoint(it.soc).toLowerCase() %>.cfg",
+<% } %>
   "cfs.environment": <%= it.configureEnvVariables() %>,
   "cfs.coreDump.address": "<%= it.coreDumpAddress(it.soc) %>",
-  "cfs.project.toolchain.id": "arm.zephyr.eabi.toolchain",
+  "cfs.project.toolchain.id": "<%= it.coreId === "RV" ? "riscv.zephyr.elf.toolchain" : "arm.zephyr.eabi.toolchain" %>",
   "cfs.project.firmwarePlatform": "Zephyr"
 }

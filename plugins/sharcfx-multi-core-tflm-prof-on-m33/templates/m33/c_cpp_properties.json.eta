@@ -1,0 +1,44 @@
+<%~ include("@normalizeSoc", it) %>
+<%~ include("@sharcfxUtils", it) %>
+{
+  "env": {
+    "cfs.project.toolchain.path": "",
+    "cfs.project.sdk.path": ""
+  },
+  "configurations": [
+<% const platforms = [{name: "Win32", ext: ".exe"}, {name: "Linux", ext: ""}]; -%>
+<% platforms.forEach((platform, idx) => { -%>
+    {
+      "name": "<%= platform.name %>",
+      "includePath": [
+        "${default}",
+        "${workspaceFolder}",
+        "${workspaceFolder}/**",
+        "${env:cfs.project.sdk.path}/packs/AnalogDevices/ADSP-SC83x_DFP/**/Include/**",
+        "${env:cfs.project.sdk.path}/packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include",
+        "${config:cfs.sdk.path}/Tools/cfsai/lib/cortex-m/tflite-micro",
+        "${config:cfs.sdk.path}/Tools/cfsai/lib/cortex-m/tflite-micro/third_party/flatbuffers/include",
+        "${config:cfs.sdk.path}/Tools/cfsai/lib/cortex-m/tflite-micro/third_party/gemmlowp/",
+        "${config:cfs.sdk.path}/Tools/cfsai/lib/cortex-m/tflite-micro/third_party/gemmlowp/**"
+      ],
+      "defines": [
+        "${config:cfs.project.board}",
+        "TARGET=<%= it.processorMacro(it.soc) %>",
+        "CORE2",
+        "-D__SILICON_REVISION__=<%= it.siliconRevision(it.soc) %>",
+        "__GNUC__"
+      ],
+      "intelliSenseMode": "gcc-arm",
+      "compilerPath": "${env:cfs.project.toolchain.path}/bin/arm-none-eabi-gcc<%= platform.ext %>",
+      "browse": {
+        "path": [
+          "${default}",
+          "${workspaceFolder}",
+          "${workspaceFolder}/**"
+        ]
+      }
+    }<%= idx < platforms.length - 1 ? ',' : '' %>
+<% }) -%>
+  ],
+  "version": 4
+}

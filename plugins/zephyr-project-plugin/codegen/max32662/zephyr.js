@@ -326,31 +326,29 @@ if (it.cfsconfig.Package.toUpperCase() === "TQFNEP") {
     ];
 }
 
-unsupported_in_dts = [
-    {datamodel: "AES", diag: "The Advanced Encryption Standard and True Random Number Generator peripheral is not currently supported in devicetree.", ctrl: "AES_ENABLE", value: "TRUE"},
+// Manually added entries: sub-feature and clock-specific warnings.
+const manuallyAddedUnsupportedList = [
     {datamodel: "AES KEY", diag: "The Advanced Encryption Standard and True Random Number Generator peripheral is not currently supported in devicetree.", ctrl: "AES_KEY_ENABLE", value: "TRUE"},
-    {datamodel: "TRNG", diag: "The Advanced Encryption Standard and True Random Number Generator peripheral is not currently supported in devicetree.", ctrl: "TRNG_ENABLE", value: "TRUE"},
     {clocknode: "AOD_CLK", diag: "Setting divide value on AOD from the GCR is not currently supported in devicetree.", ctrl: "DIV", value: "8" },
     {clocknode: "AOD_CLK", diag: "Setting divide value on AOD from the GCR is not currently supported in devicetree.", ctrl: "DIV", value: "16" },
     {clocknode: "AOD_CLK", diag: "Setting divide value on AOD from the GCR is not currently supported in devicetree.", ctrl: "DIV", value: "32" },
     {clocknode: "ERFO Mux", diag: "Bypass of the ERFO is not currently supported in devicetree.", ctrl: "MUX", value: "ERFO_CLK" },
     {clocknode: "ERTCO Mux", diag: "Bypass of the ERTCO is not currently supported in devicetree.", ctrl: "MUX", value: "ERTCO_CLK" },
-    {datamodel: "I2S", diag: "The Inter-IC Sound Interface peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "ICC", diag: "The Instruction Cache Controler is not currently supported in devicetree."},
     {datamodel: "IPO PRESCALER", diag: "Setting divide value on IPO PRESCALER from the GCR is not currently supported in devicetree.", ctrl: "DIV", value: "2"},
     {datamodel: "IPO PRESCALER", diag: "Setting divide value on IPO PRESCALER from the GCR is not currently supported in devicetree.", ctrl: "DIV", value: "4"},
     {datamodel: "IPO PRESCALER", diag: "Setting divide value on IPO PRESCALER from the GCR is not currently supported in devicetree.", ctrl: "DIV", value: "8"},
-    {datamodel: "LPCMP", diag: "The LPCMP peripheral is not currently supported in devicetree."},
-    {datamodel: "PT0", diag: "The Pulse Train Engines peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "PT1", diag: "The Pulse Train Engines peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "PT2", diag: "The Pulse Train Engines peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "PT3", diag: "The Pulse Train Engines peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "PTG", diag: "The PTG peripheral is not currently supported in devicetree."},
     {datamodel: "RTC", clocknode: "32KCAL", diag: "Enabling 32KCAL from the RTC is not currently supported in devicetree.", ctrl: "32KCAL", value: "1HZ"},
     {datamodel: "RTC", clocknode: "32KCAL", diag: "Enabling 32KCAL from the RTC is not currently supported in devicetree.", ctrl: "32KCAL", value: "512HZ"},
     {datamodel: "RTC", clocknode: "32KCAL", diag: "Enabling 32KCAL from the RTC is not currently supported in devicetree.", ctrl: "32KCAL", value: "4KHZ"},
-    {datamodel: "RTC", clocknode: "32KCAL", diag: "Enabling 32KCAL from the RTC is not currently supported in devicetree.", ctrl: "32KCAL", value: "32KHZ"}
+    {datamodel: "RTC", clocknode: "32KCAL", diag: "Enabling 32KCAL from the RTC is not currently supported in devicetree.", ctrl: "32KCAL", value: "32KHZ"},
 ];
+
+// Auto-generated: peripherals not in peripheralData + version-filtered peripherals.
+const { supported, unsupported } = buildUnsupportedZephyrEntries(peripheralData, manuallyAddedUnsupportedList);
+
+// Update peripheralData and unsupported_in_dts
+unsupported_in_dts = unsupported;
+peripheralData = supported;
 
 function mapClockName(clock) {
     if (clock === "HF_EXT_CLK") {
@@ -371,7 +369,7 @@ function mapClockName(clock) {
 
 function getClocksUsed() {
     let clocksUsed = new Set();
-    for (const peri of peripheralData) {
+    for (const peri of supported) {
         if (peri.clock_mux && isPeripheralClockSetTo(peri.datamodel, peri.enable, "TRUE")) {
             const clockName = mapClockName(getPeripheralClockSetting(peri.datamodel, peri.clock_mux, peri.clock_default));
             if (clockName) {

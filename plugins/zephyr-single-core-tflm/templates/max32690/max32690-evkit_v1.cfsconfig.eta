@@ -50,7 +50,7 @@
       "CoreId": "CM4",
       "ProjectId": "CM4",
       "PluginId": "com.analog.project.zephyr.plugin",
-      "PluginVersion": "^1.1.0",
+      "PluginVersion": "^1.4.0",
       "FirmwarePlatform": "zephyr",
       "ExternallyManaged": false,
       "Partitions": [
@@ -197,18 +197,10 @@
       ],
       "PlatformConfig": {
         "ProjectName": "m4",
-        "ZephyrVersion": "4.3.0",
+        "ZephyrVersion": "4.4.2",
         "ZephyrBoardName": "max32690evkit/max32690/m4"
       },
-      "Profiling" : {
-        "Zephelin": {
-          "Enabled": false,
-          "AIEnabled": false,
-          "Format": "TEXT",
-          "Interface": "UART",
-          "Port": 2
-        }
-      },
+      "Profiling" : {},
 <%~ include("../ai.cfsconfig.eta", it) %>
     },
     {

@@ -11,6 +11,7 @@
   "cfs.debugPath": "${workspaceFolder}/build/",
   "cfs.configureWorkspace": "Yes",
   "cfs.project.firmwarePlatform": "MSDK",
+  "cfs.project.toolchain.id": "arm.none.eabi.toolchain",
   "cfs.openocd.target": "target/<%= it.openocdInflectionPoint(it.soc).toLowerCase() %>.cfg",
   "cfs.openocd.interface": "interface/cmsis-dap.cfg",
   "cfs.cmsis.svdFile": "${command:cfs.tool.path.msdk}/Libraries/CMSIS/Device/Maxim/<%= it.msdkInflectionPoint(it.soc) %>/Include/<%= it.msdkInflectionPoint(it.soc).toLowerCase() %>.svd"

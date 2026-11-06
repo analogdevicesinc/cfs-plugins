@@ -1,0 +1,25 @@
+<%
+function qemuLaunchConfiguration() {
+  return {
+    name: "Debug with GDB and QEMU (Simulator)",
+    type: "cortex-debug",
+    request: "launch",
+    executable: "${config:cfs.programFile}",
+    cwd: "${workspaceFolder}",
+    gdbPath: "${cfs:tool.path.arm.none.eabi.toolchain}/bin/arm-none-eabi-gdb",
+    windows: {
+      gdbPath: "${cfs:tool.path.arm.none.eabi.toolchain}/bin/arm-none-eabi-gdb.exe"
+    },
+    servertype: "external",
+    gdbTarget: "localhost:10000",
+    runToEntryPoint: "main",
+    showDevDebugOutput: "none",
+    preLaunchTask: "CFS: Start QEMU GDB Server",
+    postDebugTask: "CFS: Stop QEMU GDB Server",
+    postLaunchCommands: ["set remotetimeout 60"]
+  };
+}
+
+const configuration = qemuLaunchConfiguration();
+%>
+<%~ JSON.stringify(configuration, null, 2).replace(/\n/g, "\n    ") + "\n" %>

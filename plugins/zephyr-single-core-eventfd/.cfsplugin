@@ -2,7 +2,7 @@
   "pluginName": "Zephyr Single Core Eventfd",
   "pluginDescription": "Application demonstrates using the POSIX eventfd() function to create a file descriptor.",
   "pluginId": "com.analog.zephyr.workspace.eventfd",
-  "pluginVersion": "1.0.0",
+  "pluginVersion": "1.1.0",
   "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "zephyr",

@@ -10,13 +10,13 @@
       "servertype": "openocd",
       "serverpath": "${config:cfs.openocd.path}/bin/openocd",
       "linux": {
-        "gdbPath": "${config:cfs.toolchain.armAArch32GCC.path}/bin/arm-none-eabi-gdb"
+        "gdbPath": "${cfs:tool.path.arm.none.eabi.toolchain.debuggerPath}"
       },
       "windows": {
-        "gdbPath": "${config:cfs.toolchain.armAArch32GCC.path}/bin/arm-none-eabi-gdb.exe"
+        "gdbPath": "${cfs:tool.path.arm.none.eabi.toolchain.debuggerPath}"
       },
       "osx": {
-        "gdbPath": "${config:cfs.toolchain.armAArch32GCC.path}/bin/arm-none-eabi-gdb"
+        "gdbPath": "${cfs:tool.path.arm.none.eabi.toolchain.debuggerPath}"
       },
       "svdPath": "${config:cfs.cmsis.svdFile}",
       "searchDir": [
@@ -47,15 +47,15 @@
       "servertype": "jlink",
       "linux": {
         "serverpath": "${command:cfs.jlink.setJlinkPath}/JLinkGDBServerCLExe",
-        "gdbPath": "${config:cfs.toolchain.armAArch32GCC.path}/bin/arm-none-eabi-gdb"
+        "gdbPath": "${cfs:tool.path.arm.none.eabi.toolchain.debuggerPath}"
       },
       "windows": {
         "serverpath": "${command:cfs.jlink.setJlinkPath}/JLinkGDBServerCL.exe",
-        "gdbPath": "${config:cfs.toolchain.armAArch32GCC.path}/bin/arm-none-eabi-gdb.exe"
+        "gdbPath": "${cfs:tool.path.arm.none.eabi.toolchain.debuggerPath}"
       },
       "osx": {
         "serverpath": "${command:cfs.jlink.setJlinkPath}/JLinkGDBServerCLExe",
-        "gdbPath": "${config:cfs.toolchain.armAArch32GCC.path}/bin/arm-none-eabi-gdb"
+        "gdbPath": "${cfs:tool.path.arm.none.eabi.toolchain.debuggerPath}"
       },
       "device": "${config:cfs.jlink.device}",
       "interface": "swd",

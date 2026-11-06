@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "packages": [
+    {
+      "name": "msdk",
+      "version": "^2.4.0"
+    },
+<% if (it.coreId === "RV") { %>
+    {
+      "name": "gnu_riscv_toolchain",
+      "version": ">=14"
+    },
+<% } else { %>
+    {
+      "name": "gnu_arm_toolchain",
+      "version": ">=14"
+    },
+<% } %>
+    {
+      "name": "cfs_base_data_models",
+      "version": "^2.4.0"
+    },
+    {
+      "name": "cfs_base_plugins",
+      "version": "^2.4.0"
+    }
+  ]
+}

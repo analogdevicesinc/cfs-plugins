@@ -2,7 +2,7 @@
   "pluginName": "MSDK Single Core Hash",
   "pluginDescription": "Demonstrates SHA-256 hashing using the CTB Hash peripheral.",
   "pluginId": "com.analog.singlecore.msdk.hash",
-  "pluginVersion": "1.0.0",
+  "pluginVersion": "1.1.0",
   "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "MSDK",

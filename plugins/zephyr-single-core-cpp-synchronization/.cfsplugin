@@ -2,7 +2,7 @@
   "pluginName": "Zephyr Single Core Synchronization C++",
   "pluginDescription": "Use Zephyr synchronization primitives from C++ code.",
   "pluginId": "com.analog.zephyr.workspace.synchronization.cpp",
-  "pluginVersion": "1.2.0",
+  "pluginVersion": "1.3.0",
   "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "zephyr",

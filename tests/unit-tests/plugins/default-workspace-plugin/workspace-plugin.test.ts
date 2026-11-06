@@ -15,10 +15,10 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import { expect } from "chai";
-import { CfsPluginInfo } from "cfs-types";
+import type { CfsPluginInfo, CfsWorkspace } from "cfs-types";
 import { GenericPlugin } from "cfs-plugins-sdk";
-import { fileExists, isDebug } from "../../utilities/test-utilities.js";
-import { joinPath } from "../../utilities/path-utilities.js";
+import { isDebug } from "@utilities/test-utilities.js";
+import { WorkspaceValidationService } from "@services/WorkspaceValidationService.js";
 
 describe("Unit test for WorkspacePlugin", () => {
   let plugin: GenericPlugin;
@@ -52,7 +52,7 @@ describe("Unit test for WorkspacePlugin", () => {
 
   before(async () => {
     try {
-      const filePath = "plugins/default-workspace-plugin/.cfsplugin";
+      const filePath = "plugins/dist/default-workspace-plugin/.cfsplugin";
       const absolutePath = path.resolve(filePath);
       const fileContent = await fs.readFile(absolutePath, "utf-8");
       pluginInfo = JSON.parse(fileContent) as CfsPluginInfo;
@@ -73,43 +73,31 @@ describe("Unit test for WorkspacePlugin", () => {
   });
 
   it("Should generate the workspace", async () => {
-    await plugin.generateWorkspace(cfsWorkspace);
+    await plugin.generateWorkspace(cfsWorkspace as unknown as CfsWorkspace);
 
-    // Verify the workspace was generated
-    const paths = {
-      cfsWorkspace: joinPath(
-        `${cfsWorkspace.location}/${cfsWorkspace.workspaceName}/.cfs/`,
-        `.cfsworkspace`,
-      ),
-      codeWorkspace: joinPath(
-        `${cfsWorkspace.location}/${cfsWorkspace.workspaceName}`,
-        `${cfsWorkspace.workspaceName}.code-workspace`,
-      ),
-      cfsConfig: joinPath(
-        `${cfsWorkspace.location}/${cfsWorkspace.workspaceName}/.cfs/`,
-        `${cfsWorkspace.workspaceName}.cfsconfig`,
-      ),
-    };
+    // MAX32690 satisfies every gdb_toolbox condition, so the full toolbox tree
+    // (shared source/destination mappings) must be produced.
+    const expectedWorkspaceFiles = [
+      ".cfs/.cfsworkspace",
+      `.cfs/${cfsWorkspace.workspaceName}.cfsconfig`,
+      ".cfs/gdb_toolbox/configs/fault-analyzer.json",
+      ".cfs/gdb_toolbox/configs/memory-dump.json",
+      ".cfs/gdb_toolbox/configs/register-dump.json",
+      ".cfs/gdb_toolbox/configs/crash-cause-zephyr.json",
+      ".cfs/gdb_toolbox/configs/thread-analyzer.json",
+      ".cfs/gdb_toolbox/configs/heap-analyzer.json",
+      ".cfs/gdb_toolbox/gdb/fault-analyzer-arm.gdb",
+      ".cfs/gdb_toolbox/gdb/fault-analyzer-xtensa.gdb",
+      ".cfs/gdb_toolbox/gdb/heap-analyzer.gdb",
+      ".cfs/gdb_toolbox/gdb/crash-cause-zephyr.gdb",
+      ".cfs/gdb_toolbox/gdb/thread-analyzer.gdb",
+      `${cfsWorkspace.workspaceName}.code-workspace`,
+    ];
 
-    const cfsWorkspaceExists = await fileExists(paths.cfsWorkspace);
-    expect(cfsWorkspaceExists, `Expected ${paths.cfsWorkspace} to exist`).to.be
-      .true;
-
-    const codeWorkspaceExists = await fileExists(paths.codeWorkspace);
-    expect(codeWorkspaceExists, `Expected ${paths.codeWorkspace} to exist`).to
-      .be.true;
-
-    const cfsConfigExists = await fileExists(paths.cfsConfig);
-    expect(cfsConfigExists, `Expected ${paths.cfsConfig} to exist`).to.be.true;
-
-    // currently broken - gdb toolbox json configs are only accessible via dist which the tests don't have access to
-
-    // Confirm that valid JSON files were generated
-    // const jsonFiles = await findJsonFiles(cfsWorkspace.location);
-    // expect(jsonFiles.length).to.be.greaterThan(0, "No JSON files found");
-    // for (const file of jsonFiles) {
-    //   const result = await validateJsonFile(file);
-    //   expect(result, `Error: '${file}' is not a valid JSON file.`).to.be.true;
-    // }
+    const workspaceValidationService = new WorkspaceValidationService();
+    await workspaceValidationService.validateWorkspaceFiles(
+      cfsWorkspace as unknown as CfsWorkspace,
+      expectedWorkspaceFiles,
+    );
   });
 });

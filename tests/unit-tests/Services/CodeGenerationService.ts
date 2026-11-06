@@ -12,17 +12,24 @@
  * limitations under the License.
  *
  */
+import { execFileSync } from "node:child_process";
+import { existsSync, readFileSync, rmSync } from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import { expect } from "chai";
 import {
   fileExists,
   loadPluginInfo,
   validateGeneratedFileContent,
 } from "@utilities/test-utilities.js";
+import { readPackageIndex } from "@utilities/package-index.js";
 import type { CfsCodeGenerationContext, CfsSocDataModel } from "cfs-types";
 import ZephyrProjectPlugin from "@plugins/zephyr-project-plugin/index.js";
 import MsdkProjectPlugin from "@plugins/msdk-project-plugin/index.js";
 import SharcFxProjectPlugin from "@plugins/sharcfx-project-plugin/index.js";
 import { joinPath } from "@utilities/path-utilities.js";
+
+const ZEPHYR_PROJECT_PLUGIN_ID = "com.analog.project.zephyr.plugin";
 
 /**
  * Service for validating code generation results against explicitly provided expected file paths.
@@ -88,20 +95,153 @@ export class CodeGenerationService {
     projectDetails: any,
     socDataModel: CfsSocDataModel,
     basePath: string,
+    options: { withBoardDts?: boolean } = {},
   ): Promise<string[]> {
     const plugin = await this.createPlugin(projectDetails.pluginId as string);
+    const boardDts = options.withBoardDts
+      ? this.resolveBoardDts(projectDetails)
+      : undefined;
     const context: CfsCodeGenerationContext = {
       cfsconfig: projectDetails.cfsconfig,
       datamodel: socDataModel,
       projectId: projectDetails.projectId as string,
       coreId: projectDetails.coreId as string,
+      ...(boardDts ? { boardDts } : {}),
     };
     return plugin.generateCode(context, basePath);
   }
 
+  /**
+   * Build-test-only: produces the `boardDts` code-generation input by parsing the
+   * Zephyr board devicetree with `cfsutil dt parse`, mirroring what the product
+   * injects at generation time. Zephyr overlay templates gate memory/partition
+   * fixes (e.g. `/delete-node/ &m4_sram`) on `hasSocNodeLabel(...)`, which reads
+   * `it.boardDts`; without it the generated overlay drifts from the product and
+   * fails the Zephyr 4.4.x devicetree build. Opt-in (only the build test passes
+   * `withBoardDts`) so code-generation validation tests stay free of cfsutil.
+   * Returns `undefined` silently for non-Zephyr projects, which never read
+   * `boardDts`. For a Zephyr project every failure is a real one - generation
+   * still proceeds without board-dts context, as before, but a warning names
+   * the reason so a broken cfsutil or Zephyr install is distinguishable from
+   * "not applicable" instead of quietly skipping the overlay fix.
+   */
+  private resolveBoardDts(
+    projectDetails: any,
+  ): Record<string, unknown> | undefined {
+    const { pluginId, projectId } = projectDetails as {
+      pluginId?: string;
+      projectId?: string;
+    };
+
+    // Only the Zephyr overlay template reads boardDts, so anything else is not
+    // applicable rather than broken. Keyed off the plugin id, not a missing
+    // ZephyrBoardName, so a Zephyr project with a bad cfsconfig still warns.
+    if (pluginId !== ZEPHYR_PROJECT_PLUGIN_ID) {
+      return undefined;
+    }
+
+    const warn = (reason: string): void => {
+      console.warn(`[boarddts:unavailable] ${reason}`);
+    };
+
+    const cfsUtil = process.env.CFS_UTIL_CMD;
+    if (!cfsUtil) {
+      warn("CFS_UTIL_CMD is not set");
+      return undefined;
+    }
+    const projects = projectDetails?.cfsconfig?.Projects ?? [];
+    const project =
+      projects.find((p: any) => p.ProjectId === projectDetails.projectId) ??
+      projects[0];
+    const boardName = project?.PlatformConfig?.ZephyrBoardName as
+      | string
+      | undefined;
+    if (!boardName) {
+      warn(`no ZephyrBoardName in cfsconfig for project '${projectId}'`);
+      return undefined;
+    }
+    const zephyrBase = this.resolveZephyrBase();
+    if (!zephyrBase) {
+      warn(`no installed Zephyr package found for board '${boardName}'`);
+      return undefined;
+    }
+    const boardDir = boardName.split("/")[0];
+    const dtsPath = path.join(
+      zephyrBase,
+      "boards",
+      "adi",
+      boardDir,
+      `${boardName.replace(/\//g, "_")}.dts`,
+    );
+    if (!existsSync(dtsPath)) {
+      warn(`board devicetree not found: ${dtsPath}`);
+      return undefined;
+    }
+    const outFile = path.join(
+      os.tmpdir(),
+      `cfs-boarddts-${process.pid}-${Date.now()}.json`,
+    );
+    try {
+      execFileSync(
+        cfsUtil,
+        [
+          "dt",
+          "parse",
+          dtsPath,
+          "-f",
+          "json",
+          "-o",
+          outFile,
+          "-I",
+          path.join(zephyrBase, "dts"),
+          "-I",
+          path.join(zephyrBase, "dts", "arm"),
+          "-I",
+          path.join(zephyrBase, "dts", "common"),
+          "-I",
+          path.join(zephyrBase, "dts", "vendor"),
+        ],
+        // A shell on Windows, matching WorkspaceBuildService: the documented
+        // Windows CFS_UTIL_CMD is the kit's `cfs.cmd`, which execFileSync
+        // cannot launch directly. Without this the call throws, the catch
+        // below drops boardDts, and Windows build tests silently lose the fix.
+        { stdio: "pipe", shell: process.platform === "win32" },
+      );
+      return JSON.parse(readFileSync(outFile, "utf-8")) as Record<
+        string,
+        unknown
+      >;
+    } catch (error) {
+      warn(
+        `cfsutil dt parse failed for ${dtsPath}: ${(error as Error).message}`,
+      );
+      return undefined;
+    } finally {
+      try {
+        rmSync(outFile, { force: true });
+      } catch {
+        // best-effort cleanup
+      }
+    }
+  }
+
+  /**
+   * Resolves the installed Zephyr package's base directory (the west workspace
+   * `.../<hash>/f/zephyr`) from the package manager's `.cfsPackages` index, the
+   * same index `cfsutil pkg path` reads.
+   */
+  private resolveZephyrBase(): string | undefined {
+    const entry = readPackageIndex().zephyr;
+    if (!entry?.path) {
+      return undefined;
+    }
+    const base = path.join(path.dirname(entry.path), "f", "zephyr");
+    return existsSync(base) ? base : undefined;
+  }
+
   private async createPlugin(pluginId: string): Promise<any> {
     switch (pluginId) {
-      case "com.analog.project.zephyr.plugin":
+      case ZEPHYR_PROJECT_PLUGIN_ID:
         const zephyrProjectPluginPath =
           "plugins/dist/zephyr-project-plugin/.cfsplugin";
         return new ZephyrProjectPlugin(

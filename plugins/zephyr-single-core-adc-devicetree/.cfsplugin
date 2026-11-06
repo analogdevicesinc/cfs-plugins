@@ -2,7 +2,7 @@
   "pluginName": "Zephyr Single Core ADC Devicetree",
   "pluginDescription": "Single Core Zephyr template for configuring and reading ADC channels using devicetree.",
   "pluginId": "com.analog.zephyr.workspace.adc.devicetree",
-  "pluginVersion": "1.0.0",
+  "pluginVersion": "1.1.0",
   "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "zephyr",

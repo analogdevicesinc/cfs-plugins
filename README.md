@@ -57,6 +57,44 @@ For information on using CFS Plugins in CFS, refer to the [CFS User Guide](https
 
 ---
 
+## ⚙️ SharcFX Plugins
+
+The repository includes a set of SharcFX plugins for ADSP-SC83x and ADSP-2183x processors:
+
+- **[`sharcfx-project-plugin`](./plugins/sharcfx-project-plugin/)** – Project and code generation for SHARC-FX workspaces. Implements `project`, `codegen`, and `properties` services.
+- **[`sharcfx-multi-core-example`](./plugins/sharcfx-multi-core-example/)** – Multi-core Hello World template (SHARC-FX core 1 + ARM M33 core 2).
+- **[`sharcfx-multi-core-tflm-on-m33`](./plugins/sharcfx-multi-core-tflm-on-m33/)** – Multi-core template with TensorFlow Lite Micro on the ARM M33 core.
+- **[`sharcfx-single-core-example`](./plugins/sharcfx-single-core-example/)** – Single-core Hello World template (SHARC-FX only).
+- **[`sharcfx-single-core-tflm`](./plugins/sharcfx-single-core-tflm/)** – Single-core template with TensorFlow Lite Micro on SHARC-FX.
+
+### Build Artifact Types
+
+SharcFX projects support multiple build artifact types. To change the artifact type, set `cfs.sfx.artifactType` for an SFX project or `cfs.arm.artifactType` for an M33 project in `.vscode/settings.json`, then run the **build** task. You can also override it on the command line:
+
+```bash
+make ARTIFACT_TYPE=static_library
+```
+
+#### SFX Core (SHARC-FX / Xtensa)
+
+| Type                   | Output           | Description       |
+| ---------------------- | ---------------- | ----------------- |
+| `executable` (default) | `<project>.dxe`  | Linked executable |
+| `static_library`       | `lib<project>.a` | Static archive    |
+
+#### M33 Core (ARM Cortex-M33)
+
+| Type                   | Output           | Description                                      |
+| ---------------------- | ---------------- | ------------------------------------------------ |
+| `executable` (default) | `<project>.elf`  | Linked executable                                |
+| `static_library`       | `lib<project>.a` | Static archive                                   |
+| `binary`               | `<project>.bin`  | Raw binary via objcopy (builds executable first) |
+| `hex`                  | `<project>.hex`  | Intel HEX via objcopy (builds executable first)  |
+
+Run `make help` inside a generated project for a full list of available targets.
+
+---
+
 ## 📂 Plugin Structure Overview
 
 ```markdown

@@ -1,0 +1,149 @@
+/* Copyright 2023 The TensorFlow Authors. All Rights Reserved.
+
+Portions Copyright (c) 2026 Analog Devices, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+==============================================================================*/
+
+// Simplified version of hello world example from
+// https://github.com/tensorflow/tflite-micro/tree/main/tensorflow/lite/micro/examples/hello_world
+
+// Needed for sin() and fabsf()
+#include <math.h>
+<% if (it.soc.toLowerCase() === "max32690") { %>
+#include <stdint.h>
+#include <inttypes.h>
+<% } %>
+
+// Needed for printf()
+#include <stdio.h>
+
+// Standard TfLM includes
+#pragma GCC diagnostic push
+// TFLM library mixes float/double literals which produces warnings
+#pragma GCC diagnostic ignored "-Wdouble-promotion"
+#include "tensorflow/lite/core/c/common.h"
+#include "tensorflow/lite/micro/micro_interpreter.h"
+#include "tensorflow/lite/micro/micro_mutable_op_resolver.h"
+#include "tensorflow/lite/micro/micro_profiler.h"
+#include "tensorflow/lite/micro/recording_micro_interpreter.h"
+#include "tensorflow/lite/micro/system_setup.h"
+#include "tensorflow/lite/schema/schema_generated.h"
+#pragma GCC diagnostic pop
+
+<% if (it.soc.toLowerCase() === "max32690") { %>
+// On MAX32690 hardware, DWT_CTRL.NOCYCCNT reads 1, so CYCCNT is not implemented.
+// Profiling therefore uses the timer peripheral as a fallback.
+#include <tmr.h>
+
+<% } %>
+// ADI Generated model header
+#include "adi_tflm.hpp"
+
+<% if (it.soc.toLowerCase() === "max32690") { %>
+// TMR0 uses PCLK (prescaler = 1). With the current System Planner
+// configuration (CPU = 120 MHz, PCLK = 60 MHz), one TMR tick equals
+// two CPU cycles.
+// Update this ratio if the System Planner clock configuration changes.
+static constexpr uint32_t kCpuCyclesPerTmrTick = 2U;
+
+<% } %>
+int RunFloat32Model() {
+  const tflite::Model* model = ::tflite::GetModel(hello_world_model_f32);
+  TFLITE_CHECK_EQ(model->version(), TFLITE_SCHEMA_VERSION);
+
+  // Call op resolver function provided by ADI generated file to avoid
+  // having to identify which operators are used by the model. 
+  tflite::MicroMutableOpResolver<HELLO_WORLD_MODEL_F32_NUM_OPERATORS> op_resolver;
+  TF_LITE_ENSURE_STATUS(adi_resolve_ops_hello_world_model_f32(op_resolver));
+
+  tflite::MicroInterpreter interpreter(model, 
+                                       op_resolver, 
+                                       hello_world_model_f32_arena,
+                                       HELLO_WORLD_MODEL_F32_ARENA_SIZE);
+  TF_LITE_ENSURE_STATUS(interpreter.AllocateTensors());
+
+  size_t used = interpreter.arena_used_bytes();
+
+  printf("TFLM arena usage: \n- Used=%u bytes\n- Total=%u bytes\n- Free=%u bytes\n",
+        (unsigned int)used, (unsigned int)HELLO_WORLD_MODEL_F32_ARENA_SIZE, (unsigned int)(HELLO_WORLD_MODEL_F32_ARENA_SIZE - used));
+
+  // Check if the predicted output is within a small range of the
+  // expected output
+  float epsilon = 0.05f;
+  constexpr int kNumTestValues = 4;
+  float golden_inputs[kNumTestValues] = {0.f, 1.f, 3.f, 5.f};
+  bool pass = 0;
+  int fails = 0;
+<% if (it.soc.toLowerCase() === "max32690") { %>
+  uint64_t invoke_ticks_total = 0;
+  uint32_t invoke_ticks_min = UINT32_MAX;
+  uint32_t invoke_ticks_max = 0;
+
+  // TMR0 is configured by System Planner (via PeripheralInit() in soc_init.c).
+  // Reset the counter and start the timer before profiling.
+  MXC_TMR_SetCount(MXC_TMR0, 0U);
+  MXC_TMR_Start(MXC_TMR0);
+
+<% } %>
+  for (int i = 0; i < kNumTestValues; ++i) {
+    interpreter.input(0)->data.f[0] = golden_inputs[i];
+<% if (it.soc.toLowerCase() === "max32690") { %>
+    
+    // Measure only the call to Invoke().
+    uint32_t start_ticks = MXC_TMR_GetCount(MXC_TMR0);
+<% } %>
+    TF_LITE_ENSURE_STATUS(interpreter.Invoke());
+<% if (it.soc.toLowerCase() === "max32690") { %>
+    uint32_t end_ticks = MXC_TMR_GetCount(MXC_TMR0);
+
+    uint32_t invoke_ticks = end_ticks - start_ticks;
+    invoke_ticks_total += invoke_ticks;
+    if (invoke_ticks < invoke_ticks_min) {
+      invoke_ticks_min = invoke_ticks;
+    }
+    if (invoke_ticks > invoke_ticks_max) {
+      invoke_ticks_max = invoke_ticks;
+    }
+
+<% } %>
+    float y_pred = interpreter.output(0)->data.f[0];
+    float y_calc = sin(golden_inputs[i]);
+    pass = fabsf(y_calc - y_pred) < epsilon;
+    if (!pass)
+      fails++;
+    printf("Test %d %s: pred=%f calc=%f\n", i, pass ? "passed" : "failed", (double)y_pred, (double)y_calc);
+  }
+
+<% if (it.soc.toLowerCase() === "max32690") { %>
+  MXC_TMR_Stop(MXC_TMR0);
+  double invoke_ticks_avg = (double)invoke_ticks_total / (double)kNumTestValues;
+
+  printf("Inference performance (CPU cycles): \n\tavg: %.2f\n\tmin: %" PRIu64 "\n\tmax: %" PRIu64 "\n",
+         invoke_ticks_avg * (double)kCpuCyclesPerTmrTick,
+         ((uint64_t)invoke_ticks_min * kCpuCyclesPerTmrTick),
+         ((uint64_t)invoke_ticks_max * kCpuCyclesPerTmrTick));
+         
+<% } %>
+  return fails;
+}
+
+int main() {
+  int fails = 0;
+  tflite::InitializeTarget();
+  fails += RunFloat32Model();
+  printf("Done - %s\n", fails ? "Failures" : "Success");
+  while(1)
+     ; /* idle loop */
+}
+

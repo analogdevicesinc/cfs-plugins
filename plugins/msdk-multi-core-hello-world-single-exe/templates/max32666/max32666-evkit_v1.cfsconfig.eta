@@ -51,7 +51,7 @@
       "CoreId": "CM4-0",
       "ProjectId": "CM4-0",
       "PluginId": "com.analog.project.msdk.plugin",
-      "PluginVersion": "^1.2.0",
+      "PluginVersion": "^1.4.0",
       "FirmwarePlatform": "msdk",
       "ExternallyManaged": false,
       "PlatformConfig": {
@@ -183,7 +183,7 @@
       "CoreId": "CM4-1",
       "ProjectId": "CM4-1",
       "PluginId": "com.analog.project.msdk.plugin",
-      "PluginVersion": "^1.2.0",
+      "PluginVersion": "^1.4.0",
       "FirmwarePlatform": "msdk",
       "ExternallyManaged": false,
       "PlatformConfig": {

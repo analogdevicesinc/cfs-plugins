@@ -1,0 +1,58 @@
+<%
+/*********************************************************************************
+
+Copyright(c) 2022-2026 Analog Devices, Inc. All Rights Reserved.
+
+This software is proprietary.  By using this software you agree
+to the terms of the associated Analog Devices License Agreement.
+
+*********************************************************************************/
+%> 
+<% eval(this.render("templates/ssdd/ssdd_common.js")); %>
+<%~ include("@copyrightHeader", it) %> 
+/* This file is generated using the peripheral settings configured using System Planner.
+ * Please do not edit the values here directly.
+ */
+
+/*! \addtogroup MLB_Driver MLB Device Driver
+ *  @{
+ */
+
+/*! \defgroup MLB_Driver_Static_Configuration MLB Driver static configuration
+ *  @{
+ */
+
+/*********************************************************************************
+* @file:    adi_mlb_config_SC8xx.h
+* @brief:   Header file for MLB driver static configuration parameters
+*********************************************************************************/
+#ifndef ADI_MLB_CONFIG_SC8XX_H
+#define ADI_MLB_CONFIG_SC8XX_H
+
+#define ADI_MLB_TOT_CHANNELS        		 (<%= getPeriConfigValueInt("MLB0", "TOT_CHANNELS", "0") %>u)      /*!< Total number of MLB Logical Channels used in application.*/
+
+#if defined(__ADSPSC835_FAMILY__)
+<%
+  var _g_dataint0_sec_int = [
+    getAssignedPeripheral("MLB0") ? getPeriConfigValueBoolAsInt("MLB0", "DATAINT0_SEC_INT", "FALSE") : null,
+  ].filter(v => v !== null);
+%> 
+#define ADI_MLB_CONFIG_DATAINT0_SEC_INT       (<%= _g_dataint0_sec_int.length ? _g_dataint0_sec_int[0] : getPeriConfigValueBoolAsInt("MLB0", "DATAINT0_SEC_INT", "FALSE") %>u)      /*!< This MACRO configures the default interrupt routing for SEC Interrupt (1u) OR Core Direct Interrupt (0u)*/
+<%
+  var _g_dataint1_sec_int = [
+    getAssignedPeripheral("MLB0") ? getPeriConfigValueBoolAsInt("MLB0", "DATAINT1_SEC_INT", "FALSE") : null,
+  ].filter(v => v !== null);
+%> 
+#define ADI_MLB_CONFIG_DATAINT1_SEC_INT       (<%= _g_dataint1_sec_int.length ? _g_dataint1_sec_int[0] : getPeriConfigValueBoolAsInt("MLB0", "DATAINT1_SEC_INT", "FALSE") %>u)		/*!< This MACRO configures the default interrupt routing for SEC Interrupt (1u) OR Core Direct Interrupt (0u)*/
+#endif
+
+<%
+  var _g_stat_sec_int = [
+    getAssignedPeripheral("MLB0") ? getPeriConfigValueBoolAsInt("MLB0", "STAT_SEC_INT", "FALSE") : null,
+  ].filter(v => v !== null);
+%> 
+#define ADI_MLB_CONFIG_STAT_SEC_INT       	  (<%= _g_stat_sec_int.length ? _g_stat_sec_int[0] : getPeriConfigValueBoolAsInt("MLB0", "STAT_SEC_INT", "FALSE") %>u)		/*!< This MACRO configures the default interrupt routing for SEC Interrupt (1u) OR Core Direct Interrupt (0u)*/
+
+#endif /* ADI_MLB_CONFIG_SC8XX_H */
+
+/** @}*/

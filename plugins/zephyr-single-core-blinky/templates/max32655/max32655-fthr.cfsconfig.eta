@@ -92,7 +92,7 @@
       "CoreId": "CM4",
       "ProjectId": "CM4",
       "PluginId": "com.analog.project.zephyr.plugin",
-      "PluginVersion": "^1.1.0",
+      "PluginVersion": "^1.4.0",
       "FirmwarePlatform": "zephyr",
       "ExternallyManaged": false,
       "Partitions": [
@@ -346,7 +346,7 @@
       ],
       "PlatformConfig": {
         "ProjectName": "m4",
-        "ZephyrVersion": "4.3.0",
+        "ZephyrVersion": "4.4.2",
         "ZephyrBoardName": "max32655fthr/max32655/m4"
       }
     },

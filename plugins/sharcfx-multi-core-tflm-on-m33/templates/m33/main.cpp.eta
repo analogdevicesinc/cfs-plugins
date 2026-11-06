@@ -1,5 +1,7 @@
 /* Copyright 2023 The TensorFlow Authors. All Rights Reserved.
 
+Portions Copyright (c) 2026 Analog Devices, Inc.
+
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -18,8 +20,8 @@ limitations under the License.
 
 // Needed for sin() and fabsf()
 #include <math.h>
-
 #include <stdio.h>
+#include <stdint.h>
 
 #define TF_LITE_STATIC_MEMORY
 
@@ -29,12 +31,22 @@ limitations under the License.
 #include "tensorflow/lite/micro/micro_log.h"
 #include "tensorflow/lite/micro/micro_mutable_op_resolver.h"
 #include "tensorflow/lite/micro/micro_profiler.h"
+#include "tensorflow/lite/micro/micro_time.h"
+#include "tensorflow/lite/micro/cortex_m_generic/debug_log_callback.h"
 #include "tensorflow/lite/micro/recording_micro_interpreter.h"
 #include "tensorflow/lite/micro/system_setup.h"
 #include "tensorflow/lite/schema/schema_generated.h"
 
 // ADI Generated model header
 #include "adi_tflm.hpp"
+
+#ifdef ENABLE_TFLM_PROFILING
+// cortex_m_generic DebugLog drops MicroPrintf output unless a callback is registered.
+static void TflmDebugLog(const char* s)
+{
+  printf("%s", s);
+}
+#endif
 
 int RunFloat32Model() {
   const tflite::Model* model = ::tflite::GetModel(hello_world_model_f32);
@@ -45,12 +57,30 @@ int RunFloat32Model() {
   tflite::MicroMutableOpResolver<HELLO_WORLD_MODEL_F32_NUM_OPERATORS> op_resolver;
   TF_LITE_ENSURE_STATUS(adi_resolve_ops_hello_world_model_f32(op_resolver));
 
+#ifdef ENABLE_TFLM_PROFILING
+  // Passing a profiler to the interpreter makes TFLM record per-operator timings.
+  // Static: MicroProfiler is ~80 KB, larger than the 32 KB stack.
+  static tflite::MicroProfiler profiler;
+  tflite::MicroProfilerInterface* profiler_ptr = &profiler;
+#else
+  tflite::MicroProfilerInterface* profiler_ptr = nullptr;
+#endif
+
   tflite::MicroInterpreter interpreter(model,
                                        op_resolver,
                                        hello_world_model_f32_arena,
-                                       HELLO_WORLD_MODEL_F32_ARENA_SIZE);
+                                       HELLO_WORLD_MODEL_F32_ARENA_SIZE,
+                                       /*resource_variables=*/nullptr,
+                                       profiler_ptr);
   TF_LITE_ENSURE_STATUS(interpreter.AllocateTensors());
 
+#ifdef ENABLE_TFLM_PROFILING
+  size_t used = interpreter.arena_used_bytes();
+
+  printf("TFLM arena usage: \n- Used=%u bytes\n- Total=%u bytes\n- Free=%u bytes\n",
+        (unsigned int)used, (unsigned int)HELLO_WORLD_MODEL_F32_ARENA_SIZE, (unsigned int)(HELLO_WORLD_MODEL_F32_ARENA_SIZE - used));
+#endif
+  
   // Check if the predicted output is within a small range of the
   // expected output
   float epsilon = 0.05f;
@@ -58,17 +88,56 @@ int RunFloat32Model() {
   float golden_inputs[kNumTestValues] = {0.f, 1.f, 3.f, 5.f};
   bool pass = 0;
   int fails = 0;
+#ifdef ENABLE_TFLM_PROFILING
+  uint64_t total_cycles = 0U;
+  uint32_t min_cycles = UINT32_MAX;
+  uint32_t max_cycles = 0U;
+#endif
 
   for (int i = 0; i < kNumTestValues; ++i) {
     interpreter.input(0)->data.f[0] = golden_inputs[i];
-    TF_LITE_ENSURE_STATUS(interpreter.Invoke());
+
+#ifdef ENABLE_TFLM_PROFILING
+    const uint32_t start_cycles = tflite::GetCurrentTimeTicks();
+#endif
+    TfLiteStatus invoke_status = interpreter.Invoke();
+#ifdef ENABLE_TFLM_PROFILING
+    const uint32_t invoke_cycles = tflite::GetCurrentTimeTicks() - start_cycles;
+#endif
+    TF_LITE_ENSURE_STATUS(invoke_status);
+
+#ifdef ENABLE_TFLM_PROFILING
+    total_cycles += invoke_cycles;
+    if (invoke_cycles < min_cycles)
+    {
+      min_cycles = invoke_cycles;
+    }
+    if (invoke_cycles > max_cycles)
+    {
+      max_cycles = invoke_cycles;
+    }
+
+    printf("\nPer-operator profile for test %d:\n", i);
+    profiler.LogCsv();
+    profiler.ClearEvents();
+#endif
+
     float y_pred = interpreter.output(0)->data.f[0];
     float y_calc = sin(golden_inputs[i]);
     pass = fabsf(y_calc - y_pred) < epsilon;
     if (!pass)
       fails++;
-    MicroPrintf("Test %d %s: pred=%f calc=%f", i, pass ? "passed" : "failed", (double)y_pred, (double)y_calc);
+    printf("Test %d %s: pred=%f calc=%f\n", i, pass ? "passed" : "failed", (double)y_pred, (double)y_calc);
   }
+
+#ifdef ENABLE_TFLM_PROFILING
+  // Report cycle statistics across all invocations.
+  double cycle_avg = (double)total_cycles / (double)kNumTestValues;
+  printf("Inference performance (CPU cycles): \n\tavg: %.2f\n\tmin: %lu\n\tmax: %lu\n",
+    cycle_avg,
+    min_cycles,
+    max_cycles);
+#endif
 
   return fails;
 }
@@ -80,9 +149,12 @@ extern "C" {
 int main(void) {
   int fails = 0;
   adi_initpinmux();
+#ifdef ENABLE_TFLM_PROFILING
+  RegisterDebugLogCallback(TflmDebugLog);
+#endif
   tflite::InitializeTarget();
   fails += RunFloat32Model();
-  MicroPrintf("Done - %s\n", fails ? "Failures" : "Success");
+  printf("Done - %s\n", fails ? "Failures" : "Success");
   while(1)
      ; /* idle loop */
   

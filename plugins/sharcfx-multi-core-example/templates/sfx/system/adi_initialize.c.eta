@@ -10,6 +10,7 @@
 
 #include "adi_initialize.h"
 
+extern int32_t adi_SRU_Init(void);
 extern int32_t adi_initpinmux(void);
 
 int32_t adi_initComponents(void)
@@ -20,6 +21,10 @@ int32_t adi_initComponents(void)
 
   if (result == 0) {
     result = adi_initpinmux();
+  }
+
+  if (result == 0) {
+    result = adi_SRU_Init();
   }
 
   return result;

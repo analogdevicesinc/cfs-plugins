@@ -1,18 +1,33 @@
 <%~ include("@sharcfxUtils", it) %>
 # Top-level Makefile
 
-SHELL := sh.exe
+ifeq ($(OS),Windows_NT)
+    SHELL := sh.exe
+else
+    SHELL := /bin/sh
+endif
 
 # Build type (default to Debug)
 DEBUG ?= 1
+
+V ?= 0
+ifeq ($(V),1)
+Q =
+else
+Q = @
+endif
+
+# Target SoC (can be overridden via make TARGET=...)
+TARGET ?= <%= it.soc %>
 
 # Compiler and linker settings
 CC = ccfx
 CXX = ccfx++
 
-CFLAGS = -proc <%= it.soc %> -si-revision any -c -ffunction-sections -fdata-sections -mlongcalls -DCORE1
-CXXFLAGS = -proc <%= it.soc %> -si-revision any -c -ffunction-sections -fdata-sections -mlongcalls -DCORE1 -std=c++17 -stdlib=libc++
-LDFLAGS = -proc <%= it.soc %> -si-revision any -Wl,--gc-sections -Wl,--defsym=__prefctl_default=0x88
+CFLAGS = -proc $(TARGET) -si-revision any -c -ffunction-sections -fdata-sections -mlongcalls -DCORE1
+CXXFLAGS = -proc $(TARGET) -si-revision any -c -ffunction-sections -fdata-sections -mlongcalls -DCORE1 -std=c++17 -stdlib=libc++
+LDFLAGS = -proc $(TARGET) -si-revision any -Wl,--gc-sections -Wl,--defsym=__prefctl_default=0x88
+DEPFLAGS = -MMD -MP
 
 
 #=============================================================================
@@ -47,13 +62,17 @@ else
 endif
 
 BUILD_DIR = build
-OBJ_DIR = $(BUILD_DIR)/obj
+OBJ_DIR = $(BUILD_DIR)/obj/$(ARTIFACT_TYPE)
 
 
 # Include project-specific Makefile.
 PROJECTMK ?= $(abspath ./project.mk)
 include $(PROJECTMK)
 $(info Loaded project.mk)
+
+CONFIGMK ?= $(abspath ./config.mk)
+-include $(CONFIGMK)
+$(info Loaded config.mk)
 
 #=============================================================================
 #  DISCOVER ADDITIONAL LIBS
@@ -67,6 +86,7 @@ ADDITIONAL_LIBS =
 
 # Function to normalize path for variable names (replace / and : with _)
 normalize_path = $(subst :,_,$(subst /,_,$(subst \,_,$(1))))
+display_path = $(if $(and $(SSDD_BASE),$(filter $(subst \,/,$(SSDD_BASE))/%,$(subst \,/,$(1)))),SSDD/$(patsubst $(subst \,/,$(SSDD_BASE))/%,%,$(subst \,/,$(1))),$(if $(and $(DFP_SOURCE_DIR),$(filter $(DFP_SOURCE_DIR)/%,$(subst \,/,$(1)))),DFP/$(patsubst $(DFP_SOURCE_DIR)/%,%,$(subst \,/,$(1))),$(subst \,/,$(1))))
 
 # Discover workspace source files
 define discover_sources
@@ -75,10 +95,14 @@ endef
 
 # Discover external source files
 define discover_external_sources
-$(foreach base,$(EXTERNAL_BASES),\
+$(foreach base,$(EXTERNAL_DISCOVERY_BASES),\
 	$(foreach subdir,$(shell find "$(base)" -type d 2>/dev/null | head -50),\
 	$(wildcard $(subdir)/*.c $(subdir)/*.cc $(subdir)/*.cpp)))
 endef
+
+# SSDD is an external base for object paths and compile rules, but its source
+# files are selected explicitly in config.mk rather than discovered.
+EXTERNAL_DISCOVERY_BASES = $(filter-out $(SSDD_BASE),$(EXTERNAL_BASES))
 
 # Get all workspace source files
 PROJ_C_SRCS = $(filter %.c,$(call discover_sources))
@@ -86,8 +110,8 @@ PROJ_CXX_SRCS = $(filter %.cc %.cpp,$(call discover_sources))
 
 # Get all external source files
 EXT_ALL_SRCS = $(call discover_external_sources)
-EXT_C_SRCS = $(filter %.c,$(EXT_ALL_SRCS))
-EXT_CXX_SRCS = $(filter %.cc %.cpp,$(EXT_ALL_SRCS))
+EXT_C_SRCS = $(filter %.c,$(EXT_ALL_SRCS)) $(filter %.c,$(SSDD_C_SRCS))
+EXT_CXX_SRCS = $(filter %.cc %.cpp,$(EXT_ALL_SRCS)) $(filter %.cc %.cpp,$(SSDD_CXX_SRCS))
 
 # Combined source files
 C_SRCS = $(PROJ_C_SRCS) $(EXT_C_SRCS)
@@ -103,7 +127,7 @@ BASE_INCLUDES = -I src/system
 
 # Auto-discover external include paths
 # EXTERNAL_INCLUDES = $(foreach base,$(EXTERNAL_BASES),-I "$(base)" $(foreach subdir,$(shell find "$(base)" -type d 2>/dev/null | head -20),-I "$(subdir)"))
-EXTERNAL_INCLUDES = 
+EXTERNAL_INCLUDES = $(foreach dir,$(EXTERNAL_INCLUDE_DIRS),-I "$(dir)")
 
 # All includes
 INCLUDES += $(BASE_INCLUDES) $(EXTERNAL_INCLUDES)
@@ -137,83 +161,139 @@ EXT_CXX_OBJS += $(foreach base,$(EXTERNAL_BASES),\
 
 # All object files
 ALL_OBJS = $(PROJ_C_OBJS) $(PROJ_CXX_OBJS) $(EXT_C_OBJS) $(EXT_CXX_OBJS)
+DEP_FILES = $(ALL_OBJS:.o=.d) $(LSP_PATH)/mpu_table.d
+CONFIGMK_DEPS = $(wildcard $(CONFIGMK))
 
-# Target executable
+#=============================================================================
+# ARTIFACT CONFIGURATION
+#=============================================================================
+
+# Artifact type (overridable via make ARTIFACT_TYPE=...)
+# Valid values: executable, static_library
+ARTIFACT_TYPE ?= executable
+
+.PHONY: check_debug gen-xt-substitute-path
+
+ifneq ($(ARTIFACT_TYPE),executable)
+check_debug:
+	$(error Launch is unavailable because the current artifact type is '$(ARTIFACT_TYPE)'. Select 'executable'  to launch.)
+else
+check_debug: all gen-xt-substitute-path
+endif
+
+# Map Xtensa runtime sources from the selected debug executable.
+gen-xt-substitute-path: all
+	@sh .vscode/gen-xt-substitute-path.sh "$(DEBUG_EXE)" "$(SFX_PATH)"
+
+# Tools
+AR = xt-ar
+ARFLAGS = rc
+
+# Output file paths
 DXE = $(BUILD_DIR)/$(PROJECT).dxe
-	
+DEBUG_EXE ?= $(DXE)
+LIB = $(BUILD_DIR)/lib$(PROJECT).a
+LINK_INPUT_FILE = $(BUILD_DIR)/input-file.txt
 #=============================================================================
 # COMPILATION RULES
 #=============================================================================
 
 # Workspace C files
-$(OBJ_DIR)/%.o: %.c
-	@echo "Invoking: CodeFusion SHARC-FX C Compiler"
+$(OBJ_DIR)/%.o: %.c $(CONFIGMK_DEPS)
+	@echo "CC $(call display_path,$<)"
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+	$(Q)$(CC) $(CFLAGS) $(DEPFLAGS) $(INCLUDES) -c $< -o $@
 
 # Workspace C++ files
-$(OBJ_DIR)/%.o: %.cc
-	@echo "Invoking: CodeFusion SHARC-FX C++ Compiler"
+$(OBJ_DIR)/%.o: %.cc $(CONFIGMK_DEPS)
+	@echo "CXX $(call display_path,$<)"
 	@mkdir -p $(dir $@)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+	$(Q)$(CXX) $(CXXFLAGS) $(DEPFLAGS) $(INCLUDES) -c $< -o $@
 
-$(OBJ_DIR)/%.o: %.cpp
-	@echo "Invoking: CodeFusion SHARC-FX C++ Compiler"
+$(OBJ_DIR)/%.o: %.cpp $(CONFIGMK_DEPS)
+	@echo "CXX $(call display_path,$<)"
 	@mkdir -p $(dir $@)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+	$(Q)$(CXX) $(CXXFLAGS) $(DEPFLAGS) $(INCLUDES) -c $< -o $@
 
 # External C files - dynamic rules for each base
 define make_ext_c_rule
-$(OBJ_DIR)/ext/$(call normalize_path,$(1))/%.o: $(1)/%.c
+$(OBJ_DIR)/ext/$(call normalize_path,$(1))/%.o: $(1)/%.c $(CONFIGMK_DEPS)
+	@echo "CC $$(call display_path,$$<)"
 	@mkdir -p $$(dir $$@)
-	$$(CC) $$(CFLAGS) $$(INCLUDES) -c $$< -o $$@
+	$$(Q)$$(CC) $$(CFLAGS) $$(DEPFLAGS) $$(INCLUDES) -c $$< -o $$@
 endef
 
 $(foreach base,$(EXTERNAL_BASES),$(eval $(call make_ext_c_rule,$(base))))
 
 # External C++ files - dynamic rules for each base
 define make_ext_cxx_rule
-$(OBJ_DIR)/ext/$(call normalize_path,$(1))/%.o: $(1)/%.cc
+$(OBJ_DIR)/ext/$(call normalize_path,$(1))/%.o: $(1)/%.cc $(CONFIGMK_DEPS)
+	@echo "CXX $$(call display_path,$$<)"
 	@mkdir -p $$(dir $$@)
-	$$(CXX) $$(CXXFLAGS) $$(INCLUDES) -c $$< -o $$@
+	$$(Q)$$(CXX) $$(CXXFLAGS) $$(DEPFLAGS) $$(INCLUDES) -c $$< -o $$@
 
-$(OBJ_DIR)/ext/$(call normalize_path,$(1))/%.o: $(1)/%.cpp
+$(OBJ_DIR)/ext/$(call normalize_path,$(1))/%.o: $(1)/%.cpp $(CONFIGMK_DEPS)
+	@echo "CXX $$(call display_path,$$<)"
 	@mkdir -p $$(dir $$@)
-	$$(CXX) $$(CXXFLAGS) $$(INCLUDES) -c $$< -o $$@
+	$$(Q)$$(CXX) $$(CXXFLAGS) $$(DEPFLAGS) $$(INCLUDES) -c $$< -o $$@
 endef
 
 $(foreach base,$(EXTERNAL_BASES),$(eval $(call make_ext_cxx_rule,$(base))))
+
+-include $(DEP_FILES)
 
 # Include the makefile for the Tensor Flow Lite Micro library and model sources,
 # if present. This is done after the other configurations.
 sinclude aimodels.mk
 
 #=============================================================================
+# DEFAULT TARGET
+#=============================================================================
+.DEFAULT_GOAL := all
+
+#=============================================================================
 # BUILD TARGETS
 #=============================================================================
 
-# Default target
-.PHONY: all
-all: link
+# Default target — dispatches based on ARTIFACT_TYPE
+.PHONY: all link
 
-# Linking step
+ifeq ($(ARTIFACT_TYPE),static_library)
+all: $(LIB)
+else ifeq ($(ARTIFACT_TYPE),executable)
+all: link
+else
+$(error Unsupported ARTIFACT_TYPE "$(ARTIFACT_TYPE)"; expected executable or static_library)
+endif
+
+# Executable (.dxe)
 link: $(DXE)
 
 $(LSP_PATH)/ldscripts/elf32xtensa.x: $(LSP_PATH)/memmap.xmm $(LSP_PATH)/specs
-	@echo "Generating LD scripts from Linker Support Package"
-	$(SFX_PATH)/Xtensa/XtensaTools/bin/xt-genldscripts -b $(LSP_PATH) -nompu
+	@echo "LD $@"
+	$(Q)$(SFX_PATH)/Xtensa/XtensaTools/bin/xt-genldscripts -b $(LSP_PATH) -nompu
 
 $(LSP_PATH)/mpu_table.c: $(LSP_PATH)/ldscripts/elf32xtensa.x
-	@echo "Generating MPU table"
-	$(SFX_PATH)/Xtensa/XtensaTools/bin/xt-genmpu -mlsp=$(LSP_PATH) -o $(LSP_PATH)/mpu_table.c
+	@echo "GEN $@"
+	$(Q)$(SFX_PATH)/Xtensa/XtensaTools/bin/xt-genmpu -mlsp=$(LSP_PATH) -o $(LSP_PATH)/mpu_table.c
 
 $(LSP_PATH)/mpu_table.o: $(LSP_PATH)/mpu_table.c
-	$(CC) $(CFLAGS) -c $(LSP_PATH)/mpu_table.c -o $(LSP_PATH)/mpu_table.o
+	@echo "CC $(call display_path,$<)"
+	$(Q)$(CC) $(CFLAGS) $(DEPFLAGS) -c $(LSP_PATH)/mpu_table.c -o $(LSP_PATH)/mpu_table.o
 
-$(DXE): $(ALL_OBJS) $(ADDITIONAL_LIBS) $(LSP_PATH)/ldscripts/elf32xtensa.x $(LSP_PATH)/mpu_table.o
-	@echo "Invoking: CodeFusion SHARC-FX C++ Linker"
-	@mkdir -p $(BUILD_DIR)
-	$(CXX) -o $(DXE) $(ALL_OBJS) -mlsp=$(LSP_PATH) $(LDFLAGS) -lm
+$(BUILD_DIR):
+	@mkdir -p $@
+
+$(DXE): $(ALL_OBJS) $(ADDITIONAL_LIBS) $(CONFIGMK_DEPS) $(LSP_PATH)/ldscripts/elf32xtensa.x $(LSP_PATH)/mpu_table.o | $(BUILD_DIR)
+	@echo "LD $@"
+	$(file >$(LINK_INPUT_FILE),)$(foreach obj,$(ALL_OBJS),$(file >>$(LINK_INPUT_FILE),$(obj)))
+	$(Q)$(CXX) -o $(DXE) @$(LINK_INPUT_FILE) -mlsp=$(LSP_PATH) $(LDFLAGS) -lm
+
+# Static library (.a)
+$(LIB): $(ALL_OBJS) $(CONFIGMK_DEPS) | $(BUILD_DIR)
+	@echo "AR $@"
+	@rm -f $(LIB)
+	$(Q)$(AR) $(ARFLAGS) $(LIB) $(ALL_OBJS)
 
 # Build type targets
 .PHONY: debug release
@@ -235,6 +315,7 @@ info:
 	@echo "=================================="
 	@echo "Project: $(PROJECT)"
 	@echo "Build Type: $(BUILD_TYPE)"
+	@echo "Artifact Type: $(ARTIFACT_TYPE)"
 	@echo "Target: $(DXE)"
 	@echo "Build Dir: $(BUILD_DIR)"
 	@echo "Object Dir: $(OBJ_DIR)"
@@ -319,7 +400,8 @@ rebuild: clean all
 .PHONY: help
 help:
 	@echo "Available targets:"
-	@echo "  all (default) - Build the project"
+	@echo "  all (default) - Build the project (based on ARTIFACT_TYPE)"
+	@echo "  link          - Build executable (.dxe)"
 	@echo "  debug         - Build in debug mode"
 	@echo "  release       - Build in release mode"
 	@echo "  clean         - Clean current build type"
@@ -329,3 +411,7 @@ help:
 	@echo "  show-external - Show external directory structure"
 	@echo "  list-objs     - List all object files"
 	@echo "  help          - Show this help"
+	@echo ""
+	@echo "Artifact types (set via ARTIFACT_TYPE=...):"
+	@echo "  executable      - Executable (.dxe) [default]"
+	@echo "  static_library  - Static library (.a)"

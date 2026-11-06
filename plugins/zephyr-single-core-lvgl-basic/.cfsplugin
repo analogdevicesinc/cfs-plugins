@@ -2,7 +2,7 @@
   "pluginName": "Zephyr Single Core LVGL Basic",
   "pluginDescription": "Display a 'Hello World' and react to user input using LVGL.",
   "pluginId": "com.analog.zephyr.workspace.lvgl.basic",
-  "pluginVersion": "1.0.0",
+  "pluginVersion": "1.1.0",
   "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "zephyr",

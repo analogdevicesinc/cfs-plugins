@@ -33,7 +33,7 @@
       "CoreId": "CM33",
       "ProjectId": "CM33",
       "PluginId": "com.analog.project.zephyr.plugin",
-      "PluginVersion": "^1.2.0",
+      "PluginVersion": "^1.4.0",
       "FirmwarePlatform": "zephyr",
       "ExternallyManaged": false,
       "PlatformConfig": {

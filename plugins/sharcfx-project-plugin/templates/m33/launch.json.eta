@@ -11,7 +11,10 @@
       "runToEntryPoint": "main",
       "servertype": "external",
       "serverpath": "${config:cfs.openocd.path}/bin/openocd",
-      "gdbPath": "${config:cfs.toolchain.armAArch32GCC.path}/bin/arm-none-eabi-gdb.exe",
+      "gdbPath": "${cfs:tool.path.arm.none.eabi.toolchain}/bin/arm-none-eabi-gdb",
+      "windows": {
+        "gdbPath": "${cfs:tool.path.arm.none.eabi.toolchain}/bin/arm-none-eabi-gdb.exe"
+      },
       "searchDir": [
         "${config:cfs.openocd.path}/share/openocd/scripts"
       ],
@@ -29,7 +32,8 @@
         "load",
         "break main"
       ],
-      "preLaunchTask": "CFS: build"
-    }
+      "preLaunchTask": "CFS: debug: check"
+    },
+    <%~ include("../../files/sharcfx-qemu/templates/qemu-launch.eta", it) %>
   ]
 }

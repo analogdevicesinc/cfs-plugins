@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024-2025 Analog Devices, Inc.
+ * Copyright (c) 2024-2026 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,12 +57,14 @@ peripheralData = [
           { name: "prescaler", type: "int", control: "CLKDIV", cfg_default: "1"}
       ]},
     { zephyr: "timer1", datamodel: "TMR1", enable: "TMR1_ENABLE",
+      pins: [],
       subnode: () => getAssignedPeripheral("TMR1").Config?.MODE === "COMPARE" ? "counter" : "pwm",
       pins_node: () => getAssignedPeripheral("TMR1").Config?.MODE === "COMPARE" ? undefined : "subnode",
       config: [
           { name: "prescaler", type: "int", control: "CLKDIV", cfg_default: "1"}
       ]},
     { zephyr: "timer2", datamodel: "TMR2", enable: "TMR2_ENABLE",
+      pins: [],
       subnode: () => getAssignedPeripheral("TMR2").Config?.MODE === "COMPARE" ? "counter" : "pwm",
       pins_node: () => getAssignedPeripheral("TMR2").Config?.MODE === "COMPARE" ? undefined : "subnode",
       config: [
@@ -154,12 +156,14 @@ peripheralData = [
           { name: "prescaler", type: "int", control: "CLKDIV", cfg_default: "1"}
       ]},
     { zephyr: "timer1", datamodel: "TMR1", enable: "TMR1_ENABLE",
+      pins: [],
       subnode: () => getAssignedPeripheral("TMR1").Config?.MODE === "COMPARE" ? "counter" : "pwm",
       pins_node: () => getAssignedPeripheral("TMR1").Config?.MODE === "COMPARE" ? undefined : "subnode",
       config: [
           { name: "prescaler", type: "int", control: "CLKDIV", cfg_default: "1"}
       ]},
     { zephyr: "timer2", datamodel: "TMR2", enable: "TMR2_ENABLE",
+      pins: [],
       subnode: () => getAssignedPeripheral("TMR2").Config?.MODE === "COMPARE" ? "counter" : "pwm",
       pins_node: () => getAssignedPeripheral("TMR2").Config?.MODE === "COMPARE" ? undefined : "subnode",
       config: [
@@ -251,12 +255,14 @@ peripheralData = [
           { name: "prescaler", type: "int", control: "CLKDIV", cfg_default: "1"}
       ]},
     { zephyr: "timer1", datamodel: "TMR1", enable: "TMR1_ENABLE",
+      pins: [],
       subnode: () => getAssignedPeripheral("TMR1").Config?.MODE === "COMPARE" ? "counter" : "pwm",
       pins_node: () => getAssignedPeripheral("TMR1").Config?.MODE === "COMPARE" ? undefined : "subnode",
       config: [
           { name: "prescaler", type: "int", control: "CLKDIV", cfg_default: "1"}
       ]},
     { zephyr: "timer2", datamodel: "TMR2", enable: "TMR2_ENABLE",
+      pins: [],
       subnode: () => getAssignedPeripheral("TMR2").Config?.MODE === "COMPARE" ? "counter" : "pwm",
       pins_node: () => getAssignedPeripheral("TMR2").Config?.MODE === "COMPARE" ? undefined : "subnode",
       config: [
@@ -299,15 +305,21 @@ peripheralData = [
 
 }
 
-unsupported_in_dts = [
+// Manually added entries: sub-feature and clock-specific warnings.
+const manuallyAddedUnsupportedList = [
     {clocknode: "ERTCO Mux", diag: "Bypass of the ERTCO is not currently supported in devicetree.", ctrl: "MUX", value: "ERTCO_CLK"},
-    {datamodel: "ICC", diag: "The Instruction Cache Controller peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
     {datamodel: "RTC", clocknode: "32KCAL", diag: "Enabling 32KCAL from the RTC is not currently supported in devicetree.", ctrl: "32KCAL", value: "1HZ"},
     {datamodel: "RTC", clocknode: "32KCAL", diag: "Enabling 32KCAL from the RTC is not currently supported in devicetree.", ctrl: "32KCAL", value: "512HZ"},
     {datamodel: "RTC", clocknode: "32KCAL", diag: "Enabling 32KCAL from the RTC is not currently supported in devicetree.", ctrl: "32KCAL", value: "4KHZ"},
     {datamodel: "RTC", clocknode: "32KCAL", diag: "Enabling 32KCAL from the RTC is not currently supported in devicetree.", ctrl: "32KCAL", value: "32KHZ"},
-    {datamodel: "SPIMSS", diag: "The SPIMSS peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"}
 ];
+
+// Auto-generated: peripherals not in peripheralData + version-filtered peripherals.
+const { supported, unsupported } = buildUnsupportedZephyrEntries(peripheralData, manuallyAddedUnsupportedList);
+
+// Update peripheralData and unsupported_in_dts
+unsupported_in_dts = unsupported;
+peripheralData = supported;
 
 function mapClockName(clock) {
     if (clock === "HFIO") {
@@ -322,7 +334,7 @@ function mapClockName(clock) {
 
 function getClocksUsed() {
     let clocksUsed = new Set();
-    for (const peri of peripheralData) {
+    for (const peri of supported) {
         if (peri.clock_mux && isPeripheralClockSetTo(peri.datamodel, peri.enable, "TRUE")) {
             const clockName = mapClockName(getPeripheralClockSetting(peri.datamodel, peri.clock_mux, peri.clock_default));
             if (clockName) {

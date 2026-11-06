@@ -4,15 +4,14 @@
       "ProjectId": "CM4-0",
       "FirmwarePlatform": "zephyr",
       "PluginId": "com.analog.project.zephyr.plugin",
-      "PluginVersion": "^1.1.0",
+      "PluginVersion": "^1.4.0",
       "ExternallyManaged": false,
       "PlatformConfig": {
         "ProjectName": "m4-0",
-        "ZephyrVersion": "4.3.0",
+        "ZephyrVersion": "4.4.2",
         "ZephyrBoardName": "max32666fthr/max32666/cpu0",
         "EnableCoreDump": true
       },
-      "Family": "Cortex-M",
       "Partitions": [
         {
           "Name": "m4_flash",
@@ -169,7 +168,6 @@
       "PluginId": "",
       "PluginVersion": "",
       "ExternallyManaged": true,
-      "Family": "Cortex-M",
       "Partitions": [],
       "Peripherals": []
     }

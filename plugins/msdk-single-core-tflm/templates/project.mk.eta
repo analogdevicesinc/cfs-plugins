@@ -26,6 +26,8 @@
 # **********************************************************
 
 # Add your config here!
+# To use a custom TFLite Micro path, uncomment and update the path below.
+# TFLITE_PATH := /path/to/tflite-micro
 
 # Add library dependencies
 include config.mk

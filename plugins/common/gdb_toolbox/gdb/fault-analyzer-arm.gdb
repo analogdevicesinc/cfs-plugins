@@ -110,27 +110,30 @@ define faultStatusRegisters
     printf "\n"
 
     # Debug Fault Status Register (DFSR)
+    # NOTE: DFSR bits reflect normal debug activity (halt, breakpoint, vector
+    # catch) when running under a debugger. They are NOT application faults, so
+    # they are reported for information only and excluded from the fault count.
     set $dfsr = *(unsigned int*)0xE000ED30
     printf "Debug Fault Status Register (DFSR): 0x%08X\n", $dfsr
     if $dfsr != 0
-        printf "  DFSR Bits Set:\n"
+        printf "  DFSR Bits Set (debug events, expected while debugging):\n"
         if $dfsr & 0x00000001
-            printf "    [0] HALTED: Halt request debug fault\n"
+            printf "    [0] HALTED: Halt request by debugger\n"
         end
         if $dfsr & 0x00000002
-            printf "    [1] BKPT: Breakpoint debug fault\n"
+            printf "    [1] BKPT: Breakpoint hit\n"
         end
         if $dfsr & 0x00000004
-            printf "    [2] DWTTRAP: Data Watchpoint and Trace (DWT) debug fault\n"
+            printf "    [2] DWTTRAP: Data Watchpoint and Trace (DWT) event\n"
         end
         if $dfsr & 0x00000008
-            printf "    [3] VCATCH: Vector catch debug fault\n"
+            printf "    [3] VCATCH: Vector catch event\n"
         end
         if $dfsr & 0x00000010
-            printf "    [4] EXTERNAL: External debug request fault\n"
+            printf "    [4] EXTERNAL: External debug request\n"
         end
     else
-        printf "  No Debug faults detected\n"
+        printf "  No debug events recorded\n"
     end
     printf "\n"
 
@@ -151,10 +154,6 @@ define faultStatusRegisters
     if $hfsr != 0
         set $total_faults = $total_faults + 1
         printf "• Hard fault detected\n"
-    end
-    if $dfsr != 0
-        set $total_faults = $total_faults + 1
-        printf "• Debug fault detected\n"
     end
 
     if $total_faults == 0
@@ -265,7 +264,7 @@ define stackInfo
             set $saved_pc = *((unsigned int *)($stackptr + 24))
         end
 
-        if $mmfsr != 0 || $bfsr != 0 || $ufsr != 0 || $hfsr != 0 
+        if $mmfsr != 0 || $bfsr != 0 || $ufsr != 0 || $hfsr != 0
             printf "Fault occurred at PC: 0x%08X\n", $saved_pc
             list *$saved_pc
             info line *$saved_pc

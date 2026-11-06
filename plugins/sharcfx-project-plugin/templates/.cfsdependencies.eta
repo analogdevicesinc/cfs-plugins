@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "packages": [
+    {
+      "name": "cfs_base_data_models",
+      "version": "^2.4.0"
+    },
+    {
+      "name": "cfs_base_plugins",
+      "version": "^2.4.0"
+    },
+    {
+      "name": "xtensa_sharcfx_toolchain",
+      "version": "^15.5.1"
+<% if (it.coreId.toLowerCase().includes("m33")) { %>
+    },
+    {
+      "name": "cortex-m_sharcfx_sdk",
+      "version": "^1.0.0"
+<% } %>
+    }
+  ]
+}

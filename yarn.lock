@@ -465,17 +465,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@tsconfig/node18@npm:^18.2.4":
-  version: 18.2.4
-  resolution: "@tsconfig/node18@npm:18.2.4"
-  checksum: 10c0/cdfd17f212660374eb2765cd5907b2252e43cfa2623cd52307a49f004327ef49bbe7d53c78b0aca57f33e9a5cb0d7d2eb5ded9be1235e6212f65c9f0699322b6
-  languageName: node
-  linkType: hard
-
-"@tsconfig/node20@npm:^20.1.6":
-  version: 20.1.6
-  resolution: "@tsconfig/node20@npm:20.1.6"
-  checksum: 10c0/736bca8c405222e78f77da068bf705b398e3afb3f2ec3c1d2a8792505283863bef8cca5646358fcbabd3b07c6fbbf0b1acdf09aa182254fe60eb519827737f09
+"@tsconfig/node24@npm:^24.0.4":
+  version: 24.0.4
+  resolution: "@tsconfig/node24@npm:24.0.4"
+  checksum: 10c0/9c5d4173204c6935c45d3ff0584fd423bd7d8bc3f6b246e646320ae584e4226b34ea1c66ec67cd16769c73e7e80f4cc562287b0acaa4ec81aa482463972ff83f
   languageName: node
   linkType: hard
 
@@ -553,12 +546,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:20":
-  version: 20.19.1
-  resolution: "@types/node@npm:20.19.1"
+"@types/node@npm:24":
+  version: 24.13.3
+  resolution: "@types/node@npm:24.13.3"
   dependencies:
-    undici-types: "npm:~6.21.0"
-  checksum: 10c0/4f1c3c8ec24c79af6802b376fa307904abf19accb9ac291de0bfc02220494c8b027d3ef733dbf64cc09b37594f22f679a15eabb30f3785bcfcc13bd9bbd8c0e2
+    undici-types: "npm:~7.18.0"
+  checksum: 10c0/a5bc08f49b9581dcdca90e02cd77197a3c799840807664942e5cd5161a553d4d2ae8064f7e3294410d748d7d098b5c1848be7fa50c06f29c4193ab16be4e59eb
   languageName: node
   linkType: hard
 
@@ -566,6 +559,13 @@ __metadata:
   version: 1.20.2
   resolution: "@types/resolve@npm:1.20.2"
   checksum: 10c0/c5b7e1770feb5ccfb6802f6ad82a7b0d50874c99331e0c9b259e415e55a38d7a86ad0901c57665d93f75938be2a6a0bc9aa06c9749192cadb2e4512800bbc6e6
+  languageName: node
+  linkType: hard
+
+"@types/semver@npm:^7.8.0":
+  version: 7.8.0
+  resolution: "@types/semver@npm:7.8.0"
+  checksum: 10c0/46a1f38e36013448b279798e8b134e7e8de3b3630b1f40683903b9d57d36dd1d70838515570ed9a149fa09e9c381b9e39319b58d7b9f3b929b42ae2becff7aa3
   languageName: node
   linkType: hard
 
@@ -939,21 +939,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cfs-data-models@https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-data-models&tag=V2.3.0":
-  version: 2.3.0
-  resolution: "cfs-data-models@https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-data-models&commit=303ada66afe73bf28743969f15727a5742afaaa9"
-  checksum: 10c0/cdcc833e4ff90f55125533875cc2fc4589deda6a985efc760a017e920695c13ff4fb5b2ecfe9657635896d08ec7280def6ecf1ca5cdcc79baa28079e8594c20f
-  languageName: node
-  linkType: hard
-
-"cfs-plugins-sdk@https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-plugins-sdk&tag=V2.3.0":
+"cfs-plugins-sdk@https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-plugins-sdk&tag=V2.4.0":
   version: 1.0.0
-  resolution: "cfs-plugins-sdk@https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-plugins-sdk&commit=303ada66afe73bf28743969f15727a5742afaaa9"
+  resolution: "cfs-plugins-sdk@https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-plugins-sdk&commit=559c1cf7c0a569f9a9b8b771a48fd6521db78316"
   dependencies:
-    cfs-types: "npm:^2.3.0"
+    cfs-types: "npm:^2.4.0"
     eta: "npm:^3.5.0"
     fast-glob: "npm:^3.3.3"
-  checksum: 10c0/da42d7c61d059a3a07cc4555f092084ee454572a4e82888927b75e358ec97a48c1eac382c239b7ce8d9ac01c99f3172e807f678e7bb5cfa00211cd306a38b2b0
+  checksum: 10c0/12c7d8244fcd19ad40d377c6fd8a19ce15f6f2f2eedc1c5317f95aeb6309faa7929493119b394461a1e6f6f75dad7ace452214e347e35db37d4e40420c590165
   languageName: node
   linkType: hard
 
@@ -964,17 +957,19 @@ __metadata:
     "@rollup/plugin-commonjs": "npm:^28.0.2"
     "@rollup/plugin-node-resolve": "npm:^16.0.0"
     "@rollup/plugin-typescript": "npm:^12.1.2"
-    "@tsconfig/node18": "npm:^18.2.4"
-    "@tsconfig/node20": "npm:^20.1.6"
+    "@tsconfig/node24": "npm:^24.0.4"
     "@types/chai": "npm:^5"
     "@types/chai-as-promised": "npm:^8"
     "@types/mocha": "npm:^10.0.10"
-    "@types/node": "npm:20"
+    "@types/node": "npm:24"
+    "@types/semver": "npm:^7.8.0"
     "@types/sinon": "npm:^17.0.3"
     "@typescript-eslint/eslint-plugin": "npm:^8.35.0"
     "@typescript-eslint/parser": "npm:^8.35.0"
+    cfsconfig-template-check: "npm:^2.4.0"
     chai: "npm:^5.1.2"
     chai-as-promised: "npm:^8.0.1"
+    dotenv: "npm:^17.4.2"
     eslint: "npm:8.57.0"
     eslint-config-prettier: "npm:^10.1.5"
     glob: "npm:^10.0.0"
@@ -983,6 +978,7 @@ __metadata:
     rollup: "npm:^4.34.8"
     rollup-plugin-copy: "npm:^3.5.0"
     rollup-plugin-typescript-resolve: "npm:^1.0.1"
+    semver: "npm:^7.8.5"
     shx: "npm:^0.3.4"
     sinon: "npm:^19.0.2"
     ts-node: "npm:^10.9.2"
@@ -991,10 +987,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"cfs-types@https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-types&tag=V2.3.0":
-  version: 2.3.0
-  resolution: "cfs-types@https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-types&commit=303ada66afe73bf28743969f15727a5742afaaa9"
-  checksum: 10c0/5813f52ca93944a3ac57d808b7399bc2d294afbf4560ab1b265e2e4f2f528231172eda31a77d1dc69a43f43200cf888ad2d13af32e152faf1d144076508a79c9
+"cfs-types@https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-types&tag=V2.4.0":
+  version: 2.4.0
+  resolution: "cfs-types@https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-types&commit=559c1cf7c0a569f9a9b8b771a48fd6521db78316"
+  checksum: 10c0/0b4208132a20b4c1b6936e8391bb04cd77e54149e98a31fd78b5f8e7feb005b836ac26f5a63b84ace7b9defae4ce597ca7c437af2cd8d27eadb3086f95716011
+  languageName: node
+  linkType: hard
+
+"cfsconfig-template-check@https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfsconfig-template-check&tag=V2.4.0":
+  version: 2.4.0
+  resolution: "cfsconfig-template-check@https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfsconfig-template-check&commit=559c1cf7c0a569f9a9b8b771a48fd6521db78316"
+  checksum: 10c0/1f01fb668340bd0e10d873968d64eb60e809d0b5c69c6b832e570772a818f6fee897e0ad52b68020d85f3a9f8ea0bba284b8699b1b02841281693439b550c2e3
   languageName: node
   linkType: hard
 
@@ -1207,6 +1210,13 @@ __metadata:
   dependencies:
     esutils: "npm:^2.0.2"
   checksum: 10c0/c96bdccabe9d62ab6fea9399fdff04a66e6563c1d6fb3a3a063e8d53c3bb136ba63e84250bbf63d00086a769ad53aef92d2bd483f03f837fc97b71cbee6b2520
+  languageName: node
+  linkType: hard
+
+"dotenv@npm:^17.4.2":
+  version: 17.4.2
+  resolution: "dotenv@npm:17.4.2"
+  checksum: 10c0/164f8e77a646c8446867d5b588d26ea6005c8ea7c5eb41cf926f6113d23f2191355f6e0cfd95ea9bab98394a5b0a3f1e51a8399711b666fe55cc7b0bd745f942
   languageName: node
   linkType: hard
 
@@ -2483,8 +2493,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "plugins@workspace:plugins"
   dependencies:
-    cfs-data-models: "https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-data-models&tag=V2.3.0"
-    cfs-plugins-sdk: "https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-plugins-sdk&tag=V2.3.0"
+    cfs-plugins-sdk: "https://github.com/analogdevicesinc/codefusion-studio.git#workspace=cfs-plugins-sdk&tag=V2.4.0"
     fast-glob: "npm:^3.3.3"
   languageName: unknown
   linkType: soft
@@ -2762,6 +2771,15 @@ __metadata:
   bin:
     semver: bin/semver.js
   checksum: 10c0/88f33e148b210c153873cb08cfe1e281d518aaa9a666d4d148add6560db5cd3c582f3a08ccb91f38d5f379ead256da9931234ed122057f40bb5766e65e58adaf
+  languageName: node
+  linkType: hard
+
+"semver@npm:^7.8.5":
+  version: 7.8.5
+  resolution: "semver@npm:7.8.5"
+  bin:
+    semver: bin/semver.js
+  checksum: 10c0/b1f3127a5be8125a94f37188b361c212466c292c6910adce3ec106cff5dc211ccaedc4739c11bb70fda59d6fc1f040a9bca289f4e093451521a2372e5231fe0c
   languageName: node
   linkType: hard
 
@@ -3097,6 +3115,13 @@ __metadata:
   version: 6.21.0
   resolution: "undici-types@npm:6.21.0"
   checksum: 10c0/c01ed51829b10aa72fc3ce64b747f8e74ae9b60eafa19a7b46ef624403508a54c526ffab06a14a26b3120d055e1104d7abe7c9017e83ced038ea5cf52f8d5e04
+  languageName: node
+  linkType: hard
+
+"undici-types@npm:~7.18.0":
+  version: 7.18.2
+  resolution: "undici-types@npm:7.18.2"
+  checksum: 10c0/85a79189113a238959d7a647368e4f7c5559c3a404ebdb8fc4488145ce9426fcd82252a844a302798dfc0e37e6fb178ff481ed03bc4caf634c5757d9ef43521d
   languageName: node
   linkType: hard
 

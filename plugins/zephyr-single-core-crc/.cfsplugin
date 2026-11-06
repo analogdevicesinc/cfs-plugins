@@ -2,7 +2,7 @@
   "pluginName": "Zephyr Single Core CRC",
   "pluginDescription": "This sample demonstrates how to use the Cyclic Redundancy Check Subsystem.",
   "pluginId": "com.analog.zephyr.workspace.crc",
-  "pluginVersion": "1.0.0",
+  "pluginVersion": "1.1.0",
   "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "zephyr",

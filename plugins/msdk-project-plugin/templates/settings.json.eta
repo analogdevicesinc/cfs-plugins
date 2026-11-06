@@ -13,9 +13,11 @@
   "cfs.configureWorkspace": "Yes",
   "cfs.project.firmwarePlatform": "MSDK",
 <% if (it.coreId.startsWith("CM")) { %>
+  "cfs.project.toolchain.id": "arm.none.eabi.toolchain",
   "cfs.openocd.target": "target/<%= it.openocdInflectionPoint(it.soc).toLowerCase() %>.cfg",
   "cfs.openocd.interface": "interface/cmsis-dap.cfg",
 <% } else if (it.coreId === "RV") { %>
+  "cfs.project.toolchain.id": "xpack.riscv.none.elf.toolchain",
   "cfs.openocd.target": "target/<%= it.openocdInflectionPoint(it.soc).toLowerCase() %>_riscv.cfg",
   "cfs.openocd.interface": "interface/ftdi/olimex-arm-usb-ocd-h.cfg",
 <% } %>

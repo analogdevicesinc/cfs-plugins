@@ -1,0 +1,101 @@
+<%
+// Single quotes stop the POSIX shell expanding `$`/backticks in resolved paths.
+function posixCommand(command, args) {
+  return [command, ...args]
+    .map((arg) => `'${arg.replaceAll("'", "'\\''")}'`)
+    .join(" ");
+}
+
+// `cmd.exe /c` drops the outermost quote pair of the command line.
+function windowsCommand(command, args) {
+  return `"${[command, ...args].map((arg) => `"${arg}"`).join(" ")}"`;
+}
+
+function taskEntry(label, command, args, linuxCommand, linuxArgs) {
+  const resolvedLinuxCommand = linuxCommand || command;
+  const resolvedLinuxArgs = linuxArgs || args;
+  return {
+    label,
+    type: "shell",
+    options: { cwd: "${workspaceFolder}" },
+    presentation: { reveal: "silent", panel: "dedicated", close: true },
+    problemMatcher: [],
+    windows: { command: windowsCommand(command, args) },
+    linux: { command: posixCommand(resolvedLinuxCommand, resolvedLinuxArgs) }
+  };
+}
+
+const tasks = [
+  {
+    ...taskEntry(
+      "Start QEMU GDB Server",
+      "${config:cfs.sdk.path}/Tools/python/python.exe",
+      [
+        "${workspaceFolder}/.vscode/qemu-gdbserver.py",
+        "start",
+        "--qemu-path",
+        "${cfs:tool.path.cortex-m-sharcfx}/qemu/qemu-system-aarch32.exe",
+        "--program-path",
+        "${config:cfs.programFile}"
+      ],
+      "${config:cfs.sdk.path}/Tools/python/bin/python",
+      [
+        "${workspaceFolder}/.vscode/qemu-gdbserver.py",
+        "start",
+        "--qemu-path",
+        "${cfs:tool.path.cortex-m-sharcfx}/qemu/bin/qemu-system-aarch32",
+        "--program-path",
+        "${config:cfs.programFile}"
+      ]
+    ),
+    dependsOn: "CFS: build",
+    dependsOrder: "sequence"
+  },
+  taskEntry(
+    "Stop QEMU GDB Server",
+    "${config:cfs.sdk.path}/Tools/python/python.exe",
+    ["${workspaceFolder}/.vscode/qemu-gdbserver.py", "stop"],
+    "${config:cfs.sdk.path}/Tools/python/bin/python",
+    ["${workspaceFolder}/.vscode/qemu-gdbserver.py", "stop"]
+  ),
+ {
+  ...taskEntry(
+    "QEMU: tail stdout",
+    "tail",
+    ["-F", "-n", "200", "${workspaceFolder}/.vscode/.qemu.stdout.log"],
+    null,
+    null
+  ),
+
+  isBackground: true,
+
+  windows: {
+    command: "powershell -NoProfile -ExecutionPolicy Bypass -Command \"Get-Content -LiteralPath '.vscode/.qemu.stdout.log' -Tail 200 -Wait\""
+  },
+
+  presentation: {
+    reveal: "always",
+    panel: "dedicated",
+    clear: true,
+    focus: false
+  },
+
+  runOptions: {
+    instanceLimit: 1
+  },
+
+  problemMatcher: {
+    pattern: {
+      regexp: "^$",
+      message: 1
+    },
+    background: {
+      activeOnStart: true,
+      beginsPattern: ".",
+      endsPattern: "^\\x00$"
+    }
+  }
+}
+];
+%>
+<%~ JSON.stringify(tasks, null, 2) %>

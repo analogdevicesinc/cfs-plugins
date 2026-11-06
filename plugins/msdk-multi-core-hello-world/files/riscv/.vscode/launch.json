@@ -10,13 +10,13 @@
       "servertype": "openocd",
       "serverpath": "${config:cfs.openocd.path}/bin/openocd",
       "linux": {
-        "gdbPath": "${config:cfs.toolchain.riscVGCC.path}/bin/riscv-none-elf-gdb"
+        "gdbPath": "${cfs:tool.path.xpack.riscv.none.elf.toolchain.debuggerPath}"
       },
       "windows": {
-        "gdbPath": "${config:cfs.toolchain.riscVGCC.path}/bin/riscv-none-elf-gdb.exe"
+        "gdbPath": "${cfs:tool.path.xpack.riscv.none.elf.toolchain.debuggerPath}"
       },
       "osx": {
-        "gdbPath": "${config:cfs.toolchain.riscVGCC.path}/bin/riscv-none-elf-gdb"
+        "gdbPath": "${cfs:tool.path.xpack.riscv.none.elf.toolchain.debuggerPath}"
       },
       "svdPath": "${config:cfs.cmsis.svdFile}",
       "searchDir": ["${config:cfs.openocd.path}/share/openocd/scripts"],

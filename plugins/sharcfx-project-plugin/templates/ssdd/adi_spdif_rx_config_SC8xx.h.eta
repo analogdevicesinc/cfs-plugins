@@ -1,0 +1,114 @@
+<%
+/*********************************************************************************
+
+Copyright(c) 2022-2026 Analog Devices, Inc. All Rights Reserved.
+
+This software is proprietary.  By using this software you agree
+to the terms of the associated Analog Devices License Agreement.
+
+*********************************************************************************/
+%> 
+<% eval(this.render("templates/ssdd/ssdd_common.js")); %>
+<%~ include("@copyrightHeader", it) %> 
+/* This file is generated using the peripheral settings configured using System Planner.
+ * Please do not edit the values here directly.
+ */
+
+/*!
+ *  @addtogroup SPDIF_RX_Driver
+ *  @{
+ */
+
+/*!
+ * @defgroup SPDIF_RX_Driver_Static_Configuration SPDIF_RX Driver Static Configuration
+ * @{
+  Static Configuration provides an easy and convenient  way for application to configure the device during driver's open
+  call. When an application provides custom static configuration file, then according to the setting provided driver initializes
+  the device during driver's open call. If application fails to provide any custom configuration file, then by default S/PDIF RX device
+  driver does not perform any static configuration.
+ */
+
+ 
+/*!
+ * @file     adi_spdif_rx_config_SC8xx.h
+ *
+ * @brief    S/PDIF Receiver driver static configuration file
+ *
+ * @version  $Revision: 37632 $
+ *
+ * @date     $Date: 2019-10-09 12:35:37 +0530 (Wed, 09 Oct 2019) $
+ *
+ * @details
+ *           This is the static configuration file for the S/PDIF Receiver Driver
+ */
+
+
+
+
+
+#ifndef ADI_SPDIF_RX_CONFIG_SC8XX_H
+#define ADI_SPDIF_RX_CONFIG_SC8XX_H
+
+
+/**********************************************************************************************
+ *					       SPDIF 0 RX
+ **********************************************************************************************/
+
+/*! Set to use static configuration for Spdif 0 */
+#define USE_STATIC_SPDIF0_RX <%= getPeriConfigValueBoolAsInt("SPDIF0", "RX_STATIC_CFG", "FALSE") %>u
+
+/*! SPDIF0 RX frame sync strength. Set for strong frame sync and clear for weak frame sync */
+#define SPDIF0_RX_FS_STRENGTH        <%= getPeriConfigValueEnum("SPDIF0", "RX_FS_STRENGTH", "WEAK", {"WEAK":0,"STRONG":1}) %>u
+
+/*! SPDIF0 RX frame lock speed. Set for fast mode and clear for slow mode */
+#define SPDIF0_RX_LOCK_SPEED         <%= getPeriConfigValueEnum("SPDIF0", "RX_LOCK_SPEED", "SLOW", {"SLOW":0,"FAST":1}) %>u
+
+/*! SPDIF0 RX auto restart enable. Set for Auto mode and clear for manual mode */
+#define SPDIF0_RX_AUTO_RESTART       <%= getPeriConfigValueEnum("SPDIF0", "RX_AUTO_RESTART", "MANUAL", {"MANUAL":0,"AUTO":1}) %>u
+
+/*! SPDIF0 RX Set Tdmsel for MCLK division */
+#define SPDIF0_RX_TDMSEL       <%= getPeriConfigValueInt("SPDIF0", "RX_TDMSEL", "0") %>u
+
+/* Static configuration for Spdif 0 */
+#define ADI_SPDIF0_RX_FS_STRENGTH       ((uint32_t)SPDIF0_RX_FS_STRENGTH<<BITP_SPDIF_RX_CTL_STRENGTH)
+#define ADI_SPDIF0_RX_LOCK_SPEED        ((uint32_t)SPDIF0_RX_LOCK_SPEED<<BITP_SPDIF_RX_CTL_FASTLOCK)
+#define ADI_SPDIF0_RX_AUTO_RESTART      ((uint32_t)SPDIF0_RX_AUTO_RESTART<<BITP_SPDIF_RX_CTL_RSTRTAUDIO)
+#define ADI_SPDIF0_RX_TDMSEL            ((uint32_t)SPDIF0_RX_TDMSEL<<BITP_SPDIF_RX_CTL_TDMSEL)
+
+/* Spdif 0 RX CTL Reg */
+#define ADI_SPDIF_RX0_CTL                    (ADI_SPDIF0_RX_FS_STRENGTH|ADI_SPDIF0_RX_LOCK_SPEED|ADI_SPDIF0_RX_AUTO_RESTART|ADI_SPDIF0_RX_TDMSEL)
+
+
+
+/**********************************************************************************************
+ *					       SPDIF 1 RX
+ **********************************************************************************************/
+
+/*! Set to use static configuration for Spdif 1 */
+#define USE_STATIC_SPDIF1_RX <%= getPeriConfigValueBoolAsInt("SPDIF1", "RX_STATIC_CFG", "FALSE") %>u
+
+/*! SPDIF1 RX frame sync strength. Set for strong frame sync and clear for weak frame sync */
+#define SPDIF1_RX_FS_STRENGTH        <%= getPeriConfigValueEnum("SPDIF1", "RX_FS_STRENGTH", "WEAK", {"WEAK":0,"STRONG":1}) %>u
+
+/*! SPDIF1 RX frame lock speed. Set for fast mode and clear for slow mode */
+#define SPDIF1_RX_LOCK_SPEED         <%= getPeriConfigValueEnum("SPDIF1", "RX_LOCK_SPEED", "SLOW", {"SLOW":0,"FAST":1}) %>u
+
+/*! SPDIF1 RX auto restart enable. Set for Auto mode and clear for manual mode */
+#define SPDIF1_RX_AUTO_RESTART       <%= getPeriConfigValueEnum("SPDIF1", "RX_AUTO_RESTART", "MANUAL", {"MANUAL":0,"AUTO":1}) %>u
+
+/*! SPDIF1 RX Set Tdmsel for MCLK division */
+#define SPDIF1_RX_TDMSEL       <%= getPeriConfigValueInt("SPDIF1", "RX_TDMSEL", "0") %>u
+
+/* Static configuration for Spdif 1 */
+#define ADI_SPDIF1_RX_FS_STRENGTH       ((uint32_t)SPDIF1_RX_FS_STRENGTH<<BITP_SPDIF_RX_CTL_STRENGTH)
+#define ADI_SPDIF1_RX_LOCK_SPEED        ((uint32_t)SPDIF1_RX_LOCK_SPEED<<BITP_SPDIF_RX_CTL_FASTLOCK)
+#define ADI_SPDIF1_RX_AUTO_RESTART      ((uint32_t)SPDIF1_RX_AUTO_RESTART<<BITP_SPDIF_RX_CTL_RSTRTAUDIO)
+#define ADI_SPDIF1_RX_TDMSEL            ((uint32_t)SPDIF1_RX_TDMSEL<<BITP_SPDIF_RX_CTL_TDMSEL)
+
+/* Spdif 1 RX CTL Reg */
+#define ADI_SPDIF_RX1_CTL                    (ADI_SPDIF1_RX_FS_STRENGTH|ADI_SPDIF1_RX_LOCK_SPEED|ADI_SPDIF1_RX_AUTO_RESTART|ADI_SPDIF1_RX_TDMSEL)
+
+#endif /* ADI_SPDIF_RX_CONFIG_SC8XX_H */
+
+/**@}*/
+/*@}*/

@@ -1,3 +1,16 @@
+/**
+ * Copyright (c) 2024-2026 Analog Devices, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
 
 peripheralData = [
     { zephyr: "dma0", datamodel: "DMA", enable: "ENABLE"},
@@ -133,25 +146,25 @@ peripheralData = [
     { zephyr: "wdt0", datamodel: "WDT0", enable: "WDT0_ENABLE", clock_mux: "WDT0_MUX",  clock_default: "PCLK",}
 ];
 
-unsupported_in_dts = [
-    {datamodel: "AES", diag: "The AES peripheral is not currently supported in devicetree.", ctrl: "AES_ENABLE", value: "TRUE"},
+// Manually added entries: sub-feature and clock-specific warnings.
+const manuallyAddedUnsupportedList = [
     {clocknode: "AFE", diag: "The AFE is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
     {clocknode: "AOD_CLK", diag: "Setting divide value on AOD from the GCR is not currently supported in devicetree.", ctrl: "DIV", value: "8" },
     {clocknode: "AOD_CLK", diag: "Setting divide value on AOD from the GCR is not currently supported in devicetree.", ctrl: "DIV", value: "16" },
     {clocknode: "AOD_CLK", diag: "Setting divide value on AOD from the GCR is not currently supported in devicetree.", ctrl: "DIV", value: "32" },
-    {datamodel: "CRC", diag: "The CRC peripheral is not currently supported in devicetree.", ctrl: "CRC_ENABLE", value: "TRUE"},
     {clocknode: "ERFO Mux", diag: "Bypass of the ERFO is not currently supported in devicetree.", ctrl: "MUX", value: "ERFO_CLK"},
     {clocknode: "HART_CLK Mux", diag: "Setting clock option on HART Mux is not currently supported in devicetree.", ctrl: "MUX", value: "ERFO_DIV_8"},
     {clocknode: "IPO PRESCALER", diag: "Setting divide value on IPO PRESCALER from the GCR is not currently supported in devicetree.", ctrl: "DIV", value: "2"},
     {clocknode: "IPO PRESCALER", diag: "Setting divide value on IPO PRESCALER from the GCR is not currently supported in devicetree.", ctrl: "DIV", value: "4"},
-    {clocknode: "IPO PRESCALER", diag: "Setting divide value on IPO PRESCALER from the GCR is not currently supported in devicetree.", ctrl: "DIV", value: "8"},
-    {datamodel: "LPTMR1", diag: "The Low-Power Timer 1 peripheral is not currently supported in devicetree.", ctrl: "LPTMR1_ENABLE", value: "TRUE", MUX: "LPTMR1_MUX"},
-    {datamodel: "LPUART0", diag: "The Low-Power UART peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE", MUX: "MUX"},
-    {datamodel: "SPI0", diag: "The Serial Peripheral Interface 0 is not currently supported in devicetree.", ctrl: "SPI0_ENABLE", value: "TRUE"},
-    {datamodel: "SPI2", diag: "The Serial Peripheral Interface 2 is not currently supported in devicetree.", ctrl: "SPI2_ENABLE", value: "TRUE"},
-    {datamodel: "UART1", diag: "The UART1 peripheral is not currently supported in devicetree.", enable: "UART1_ENABLE", clock_mux: "UART1_MUX"},
-    {datamodel: "WDT1", diag: "The Watch Dog Timer 1 peripheral is not currently supported in devicetree.", ctrl: "WDT1_ENABLE", value: "TRUE", MUX: "WDT1_MUX"}
+    {clocknode: "IPO PRESCALER", diag: "Setting divide value on IPO PRESCALER from the GCR is not currently supported in devicetree.", ctrl: "DIV", value: "8"}
 ];
+
+// Auto-generated: peripherals not in peripheralData + version-filtered peripherals.
+const { supported, unsupported } = buildUnsupportedZephyrEntries(peripheralData, manuallyAddedUnsupportedList);
+
+// Update peripheralData and unsupported_in_dts
+unsupported_in_dts = unsupported;
+peripheralData = supported;
 
 function mapClockName(clock) {
     if (clock === "EXT_CLK1" || clock === "EXT_CLK2") {
@@ -170,7 +183,7 @@ function mapClockName(clock) {
 
 function getClocksUsed() {
     let clocksUsed = new Set();
-    for (const peri of peripheralData) {
+    for (const peri of supported) {
         if (peri.clock_mux && isPeripheralClockSetTo(peri.datamodel, peri.enable, "TRUE")) {
             const clockName = mapClockName(getPeripheralClockSetting(peri.datamodel, peri.clock_mux, peri.clock_default));
             if (clockName) {

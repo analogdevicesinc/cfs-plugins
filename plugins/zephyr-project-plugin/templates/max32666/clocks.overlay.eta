@@ -26,3 +26,4 @@
 <% } %>
 	sysclk-prescaler = <<%= getClockSetting("PRESCALER", "DIV", "1") %>>;
 };
+

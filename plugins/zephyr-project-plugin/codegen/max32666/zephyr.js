@@ -567,43 +567,10 @@ peripheralData = [
 
 }
 
-// Filter peripheralData based on zephyrVersionMin/zephyrVersionMax.
-// Entries outside the supported range are removed and later added to unsupported_in_dts.
-const { supported, unsupported } = filterByZephyrVersion(peripheralData);
-
-// Replace peripheralData with only the supported peripherals so the template
-// does not generate code for peripherals filtered out by version constraints.
-peripheralData = supported;
-
-unsupported_in_dts = [
+// Manually added entries: sub-feature and clock-specific warnings.
+const manuallyAddedUnsupportedList = [
     {clocknode: "ADC_CLK_SCALER", diag: "The clock divider for ADC is not currently supported in devicetree.", ctrl: "DIV"},
-    {datamodel: "AUDIO", diag: "The Audio Interface peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE", MUX: "MUX"},
-    {datamodel: "BLE", diag: "Bluetooth is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "CM4 (CPU1)", diag: "CPU1 is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "USBHS", clocknode: "High-Speed USB", diag: "High-Speed USB is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {clocknode: "HTIMER0/1", diag: "HTMR0 is not currently supported in devicetree.", ctrl: "HTMR0_ENABLE", value: "TRUE"},
-    {clocknode: "HTIMER0/1", diag: "HTMR1 is not currently supported in devicetree.", ctrl: "HTMR1_ENABLE", value: "TRUE"},
     {clocknode: "HSO_DIV_2_4", diag: "The HSO clock selection is not currently supported in devicetree.",  ctrl: "DIV", value: "4"},
-    {datamodel: "PT0", diag: "The Pulse Trains peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "PT1", diag: "The Pulse Trains peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "PT2", diag: "The Pulse Trains peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "PT3", diag: "The Pulse Trains peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "PT4", diag: "The Pulse Trains peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "PT5", diag: "The Pulse Trains peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "PT6", diag: "The Pulse Trains peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "PT7", diag: "The Pulse Trains peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "PT8", diag: "The Pulse Trains peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "PT9", diag: "The Pulse Trains peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "PT10", diag: "The Pulse Trains peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "PT11", diag: "The Pulse Trains peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "PT12", diag: "The Pulse Trains peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "PT13", diag: "The Pulse Trains peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "PT14", diag: "The Pulse Trains peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "PT15", diag: "The Pulse Trains peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "SDHC", diag: "The SDHC peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"}, //ZEPHYR-861
-    {datamodel: "TPU", diag: "The Trust Protection Unit peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "WDT1", diag: "The Watchdog Timer 1 peripheral is not currently supported in devicetree.", ctrl: "WDT1_ENABLE", value: "TRUE"}, //ZEPHYR-864
-    {datamodel: "WDT2", diag: "The Watchdog Timer 2 peripheral is not currently supported in devicetree.", ctrl: "WDT2_ENABLE", value: "TRUE"}, //ZEPHYR-864
     {datamodel: "RTC", clocknode: "SQWOUT", diag: "Enabling SQWOUT from the RTC is not currently supported in devicetree.", ctrl: "SQWOUT", value: "1HZ"},
     {datamodel: "RTC", clocknode: "SQWOUT", diag: "Enabling SQWOUT from the RTC is not currently supported in devicetree.", ctrl: "SQWOUT", value: "512HZ"},
     {datamodel: "RTC", clocknode: "SQWOUT", diag: "Enabling SQWOUT from the RTC is not currently supported in devicetree.", ctrl: "SQWOUT", value: "4KHZ"},
@@ -612,8 +579,12 @@ unsupported_in_dts = [
     {clocknode: "ERFO Mux", diag: "Bypass of the ERFO is not currently supported in devicetree.", ctrl: "MUX", value: "ERFO_CLK"},
 ];
 
-// Add filtered-out peripherals to unsupported_in_dts
-unsupported_in_dts.push(...buildUnsupportedVersionEntries(unsupported));
+// Auto-generated: peripherals not in peripheralData + version-filtered peripherals.
+const { supported, unsupported } = buildUnsupportedZephyrEntries(peripheralData, manuallyAddedUnsupportedList);
+
+// Update peripheralData and unsupported_in_dts
+unsupported_in_dts = unsupported;
+peripheralData = supported;
 
 function mapClockName(clock) {
     if (clock === "HSO") {

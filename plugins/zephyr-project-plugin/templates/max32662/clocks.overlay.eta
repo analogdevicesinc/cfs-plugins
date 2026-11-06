@@ -34,3 +34,10 @@
 	};
 };
 <% } %>
+<% if (isSystemClockSet("P0.11", "P0_11_FREQ") && compareZephyrVersion("4.4.0") >= 0) { %>
+&clk_lp_ext {
+	clock-frequency = <<%= getClockSetting("P0.11", "P0_11_FREQ") %>>;
+	status = "okay";
+};
+
+<% } %>

@@ -1,55 +1,138 @@
+<% const hasBoard = Boolean(it.board); %>
+<% const _origBoard = it.board; if (!it.board) it.board = ''; %>
 <%~ include("@sharcfxBoardName", it) %>
+<% it.board = _origBoard; %>
 <%~ include("@normalizeSoc", it) %>
-{
-  "version": "2.0.0",
-  "tasks": [
-    {
-      "type": "shell",
-      "command": "make -j 8 clean --output-sync=target --no-print-directory TARGET=${config:cfs.project.target} BOARD=${config:cfs.project.board} MAKE=make PROJECT=${config:cfs.project.name} SDK_PATH=${config:cfs.sdk.path}",
-      "options": {
-        "cwd": "${workspaceFolder}",
-        "env": {
-          "PATH" : "${config:cfs.sdk.path}/Tools/git/usr/bin;${config:cfs.sdk.path};${config:cfs.toolchain.armAArch32GCC.path}/bin;${env:PATH}",
-          "PYTHON_CMD": "none",
-          "CMAKE_PREFIX_PATH": "none",
-          "GIT_EXEC_PATH": "",
-          "ZEPHYR_BASE": "none",
-          "PYTHONHOME": "none",
-          "PYTHONPATH": ""
-        },
-        "shell": {
-          "args": [
-            "/c"
-          ],
-          "executable": "${env:windir}\\System32\\cmd.exe"
-        }
-      },
-      "group": "build",
-      "label": "clean"
-    },
-    {
-      "type": "shell",
-      "command": "make -r -j 8 --output-sync=target --no-print-directory TARGET=${config:cfs.project.target} BOARD=${config:cfs.project.board} MAKE=make PROJECT=${config:cfs.project.name} SDK_PATH=${config:cfs.sdk.path}",
-      "options": {
-        "cwd": "${workspaceFolder}",
-        "env": {
-          "PATH" : "${config:cfs.sdk.path}/Tools/git/usr/bin;${config:cfs.sdk.path};${config:cfs.toolchain.armAArch32GCC.path}/bin;${env:PATH}",
-          "PYTHON_CMD": "none",
-          "CMAKE_PREFIX_PATH": "none",
-          "GIT_EXEC_PATH": "",
-          "ZEPHYR_BASE": "none",
-          "PYTHONHOME": "none",
-          "PYTHONPATH": ""
-        },
-        "shell": {
-          "args": [
-            "/c"
-          ],
-          "executable": "${env:windir}\\System32\\cmd.exe"
-        }
-      },
-      "group": "build",
-      "label": "build"
-    }
-  ]
+<%
+const windowsPath = "${config:cfs.sdk.path}/Tools/git/usr/bin;${config:cfs.sdk.path};${cfs:tool.path.arm.none.eabi.toolchain}/bin;${env:PATH}";
+const linuxPath = "${config:cfs.sdk.path}:${cfs:tool.path.arm.none.eabi.toolchain}/bin:${env:PATH}";
+const openocdBoard = hasBoard ? it.sharcfxBoardNameInflectionPoint(it.soc).toLowerCase() : "";
+const flashBoardConfig = hasBoard
+  ? `${openocdBoard.replace("sc", "21")}_${it.getSharcFxBoardName()}.cfg`
+  : "";
+const outputLdr = "${workspaceFolder}/build/${workspaceFolderBasename}_Core2.ldr";
+const core2Elf = "${workspaceFolder}/build/${workspaceFolderBasename}.elf";
+
+const commonEnv = {
+  PYTHON_CMD: "none",
+  CMAKE_PREFIX_PATH: "none",
+  GIT_EXEC_PATH: "",
+  ZEPHYR_BASE: "none",
+  PYTHONHOME: "none",
+  PYTHONPATH: "",
+};
+const flashCommand = [
+  "${cfs:tool.path.xtensa-sharcfx}/elfloader",
+  `-proc ${it.soc}`,
+  "-si-revision any -bspi -fbinary -bcode 1",
+  `-core2=\"${core2Elf}\"`,
+  `-o \"${outputLdr}\"`,
+  "&& ${cfs:tool.path.xtensa-sharcfx}/cldp",
+  `-proc ${it.soc}`,
+  "-emu ${config:cfs.arm.flash.emulator}",
+  "-driver \"${config:cfs.sdk.path}/Tools/openocd/share/openocd/scripts/board/flash_algorithms/2183x_flash.dxe\"",
+  `-board ${flashBoardConfig}`,
+  "-openocdroot \"${config:cfs.sdk.path}/Tools/openocd\"",
+  `-verbose`,
+  "-cmd prog",
+  `-file \"${outputLdr}\"`,
+  "-format bin",
+  "-erase ${config:cfs.arm.flash.eraseMode}",
+  "-offset ${config:cfs.arm.flash.offset}",
+].join(" ");
+const eraseCommand = [
+  "${cfs:tool.path.xtensa-sharcfx}/cldp",
+  `-proc ${it.soc}`,
+  "-emu ${config:cfs.arm.flash.emulator}",
+  "-driver \"${config:cfs.sdk.path}/Tools/openocd/share/openocd/scripts/board/flash_algorithms/2183x_flash.dxe\"",
+  `-board ${flashBoardConfig}`,
+  "-openocdroot \"${config:cfs.sdk.path}/Tools/openocd\"",
+  "-verbose",
+  "-cmd erase",
+].join(" ");
+const windowsOptions = {
+  options: {
+    env: { ...commonEnv, SHELL: "sh.exe", PATH: windowsPath },
+    shell: { executable: "${env:windir}\\System32\\cmd.exe", args: ["/c"] }
+  }
+};
+const linuxOptions = {
+  options: {
+    env: { ...commonEnv, SHELL: "/bin/sh", PATH: linuxPath }
+  }
+};
+
+function taskEntry(command, label) {
+  return {
+    type: "shell",
+    command,
+    options: { cwd: "${workspaceFolder}", env: commonEnv },
+    windows: windowsOptions,
+    linux: linuxOptions,
+    group: "build",
+    label
+  };
 }
+
+const checkLaunchCommand =
+    "make -r -j 8 --output-sync=target --no-print-directory check_debug " +
+        "TARGET=${config:cfs.project.target} " +
+        "BOARD=${config:cfs.project.board} " +
+        "SDK_PATH=${cfs:tool.path.cortex-m-sharcfx} " +
+        "MAKE=make " +
+        "PROJECT=${config:cfs.project.name} " +
+        "ARTIFACT_TYPE=${config:cfs.arm.artifactType}"
+
+const checkLaunchTask = {
+    label: "debug: check",
+    type: "shell",
+
+    command: `${checkLaunchCommand}`,
+
+    options: {
+        cwd: "${workspaceFolder}",
+        env: commonEnv,
+    },
+
+    windows: windowsOptions,
+    linux: linuxOptions,
+
+    problemMatcher: [],
+};
+
+const qemuTasks = JSON.parse(
+  include("../../files/sharcfx-qemu/templates/qemu-tasks.eta", it),
+);
+const qemuStartTask = qemuTasks.find(
+  (task) => task.label === "Start QEMU GDB Server",
+);
+if (qemuStartTask) {
+  qemuStartTask.dependsOn = "CFS: debug: check";
+}
+
+const tasks = [
+  taskEntry(
+    "make -j 8 clean --output-sync=target --no-print-directory TARGET=${config:cfs.project.target} BOARD=${config:cfs.project.board} MAKE=make PROJECT=${config:cfs.project.name} SDK_PATH=${cfs:tool.path.cortex-m-sharcfx} ARTIFACT_TYPE=${config:cfs.arm.artifactType}",
+    "clean"
+  ),
+  taskEntry(
+    "make -r -j 8 --output-sync=target --no-print-directory TARGET=${config:cfs.project.target} BOARD=${config:cfs.project.board} MAKE=make PROJECT=${config:cfs.project.name} SDK_PATH=${cfs:tool.path.cortex-m-sharcfx} ARTIFACT_TYPE=${config:cfs.arm.artifactType}",
+    "build"
+  ),
+  ...(hasBoard ? [{
+    ...taskEntry(
+      eraseCommand,
+      "erase"
+    )
+  }, {
+    ...taskEntry(
+      `${checkLaunchCommand} && ` +
+      flashCommand,
+      "flash"
+    )
+  }] : []),
+  checkLaunchTask,
+  ...qemuTasks
+];
+%>
+<%~ JSON.stringify({ version: "2.0.0", tasks }, null, 2) %>

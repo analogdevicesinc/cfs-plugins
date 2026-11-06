@@ -20,12 +20,11 @@
 # variables.  These variables are defined in a file called
 # "Makefile" that is located next to this one.
 
-# For instructions on how to use this system, see
-# https://analogdevicesinc.github.io/msdk/USERGUIDE/#build-system
-
 # **********************************************************
 
 # Add your config here!
+# To use a custom TFLM source location, uncomment and update the path below.
+# TFLM_SRC_ROOT := /path/to/tflite-micro
 
 # Add library dependencies
 

@@ -2,7 +2,7 @@
   "pluginName": "Zephyr Project Plugin",
   "pluginId": "com.analog.project.zephyr.plugin",
   "pluginDescription": "Manually configure and create Zephyr projects.",
-  "pluginVersion": "1.3.0",
+  "pluginVersion": "1.4.0",
   "schemaVersion": "1.2.0",
   "pluginApiVersion": 1,
   "author": "Analog Devices, Inc.",
@@ -228,7 +228,8 @@
         },
         {
           "src": "templates/launch.json.eta",
-          "dst": ".vscode/launch.json"
+          "dst": ".vscode/launch.json",
+          "condition": "${!(context.coreId === 'RV' && (context.soc.toLowerCase() === 'max32690' || (context.soc.toLowerCase() === 'max32655' && context.package.toLowerCase() === 'wlp')))}"
         },
         {
           "src": "templates/src/FastDSP/SStudioPlusConfig.json.eta",
@@ -239,13 +240,17 @@
           "src": "templates/arm/ozone-project.jdebug.eta",
           "dst": "${['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : ['max32666'].includes(context.soc.toLowerCase()) ? 'cpu0' : 'm4'}.jdebug",
           "condition": "${['CM4', 'CM33', 'CM55', 'CPU0', 'CM4-0'].includes(context.coreId)}"
+        },
+        {
+          "src": "templates/.cfsdependencies.eta",
+          "dst": ".cfs/.cfsdependencies"
+        },
+        {
+          "src": "templates/.vscode/c_cpp_properties.json.eta",
+          "dst": ".vscode/c_cpp_properties.json"
         }
       ],
       "files": [
-        {
-          "src": "files/.vscode/c_cpp_properties.json",
-          "dst": ".vscode/"
-        },
         {
           "src": "files/README.rst",
           "dst": "/"
@@ -294,7 +299,7 @@
       {
         "id": "ZephyrVersion",
         "name": "Zephyr Version",
-        "default": "4.3.0",
+        "default": "4.4.2",
         "type": "array",
         "enum": [
           {
@@ -304,6 +309,10 @@
           {
             "value": "4.3.0",
             "label": "4.3.0"
+          },
+          {
+            "value": "4.4.2",
+            "label": "4.4.2"
           }
         ],
         "required": true
@@ -540,6 +549,23 @@
           }
         ]
       },
+      "AOD_CLK_DIV": {
+        "modifiedControls": [
+          {
+            "Id": "DIV",
+            "Description": "Divider Value",
+            "EnumValues": [
+              {
+                "Id": "4",
+                "Description": "Divide by 4",
+                "Value": 2
+              }
+            ],
+            "Type": "enum",
+            "partRegexp": "MAX32670"
+          }
+        ]
+      },
       "AoD": {
         "modifiedControls": [
           {
@@ -554,6 +580,41 @@
             ],
             "Type": "enum",
             "partRegexp": "MAX32672"
+          }
+        ]
+      },
+      "CNN PRESCALER": {
+        "modifiedControls": [
+          {
+            "Id": "DIV",
+            "Description": "Divider Value",
+            "EnumValues": [
+              {
+                "Id": "2",
+                "Description": "Divide by 2",
+                "Value": 2
+              }
+            ],
+            "Type": "enum",
+            "partRegexp": "MAX78000"
+          }
+        ]
+      },
+      "CNN Mux": {
+        "modifiedControls": [
+          {
+            "Id": "MUX",
+            "Description": "Clock Source",
+            "Type": "enum",
+            "Condition": "${ControlExists:ENABLE} ! ${Control:ENABLE} |",
+            "EnumValues": [
+              {
+                "Id": "SYS_CLK_DIV_2",
+                "Description": "SYS_CLK_DIV_2",
+                "Value": 12
+              }
+            ],
+            "partRegexp": "MAX78000"
           }
         ]
       },

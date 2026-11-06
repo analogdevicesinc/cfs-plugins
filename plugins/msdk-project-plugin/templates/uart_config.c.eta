@@ -40,6 +40,7 @@ function getUartClock() {
     case "EXT":
     case "EXT_CLK1":
     case "EXT_CLK2":
+    case "HF_EXT_CLK":
     case "P0.12 AF2":
       clock_enum = "MXC_UART_EXT_CLK";
       break;

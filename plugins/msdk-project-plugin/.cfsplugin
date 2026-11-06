@@ -2,7 +2,7 @@
   "pluginName": "MSDK Project Plugin",
   "pluginDescription": "MSDK project and code generation.",
   "pluginId": "com.analog.project.msdk.plugin",
-  "pluginVersion": "1.3.0",
+  "pluginVersion": "1.4.0",
   "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "MSDK",
@@ -208,6 +208,10 @@
           "src": "templates/arm/ozone-project.jdebug.eta",
           "dst": "${(['max32657','max32658'].includes(context.soc.toLowerCase()) ? 'm33' : 'm4')}.jdebug",
           "condition": "${['CM4', 'CM4-0', 'CM33', 'CM55'].includes(context.coreId)}"
+        },
+        {
+          "src": "templates/.cfsdependencies.eta",
+          "dst": ".cfs/.cfsdependencies"
         }
       ],
       "files": [
@@ -312,6 +316,58 @@
             ],
             "Type": "enum",
             "partRegexp": "MAX32675C"
+          }
+        ]
+      },
+      "AOD_CLK_DIV": {
+        "modifiedControls": [
+          {
+            "Id": "DIV",
+            "Description": "Divider Value",
+            "EnumValues": [
+              {
+                "Id": "4",
+                "Description": "Divide by 4",
+                "Value": 2
+              }
+            ],
+            "Type": "enum",
+            "partRegexp": "MAX32670"
+          }
+        ]
+      },
+      "CNN PRESCALER": {
+        "modifiedControls": [
+          {
+            "Id": "DIV",
+            "Description": "Divider Value",
+            "EnumValues": [
+              {
+                "Id": "2",
+                "Description": "Divide by 2",
+                "Value": 2
+              }
+            ],
+            "Type": "enum",
+            "partRegexp": "MAX78000"
+          }
+        ]
+      },
+      "CNN Mux": {
+        "modifiedControls": [
+          {
+            "Id": "MUX",
+            "Description": "Clock Source",
+            "Type": "enum",
+            "Condition": "${ControlExists:ENABLE} ! ${Control:ENABLE} |",
+            "EnumValues": [
+              {
+                "Id": "SYS_CLK_DIV_2",
+                "Description": "SYS_CLK_DIV_2",
+                "Value": 12
+              }
+            ],
+            "partRegexp": "MAX78000"
           }
         ]
       },

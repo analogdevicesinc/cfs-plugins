@@ -9,6 +9,35 @@ To install node dependencies, run:
 
 `yarn install`
 
+## Data Models
+
+Plugins require SoC data models that are hosted on Cloudsmith as Conan packages. These must be downloaded before running tests.
+
+### Prerequisites
+
+- [Python 3](https://www.python.org/)
+- [Conan 2](https://conan.io/) (`pip install conan==2.21.0`)
+
+### One-time setup
+
+```bash
+conan profile detect --exist-ok
+```
+
+### Download
+
+```bash
+bash scripts/download-datamodels.sh
+```
+
+The package list is maintained in `scripts/datamodel-packages.conf`. You can also pass packages explicitly on the command line to override, for example:
+
+```bash
+bash scripts/download-datamodels.sh cfs_base_data_models/2.4.0
+```
+
+The JSON files are placed in `data-models/socs/` (gitignored). You only need to re-run this when the upstream data models change.
+
 ## Building the Plugins
 
 To build the plugins:
@@ -46,17 +75,11 @@ Clone the `codefusion-studio` repository alongside this one:
 
 #### Configuration
 
-1. **Update `plugins/package.json`** — replace the remote URLs for `cfs-plugins-sdk` and `cfs-data-models` with portals pointing to your local checkout:
+1. **Update `plugins/package.json`** — replace the remote URL for `cfs-plugins-sdk` with portal pointing to your local checkout:
 
    ```json
    "dependencies": {
      "cfs-plugins-sdk": "portal:../../codefusion-studio/packages/cfs-plugins-sdk"
-   }
-   ```
-
-   ```json
-   "devDependencies": {
-     "cfs-data-models": "portal:../../codefusion-studio/packages/cfs-data-models"
    }
    ```
 

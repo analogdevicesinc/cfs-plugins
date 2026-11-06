@@ -1,0 +1,167 @@
+<%
+/******************************************************************************
+
+ Copyright (c) 2022-2026 Analog Devices.  All Rights Reserved.
+
+ This software is proprietary.  By using this software you agree
+ to the terms of the associated Analog Devices License Agreement.
+
+*******************************************************************************/
+%> 
+<% eval(this.render("templates/ssdd/ssdd_common.js")); %>
+<%~ include("@copyrightHeader", it) %> 
+/* This file is generated using the peripheral settings configured using System Planner.
+ * Please do not edit the values here directly.
+ */
+
+/** @addtogroup TWI_Driver
+ *  @{
+ */
+ 
+  /** @defgroup TWI_Driver_Static_Configuration TWI Driver Static Configuration
+   *  @{
+
+  Static Configuration: Using this configuration applications can configure the control registers
+  parameters upfront which can be set to default before TWI data transfer starts. This configuration
+  has macros which can be configured through adi_twi_config_SC8xx.h file which by default is available
+  with TWI driver. Example project can maintain a copy of it locally for custom configuration.
+  In the default static configuration, each TWI instance is enabled and PRESCALE is configured
+  according to preload SYSCLOCK and set in fast mode.
+*/
+
+/*!
+* @file      adi_twi_config_SC8xx.h
+*
+* @brief     TWI driver static configuration header file
+*
+* @details
+*            TWI driver static configuration header file
+*/
+
+#ifndef ADI_TWI_CONFIG_SC8XX_H
+#define ADI_TWI_CONFIG_SC8XX_H
+
+#if defined(__ADSPSHARCFX__) && defined(__ADSPSC835_FAMILY__)
+/*! Specifies if the SEC interrupts should be used for all TWI instances
+ * If set as 1, SEC interrupt path is enabled for all TWI instances
+ * If set as 0, direct interrupt path is enabled for all TWI instances*/ 
+<%
+  var _g_sec_int = [
+    getAssignedPeripheral("TWI0") ? getPeriConfigValueBoolAsInt("TWI0", "SEC_INT", "FALSE") : null,
+    getAssignedPeripheral("TWI1") ? getPeriConfigValueBoolAsInt("TWI1", "SEC_INT", "FALSE") : null,
+    getAssignedPeripheral("TWI2") ? getPeriConfigValueBoolAsInt("TWI2", "SEC_INT", "FALSE") : null,
+    getAssignedPeripheral("TWI3") ? getPeriConfigValueBoolAsInt("TWI3", "SEC_INT", "FALSE") : null,
+    getAssignedPeripheral("TWI4") ? getPeriConfigValueBoolAsInt("TWI4", "SEC_INT", "FALSE") : null,
+    getAssignedPeripheral("TWI5") ? getPeriConfigValueBoolAsInt("TWI5", "SEC_INT", "FALSE") : null,
+  ].filter(v => v !== null);
+%> 
+#define ADI_TWI_CONFIG_SEC_INT       <%= _g_sec_int.length ? _g_sec_int[0] : getPeriConfigValueBoolAsInt("TWI0", "SEC_INT", "FALSE") %>u
+<%
+  if (_g_sec_int.length > 1 && !_g_sec_int.every(v => v === _g_sec_int[0])) {
+%> 
+#error "ADI_TWI_CONFIG_SEC_INT: all assigned TWI instances must have the same SEC_INT setting"
+<% } %> 
+#endif /* defined(__ADSPSHARCFX__) && defined(__ADSPSC835_FAMILY__) */
+
+/*!TWI0 Instance*/
+/*!Select TWI0 Instance */
+#define ADI_TWI0_INSTANCE                     		<%= getAssignedPeripheral("TWI0") ? "1" : "0" %>u
+
+/*! Specifies the Prescale value for internal time reference*/
+#define ADI_TWI0_CTL_PRESCALE              	 	  	(<%= getPeriConfigValueInt("TWI0", "PRESCALE", "12") %>u)
+/*! Specifies the TWI clock frequency in kHz*/
+#define ADI_TWI0_CLK_FREQ              	 	 	  	(<%= getPeriConfigValueInt("TWI0", "CLK_FREQ", "400") %>u)
+/*! Specifies the TWI clock duty cycle */
+#define ADI_TWI0_DUTY_CYCLE              	 	  	(<%= getPeriConfigValueInt("TWI0", "DUTY_CYCLE", "50") %>u)
+/*! Specifies the TWI Master Address register Configuration */
+#define ADI_TWI0_MSTRADDR_ADDR 				 	 	(<%= getPeriConfigValueInt("TWI0", "MSTRADDR_ADDR", "255") %>u)
+/*! Specifies the TWI Slave address register Configuration */
+#define ADI_TWI0_SLVADDR_ADDR				     	(<%= getPeriConfigValueInt("TWI0", "SLVADDR_ADDR", "255") %>u)
+
+
+
+/*!TWI1 Instance*/
+/*!Select TWI1 Instance */
+#define ADI_TWI1_INSTANCE                     		<%= getAssignedPeripheral("TWI1") ? "1" : "0" %>u
+
+/*! Specifies the Prescale value for internal time reference*/
+#define ADI_TWI1_CTL_PRESCALE              	 	  	(<%= getPeriConfigValueInt("TWI1", "PRESCALE", "12") %>u)
+/*! Specifies the TWI clock frequency in kHz*/
+#define ADI_TWI1_CLK_FREQ              	 	 	  	(<%= getPeriConfigValueInt("TWI1", "CLK_FREQ", "400") %>u)
+/*! Specifies the TWI clock duty cycle */
+#define ADI_TWI1_DUTY_CYCLE              	 	  	(<%= getPeriConfigValueInt("TWI1", "DUTY_CYCLE", "50") %>u)
+/*! Specifies the TWI Master Address register Configuration */
+#define ADI_TWI1_MSTRADDR_ADDR 				 	 	(<%= getPeriConfigValueInt("TWI1", "MSTRADDR_ADDR", "255") %>u)
+/*! Specifies the TWI Slave address register Configuration */
+#define ADI_TWI1_SLVADDR_ADDR				     	(<%= getPeriConfigValueInt("TWI1", "SLVADDR_ADDR", "255") %>u)
+
+
+/*!TWI2 Instance*/
+/*!Select TWI2 Instance */
+#define ADI_TWI2_INSTANCE                    		 <%= getAssignedPeripheral("TWI2") ? "1" : "0" %>u
+
+/*! Specifies the Prescale value for internal time reference*/
+#define ADI_TWI2_CTL_PRESCALE              	 	  	(<%= getPeriConfigValueInt("TWI2", "PRESCALE", "12") %>u)
+/*! Specifies the TWI clock frequency in kHz*/
+#define ADI_TWI2_CLK_FREQ              	 	 	  	(<%= getPeriConfigValueInt("TWI2", "CLK_FREQ", "400") %>u)
+/*! Specifies the TWI clock duty cycle */
+#define ADI_TWI2_DUTY_CYCLE              	 	  	(<%= getPeriConfigValueInt("TWI2", "DUTY_CYCLE", "50") %>u)
+/*! Specifies the TWI Master Address register Configuration */
+#define ADI_TWI2_MSTRADDR_ADDR 				 	 	(<%= getPeriConfigValueInt("TWI2", "MSTRADDR_ADDR", "255") %>u)
+/*! Specifies the TWI Slave address register Configuration */
+#define ADI_TWI2_SLVADDR_ADDR				     	(<%= getPeriConfigValueInt("TWI2", "SLVADDR_ADDR", "255") %>u)
+
+/*!TWI3 Instance*/
+/*!Select TWI3 Instance */
+#define ADI_TWI3_INSTANCE                    		 <%= getAssignedPeripheral("TWI3") ? "1" : "0" %>u
+
+/*! Specifies the Prescale value for internal time reference*/
+#define ADI_TWI3_CTL_PRESCALE              	 	  	(<%= getPeriConfigValueInt("TWI3", "PRESCALE", "12") %>u)
+/*! Specifies the TWI clock frequency in kHz*/
+#define ADI_TWI3_CLK_FREQ              	 	 	  	(<%= getPeriConfigValueInt("TWI3", "CLK_FREQ", "400") %>u)
+/*! Specifies the TWI clock duty cycle */
+#define ADI_TWI3_DUTY_CYCLE              	 	  	(<%= getPeriConfigValueInt("TWI3", "DUTY_CYCLE", "50") %>u)
+/*! Specifies the TWI Master Address register Configuration */
+#define ADI_TWI3_MSTRADDR_ADDR 				 	 	(<%= getPeriConfigValueInt("TWI3", "MSTRADDR_ADDR", "255") %>u)
+/*! Specifies the TWI Slave address register Configuration */
+#define ADI_TWI3_SLVADDR_ADDR				     	(<%= getPeriConfigValueInt("TWI3", "SLVADDR_ADDR", "255") %>u)
+
+
+/*!TWI4 Instance*/
+/*!Select TWI4 Instance */
+#define ADI_TWI4_INSTANCE                    		 <%= getAssignedPeripheral("TWI4") ? "1" : "0" %>u
+
+/*! Specifies the Prescale value for internal time reference*/
+#define ADI_TWI4_CTL_PRESCALE              	 	  	(<%= getPeriConfigValueInt("TWI4", "PRESCALE", "12") %>u)
+/*! Specifies the TWI clock frequency in kHz*/
+#define ADI_TWI4_CLK_FREQ              	 	 	  	(<%= getPeriConfigValueInt("TWI4", "CLK_FREQ", "400") %>u)
+/*! Specifies the TWI clock duty cycle */
+#define ADI_TWI4_DUTY_CYCLE              	 	  	(<%= getPeriConfigValueInt("TWI4", "DUTY_CYCLE", "50") %>u)
+/*! Specifies the TWI Master Address register Configuration */
+#define ADI_TWI4_MSTRADDR_ADDR 				 	 	(<%= getPeriConfigValueInt("TWI4", "MSTRADDR_ADDR", "255") %>u)
+/*! Specifies the TWI Slave address register Configuration */
+#define ADI_TWI4_SLVADDR_ADDR				     	(<%= getPeriConfigValueInt("TWI4", "SLVADDR_ADDR", "255") %>u)
+
+
+/*!TWI5 Instance*/
+/*!Select TWI5 Instance */
+#define ADI_TWI5_INSTANCE                    		 <%= getAssignedPeripheral("TWI5") ? "1" : "0" %>u
+
+/*! Specifies the Prescale value for internal time reference*/
+#define ADI_TWI5_CTL_PRESCALE              	 	  	(<%= getPeriConfigValueInt("TWI5", "PRESCALE", "12") %>u)
+/*! Specifies the TWI clock frequency in kHz*/
+#define ADI_TWI5_CLK_FREQ              	 	 	  	(<%= getPeriConfigValueInt("TWI5", "CLK_FREQ", "400") %>u)
+/*! Specifies the TWI clock duty cycle */
+#define ADI_TWI5_DUTY_CYCLE              	 	  	(<%= getPeriConfigValueInt("TWI5", "DUTY_CYCLE", "50") %>u)
+/*! Specifies the TWI Master Address register Configuration */
+#define ADI_TWI5_MSTRADDR_ADDR 				 	 	(<%= getPeriConfigValueInt("TWI5", "MSTRADDR_ADDR", "255") %>u)
+/*! Specifies the TWI Slave address register Configuration */
+#define ADI_TWI5_SLVADDR_ADDR				     	(<%= getPeriConfigValueInt("TWI5", "SLVADDR_ADDR", "255") %>u)
+
+
+#endif /*ADI_TWI_CONFIG_SC8XX_H*/
+
+/*@}*/
+
+/*@}*/
+

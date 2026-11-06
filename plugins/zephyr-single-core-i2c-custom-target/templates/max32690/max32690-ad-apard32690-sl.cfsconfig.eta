@@ -22,21 +22,18 @@
   ],
   "ClockNodes": [
     {
-      "Type": "Peripheral",
       "Name": "UART0/1/2",
       "Control": "UART0_ENABLE",
       "Value": "TRUE",
       "Enabled": true
     },
     {
-      "Type": "Peripheral",
       "Name": "UART0/1/2",
       "Control": "UART0_MUX",
       "Value": "IBRO",
       "Enabled": true
     },
     {
-      "Type": "Mux",
       "Name": "SYS_OSC Mux",
       "Control": "MUX",
       "Value": "IPO",
@@ -54,7 +51,7 @@
       "CoreId": "CM4",
       "ProjectId": "CM4",
       "PluginId": "com.analog.project.zephyr.plugin",
-      "PluginVersion": "^1.1.0",
+      "PluginVersion": "^1.4.0",
       "FirmwarePlatform": "zephyr",
       "ExternallyManaged": false,
       "Partitions": [
@@ -168,7 +165,7 @@
       ],
       "PlatformConfig": {
         "ProjectName": "m4",
-        "ZephyrVersion": "4.3.0",
+        "ZephyrVersion": "4.4.2",
         "ZephyrBoardName": "apard32690/max32690/m4",
         "EnableCoreDump": true
       }

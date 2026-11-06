@@ -1,7 +1,0 @@
-<% if (it.coreId.startsWith("CM")) { %>
-<%~ include("./arm/launch.json.eta", it) %>
-<% } else if (it.coreId === "RV") { %>
-<%~ include("./riscv/launch.json.eta", it) %>
-<% } else if (it.coreId === "FX") { %>
-<%~ include("./sharc-fx/sfx/launch.json.eta", it) %>
-<% } %>

@@ -1,0 +1,363 @@
+<%
+/**
+ * Copyright (c) 2026 Analog Devices, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+%>
+<% eval(this.render("templates/ssdd/ssdd_common.js")); %>
+<% if (it.coreId.toLowerCase().includes("m33")) { %>
+<%
+  /**
+   * M33 inline dependency conditions.
+   */
+  const matchesSsddAllocation = (name, prefix) => {
+    if (!name.startsWith(prefix)) return false;
+    const suffix = name.slice(prefix.length);
+    return suffix === "" || /^\d+$/.test(suffix) || /^[A-Z]$/.test(suffix);
+  };
+  const project = it.cfsconfig.Projects?.find(
+    (candidate) => candidate.ProjectId === it.projectId
+  );
+  const assignedNames = project?.Peripherals?.map(
+    (peripheral) => peripheral.Name
+  ) ?? [];
+  const availableNames = new Set(
+    (it.datamodel?.Peripherals ?? []).map((peripheral) => peripheral.Name)
+  );
+  const m33InstanceAssigned = (prefix) =>
+    assignedNames.some(
+      (name) =>
+        availableNames.has(name) && matchesSsddAllocation(name, prefix)
+    );
+  const anyInstanceAssigned = m33InstanceAssigned;
+%>
+<%~ include("@copyrightHeaderHash", it) %>
+<%   if (anySsddPeripheralAssigned(m33InstanceAssigned)) { %>
+# M33 SSDD source dependencies selected from peripheral allocations.
+SSDD_BASE := $(lastword $(wildcard $(subst \,/,$(SDK_PATH))/packs/AnalogDevices/ADSP-SC8xx_SSDD/*/Source))
+SSDD_DRIVER_BASE := $(SSDD_BASE)/drivers
+SSDD_SERVICE_BASE := $(SSDD_BASE)/services
+EXTERNAL_INCLUDE_DIRS += include/ssdd
+
+<%     for (const directory of [
+        "services/dma",
+        "services/pdma",
+        "services/pwr",
+        "services/tru",
+        "services/pkic"
+      ]) { %>
+EXTERNAL_INCLUDE_DIRS += $(SSDD_BASE)/../Include/<%= directory + "\n" %>
+<%     } %>
+
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/dai/adi_dai.c
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/int/adi_int.c
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/int/adi_nvic_v1.c
+# Shared M33 interrupt and dispatch runtime support; included automatically for SSDD projects.
+SSDD_C_SRCS += $(SSDD_BASE)/runtime/int/adi_no_dispatched_handler.c
+SSDD_C_SRCS += $(SSDD_BASE)/runtime/int/adi_rtl_activate_dispatched_handler.c
+SSDD_C_SRCS += $(SSDD_BASE)/runtime/int/adi_rtl_deactivate_dispatched_handler.c
+SSDD_C_SRCS += $(SSDD_BASE)/runtime/int/adi_rtl_disable_interrupts.c
+SSDD_C_SRCS += $(SSDD_BASE)/runtime/int/adi_rtl_dispatched_handler_table.c
+SSDD_C_SRCS += $(SSDD_BASE)/runtime/int/adi_rtl_register_dispatched_handler.c
+SSDD_C_SRCS += $(SSDD_BASE)/runtime/int/adi_rtl_unregister_dispatched_handler.c
+<%     for (const source of ["adi_osal_noos.c", "adi_osal_noos_active.c", "adi_osal_noos_critical.c", "adi_osal_noos_event.c", "adi_osal_noos_init.c", "adi_osal_noos_mutex.c", "adi_osal_noos_prof.c", "adi_osal_noos_rtl_lock.c", "adi_osal_noos_sem.c", "adi_osal_noos_thread.c", "adi_osal_noos_timing.c", "adi_osal_noos_tls.c"]) { %>
+SSDD_C_SRCS += $(SSDD_BASE)/runtime/osal/<%= source + "\n" %>
+<%     } %>
+SSDD_C_SRCS += $(SSDD_BASE)/runtime/osal/cortex-m33/adi_osal_arch_c.c
+SSDD_C_SRCS += $(SSDD_BASE)/runtime/osal/cortex-m33/adi_osal_noos_arch_c.c
+<%     if (anyInstanceAssigned("ASRC")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/asrc/adi_asrc.c
+<%     } %>
+<%     if (anyInstanceAssigned("CANFD")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/canfd/adi_canfd.c
+<%     } %>
+<%     if (anyInstanceAssigned("CNT")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/rotary/adi_counter.c
+<%     } %>
+<%     if (anyInstanceAssigned("CRC")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/crc/adi_crc.c
+<%     } %>
+<%     if (anyInstanceAssigned("DMCPM")) { %>
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/dmcpm/adi_dmcpm.c
+<%     } %>
+<%     if (anyInstanceAssigned("EMAC")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/ethernet/emac/adi_emac.c
+<%     } %>
+<%     if (anyInstanceAssigned("FRACNPLL")) { %>
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/fpll/adi_fpll.c
+<%     } %>
+<%     if (anyInstanceAssigned("HADC")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/hadc/adi_hadc.c
+<%     } %>
+<%     if (anyInstanceAssigned("L2CTL")) { %>
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/l2ctl/adi_l2ctl.c
+<%     } %>
+<%     if (anyInstanceAssigned("LP")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/linkport/adi_linkport.c
+<%     } %>
+<%     if (anyInstanceAssigned("MEPU")) { %>
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/mepu/adi_mepu.c
+<%     } %>
+<%     if (anyInstanceAssigned("MLB")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/mlb/adi_mlb.c
+<%     } %>
+<%     if (anyInstanceAssigned("PCG")) { %>
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/pcg/adi_pcg.c
+<%     } %>
+<%     if (anyInstanceAssigned("PDM")) { %>
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/pdm/adi_pdm.c
+<%     } %>
+<%     if (anyInstanceAssigned("PKA")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/crypto/adi_pka.c
+<%     } %>
+<%     if (anyInstanceAssigned("PKTE")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/crypto/adi_pkte.c
+<%     } %>
+<%     if (anyInstanceAssigned("PORT")) { %>
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/gpio/adi_gpio.c
+<%     } %>
+<%     if (anyInstanceAssigned("PWM")) { %>
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/pwm/adi_pwm.c
+<%     } %>
+<%     if (anyInstanceAssigned("RCU")) { %>
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/rcu/adi_rcu.c
+<%     } %>
+<%     if (anyInstanceAssigned("SMPU")) { %>
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/smpu/adi_smpu.c
+<%     } %>
+<%     if (anyInstanceAssigned("SPDIF")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/spdif/adi_spdif_rx.c
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/spdif/adi_spdif_tx.c
+<%     } %>
+<%     if (anyInstanceAssigned("SPI")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/spi/adi_spi.c
+<%     } %>
+<%     if (anyInstanceAssigned("SPORT")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/sport/adi_sport.c
+<%     } %>
+<%     if (anyInstanceAssigned("SPU")) { %>
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/spu/adi_spu.c
+<%     } %>
+<%     if (anyInstanceAssigned("SWU")) { %>
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/swu/adi_swu.c
+<%     } %>
+<%     if (anyInstanceAssigned("TIMER")) { %>
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/tmr/adi_tmr.c
+<%     } %>
+<%     if (anyInstanceAssigned("TMU")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/tmu/adi_tmu.c
+<%     } %>
+<%     if (anyInstanceAssigned("TRNG")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/crypto/adi_trng.c
+<%     } %>
+<%     if (anyInstanceAssigned("TWI")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/twi/adi_twi.c
+<%     } %>
+<%     if (anyInstanceAssigned("UART")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/uart/adi_uart.c
+<%     } %>
+<%     if (anyInstanceAssigned("WDOG")) { %>
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/wd/adi_wd.c
+<%     } %>
+<%     if (anyInstanceAssigned("XSPI")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/xspi/adi_xspi.c
+<%     } %>
+<%     if (
+        anyInstanceAssigned("CANFD") ||
+        anyInstanceAssigned("CRC") ||
+        anyInstanceAssigned("EMDMA") ||
+        anyInstanceAssigned("XSPI")
+      ) { %>
+# Shared DMA service required by CANFD, CRC, EMDMA, and XSPI.
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/dma/adi_dma.c
+<%     } %>
+<%     if (
+        anyInstanceAssigned("CANFD") ||
+        anyInstanceAssigned("CRC") ||
+        anyInstanceAssigned("EMDMA") ||
+        anyInstanceAssigned("PWR") ||
+        anyInstanceAssigned("TIMER") ||
+        anyInstanceAssigned("UART") ||
+        anyInstanceAssigned("XSPI")
+      ) { %>
+# Shared power service required by CANFD, CRC, EMDMA, PWR, TIMER, UART, and XSPI.
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/pwr/adi_pwr.c
+<%     } %>
+<%     if (
+        anyInstanceAssigned("DMA") ||
+        anyInstanceAssigned("LP") ||
+        anyInstanceAssigned("PDMA") ||
+        anyInstanceAssigned("SPI") ||
+        anyInstanceAssigned("SPORT") ||
+        anyInstanceAssigned("UART")
+      ) { %>
+# Shared PDMA service required by DMA, LP, PDMA, SPI, SPORT, and UART.
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/pdma/adi_pdma.c
+<%     } %>
+<%     if (anyInstanceAssigned("CANFD") || anyInstanceAssigned("TRU")) { %>
+# Shared TRU service required by CANFD and TRU.
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/tru/adi_tru.c
+<%     } %>
+<%     if (
+        anyInstanceAssigned("PKA") ||
+        anyInstanceAssigned("PKIC") ||
+        anyInstanceAssigned("TRNG")
+      ) { %>
+# Shared PKIC service required by PKA, PKIC, and TRNG.
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/pkic/adi_pkic.c
+<%     } %>
+EXTERNAL_INCLUDE_DIRS += $(SSDD_BASE)/../Include
+EXTERNAL_INCLUDE_DIRS += $(SSDD_BASE)/../Include/runtime/osal
+EXTERNAL_INCLUDE_DIRS += $(sort $(dir $(SSDD_C_SRCS)))
+<%   } %>
+<% } else { %>
+<%~ include("@copyrightHeaderHash", it) %>
+<%   if (it.coreId.toLowerCase().includes("fx") && anySsddPeripheralAssigned()) { %>
+# SSDD (services/drivers) source files selected via the Peripheral Allocation
+# tab. SSDD_BASE, SSDD_C_SRCS and SSDD_CXX_SRCS are consumed by Makefile.
+
+SSDD_BASE := $(subst \,/,$(SFX_PATH))/Xtensa/SHARC-FX/lib/src
+SSDD_DRIVER_BASE := $(SSDD_BASE)/drivers/Source
+SSDD_SERVICE_BASE := $(SSDD_BASE)/services/Source
+EXTERNAL_BASES += $(SSDD_BASE)
+EXTERNAL_INCLUDE_DIRS += include/ssdd
+EXTERNAL_INCLUDE_DIRS += $(sort $(dir $(wildcard include/ssdd/drivers/*/*.h include/ssdd/services/*/*.h)))
+
+<%     if (anyInstanceAssigned("ASRC")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/asrc/adi_asrc.c
+<%     } %>
+<%     if (anyInstanceAssigned("CANFD")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/canfd/adi_canfd.c
+<%     } %>
+<%     if (anyInstanceAssigned("CRC")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/crc/adi_crc.c
+<%     } %>
+<%     if (anyInstanceAssigned("EMAC")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/ethernet/emac/adi_emac.c
+<%     } %>
+<%     if (anyInstanceAssigned("EMSI")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/emsi/adi_emsi.c
+<%     } %>
+<%     if (anyInstanceAssigned("FIR")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/fir/adi_fir.c
+<%     } %>
+<%     if (anyInstanceAssigned("HADC")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/hadc/adi_hadc.c
+<%     } %>
+<%     if (anyInstanceAssigned("HSM")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/hsm/adi_hsm.c
+<%     } %>
+<%     if (anyInstanceAssigned("IIR")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/iir/adi_iir.c
+<%     } %>
+<%     if (anyInstanceAssigned("LP")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/linkport/adi_linkport.c
+<%     } %>
+<%     if (anyInstanceAssigned("EMDMA")) { %>
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/dma/adi_dma.c
+<%     } %>
+<%     if (anyInstanceAssigned("MLB")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/mlb/adi_mlb.c
+<%     } %>
+<%     if (anyInstanceAssigned("PKA")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/crypto/adi_pka.c
+<%     } %>
+<%     if (anyInstanceAssigned("PKTE")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/crypto/adi_pkte.c
+<%     } %>
+<%     if (anyInstanceAssigned("CNT")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/rotary/adi_counter.c
+<%     } %>
+<%     if (anyInstanceAssigned("SPDIF")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/spdif/adi_spdif_rx.c
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/spdif/adi_spdif_tx.c
+<%     } %>
+<%     if (anyInstanceAssigned("SPI")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/spi/adi_spi.c
+<%     } %>
+<%     if (anyInstanceAssigned("SPORT")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/sport/adi_sport.c
+<%     } %>
+<%     if (anyInstanceAssigned("TMU")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/tmu/adi_tmu.c
+<%     } %>
+<%     if (anyInstanceAssigned("TRNG")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/crypto/adi_trng.c
+<%     } %>
+<%     if (anyInstanceAssigned("TWI")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/twi/adi_twi.c
+<%     } %>
+<%     if (anyInstanceAssigned("UART")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/uart/adi_uart.c
+<%     } %>
+<%     if (anyInstanceAssigned("XSPI")) { %>
+SSDD_C_SRCS += $(SSDD_DRIVER_BASE)/xspi/adi_xspi.c
+<%     } %>
+<%     if (anyInstanceAssigned("DAI")) { %>
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/dai/adi_dai.c
+<%     } %>
+<%     if (anyInstanceAssigned("DMA")) { %>
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/pdma/adi_pdma.c
+<%     } %>
+<%     if (anyInstanceAssigned("DMCPM")) { %>
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/dmcpm/adi_dmcpm.c
+<%     } %>
+<%     if (anyInstanceAssigned("FRACNPLL")) { %>
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/fpll/adi_fpll.c
+<%     } %>
+<%     if (anyInstanceAssigned("PORT", "", true)) { %>
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/gpio/adi_gpio.c
+<%     } %>
+<%     if (anyInstanceAssigned("L2CTL")) { %>
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/l2ctl/adi_l2ctl.c
+<%     } %>
+<%     if (anyInstanceAssigned("MEPU")) { %>
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/mepu/adi_mepu.c
+<%     } %>
+<%     if (anyInstanceAssigned("PCG")) { %>
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/pcg/adi_pcg.c
+<%     } %>
+<%     if (anyInstanceAssigned("PDM")) { %>
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/pdm/adi_pdm.c
+<%     } %>
+<%     if (anyInstanceAssigned("PKIC")) { %>
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/pkic/adi_pkic.c
+<%     } %>
+<%     if (anyInstanceAssigned("PWM")) { %>
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/pwm/adi_pwm.c
+<%     } %>
+<%     if (anyInstanceAssigned("PWR")) { %>
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/pwr/adi_pwr.c
+<%     } %>
+<%     if (anyInstanceAssigned("RCU")) { %>
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/rcu/adi_rcu.c
+<%     } %>
+<%     if (anyInstanceAssigned("SMPU")) { %>
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/smpu/adi_smpu.c
+<%     } %>
+<%     if (anyInstanceAssigned("SPU")) { %>
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/spu/adi_spu.c
+<%     } %>
+<%     if (anyInstanceAssigned("SWU")) { %>
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/swu/adi_swu.c
+<%     } %>
+<%     if (anyInstanceAssigned("TIMER")) { %>
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/tmr/adi_tmr.c
+<%     } %>
+<%     if (anyInstanceAssigned("TRU")) { %>
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/tru/adi_tru.c
+<%     } %>
+<%     if (anyInstanceAssigned("WDOG")) { %>
+SSDD_C_SRCS += $(SSDD_SERVICE_BASE)/wd/adi_wd.c
+<%     } %>
+<%   } %>
+<% } %>

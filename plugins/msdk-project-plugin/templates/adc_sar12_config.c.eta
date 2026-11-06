@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 2025 Analog Devices, Inc.
+ * Copyright (c) 2025-2026 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,9 +30,9 @@ function getADCClock() {
       break;
     case "SYS_CLK":
       if (it.datamodel.Name === "MAX78002") {
-      clock_enum = "CLK_HCLK";
+        clock_enum = "CLK_HCLK";
       } else {
-      clock_enum = "CLK_SYS_OSC";
+        clock_enum = "CLK_SYS_OSC";
       }
       break;
     case "SYS_OSC":
@@ -59,6 +59,9 @@ function getADCTrigSel() {
       break;
     case "AIN_TRIG_B":
       sel = it.datamodel.Name === "MAX32672" ? "P0_22" : "P1_0";
+      break;
+    case "AIN_TRIG_C":
+      sel = "P0_17";
       break;
     case "AIN_TRIG_D":
       if (it.datamodel.Name === "MAX32672") {
@@ -131,14 +134,12 @@ function getADCChannel(slot) {
     case "VDDIO_4":
       return "MXC_ADC_CH_VDDIO_DIV4";
     case "VDD3A_4":
-      // There is no MSDK enum for this.
-      return "18 /* VDD3A/4 */";
+      return "MXC_ADC_CH_VDD3A_DIV4";
     case "VDDB_4":
-      // There is no MSDK enum for this.
-      return "19 /* VDDB/4 */";
+      return "MXC_ADC_CH_VDDB_DIV4";
     case "VSSA":
-      // There is no MSDK enum for this.
-      return "20 /* VSSA */";
+      // For 662, there is no "VSSA" in the current data model; however it existed (by mistake) in the former data model, henceforth, mapping it to vss for compatibility.
+      return it.datamodel.Name === "MAX32662" ? "MXC_ADC_CH_VSS" :  "MXC_ADC_CH_VSSA";
   }
   return "MXC_ADC_CH_" + channel;
 }

@@ -1,5 +1,7 @@
 /* Copyright 2023 The TensorFlow Authors. All Rights Reserved.
 
+Portions Copyright (c) 2026 Analog Devices, Inc.
+
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -23,7 +25,13 @@ limitations under the License.
 #include <sys/platform.h>
 #include <sys/adi_core.h>
 #include <stdio.h>
+#include <stdint.h>
 
+#ifdef ENABLE_TFLM_PROFILING
+// Xtensa cycle counter register access.
+#include <xtensa/tie/xt_timer.h>
+#endif
+ 
 // Standard TfLite includes 
 #include "tensorflow/lite/core/c/common.h"
 #include "tensorflow/lite/micro/micro_interpreter.h"
@@ -46,11 +54,28 @@ int RunFloat32Model() {
   tflite::MicroMutableOpResolver<HELLO_WORLD_MODEL_F32_NUM_OPERATORS> op_resolver;
   TF_LITE_ENSURE_STATUS(adi_resolve_ops_hello_world_model_f32(op_resolver));
 
+#ifdef ENABLE_TFLM_PROFILING
+  // Passing a profiler to the interpreter makes TFLM record per-operator timings.
+  tflite::MicroProfiler profiler;
+  tflite::MicroProfilerInterface* profiler_ptr = &profiler;
+#else
+  tflite::MicroProfilerInterface* profiler_ptr = nullptr;
+#endif
+
   tflite::MicroInterpreter interpreter(model,
                                        op_resolver,
                                        hello_world_model_f32_arena,
-                                       HELLO_WORLD_MODEL_F32_ARENA_SIZE);
+                                       HELLO_WORLD_MODEL_F32_ARENA_SIZE,
+                                       /*resource_variables=*/nullptr,
+                                       profiler_ptr);
   TF_LITE_ENSURE_STATUS(interpreter.AllocateTensors());
+
+#ifdef ENABLE_TFLM_PROFILING
+  size_t used = interpreter.arena_used_bytes();
+
+  printf("TFLM arena usage: \n- Used=%u bytes\n- Total=%u bytes\n- Free=%u bytes\n",
+        (unsigned int)used, (unsigned int)HELLO_WORLD_MODEL_F32_ARENA_SIZE, (unsigned int)(HELLO_WORLD_MODEL_F32_ARENA_SIZE - used));
+#endif
 
   // Check if the predicted output is within a small range of the
   // expected output
@@ -59,10 +84,44 @@ int RunFloat32Model() {
   float golden_inputs[kNumTestValues] = {0.f, 1.f, 3.f, 5.f};
   bool pass = 0;
   int fails = 0;
+#ifdef ENABLE_TFLM_PROFILING
+  uint32_t invoke_cycle_sum = 0;
+  uint32_t invoke_cycle_min = UINT32_MAX;
+  uint32_t invoke_cycle_max = 0;
+#endif
 
   for (int i = 0; i < kNumTestValues; ++i) {
     interpreter.input(0)->data.f[0] = golden_inputs[i];
-    TF_LITE_ENSURE_STATUS(interpreter.Invoke());
+#ifdef ENABLE_TFLM_PROFILING
+    uint32_t invoke_start = 0;
+    uint32_t invoke_end = 0;
+    uint32_t invoke_cycles = 0;
+    // Measure CPU cycles over call to interpreter.Invoke().
+    invoke_start = XT_RSR_CCOUNT();
+#endif
+    TfLiteStatus invoke_status = interpreter.Invoke();
+
+#ifdef ENABLE_TFLM_PROFILING
+    invoke_end = XT_RSR_CCOUNT();
+#endif
+
+    TF_LITE_ENSURE_STATUS(invoke_status);
+
+#ifdef ENABLE_TFLM_PROFILING
+    invoke_cycles = invoke_end - invoke_start;
+    invoke_cycle_sum += invoke_cycles;
+    if (invoke_cycles < invoke_cycle_min) {
+      invoke_cycle_min = invoke_cycles;
+    }
+    if (invoke_cycles > invoke_cycle_max) {
+      invoke_cycle_max = invoke_cycles;
+    }
+
+    MicroPrintf("\nPer-operator profile for test %d:", i);
+    profiler.LogCsv();
+    profiler.ClearEvents();
+#endif
+
     float y_pred = interpreter.output(0)->data.f[0];
     float y_calc = sin(golden_inputs[i]);
     pass = fabsf(y_calc - y_pred) < epsilon;
@@ -70,6 +129,15 @@ int RunFloat32Model() {
       fails++;
     MicroPrintf("Test %d %s: pred=%f calc=%f", i, pass ? "passed" : "failed", (double)y_pred, (double)y_calc);
   }
+
+#ifdef ENABLE_TFLM_PROFILING
+  // Report cycle statistics across all invocations.
+  double invoke_cycle_avg = (double)invoke_cycle_sum / (double)kNumTestValues;
+  printf("\nInference performance (CPU cycles): \n\tavg: %.2f\n\tmin: %u\n\tmax: %u\n",
+    invoke_cycle_avg,
+    invoke_cycle_min,
+    invoke_cycle_max);
+#endif
 
   return fails;
 }

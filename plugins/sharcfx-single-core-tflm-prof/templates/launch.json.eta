@@ -1,0 +1,111 @@
+<%~ include("@sharcfxUtils", it) %>
+<% const loadPreload = it.soc.toLowerCase().startsWith("adsp-sc83")
+  ? `load \${cfs:tool.path.xtensa-sharcfx}/Xtensa/SHARC-FX/ldr/${it.sharcfxBoardNameInflectionPoint(it.soc)}-EV-SOM_preload_core1.dxe`
+  : `load \${cfs:tool.path.xtensa-sharcfx}/Xtensa/SHARC-FX/ldr/${it.sharcfxBoardNameInflectionPoint(it.soc)}-EV-SOM_preload.dxe`
+const sleepCmd = (python) => `shell \${config:cfs.sdk.path}/Tools/python/${python} -c "import time; time.sleep(2)"`
+const loggingCmds = [
+  "set logging overwrite on",
+  "set logging file debug-sfx.log",
+  "set logging enabled",
+  "set remotetimeout 60",
+  "source .vscode/.xt-substitute-path.gdb",
+]
+const coreCmds = (python) => [
+  "monitor reset halt",
+  loadPreload,
+  "continue",
+  sleepCmd(python),
+  "interrupt",
+]
+const prelaunchCmds = (python) => [...loggingCmds, ...coreCmds(python)]
+const postRestartCmds = (python) => [...coreCmds(python), "load"]
+const fmt = (arr, indent) => JSON.stringify(arr, null, 2).replace(/\n/g, "\n" + " ".repeat(indent))
+-%>
+{
+  "configurations": [
+    {
+      "name": "Debug with GDB and OpenOCD",
+      "type": "cortex-debug",
+      "request": "launch",
+      "runToEntryPoint": "main",
+      "cwd": "${workspaceFolder}",
+      "executable": "${config:cfs.programFile}",
+      "servertype": "openocd",
+      "serverpath": "${config:cfs.openocd.path}/bin/openocd",
+      "overrideLaunchCommands": <%~ fmt(["load"], 6) %>,
+      "svdPath": "${cfs:tool.path.xtensa-sharcfx}/System/ArchDef/<%= it.svdFile(it.soc) %>",
+      "searchDir": [
+        "${config:cfs.openocd.path}/share/openocd/scripts"
+      ],
+      "device": "SHARC-FX",
+      "showDevDebugOutput": "none",
+      "debuggerArgs": ["-l", "50"],
+      "configFiles": [
+        "${config:cfs.openocd.interface}",
+        "${config:cfs.openocd.board}"
+      ],
+      <% // Reserve GDB ports for SHARC-FX and, on SC83x, M33 to avoid overlapping the Tcl port. %>
+      <% // 2183x has no M33; processor counts avoid depending on OpenOCD target names. %>
+      "numberOfProcessors": <%= it.soc.toLowerCase().startsWith("adsp-sc83") ? 2 : 1 %>,
+      "openOCDLaunchCommands": [
+        "adapter speed 23000"
+      ],
+      "windows": {
+        "gdbPath": "${cfs:tool.path.xtensa-sharcfx}/Xtensa/XtensaTools/bin/xt-gdb.exe",
+        "preLaunchCommands": <%~ fmt(prelaunchCmds("python"), 8) %>,
+        "postRestartCommands": <%~ fmt(postRestartCmds("python"), 8) %>
+      },
+      "linux": {
+        "gdbPath": "${cfs:tool.path.xtensa-sharcfx}/Xtensa/XtensaTools/bin/xt-gdb",
+        "preLaunchCommands": <%~ fmt(prelaunchCmds("bin/python"), 8) %>,
+        "postRestartCommands": <%~ fmt(postRestartCmds("bin/python"), 8) %>
+      },
+      "preLaunchTask": "CFS: debug: check"
+    },
+    {
+      "name": "Debug with GDB and xt-run (Simulator)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${config:cfs.programFile}",
+      "cwd": "${workspaceFolder}",
+      "MIMode": "gdb",
+      "miDebuggerPath": "${cfs:tool.path.xtensa-sharcfx}/Xtensa/XtensaTools/bin/xt-gdb",
+      "windows": {
+        "miDebuggerPath": "${cfs:tool.path.xtensa-sharcfx}/Xtensa/XtensaTools/bin/xt-gdb.exe"
+      },
+      "targetArchitecture": "x64",
+      "externalConsole": false,
+      "stopAtEntry": false,
+      "preLaunchTask": "CFS: xt-run: start gdbserver",
+      "postDebugTask": "CFS: xt-run: stop gdbserver",
+      "customLaunchSetupCommands": [
+        {
+          "text": "source ${workspaceFolder}/.vscode/.xt-substitute-path.gdb",
+          "description": "Resolve XtensaTools runtime sources regardless of the installed toolchain release",
+          "ignoreFailures": false
+        },
+        {
+          "text": "source ${workspaceFolder}/.vscode/.xt-run-connect.gdb",
+          "description": "Connect to xt-run gdbserver on the captured port",
+          "ignoreFailures": false
+        },
+        {
+          "text": "-file-exec-and-symbols \"${config:cfs.programFile}\"",
+          "description": "Load the executable and its symbol table",
+          "ignoreFailures": false
+        },
+        {
+          "text": "-target-download",
+          "description": "Send the program image to the simulator (`load`)",
+          "ignoreFailures": false
+        },
+        {
+          "text": "-break-insert -t main",
+          "description": "Set a temporary breakpoint at main()",
+          "ignoreFailures": true
+        }
+      ],
+      "launchCompleteCommand": "exec-continue"
+    }
+  ]
+}

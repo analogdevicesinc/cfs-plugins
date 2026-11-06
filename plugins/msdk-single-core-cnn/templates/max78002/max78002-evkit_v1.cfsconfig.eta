@@ -3,7 +3,7 @@
       "CoreId": "CM4",
       "ProjectId": "CM4",
       "PluginId": "com.analog.project.msdk.plugin",
-      "PluginVersion": "^1.2.0",
+      "PluginVersion": "^1.4.0",
       "FirmwarePlatform": "MSDK",
       "ExternallyManaged": false,
       "PlatformConfig": {
@@ -75,14 +75,14 @@
             {
               "Name": "RX",
               "Config": {
-                "PWR": "VDDIO",
+                "PWR": "VDDIOH",
                 "PS": "WEAK_PU"
               }
             },
             {
               "Name": "TX",
               "Config": {
-                "PWR": "VDDIO"
+                "PWR": "VDDIOH"
               }
             }
           ],

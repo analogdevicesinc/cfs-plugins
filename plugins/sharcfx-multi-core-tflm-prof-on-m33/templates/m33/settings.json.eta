@@ -1,0 +1,25 @@
+<%~ include("@sharcfxBoardName", it) %>
+<%~ include("@normalizeSoc", it) %>
+<% const openocdBoard = it.sharcfxBoardNameInflectionPoint(it.soc).toLowerCase(); %>
+<% const openocdInterface = "interface/ice2000.cfg"; %>
+<% const emulatorMatch = openocdInterface.match(/ice[-_]?(\d+)/i); %>
+<% if (!emulatorMatch) throw new Error(`Unable to determine emulator from OpenOCD interface: ${openocdInterface}`); %>
+<% const emulator = emulatorMatch[1]; %>
+{
+  "C_Cpp.default.forcedInclude": [
+    "${workspaceFolder}/build/project_defines.h"
+  ],
+  "cfs.project.target": "<%= it.projectInflectionPoint(it.soc) %>",
+  "cfs.project.board": "<%= it.getSharcFxBoardName() %>",
+  "cfs.programFile": "${workspaceFolder}/build/${workspaceFolderBasename}.elf",
+  "cfs.debugPath": "${workspaceFolder}/build",
+  "cfs.configureWorkspace": "Yes",
+  "cfs.project.toolchain.id": "arm.none.eabi.toolchain",
+  "cfs.project.sdk.id": "cortex-m-sharcfx",
+  "cfs.arm.artifactType": "executable",
+  "cfs.openocd.board": "board/<%= openocdBoard %>_<%= it.getSharcFxBoardName() %>.cfg",
+  "cfs.openocd.interface": "<%= openocdInterface %>",
+  "cfs.arm.flash.emulator": "<%= emulator %>",
+  "cfs.arm.flash.eraseMode": "affected",
+  "cfs.arm.flash.offset": "0x0"
+}

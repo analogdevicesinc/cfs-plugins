@@ -1,0 +1,196 @@
+<%
+/*********************************************************************************
+
+Copyright(c) 2022-2026 Analog Devices, Inc. All Rights Reserved.
+
+This software is proprietary.  By using this software you agree
+to the terms of the associated Analog Devices License Agreement.
+
+*********************************************************************************/
+%> 
+<% eval(this.render("templates/ssdd/ssdd_common.js")); %>
+<%~ include("@copyrightHeader", it) %> 
+/* This file is generated using the peripheral settings configured using System Planner.
+ * Please do not edit the values here directly.
+ */
+
+/** @addtogroup CRC_Driver
+ *  @{
+ */
+ 
+/** @defgroup CRC_Driver_Static_Configuration CRC Driver Static Configuration
+ *  @{
+  Static Configuration provides an easy and convient way for application to configure the device during driver's open
+  call. When an application provides custom static configuration file, then according to the setting provided driver initialises
+  the device during driver's open call. If application fails to provide any custom configuration file, then by default CRC device
+  driver does not perform any static configuration.
+ */
+  
+/*!
+ * @file     adi_crc_config_SC8xx.h
+ *
+ * @brief    CRC driver static configuration file
+ *
+ * @version  $Revision$
+ *
+ * @date     $Date$
+ *
+ * @details
+ *           This is the static configuration file for the CRC Driver
+ */
+
+#ifndef ADI_CRC_CONFIG_SC8XX_H
+#define ADI_CRC_CONFIG_SC8XX_H
+
+/*! CRC0 polynomial value */
+#define CRC0_POLY_VALUE             <%= getPeriConfigValueInt("CRC0", "POLY_VALUE", "0") %>u
+/*! CRC0 Initial seed value */
+#define CRC0_SEED_VALUE             <%= getPeriConfigValueInt("CRC0", "SEED_VALUE", "0") %>u
+/*! CRC0 Compare value */
+#define CRC0_CMP_VALUE              <%= getPeriConfigValueInt("CRC0", "CMP_VALUE", "0") %>u
+/*! CRC0 Fill value */
+#define CRC0_FILL_VALUE             <%= getPeriConfigValueInt("CRC0", "FILL_VALUE", "0") %>u
+/*! CRC0 enable Bit Mirror */
+#define CRC0_BITMIRR                <%= getPeriConfigValueBoolAsInt("CRC0", "BITMIRR", "FALSE") %>u
+/*! CRC0 enable Byte Mirror */
+#define CRC0_BYTMIRR                <%= getPeriConfigValueBoolAsInt("CRC0", "BYTMIRR", "FALSE") %>u
+/*! CRC0 enable word swap */
+#define CRC0_W16SWP                 <%= getPeriConfigValueBoolAsInt("CRC0", "W16SWP", "FALSE") %>u
+/*! CRC0 select modified or unmodified data for transfer modes */
+#define CRC0_FDSEL                  <%= getPeriConfigValueEnum("CRC0", "FDSEL", "UNMODIFIED_DATA", {"UNMODIFIED_DATA":0,"MODIFIED_DATA":1}) %>u
+/*! CRC0 enable Result Mirror */
+#define CRC0_RSLTMIRR               <%= getPeriConfigValueBoolAsInt("CRC0", "RSLTMIRR", "FALSE") %>u
+/*! CRC0 enable Polynomial value Mirror*/
+#define CRC0_POLYMIRR               <%= getPeriConfigValueBoolAsInt("CRC0", "POLYMIRR", "FALSE") %>u
+/*! CRC0 enable Compare value Mirror */
+#define CRC0_CMPMIRR                <%= getPeriConfigValueBoolAsInt("CRC0", "CMPMIRR", "FALSE") %>u
+/*! CRC0 enable Auto clear to Zero  */
+#define CRC0_AUTOCLRZ               <%= getPeriConfigValueBoolAsInt("CRC0", "AUTOCLRZ", "FALSE") %>u
+/*! CRC0 enable Auto set to one */
+#define CRC0_AUTOCLRF               <%= getPeriConfigValueBoolAsInt("CRC0", "AUTOCLRF", "FALSE") %>u
+
+/*! CRC1 polynomial value */
+#define CRC1_POLY_VALUE             <%= getPeriConfigValueInt("CRC1", "POLY_VALUE", "0") %>u
+/*! CRC1 Initial seed value */
+#define CRC1_SEED_VALUE             <%= getPeriConfigValueInt("CRC1", "SEED_VALUE", "0") %>u
+/*! CRC1  Compare value */
+#define CRC1_CMP_VALUE              <%= getPeriConfigValueInt("CRC1", "CMP_VALUE", "0") %>u
+/*! CRC1 fill  value */
+#define CRC1_FILL_VALUE             <%= getPeriConfigValueInt("CRC1", "FILL_VALUE", "0") %>u
+/*! CRC1 enable Bit mirror */
+#define CRC1_BITMIRR                <%= getPeriConfigValueBoolAsInt("CRC1", "BITMIRR", "FALSE") %>u
+/*! CRC1 enable Byte mirror */
+#define CRC1_BYTMIRR                <%= getPeriConfigValueBoolAsInt("CRC1", "BYTMIRR", "FALSE") %>u
+/*! CRC1 enable Word swap */
+#define CRC1_W16SWP                 <%= getPeriConfigValueBoolAsInt("CRC1", "W16SWP", "FALSE") %>u
+/*! CRC1 select modified or unmodified data for transfer modes */
+#define CRC1_FDSEL                  <%= getPeriConfigValueEnum("CRC1", "FDSEL", "UNMODIFIED_DATA", {"UNMODIFIED_DATA":0,"MODIFIED_DATA":1}) %>u
+/*! CRC1 enable Result Mirror */
+#define CRC1_RSLTMIRR               <%= getPeriConfigValueBoolAsInt("CRC1", "RSLTMIRR", "FALSE") %>u
+/*! CRC1 enable Polynomial mirror */
+#define CRC1_POLYMIRR               <%= getPeriConfigValueBoolAsInt("CRC1", "POLYMIRR", "FALSE") %>u
+/*! CRC1 enable compare mirror */
+#define CRC1_CMPMIRR                <%= getPeriConfigValueBoolAsInt("CRC1", "CMPMIRR", "FALSE") %>u
+/*! CRC1 enable auto clear to zero */
+#define CRC1_AUTOCLRZ               <%= getPeriConfigValueBoolAsInt("CRC1", "AUTOCLRZ", "FALSE") %>u
+/*! CRC1 enable auto clear to one */
+#define CRC1_AUTOCLRF               <%= getPeriConfigValueBoolAsInt("CRC1", "AUTOCLRF", "FALSE") %>u
+
+/*! CRC2 polynomial value */
+#define CRC2_POLY_VALUE             <%= getPeriConfigValueInt("CRC2", "POLY_VALUE", "0") %>u
+/*! CRC2 Initial seed value */
+#define CRC2_SEED_VALUE             <%= getPeriConfigValueInt("CRC2", "SEED_VALUE", "0") %>u
+/*! CRC2 Compare value */
+#define CRC2_CMP_VALUE              <%= getPeriConfigValueInt("CRC2", "CMP_VALUE", "0") %>u
+/*! CRC2 Fill value */
+#define CRC2_FILL_VALUE             <%= getPeriConfigValueInt("CRC2", "FILL_VALUE", "0") %>u
+/*! CRC2 enable Bit Mirror */
+#define CRC2_BITMIRR                <%= getPeriConfigValueBoolAsInt("CRC2", "BITMIRR", "FALSE") %>u
+/*! CRC2 enable Byte Mirror */
+#define CRC2_BYTMIRR                <%= getPeriConfigValueBoolAsInt("CRC2", "BYTMIRR", "FALSE") %>u
+/*! CRC2 enable word swap */
+#define CRC2_W16SWP                 <%= getPeriConfigValueBoolAsInt("CRC2", "W16SWP", "FALSE") %>u
+/*! CRC2 select modified or unmodified data for transfer modes */
+#define CRC2_FDSEL                  <%= getPeriConfigValueEnum("CRC2", "FDSEL", "UNMODIFIED_DATA", {"UNMODIFIED_DATA":0,"MODIFIED_DATA":1}) %>u
+/*! CRC2 enable Result Mirror */
+#define CRC2_RSLTMIRR               <%= getPeriConfigValueBoolAsInt("CRC2", "RSLTMIRR", "FALSE") %>u
+/*! CRC2 enable Polynomial value Mirror*/
+#define CRC2_POLYMIRR               <%= getPeriConfigValueBoolAsInt("CRC2", "POLYMIRR", "FALSE") %>u
+/*! CRC2 enable Compare value Mirror */
+#define CRC2_CMPMIRR                <%= getPeriConfigValueBoolAsInt("CRC2", "CMPMIRR", "FALSE") %>u
+/*! CRC2 enable Auto clear to Zero  */
+#define CRC2_AUTOCLRZ               <%= getPeriConfigValueBoolAsInt("CRC2", "AUTOCLRZ", "FALSE") %>u
+/*! CRC2 enable Auto set to one */
+#define CRC2_AUTOCLRF               <%= getPeriConfigValueBoolAsInt("CRC2", "AUTOCLRF", "FALSE") %>u
+
+/*! CRC3 polynomial value */
+#define CRC3_POLY_VALUE             <%= getPeriConfigValueInt("CRC3", "POLY_VALUE", "0") %>u
+/*! CRC3 Initial seed value */
+#define CRC3_SEED_VALUE             <%= getPeriConfigValueInt("CRC3", "SEED_VALUE", "0") %>u
+/*! CRC3 Compare value */
+#define CRC3_CMP_VALUE              <%= getPeriConfigValueInt("CRC3", "CMP_VALUE", "0") %>u
+/*! CRC3 Fill value */
+#define CRC3_FILL_VALUE             <%= getPeriConfigValueInt("CRC3", "FILL_VALUE", "0") %>u
+/*! CRC3 enable Bit Mirror */
+#define CRC3_BITMIRR                <%= getPeriConfigValueBoolAsInt("CRC3", "BITMIRR", "FALSE") %>u
+/*! CRC3 enable Byte Mirror */
+#define CRC3_BYTMIRR                <%= getPeriConfigValueBoolAsInt("CRC3", "BYTMIRR", "FALSE") %>u
+/*! CRC3 enable word swap */
+#define CRC3_W16SWP                 <%= getPeriConfigValueBoolAsInt("CRC3", "W16SWP", "FALSE") %>u
+/*! CRC3 select modified or unmodified data for transfer modes */
+#define CRC3_FDSEL                  <%= getPeriConfigValueEnum("CRC3", "FDSEL", "UNMODIFIED_DATA", {"UNMODIFIED_DATA":0,"MODIFIED_DATA":1}) %>u
+/*! CRC3 enable Result Mirror */
+#define CRC3_RSLTMIRR               <%= getPeriConfigValueBoolAsInt("CRC3", "RSLTMIRR", "FALSE") %>u
+/*! CRC3 enable Polynomial value Mirror*/
+#define CRC3_POLYMIRR               <%= getPeriConfigValueBoolAsInt("CRC3", "POLYMIRR", "FALSE") %>u
+/*! CRC3 enable Compare value Mirror */
+#define CRC3_CMPMIRR                <%= getPeriConfigValueBoolAsInt("CRC3", "CMPMIRR", "FALSE") %>u
+/*! CRC3 enable Auto clear to Zero  */
+#define CRC3_AUTOCLRZ               <%= getPeriConfigValueBoolAsInt("CRC3", "AUTOCLRZ", "FALSE") %>u
+/*! CRC3 enable Auto set to one */
+#define CRC3_AUTOCLRF               <%= getPeriConfigValueBoolAsInt("CRC3", "AUTOCLRF", "FALSE") %>u
+
+
+/*! Enable Static Configuration for CRC0 */
+#define USE_STATIC_CRC0             <%= getPeriConfigValueBoolAsInt("CRC0", "STATIC_CFG", "FALSE") %>u
+/*! Enable Static Configuration for CRC1 */
+#define USE_STATIC_CRC1             <%= getPeriConfigValueBoolAsInt("CRC1", "STATIC_CFG", "FALSE") %>u
+/*! Enable Static Configuration for CRC0 */
+#define USE_STATIC_CRC2             <%= getPeriConfigValueBoolAsInt("CRC2", "STATIC_CFG", "FALSE") %>u
+/*! Enable Static Configuration for CRC1 */
+#define USE_STATIC_CRC3             <%= getPeriConfigValueBoolAsInt("CRC3", "STATIC_CFG", "FALSE") %>u
+
+
+#define CRC0_CTL                   (((uint32_t)CRC0_BITMIRR<<BITP_CRC_CTL_BITMIRR)|((uint32_t)CRC0_BYTMIRR<<BITP_CRC_CTL_BYTMIRR)|((uint32_t)CRC0_W16SWP<<BITP_CRC_CTL_W16SWP)|((uint32_t)CRC0_FDSEL<<BITP_CRC_CTL_FDSEL)|((uint32_t)CRC0_RSLTMIRR<<BITP_CRC_CTL_RSLTMIRR)|((uint32_t)CRC0_POLYMIRR<<BITP_CRC_CTL_POLYMIRR)|((uint32_t)CRC0_CMPMIRR<<BITP_CRC_CTL_CMPMIRR)|((uint32_t)CRC0_AUTOCLRZ<<BITP_CRC_CTL_AUTOCLRZ)|((uint32_t)CRC0_AUTOCLRF<<BITP_CRC_CTL_AUTOCLRF))
+
+#define CRC1_CTL                   (((uint32_t)CRC1_BITMIRR<<BITP_CRC_CTL_BITMIRR)|((uint32_t)CRC1_BYTMIRR<<BITP_CRC_CTL_BYTMIRR)|((uint32_t)CRC1_W16SWP<<BITP_CRC_CTL_W16SWP)|((uint32_t)CRC1_FDSEL<<BITP_CRC_CTL_FDSEL)|((uint32_t)CRC1_RSLTMIRR<<BITP_CRC_CTL_RSLTMIRR)|((uint32_t)CRC1_POLYMIRR<<BITP_CRC_CTL_POLYMIRR)|((uint32_t)CRC1_CMPMIRR<<BITP_CRC_CTL_CMPMIRR)|((uint32_t)CRC1_AUTOCLRZ<<BITP_CRC_CTL_AUTOCLRZ)|((uint32_t)CRC1_AUTOCLRF<<BITP_CRC_CTL_AUTOCLRF))
+
+#define CRC2_CTL                   (((uint32_t)CRC2_BITMIRR<<BITP_CRC_CTL_BITMIRR)|((uint32_t)CRC2_BYTMIRR<<BITP_CRC_CTL_BYTMIRR)|((uint32_t)CRC2_W16SWP<<BITP_CRC_CTL_W16SWP)|((uint32_t)CRC2_FDSEL<<BITP_CRC_CTL_FDSEL)|((uint32_t)CRC2_RSLTMIRR<<BITP_CRC_CTL_RSLTMIRR)|((uint32_t)CRC2_POLYMIRR<<BITP_CRC_CTL_POLYMIRR)|((uint32_t)CRC2_CMPMIRR<<BITP_CRC_CTL_CMPMIRR)|((uint32_t)CRC2_AUTOCLRZ<<BITP_CRC_CTL_AUTOCLRZ)|((uint32_t)CRC2_AUTOCLRF<<BITP_CRC_CTL_AUTOCLRF))
+
+#define CRC3_CTL                   (((uint32_t)CRC3_BITMIRR<<BITP_CRC_CTL_BITMIRR)|((uint32_t)CRC3_BYTMIRR<<BITP_CRC_CTL_BYTMIRR)|((uint32_t)CRC3_W16SWP<<BITP_CRC_CTL_W16SWP)|((uint32_t)CRC3_FDSEL<<BITP_CRC_CTL_FDSEL)|((uint32_t)CRC3_RSLTMIRR<<BITP_CRC_CTL_RSLTMIRR)|((uint32_t)CRC3_POLYMIRR<<BITP_CRC_CTL_POLYMIRR)|((uint32_t)CRC3_CMPMIRR<<BITP_CRC_CTL_CMPMIRR)|((uint32_t)CRC3_AUTOCLRZ<<BITP_CRC_CTL_AUTOCLRZ)|((uint32_t)CRC3_AUTOCLRF<<BITP_CRC_CTL_AUTOCLRF))
+
+#if defined(__ADSPSHARCFX__) && defined(__ADSPSC835_FAMILY__)
+/*! Specifies if the SEC interrupts should be used for CRC instances
+*If set as 1, SEC interrupt path is enabled for all CRC instances
+*If set as 0, direct interrupt path is enabled for all CRC instances
+*/
+<%
+  var _g_sec_int = [
+    getAssignedPeripheral("CRC0") ? getPeriConfigValueBoolAsInt("CRC0", "SEC_INT", "FALSE") : null,
+    getAssignedPeripheral("CRC1") ? getPeriConfigValueBoolAsInt("CRC1", "SEC_INT", "FALSE") : null,
+    getAssignedPeripheral("CRC2") ? getPeriConfigValueBoolAsInt("CRC2", "SEC_INT", "FALSE") : null,
+    getAssignedPeripheral("CRC3") ? getPeriConfigValueBoolAsInt("CRC3", "SEC_INT", "FALSE") : null,
+  ].filter(v => v !== null);
+%> 
+#define ADI_CRC_CONFIG_SEC_INT					(<%= _g_sec_int.length ? _g_sec_int[0] : getPeriConfigValueBoolAsInt("CRC0", "SEC_INT", "FALSE") %>u)
+<%
+  if (_g_sec_int.length > 1 && !_g_sec_int.every(v => v === _g_sec_int[0])) {
+%> 
+#error "ADI_CRC_CONFIG_SEC_INT: all assigned CRC instances must have the same SEC_INT setting"
+<% } %> 
+#endif
+
+#endif /* ADI_CRC_CONFIG_SC8XX_H */
+
+/**@}*/
+/**@}*/

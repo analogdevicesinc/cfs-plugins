@@ -3,6 +3,7 @@
 <%~ include("@normalizeSoc", it) %>
 {
   "env": {
+    "cfs.project.toolchain.path": "",
     "cfs.msdk.path": ""
   },
   "configurations": [
@@ -32,7 +33,7 @@
         "__GNUC__"
       ],
       "intelliSenseMode": "gcc-arm",
-      "compilerPath": "${config:cfs.toolchain.armAArch32GCC.path}/bin/arm-none-eabi-gcc.exe",
+      "compilerPath": "${env:cfs.project.toolchain.path}/bin/arm-none-eabi-gcc.exe",
       "browse": {
         "path": [
           "${default}",
@@ -74,7 +75,7 @@
         "__GNUC__"
       ],
       "intelliSenseMode": "gcc-arm",
-      "compilerPath": "${config:cfs.toolchain.armAArch32GCC.path}/bin/arm-none-eabi-gcc",
+      "compilerPath": "${env:cfs.project.toolchain.path}/bin/arm-none-eabi-gcc",
       "browse": {
         "path": [
           "${default}",
@@ -116,7 +117,7 @@
         "__GNUC__"
       ],
       "intelliSenseMode": "gcc-arm",
-      "compilerPath": "${config:cfs.toolchain.armAArch32GCC.path}/bin/arm-none-eabi-gcc",
+      "compilerPath": "${env:cfs.project.toolchain.path}/bin/arm-none-eabi-gcc",
       "browse": {
         "path": [
           "${default}",

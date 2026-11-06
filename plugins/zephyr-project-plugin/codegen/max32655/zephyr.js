@@ -28,7 +28,7 @@ if (it.cfsconfig.Package.toUpperCase() === "CTBGA") {
       ]
     },
     { datamodel: "DMA", enable: "ENABLE", zephyr: "dma0" },
-    { datamodel: "FLC0", zephyr: "flc0" },
+    { datamodel: "FLC0", zephyr: "flc0", cores: ["CM4"] },
     { datamodel: "I2C0", enable: "I2C0_ENABLE", zephyr: "i2c0",
       pins: [
           { signal: "SCL", pin: "H7", name: "i2c0_scl_p0_10"},
@@ -59,8 +59,16 @@ if (it.cfsconfig.Package.toUpperCase() === "CTBGA") {
           value: x => convertToUnitsMacro(x, "FREQ", 1000)
         }
       ]},
+    { zephyr: "i2s0", datamodel: "I2S", enable: "ENABLE", zephyrVersionMin: "4.4.0",
+      pins: [
+          { signal: "SCK", pin: "D5", name: "i2s_sck_p1_2"},
+          { signal: "SDI", pin: "E1", name: "i2s_sdi_p1_4"},
+          { signal: "SDO", pin: "E3", name: "i2s_sdo_p1_5"},
+          { signal: "WS", pin: "E4", name: "i2s_ws_p1_3"}
+      ]},
     { datamodel: "LPTMR0", enable: "ENABLE", zephyr: "lptimer0", clock_mux : "MUX", clock_default : "IBRO",
       pins: [
+          { signal: "CLK", pin: "C6", name: "lptmr0_clk_p2_6"},
           { signal: "IOA", pin: "C7", name: "lptmr0b_ioa_p2_4"}
       ],
       subnode: () => getAssignedPeripheral("LPTMR0").Config?.MODE_A === "COMPARE" ? "counter" : "pwm",
@@ -71,6 +79,7 @@ if (it.cfsconfig.Package.toUpperCase() === "CTBGA") {
       ]},
     { datamodel: "LPTMR1", enable: "ENABLE", zephyr: "lptimer1", clock_mux : "MUX", clock_default : "IBRO",
       pins: [
+          { signal: "CLK", pin: "D6", name: "lptmr1_clk_p2_7"},
           { signal: "IOA", pin: "D7", name: "lptmr1b_ioa_p2_5"}
       ],
       subnode: () => getAssignedPeripheral("LPTMR1").Config?.MODE_A === "COMPARE" ? "counter" : "pwm",
@@ -187,7 +196,7 @@ if (it.cfsconfig.Package.toUpperCase() === "CTBGA") {
       config: [
           { name: "prescaler", type: "int", control: "CLKDIV_A", cfg_default: "1"}
       ]},
-    { datamodel: "TMR3", enable: "TMR3_ENABLE", zephyr: "timer3", clock_mux : "TMR3a_MUX", clock_default : "PCLK",
+    { datamodel: "TMR3", enable: "TMR3_ENABLE", zephyr: "timer3", clock_mux : "TMR3a_MUX", clock_default : "PCLK", cores: ["CM4"],
       pins: [
           { signal: "IOB", pin: "D4", name: "tmr3a_iob_p1_7"},
           { signal: "IOA", pin: "E1", name: "tmr3b_ioa_p1_4"},
@@ -267,7 +276,7 @@ if (it.cfsconfig.Package.toUpperCase() === "CTBGA") {
           { signal: "AIN0", pin: "F6", name: "ain0_p2_0"}
       ]},
     { datamodel: "DMA", enable: "ENABLE", zephyr: "dma0" },
-    { datamodel: "FLC0", zephyr: "flc0" },
+    { datamodel: "FLC0", zephyr: "flc0", cores: ["CM4"] },
     { datamodel: "I2C0", enable: "I2C0_ENABLE", zephyr: "i2c0",
       pins: [
           { signal: "SDA", pin: "A5", name: "i2c0_sda_p0_11"},
@@ -280,6 +289,7 @@ if (it.cfsconfig.Package.toUpperCase() === "CTBGA") {
       ]},
     { datamodel: "LPTMR0", enable: "ENABLE", zephyr: "lptimer0", clock_mux : "MUX", clock_default : "IBRO",
       pins: [
+          { signal: "CLK", pin: "C8", name: "lptmr0_clk_p2_6"}
       ],
       subnode: () => getAssignedPeripheral("LPTMR0").Config?.MODE_A === "COMPARE" ? "counter" : "pwm",
       subnode_boilerplate: () => getAssignedPeripheral("LPTMR0").Config?.MODE_A === "PWM" ? ['compatible = "adi,max32-pwm"', '#pwm-cells = <3>'] : [],
@@ -289,6 +299,7 @@ if (it.cfsconfig.Package.toUpperCase() === "CTBGA") {
       ]},
     { datamodel: "LPTMR1", enable: "ENABLE", zephyr: "lptimer1", clock_mux : "MUX", clock_default : "IBRO",
       pins: [
+          { signal: "CLK", pin: "D5", name: "lptmr1_clk_p2_7"}
       ],
       subnode: () => getAssignedPeripheral("LPTMR1").Config?.MODE_A === "COMPARE" ? "counter" : "pwm",
       subnode_boilerplate: () => getAssignedPeripheral("LPTMR1").Config?.MODE_A === "PWM" ? ['compatible = "adi,max32-pwm"', '#pwm-cells = <3>'] : [],
@@ -388,7 +399,7 @@ if (it.cfsconfig.Package.toUpperCase() === "CTBGA") {
       config: [
           { name: "prescaler", type: "int", control: "CLKDIV_A", cfg_default: "1"}
       ]},
-    { datamodel: "TMR3", enable: "TMR3_ENABLE", zephyr: "timer3", clock_mux : "TMR3a_MUX", clock_default : "PCLK",
+    { datamodel: "TMR3", enable: "TMR3_ENABLE", zephyr: "timer3", clock_mux : "TMR3a_MUX", clock_default : "PCLK", cores: ["CM4"],
       pins: [
           { signal: "IOA", pin: "C1", name: "tmr3a_ioa_p1_6"}
       ],
@@ -422,15 +433,15 @@ if (it.cfsconfig.Package.toUpperCase() === "CTBGA") {
 
 }
 
-// Filter peripheralData based on zephyrVersionMin/zephyrVersionMax and packages fields.
-// Entries outside the supported range or package are removed and later added to unsupported_in_dts.
-const { supported, unsupported } = filterByZephyrVersion(peripheralData);
+// Filter peripheralData based on the current core.
+// Entries with a `cores` array are only included if the current core matches.
+const currentCoreId = getProject()?.CoreId;
+if (currentCoreId) {
+    peripheralData = peripheralData.filter(p => !p.cores || p.cores.includes(currentCoreId));
+}
 
-// Replace peripheralData with only the supported peripherals so the template
-// does not generate code for peripherals filtered out by version constraints.
-peripheralData = supported;
-
-unsupported_in_dts = [
+// Manually added entries: sub-feature and clock-specific warnings.
+const manuallyAddedUnsupportedList = [
     {datamodel: "ADC", diag: "The clock divider for ADC is not currently supported in devicetree.", ctrl: "DIV"},
     {clocknode: "ERFO Mux", diag: "Bypass of the ERFO is not currently supported in devicetree.", ctrl: "MUX", value: "ERFO_CLK"},
     {clocknode: "ERTCO Mux", diag: "Bypass of the ERTCO is not currently supported in devicetree.", ctrl: "MUX", value: "ERTCO_CLK"},
@@ -438,17 +449,15 @@ unsupported_in_dts = [
     {datamodel: "RTC", clocknode: "SQWOUT", diag: "Enabling SQWOUT from the RTC is not currently supported in devicetree.", ctrl: "SQWOUT", value: "512HZ"},
     {datamodel: "RTC", clocknode: "SQWOUT", diag: "Enabling SQWOUT from the RTC is not currently supported in devicetree.", ctrl: "SQWOUT", value: "4KHZ"},
     {datamodel: "RTC", clocknode: "SQWOUT", diag: "Enabling SQWOUT from the RTC is not currently supported in devicetree.", ctrl: "SQWOUT", value: "32KHZ"},
-    {datamodel: "AESKEYS", clocknode: "AES", diag: "The Advanced Encryption Standard peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "BLE", diag: "The Bluetooth Low Energy peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "CRC", diag: "The Cyclic Redundancy Check peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "I2S", diag: "The Inter-IC Sound Interface peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "LPCMP", diag: "The Low-Power Comparator peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "SEMA", diag: "The Semaphore peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
     {clocknode: "LPM Mux", diag: "Setting the LPM Mux is not currently supported in devicetree.", ctrl: "MUX", value: "SYS_CLK_DIV_2_ISO"}
 ];
 
-// Add filtered-out peripherals to unsupported_in_dts
-unsupported_in_dts.push(...buildUnsupportedVersionEntries(unsupported));
+// Auto-generated: peripherals not in peripheralData + version-filtered peripherals.
+const { supported, unsupported } = buildUnsupportedZephyrEntries(peripheralData, manuallyAddedUnsupportedList);
+
+// Update peripheralData and unsupported_in_dts
+unsupported_in_dts = unsupported;
+peripheralData = supported;
 
 function mapClockName(clock) {
     if (clock === "EXT_CLK") {

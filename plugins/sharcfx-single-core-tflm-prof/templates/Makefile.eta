@@ -1,0 +1,405 @@
+<%~ include("@sharcfxUtils", it) %>
+# Top-level Makefile
+
+ifeq ($(OS),Windows_NT)
+    SHELL := sh.exe
+else
+    SHELL := /bin/sh
+endif
+
+# Build type (default to Debug)
+DEBUG ?= 1
+
+V ?= 0
+ifeq ($(V),1)
+Q =
+else
+Q = @
+endif
+
+# Target SoC (can be overridden via make TARGET=...)
+TARGET ?= <%= it.soc %>
+
+# Compiler and linker settings
+CC = ccfx
+CXX = ccfx++
+
+CFLAGS = -proc $(TARGET) -si-revision any -c -ffunction-sections -fdata-sections -mlongcalls -DCORE1
+CXXFLAGS = -proc $(TARGET) -si-revision any -c -ffunction-sections -fdata-sections -mlongcalls -DCORE1 -std=c++17 -stdlib=libc++
+LDFLAGS = -proc $(TARGET) -si-revision any -Wl,--gc-sections -Wl,--defsym=__prefctl_default=0x88
+DEPFLAGS = -MMD -MP
+
+
+#=============================================================================
+# SOURCE DIRECTORIES CONFIGURATION
+#=============================================================================
+
+# Workspace directories (relative paths from project root)
+PROJ_DIRS = src src/system
+
+# External base directories (absolute paths)
+# Add new external base directories here
+EXTERNAL_BASES =
+
+# Point to the local Linker Support Package
+LSP_PATH = src/linker
+
+#=============================================================================
+# BUILD CONFIGURATION
+#=============================================================================
+
+# Build configuration
+ifeq ($(DEBUG), 1)
+    BUILD_TYPE = Debug
+    CFLAGS += -g -D_DEBUG -DADI_DEBUG
+    CXXFLAGS += -g -D_DEBUG -DADI_DEBUG
+    $(info Building in DEBUG mode)
+else
+    BUILD_TYPE = Release
+    CFLAGS += -O3 -LNO:simd -DNDEBUG
+    CXXFLAGS += -O3 -LNO:simd  -DNDEBUG
+    $(info Building in RELEASE mode)
+endif
+
+BUILD_DIR = build
+OBJ_DIR = $(BUILD_DIR)/obj/$(ARTIFACT_TYPE)
+
+
+# Include project-specific Makefile.
+PROJECTMK ?= $(abspath ./project.mk)
+include $(PROJECTMK)
+$(info Loaded project.mk)
+
+CONFIGMK ?= $(abspath ./config.mk)
+-include $(CONFIGMK)
+$(info Loaded config.mk)
+
+#=============================================================================
+#  DISCOVER ADDITIONAL LIBS
+#=============================================================================
+
+ADDITIONAL_LIBS =
+
+#=============================================================================
+# DYNAMIC SOURCE DISCOVERY
+#=============================================================================
+
+# Function to normalize path for variable names (replace / and : with _)
+normalize_path = $(subst :,_,$(subst /,_,$(subst \,_,$(1))))
+
+display_path = $(if $(and $(SSDD_BASE),$(filter $(subst \,/,$(SSDD_BASE))/%,$(subst \,/,$(1)))),SSDD/$(patsubst $(subst \,/,$(SSDD_BASE))/%,%,$(subst \,/,$(1))),$(if $(and $(DFP_SOURCE_DIR),$(filter $(DFP_SOURCE_DIR)/%,$(subst \,/,$(1)))),DFP/$(patsubst $(DFP_SOURCE_DIR)/%,%,$(subst \,/,$(1))),$(subst \,/,$(1))))
+
+# Discover workspace source files
+define discover_sources
+$(foreach dir,$(PROJ_DIRS),$(wildcard $(dir)/*.c $(dir)/*.cc $(dir)/*.cpp))
+endef
+
+# Discover external source files
+define discover_external_sources
+$(foreach base,$(EXTERNAL_DISCOVERY_BASES),\
+	$(foreach subdir,$(shell find "$(base)" -type d 2>/dev/null | head -50),\
+	$(wildcard $(subdir)/*.c $(subdir)/*.cc $(subdir)/*.cpp)))
+endef
+
+EXTERNAL_DISCOVERY_BASES = $(filter-out $(SSDD_BASE),$(EXTERNAL_BASES))
+
+# Get all workspace source files
+PROJ_C_SRCS = $(filter %.c,$(call discover_sources))
+PROJ_CXX_SRCS = $(filter %.cc %.cpp,$(call discover_sources))
+
+# Get all external source files
+EXT_ALL_SRCS = $(call discover_external_sources)
+EXT_C_SRCS = $(filter %.c,$(EXT_ALL_SRCS)) $(filter %.c,$(SSDD_C_SRCS))
+EXT_CXX_SRCS = $(filter %.cc %.cpp,$(EXT_ALL_SRCS)) $(filter %.cc %.cpp,$(SSDD_CXX_SRCS))
+
+# Combined source files
+C_SRCS = $(PROJ_C_SRCS) $(EXT_C_SRCS)
+CXX_SRCS = $(PROJ_CXX_SRCS) $(EXT_CXX_SRCS)
+ALL_SRCS = $(C_SRCS) $(CXX_SRCS)
+
+#=============================================================================
+# INCLUDE PATHS
+#=============================================================================
+
+# Base includes
+BASE_INCLUDES = -I src/system
+
+# External include directories are provided by config.mk for SSDD projects.
+EXTERNAL_INCLUDES = $(foreach dir,$(EXTERNAL_INCLUDE_DIRS),-I "$(dir)")
+
+# All includes
+INCLUDES += $(BASE_INCLUDES) $(EXTERNAL_INCLUDES)
+
+
+#=============================================================================
+# OBJECT FILE GENERATION
+#=============================================================================
+
+# Generate workspace object file paths
+# src/file.c -> build/obj/src/file.o
+PROJ_C_OBJS = $(patsubst %.c,$(OBJ_DIR)/%.o,$(filter %.c,$(PROJ_C_SRCS)))
+PROJ_CXX_OBJS = $(patsubst %.cc,$(OBJ_DIR)/%.o,$(filter %.cc,$(PROJ_CXX_SRCS)))
+PROJ_CXX_OBJS += $(patsubst %.cpp,$(OBJ_DIR)/%.o,$(filter %.cpp,$(PROJ_CXX_SRCS)))
+
+# Generate external object file paths with base directory preservation
+# c:/somewhere/else/ldscripts/file.c -> build/Debug/obj/ext/c_somewhere_else/ldscripts/file.o
+define make_ext_obj_path
+	$(patsubst $(1)/%,$(OBJ_DIR)/ext/$(call normalize_path,$(1))/%,$(2))
+endef
+
+# Generate external object paths for each base directory
+EXT_C_OBJS = $(foreach base,$(EXTERNAL_BASES),\
+	$(call make_ext_obj_path,$(base),$(patsubst %.c,%.o,$(filter $(base)/%,$(EXT_C_SRCS)))))
+
+EXT_CXX_OBJS = $(foreach base,$(EXTERNAL_BASES),\
+	$(call make_ext_obj_path,$(base),$(patsubst %.cc,%.o,$(filter $(base)/%.cc,$(EXT_CXX_SRCS)))))
+
+EXT_CXX_OBJS += $(foreach base,$(EXTERNAL_BASES),\
+	$(call make_ext_obj_path,$(base),$(patsubst %.cpp,%.o,$(filter $(base)/%.cpp,$(EXT_CXX_SRCS)))))
+
+# All object files
+ALL_OBJS = $(PROJ_C_OBJS) $(PROJ_CXX_OBJS) $(EXT_C_OBJS) $(EXT_CXX_OBJS)
+DEP_FILES = $(ALL_OBJS:.o=.d) $(LSP_PATH)/mpu_table.d
+CONFIGMK_DEPS = $(wildcard $(CONFIGMK))
+
+#=============================================================================
+# ARTIFACT CONFIGURATION
+#=============================================================================
+
+# Artifact type (overridable via make ARTIFACT_TYPE=...)
+# Valid values: executable, static_library
+ARTIFACT_TYPE ?= executable
+
+.PHONY: check_debug gen-xt-substitute-path
+
+ifneq ($(ARTIFACT_TYPE),executable)
+check_debug:
+	$(error Launch is unavailable because the current artifact type is '$(ARTIFACT_TYPE)'. Select 'executable'  to launch.)
+else
+check_debug: all gen-xt-substitute-path
+endif
+
+# Map Xtensa runtime sources from the selected debug executable.
+gen-xt-substitute-path: all
+	@sh .vscode/gen-xt-substitute-path.sh "$(DEBUG_EXE)" "$(SFX_PATH)"
+
+# Tools
+AR = xt-ar
+ARFLAGS = rc
+
+# Output file paths
+DXE = $(BUILD_DIR)/$(PROJECT).dxe
+DEBUG_EXE ?= $(DXE)
+LIB = $(BUILD_DIR)/lib$(PROJECT).a
+LINK_INPUT_FILE = $(BUILD_DIR)/input-file.txt
+	
+#=============================================================================
+# COMPILATION RULES
+#=============================================================================
+
+# Workspace C files
+$(OBJ_DIR)/%.o: %.c $(CONFIGMK_DEPS)
+	@mkdir -p $(dir $@)
+	@echo "CC $(call display_path,$<)"
+	$(Q)$(CC) $(CFLAGS) $(DEPFLAGS) $(INCLUDES) -c $< -o $@
+
+# Workspace C++ files
+$(OBJ_DIR)/%.o: %.cc $(CONFIGMK_DEPS)
+	@mkdir -p $(dir $@)
+	@echo "CXX $(call display_path,$<)"
+	$(Q)$(CXX) $(CXXFLAGS) $(DEPFLAGS) $(INCLUDES) -c $< -o $@
+
+$(OBJ_DIR)/%.o: %.cpp $(CONFIGMK_DEPS)
+	@mkdir -p $(dir $@)
+	@echo "CXX $(call display_path,$<)"
+	$(Q)$(CXX) $(CXXFLAGS) $(DEPFLAGS) $(INCLUDES) -c $< -o $@
+
+# External C files - dynamic rules for each base
+define make_ext_c_rule
+$(OBJ_DIR)/ext/$(call normalize_path,$(1))/%.o: $(1)/%.c $(CONFIGMK_DEPS)
+	@mkdir -p $$(dir $$@)
+	@echo "CC $$(call display_path,$$<)"
+	$$(Q)$$(CC) $$(CFLAGS) $$(DEPFLAGS) $$(INCLUDES) -c $$< -o $$@
+endef
+
+$(foreach base,$(EXTERNAL_BASES),$(eval $(call make_ext_c_rule,$(base))))
+
+# External C++ files - dynamic rules for each base
+define make_ext_cxx_rule
+$(OBJ_DIR)/ext/$(call normalize_path,$(1))/%.o: $(1)/%.cc $(CONFIGMK_DEPS)
+	@mkdir -p $$(dir $$@)
+	@echo "CXX $$(call display_path,$$<)"
+	$$(Q)$$(CXX) $$(CXXFLAGS) $$(DEPFLAGS) $$(INCLUDES) -c $$< -o $$@
+
+$(OBJ_DIR)/ext/$(call normalize_path,$(1))/%.o: $(1)/%.cpp $(CONFIGMK_DEPS)
+	@mkdir -p $$(dir $$@)
+	@echo "CXX $$(call display_path,$$<)"
+	$$(Q)$$(CXX) $$(CXXFLAGS) $$(DEPFLAGS) $$(INCLUDES) -c $$< -o $$@
+endef
+
+$(foreach base,$(EXTERNAL_BASES),$(eval $(call make_ext_cxx_rule,$(base))))
+
+-include $(DEP_FILES)
+
+# Include the makefile for the Tensor Flow Lite Micro library, if present
+# This is done after the other configurations
+sinclude aimodels.mk
+
+#=============================================================================
+# DEFAULT TARGET
+#=============================================================================
+.DEFAULT_GOAL := all
+
+#=============================================================================
+# BUILD TARGETS
+#=============================================================================
+
+# Default target — dispatches based on ARTIFACT_TYPE
+.PHONY: all link
+
+ifeq ($(ARTIFACT_TYPE),static_library)
+all: $(LIB)
+else ifeq ($(ARTIFACT_TYPE),executable)
+all: link
+else
+$(error Unsupported ARTIFACT_TYPE "$(ARTIFACT_TYPE)"; expected executable or static_library)
+endif
+
+# Executable (.dxe)
+link: $(DXE)
+
+$(LSP_PATH)/ldscripts/elf32xtensa.x: $(LSP_PATH)/memmap.xmm $(LSP_PATH)/specs | $(BUILD_DIR)
+	@echo "LD $@"
+	$(Q)$(SFX_PATH)/Xtensa/XtensaTools/bin/xt-genldscripts -b $(LSP_PATH) -nompu
+
+$(LSP_PATH)/mpu_table.c: $(LSP_PATH)/ldscripts/elf32xtensa.x | $(BUILD_DIR)
+	@echo "GEN $@"
+	$(Q)$(SFX_PATH)/Xtensa/XtensaTools/bin/xt-genmpu -mlsp=$(LSP_PATH) -o $(LSP_PATH)/mpu_table.c
+
+$(LSP_PATH)/mpu_table.o: $(LSP_PATH)/mpu_table.c $(CONFIGMK_DEPS)
+	@echo "CC $(call display_path,$<)"
+	$(Q)$(CC) $(CFLAGS) $(DEPFLAGS) -c $(LSP_PATH)/mpu_table.c -o $(LSP_PATH)/mpu_table.o
+
+$(BUILD_DIR):
+	@mkdir -p $@
+
+$(DXE): $(ALL_OBJS) $(ADDITIONAL_LIBS) $(CONFIGMK_DEPS) $(LSP_PATH)/ldscripts/elf32xtensa.x $(LSP_PATH)/mpu_table.o | $(BUILD_DIR)
+	$(file >$(LINK_INPUT_FILE),)$(foreach obj,$(ALL_OBJS),$(file >>$(LINK_INPUT_FILE),$(obj)))
+	@echo "LD $@"
+	$(Q)$(CXX) -o $(DXE) @$(LINK_INPUT_FILE) -mlsp=$(LSP_PATH) $(LDFLAGS) -lm
+
+# Static library (.a)
+$(LIB): $(ALL_OBJS) $(CONFIGMK_DEPS) | $(BUILD_DIR)
+	@rm -f $(LIB)
+	@echo "AR $@"
+	$(Q)$(AR) $(ARFLAGS) $(LIB) $(ALL_OBJS)
+
+# Build type targets
+.PHONY: debug release
+debug:
+	@$(MAKE) DEBUG=1
+
+release:
+	@$(MAKE) DEBUG=0
+
+#=============================================================================
+# INFORMATION AND DEBUGGING TARGETS
+#=============================================================================
+
+# Detailed build information
+.PHONY: info
+info:
+	@echo "=================================="
+	@echo "BUILD CONFIGURATION"
+	@echo "=================================="
+	@echo "Project: $(PROJECT)"
+	@echo "Build Type: $(BUILD_TYPE)"
+	@echo "Artifact Type: $(ARTIFACT_TYPE)"
+	@echo "Target: $(DXE)"
+	@echo "Build Dir: $(BUILD_DIR)"
+	@echo "Object Dir: $(OBJ_DIR)"
+	@echo "DEBUG flag: $(DEBUG)"
+	@echo "=================================="
+	@echo "DIRECTORIES"
+	@echo "=================================="
+	@echo "Workspace:"
+	@$(foreach dir,$(PROJ_DIRS),echo "  $(dir)";)
+	@echo "External Bases:"
+	@$(foreach base,$(EXTERNAL_BASES),echo "  $(base)";)
+	@echo "=================================="
+	@echo "SOURCE FILES"
+	@echo "=================================="
+	@echo "Workspace C: $(words $(PROJ_C_SRCS)) files"
+	@$(foreach src,$(PROJ_C_SRCS),echo "  $(src)";)
+	@echo "Workspace C++: $(words $(PROJ_CXX_SRCS)) files"
+	@$(foreach src,$(PROJ_CXX_SRCS),echo "  $(src)";)
+	@echo "External C: $(words $(EXT_C_SRCS)) files"
+	@$(foreach src,$(EXT_C_SRCS),echo "  $(src)";)
+	@echo "External C++: $(words $(EXT_CXX_SRCS)) files"
+	@$(foreach src,$(EXT_CXX_SRCS),echo "  $(src)";)
+	@echo "Total: $(words $(ALL_SRCS)) source files"
+
+# Show discovered external structure
+.PHONY: show-external
+show-external:
+	@echo "External Directory Structure:"
+	@$(foreach base,$(EXTERNAL_BASES),\
+		echo "$(base):"; \
+		find "$(base)" -type f \( -name "*.c" -o -name "*.cc" -o -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) 2>/dev/null | \
+		sed 's|^$(base)/|  |' | sort;)
+
+# List all object files
+.PHONY: list-objs
+list-objs:
+	@echo "Object files ($(words $(ALL_OBJS)) total):"
+	@echo "Workspace Objects ($(words $(PROJ_C_OBJS) $(PROJ_CXX_OBJS))):"
+	@$(foreach obj,$(PROJ_C_OBJS) $(PROJ_CXX_OBJS),echo "  $(obj)";)
+	@echo "External Objects ($(words $(EXT_C_OBJS) $(EXT_CXX_OBJS))):"
+	@$(foreach obj,$(EXT_C_OBJS) $(EXT_CXX_OBJS),echo "  $(obj)";)
+
+#=============================================================================
+# CLEAN TARGETS
+#=============================================================================
+
+# Clean current build type
+.PHONY: clean
+clean:
+	@echo "Cleaning $(BUILD_TYPE) build..."
+	@rm -rf $(BUILD_DIR)
+	@rm -f $(LSP_PATH)/mpu_table.c $(LSP_PATH)/mpu_table.o
+	@rm -rf $(LSP_PATH)/ldscripts
+	@echo " $(BUILD_TYPE) build cleaned"
+
+# Clean all build types
+.PHONY: clean-all
+clean-all:
+	@echo " Cleaning all builds..."
+	@rm -rf build
+	@rm -f $(LSP_PATH)/mpu_table.c $(LSP_PATH)/mpu_table.o
+	@rm -rf $(LSP_PATH)/ldscripts
+	@echo " All builds cleaned"
+
+# Rebuild (clean + build)
+.PHONY: rebuild
+rebuild: clean all
+
+#=============================================================================
+# HELP TARGET
+#=============================================================================
+
+.PHONY: help
+help:
+	@echo "Available targets:"
+	@echo "  all (default) - Build the project"
+	@echo "  debug         - Build in debug mode"
+	@echo "  release       - Build in release mode"
+	@echo "  clean         - Clean current build type"
+	@echo "  clean-all     - Clean all build types"
+	@echo "  rebuild       - Clean and rebuild current build type"
+	@echo "  info          - Show detailed build configuration"
+	@echo "  show-external - Show external directory structure"
+	@echo "  list-objs     - List all object files"
+	@echo "  help          - Show this help"
+	@echo "Artifact types (ARTIFACT_TYPE=...):"
+	@echo "  executable      - Build executable (.dxe) [default]"
+	@echo "  static_library  - Build static library (.a)"

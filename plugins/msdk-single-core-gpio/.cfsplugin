@@ -2,7 +2,7 @@
   "pluginName": "MSDK Single Core GPIO",
   "pluginDescription": "Basic GPIO input, output, and interrupts are demonstrated in this example.",
   "pluginId": "com.analog.singlecore.msdk.gpio",
-  "pluginVersion": "1.0.0",
+  "pluginVersion": "1.1.0",
   "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "MSDK",

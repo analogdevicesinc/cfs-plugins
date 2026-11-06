@@ -26,6 +26,8 @@
 # **********************************************************
 
 # Add your config here!
+# To use a custom TFLite Micro path, uncomment and update the path below.
+# TFLITE_PATH := /path/to/tflite-micro
 
 <% if (["max32655", "max32690", "max78000", "max78002"].includes(it.soc.toLowerCase()) && it.coreId !== "RV") { %>
 # To load an application on the RISC-V core, uncomment the following

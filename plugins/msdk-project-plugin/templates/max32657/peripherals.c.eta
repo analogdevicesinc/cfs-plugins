@@ -90,7 +90,7 @@
 
 <% } %>
 <%~ include("../spi_config.c.eta", { ...it, instance: "SPI0", msdk_instance: "SPI", clock: "SystemCoreClock", enable: "ENABLE" }) %>
-<%~ include("../uart_config.c.eta", { ...it, instance: "UART0", msdk_instance: "UART", enable: "ENABLE", mux: "UART0_MUX", clock_default: "PCLK" }) %>
+<%~ include("../uart_config.c.eta", { ...it, instance: "UART0", msdk_instance: "UART", enable: "ENABLE", mux: "MUX", clock_default: "PCLK" }) %>
 <%~ include("../tmr_config.c.eta", { ...it, instance: "TMR0", enable: "TMR0_ENABLE", muxa: "TMR0_MUX", clock_default: "PCLK" }) %>
 <%~ include("../tmr_config.c.eta", { ...it, instance: "TMR1", enable: "TMR1_ENABLE", muxa: "TMR1_MUX", clock_default: "PCLK" }) %>
 <%~ include("../tmr_config.c.eta", { ...it, instance: "TMR2", enable: "TMR2_ENABLE", muxa: "TMR2_MUX", clock_default: "PCLK" }) %>

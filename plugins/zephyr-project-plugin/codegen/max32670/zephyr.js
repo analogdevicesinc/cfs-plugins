@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2024-2025 Analog Devices, Inc.
+ * Copyright (c) 2024-2026 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -397,11 +397,8 @@ if (it.cfsconfig.Package.toUpperCase() === "TQFN") {
 
 }
 
-unsupported_in_dts = [
-    {datamodel: "AES", diag: "The Advanced Encryption Standard peripheral is not currently supported in devicetree.", ctrl: "AES_ENABLE", value: "TRUE"},
-    {datamodel: "CRC", diag: "The Cyclic Redundancy Check peripheral is not currently supported in devicetree.", ctrl: "CRC_ENABLE", value: "TRUE"},
-    {datamodel: "I2S0", diag: "The Inter-IC Sound Interface peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-    {datamodel: "ICC", diag: "The Instruction Cache Controller peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
+// Manually added entries: sub-feature and clock-specific warnings.
+const manuallyAddedUnsupportedList = [
     {datamodel: "RTC", clocknode: "32KCAL", diag: "Enabling 32KCAL from the RTC is not currently supported in devicetree.", ctrl: "SQWOUT", value: "1HZ" },
     {datamodel: "RTC", clocknode: "32KCAL", diag: "Enabling 32KCAL from the RTC is not currently supported in devicetree.", ctrl: "SQWOUT", value: "512HZ" },
     {datamodel: "RTC", clocknode: "32KCAL", diag: "Enabling 32KCAL from the RTC is not currently supported in devicetree.", ctrl: "SQWOUT", value: "4KHZ" },
@@ -414,12 +411,23 @@ unsupported_in_dts = [
     {clocknode: "AOD_CLK_DIV", diag: "Setting divide value on AOD from the GCR is not currently supported in devicetree.", ctrl: "DIV", value: "16" },
     {clocknode: "AOD_CLK_DIV", diag: "Setting divide value on AOD from the GCR is not currently supported in devicetree.", ctrl: "DIV", value: "32" },
     {clocknode: "ERFO Mux", diag: "Bypass of the ERFO is not currently supported in devicetree.", ctrl: "MUX", value: "ERFO_CLK" },
-    {clocknode: "HFXIN", diag: "The value modeled internally for the HFXIN clock frequency is always 32000000.", ctrl: "HFXIN_FREQ", default_value: "32000000" }
+    {clocknode: "HFXIN", diag: "The value modeled internally for the HFXIN clock frequency is always 32000000.", ctrl: "HFXIN_FREQ", default_value: "32000000" },
 ];
 
+// Auto-generated: peripherals not in peripheralData + version-filtered peripherals.
+const { supported, unsupported } = buildUnsupportedZephyrEntries(peripheralData, manuallyAddedUnsupportedList);
+
+// Update peripheralData and unsupported_in_dts
+unsupported_in_dts = unsupported;
+peripheralData = supported;
+
 function mapClockName(clock) {
-    if (clock === "EXT_CLK1" || clock === "EXT_CLK2") {
+    if (clock === "EXT_CLK1") {
         return "extclk";
+    } else if (clock === "EXT_CLK2" && compareZephyrVersion("4.4.0") < 0) {
+        return "extclk";
+    } else if (clock === "EXT_CLK2") {
+        return undefined;
     } else if (clock === "PRESCALED IPO") {
         return "ipo";
     } else if (clock === "AOD_CLK") {
@@ -434,7 +442,7 @@ function mapClockName(clock) {
 
 function getClocksUsed() {
     let clocksUsed = new Set();
-    for (const peri of peripheralData) {
+    for (const peri of supported) {
         if (peri.clock_mux && isPeripheralClockSetTo(peri.datamodel, peri.enable, "TRUE")) {
             const clockName = mapClockName(getPeripheralClockSetting(peri.datamodel, peri.clock_mux, peri.clock_default));
             if (clockName) {

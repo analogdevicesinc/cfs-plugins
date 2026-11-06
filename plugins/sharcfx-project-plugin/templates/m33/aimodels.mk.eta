@@ -1,0 +1,17 @@
+TFLITE_PATH ?= $(CFSAI_PATH)/lib/cortex-m/tflite-micro
+
+ifeq ($(ENABLE_TFLM_PROFILING),1)
+	CFLAGS += -DENABLE_TFLM_PROFILING
+	CXXFLAGS += -DENABLE_TFLM_PROFILING
+endif
+
+#=============================================================================
+#  ADD ADDITIONAL LIB AND INCLUDE PATHS TO THE MAIN PROJECT MAKEFILE
+#=============================================================================
+
+WS_DIRS += src/adi_tflm
+
+LDFLAGS += -L$(CFSAI_PATH)/lib/cortex-m/m33 -ltensorflow-microlite
+
+TFLM_INCLUDES = -I $(TFLITE_PATH) -I $(TFLITE_PATH)/third_party/flatbuffers/include -I $(TFLITE_PATH)/third_party/gemmlowp -I src/adi_tflm
+INCLUDES += $(TFLM_INCLUDES)

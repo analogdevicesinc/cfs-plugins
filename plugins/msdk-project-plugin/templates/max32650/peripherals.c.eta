@@ -56,11 +56,6 @@ function getClockSettingMAX32650(node, ctrl) {
   #warning There is currently no code emitted to configure the ERTCO bypass.
 
 <% } %>
-<% if (isPeripheralClockSetTo("OWM", "ENABLE", "TRUE")) { %>
-  /* OWM (1-Wire): Enable the Component Clock. */
-  MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_OWIRE);
-
-<% } %>
 <% if (isPeripheralClockSetTo("DMA", "ENABLE", "TRUE")) { %>
   /* DMA: Enable the Component Clock. */
   MXC_SYS_ClockEnable(MXC_SYS_PERIPH_CLOCK_DMA);

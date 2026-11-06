@@ -35,13 +35,19 @@
 };
 
 <% } %>
-<% if (isSystemClockSet("EXT_CLKn", "P0_12_FREQ_EXT2")) { %>
+<% if (isSystemClockSet("EXT_CLKn", "P0_12_FREQ_EXT2") && compareZephyrVersion("4.4.0") < 0) { %>
 / {
 	clk_extclk: clk_extclk {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
 		clock-frequency = <<%= getClockSetting("EXT_CLKn", "P0_12_FREQ_EXT2") %>>;
 	};
+};
+
+<% } else if (isSystemClockSet("EXT_CLKn", "P0_12_FREQ_EXT2")) { %>
+&clk_extclk2 {
+	clock-frequency = <<%= getClockSetting("EXT_CLKn", "P0_12_FREQ_EXT2") %>>;
+	status = "okay";
 };
 
 <% } %>

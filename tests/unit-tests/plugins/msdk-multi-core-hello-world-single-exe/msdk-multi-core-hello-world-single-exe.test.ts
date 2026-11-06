@@ -13,262 +13,70 @@
  *
  */
 
-import { promises as fs } from "node:fs";
-import path from "node:path";
-import { expect } from "chai";
-import { GenericPlugin } from "cfs-plugins-sdk";
-import type { CfsPluginInfo, CfsWorkspace } from "cfs-types";
-import { WorkspaceValidationService } from "@services/WorkspaceValidationService.js";
-import { CodeGenerationService } from "@services/CodeGenerationService.js";
-import { joinPath } from "@utilities/path-utilities.js";
-import {
-  deleteCreatedWorkspace,
-  getSocsBoardsDict,
-  isDebug,
-  replaceTemplateVariables,
-} from "@utilities/test-utilities.js";
+import { runWorkspacePluginSuite } from "@services/WorkspacePluginSuite.js";
+import { loadPluginInfo } from "@utilities/test-utilities.js";
 
-const filePath =
-  "plugins/dist/msdk-multi-core-hello-world-single-exe/.cfsplugin";
-const absolutePath = path.resolve(filePath);
-const fileContent = await fs.readFile(absolutePath, "utf-8");
-let pluginInfo = JSON.parse(fileContent) as CfsPluginInfo;
-pluginInfo.pluginPath = absolutePath;
+const pluginInfo = await loadPluginInfo(
+  "plugins/dist/msdk-multi-core-hello-world-single-exe/.cfsplugin",
+);
 
-const supportedSocs = getSocsBoardsDict(pluginInfo);
+const MSDK = "com.analog.project.msdk.plugin";
 
-const projects = [
-  { name: "m4-0", path: "./m4-0" },
-  { name: "m4-1", path: "./m4-1" },
+const expectedWorkspaceFiles = [
+  "m4-0/src/main.c",
+  "m4-0/project.mk",
+  "m4-0/.vscode/launch.json",
+  "m4-0/.vscode/flash.gdb",
+  "m4-0/README.md",
+  "m4-0/.vscode/settings.json",
+  "m4-0/.vscode/c_cpp_properties.json",
+  "m4-0/Makefile",
+  "m4-0/.vscode/cfs.tasks.json",
+  "m4-0/m4-0.jdebug",
+  "m4-1/src/main_core1.c",
+  "m4-1/.vscode/c_cpp_properties.json",
+  ".cfs/gdb_toolbox/configs/fault-analyzer.json",
+  ".cfs/gdb_toolbox/configs/memory-dump.json",
+  ".cfs/gdb_toolbox/configs/register-dump.json",
+  ".cfs/gdb_toolbox/configs/interrupt-status-arm.json",
+  ".cfs/gdb_toolbox/configs/high-water-analyzer.json",
+  ".cfs/gdb_toolbox/configs/stack-analyzer.json",
+  ".cfs/gdb_toolbox/configs/stack-painter.json",
+  ".cfs/gdb_toolbox/gdb/fault-analyzer-arm.gdb",
+  ".cfs/gdb_toolbox/gdb/fault-analyzer-riscv.gdb",
+  ".cfs/gdb_toolbox/gdb/interrupt-status-arm.gdb",
+  ".cfs/gdb_toolbox/gdb/high-water-analyzer.gdb",
+  ".cfs/gdb_toolbox/gdb/stack-analyzer.gdb",
+  ".cfs/gdb_toolbox/gdb/stack-painter.gdb",
+  ".cfs/.cfsdependencies",
+  ".cfs/.cfsworkspace",
+  "{{soc}}-{{board}}-workspace-gen.code-workspace",
+  ".cfs/{{soc}}-{{package}}.cfsconfig",
 ];
 
-// Expected generated files keyed by cfsconfig ProjectId.
-// CM4-1 is the secondary core in a single-executable build; it only
-// receives the core1 SoC init sources.
-const expectedCodeGenFilesByProjectId: Record<string, string[]> = {
-  "CM4-0": ["soc_init.c", "soc_init.h", "config.mk", "memory.ld"],
-  "CM4-1": ["soc_init_core1.c", "soc_init_core1.h"],
-};
-
-describe("MSDK Multi Core Hello World Single Exe Tests", () => {
-  it("should have at least one supported SoC/board combination", () => {
-    expect(Object.keys(supportedSocs).length).to.be.greaterThan(0);
-  });
-
-  let genericPlugin: GenericPlugin;
-  let cfsWorkspace: CfsWorkspace | undefined;
-
-  beforeEach(() => {
-    genericPlugin = new GenericPlugin(pluginInfo);
-    cfsWorkspace = undefined;
-  });
-
-  afterEach(async () => {
-    if (!isDebug() && cfsWorkspace) {
-      await deleteCreatedWorkspace(cfsWorkspace);
-    }
-  });
-
-  describe("GenerateWorkspace_BasicFlow_ShouldGenerateExpectedFiles", () => {
-    const expectedWorkspaceFilesBase = [
-      "m4-0/src/main.c",
-      "m4-0/project.mk",
-      "m4-0/.vscode/launch.json",
-      "m4-0/.vscode/flash.gdb",
-      "m4-0/README.md",
-      "m4-0/.vscode/settings.json",
-      "m4-0/.vscode/c_cpp_properties.json",
-      "m4-0/Makefile",
-      "m4-0/.vscode/cfs.tasks.json",
-      "m4-0/m4-0.jdebug",
-      "m4-1/src/main_core1.c",
-      "m4-1/.vscode/c_cpp_properties.json",
-      ".cfs/gdb_toolbox/configs/fault-analyzer.json",
-      ".cfs/gdb_toolbox/configs/memory-dump.json",
-      ".cfs/gdb_toolbox/configs/register-dump.json",
-      ".cfs/gdb_toolbox/configs/interrupt-status-arm.json",
-      ".cfs/gdb_toolbox/configs/high-water-analyzer.json",
-      ".cfs/gdb_toolbox/configs/stack-analyzer.json",
-      ".cfs/gdb_toolbox/configs/stack-painter.json",
-      ".cfs/gdb_toolbox/gdb/fault-analyzer-arm.gdb",
-      ".cfs/gdb_toolbox/gdb/fault-analyzer-riscv.gdb",
-      ".cfs/gdb_toolbox/gdb/interrupt-status-arm.gdb",
-      ".cfs/gdb_toolbox/gdb/high-water-analyzer.gdb",
-      ".cfs/gdb_toolbox/gdb/stack-analyzer.gdb",
-      ".cfs/gdb_toolbox/gdb/stack-painter.gdb",
-      ".cfs/.cfsdependencies",
-      ".cfs/.cfsworkspace",
-      "{{soc}}-{{board}}-workspace-gen.code-workspace",
-      ".cfs/{{soc}}-{{package}}.cfsconfig",
-    ];
-
-    const workspaceValidationService = new WorkspaceValidationService();
-    Object.entries(supportedSocs).forEach(([soc, boards]) => {
-      boards.forEach((board) => {
-        it(`For ${soc} soc with ${board} board`, async () => {
-          const socInfo = pluginInfo.supportedSocs.find(
-            (s) => s.name === soc && s.board === board,
-          );
-
-          if (!socInfo) {
-            expect.fail(
-              `No supportedSocs entry found for soc="${soc}" board="${board}"`,
-            );
-          }
-
-          const expectedWorkspaceFiles = expectedWorkspaceFilesBase.map(
-            (file) =>
-              replaceTemplateVariables(file, {
-                soc: soc.toLowerCase(),
-                board: board.toLowerCase(),
-                package: socInfo.package.toLowerCase(),
-              }),
-          );
-
-          cfsWorkspace = {
-            location:
-              "tests/unit-tests/plugins/msdk-multi-core-hello-world-single-exe/data",
-            workspacePluginId: pluginInfo?.pluginId,
-            workspacePluginVersion: pluginInfo?.pluginVersion,
-            workspaceName: `${soc.toLowerCase()}-${board.toLowerCase()}-workspace-gen`,
-            copyrightDate: new Date().getFullYear().toString(),
-            dataModelVersion: socInfo.dataModelVersion,
-            package: socInfo.package.toLowerCase(),
-            timestamp: new Date().toISOString(),
-            board: board,
-            soc: soc,
-            projects: projects,
-          };
-
-          await genericPlugin.generateWorkspace(cfsWorkspace);
-
-          await workspaceValidationService.validateWorkspaceFiles(
-            cfsWorkspace,
-            expectedWorkspaceFiles,
-          );
-
-          await workspaceValidationService.validateDirectoryStructure(
-            cfsWorkspace,
-            "m4-0",
-            [".cfs", "m4-1"],
-          );
-          await workspaceValidationService.validateDirectoryStructure(
-            cfsWorkspace,
-            "m4-1",
-            [".cfs", "m4-0"],
-          );
-        });
-      });
-    });
-  });
-
-  describe("GenerateCode_BasicFlow_ShouldGenerateExpectedFiles", () => {
-    Object.entries(supportedSocs).forEach(([soc, boards]) => {
-      boards.forEach((board) => {
-        it(`For ${soc} with ${board} board`, async () => {
-          const socInfo = pluginInfo.supportedSocs.find(
-            (s) => s.name === soc && s.board === board,
-          );
-
-          if (!socInfo) {
-            expect.fail(
-              `No supportedSocs entry found for soc="${soc}" board="${board}"`,
-            );
-          }
-
-          cfsWorkspace = {
-            location:
-              "tests/unit-tests/plugins/msdk-multi-core-hello-world-single-exe/data",
-            workspacePluginId: pluginInfo?.pluginId,
-            workspacePluginVersion: pluginInfo?.pluginVersion,
-            workspaceName: `${soc.toLowerCase()}-${board.toLowerCase()}-project-gen`,
-            copyrightDate: new Date().getFullYear().toString(),
-            dataModelVersion: socInfo.dataModelVersion,
-            package: socInfo.package,
-            timestamp: new Date().toISOString(),
-            board: board,
-            soc: soc,
-            projects: projects,
-          };
-
-          await genericPlugin.generateWorkspace(cfsWorkspace);
-
-          const actualcfsConfigFile = joinPath(
-            cfsWorkspace.location,
-            cfsWorkspace.workspaceName,
-            ".cfs",
-            `${cfsWorkspace.soc.toLowerCase()}-${cfsWorkspace.package.toLowerCase()}.cfsconfig`,
-          );
-          const actualcfsConfigContent = JSON.parse(
-            await fs.readFile(actualcfsConfigFile, "utf-8"),
-          );
-
-          const codeGenerationPath = joinPath(
-            cfsWorkspace.location,
-            cfsWorkspace.workspaceName,
-          );
-          const codeGenService = new CodeGenerationService();
-
-          const msdkProjects = actualcfsConfigContent.Projects.filter(
-            (p: any) => p.PluginId === "com.analog.project.msdk.plugin",
-          );
-
-          // Ensure every expected core is present and no extra cores appear,
-          // so the loop below exercises exactly the projects we expect.
-          const actualProjectIds = msdkProjects
-            .map((p: any) => p.ProjectId as string)
-            .sort();
-          const expectedProjectIds = Object.keys(
-            expectedCodeGenFilesByProjectId,
-          ).sort();
-          expect(
-            actualProjectIds,
-            `MSDK project IDs in cfsconfig do not match expected`,
-          ).to.deep.equal(expectedProjectIds);
-
-          for (const project of msdkProjects) {
-            const expectedCodeGenFiles =
-              expectedCodeGenFilesByProjectId[project.ProjectId];
-
-            if (!expectedCodeGenFiles) {
-              expect.fail(
-                `No expected code gen files defined for ProjectId "${project.ProjectId}"`,
-              );
-            }
-
-            const projectName = project.PlatformConfig?.ProjectName as string;
-
-            const projectDetails = {
-              pluginId: "com.analog.project.msdk.plugin",
-              cfsconfig: actualcfsConfigContent,
-              projectId: project.ProjectId,
-              coreId: project.CoreId,
-            };
-
-            const socDataModelPath = joinPath(
-              "node_modules",
-              "cfs-data-models",
-              "socs",
-              `${soc.toLowerCase()}-${cfsWorkspace.package.toLowerCase()}.json`,
-            );
-            const socDataModel = JSON.parse(
-              await fs.readFile(socDataModelPath, "utf-8"),
-            );
-
-            const generatedFiles = await codeGenService.runCodeGeneration(
-              projectDetails,
-              socDataModel,
-              codeGenerationPath,
-            );
-
-            await codeGenService.validateGeneratedFiles(
-              generatedFiles,
-              expectedCodeGenFiles,
-              joinPath(codeGenerationPath, projectName),
-            );
-          }
-        });
-      });
-    });
-  });
+runWorkspacePluginSuite(pluginInfo, {
+  suiteTitle: "MSDK Multi Core Hello World Single Exe Tests",
+  dataDir:
+    "tests/unit-tests/plugins/msdk-multi-core-hello-world-single-exe/data",
+  projects: [
+    { name: "m4-0", path: "./m4-0" },
+    { name: "m4-1", path: "./m4-1" },
+  ],
+  buildWorkspacePrefix: "single_exe",
+  buildable: true,
+  expectedWorkspaceFiles,
+  // CM4-1 is the secondary core in a single-executable build; it only
+  // receives the core1 SoC init sources.
+  codeGenProjects: [
+    {
+      projectId: "CM4-0",
+      pluginId: MSDK,
+      files: ["soc_init.c", "soc_init.h", "config.mk", "memory.ld"],
+    },
+    {
+      projectId: "CM4-1",
+      pluginId: MSDK,
+      files: ["soc_init_core1.c", "soc_init_core1.h"],
+    },
+  ],
 });

@@ -13,118 +13,35 @@
  *
  */
 
-import { promises as fs } from "node:fs";
-import path from "node:path";
-import { expect } from "chai";
-import { GenericPlugin } from "cfs-plugins-sdk";
-import type { CfsPluginInfo, CfsWorkspace } from "cfs-types";
-import { WorkspaceValidationService } from "@services/WorkspaceValidationService.js";
-import {
-  deleteCreatedWorkspace,
-  getSocsBoardsDict,
-  isDebug,
-  replaceTemplateVariables,
-} from "@utilities/test-utilities.js";
+import { runWorkspacePluginSuite } from "@services/WorkspacePluginSuite.js";
+import { loadPluginInfo } from "@utilities/test-utilities.js";
 
-const filePath = "plugins/dist/msdk-single-core-library-generate/.cfsplugin";
-const absolutePath = path.resolve(filePath);
-const fileContent = await fs.readFile(absolutePath, "utf-8");
-let pluginInfo = JSON.parse(fileContent) as CfsPluginInfo;
-pluginInfo.pluginPath = absolutePath;
+const pluginInfo = await loadPluginInfo(
+  "plugins/dist/msdk-single-core-library-generate/.cfsplugin",
+);
 
-const supportedSocs = getSocsBoardsDict(pluginInfo);
-
-describe("MSDK Single Core Library Generate Tests", () => {
-  it("should have at least one supported SoC/board combination", () => {
-    expect(Object.keys(supportedSocs).length).to.be.greaterThan(0);
-  });
-
-  let genericPlugin: GenericPlugin;
-  let cfsWorkspace: CfsWorkspace | undefined;
-
-  beforeEach(() => {
-    genericPlugin = new GenericPlugin(pluginInfo);
-    cfsWorkspace = undefined;
-  });
-
-  afterEach(async () => {
-    if (!isDebug() && cfsWorkspace) {
-      await deleteCreatedWorkspace(cfsWorkspace);
-    }
-  });
-
-  describe("GenerateWorkspace_BasicFlow_ShouldGenerateExpectedFiles", () => {
-    const expectedWorkspaceFilesBase = [
-      "m4/src/gpiolib.c",
-      "m4/README.md",
-      ".cfs/.cfsdependencies",
-      ".cfs/.cfsworkspace",
-      "m4/.vscode/settings.json",
-      "m4/src/gpiolib.h",
-      "m4/project.mk",
-      "m4/Makefile",
-      "m4/.vscode/c_cpp_properties.json",
-      "m4/m4.jdebug",
-      "m4/.vscode/cfs.tasks.json",
-      "{{soc}}-{{board}}-workspace-gen.code-workspace",
-    ];
-
-    const workspaceValidationService = new WorkspaceValidationService();
-    Object.entries(supportedSocs).forEach(([soc, boards]) => {
-      boards.forEach((board) => {
-        it(`For ${soc} soc with ${board} board`, async () => {
-          const socInfo = pluginInfo.supportedSocs.find(
-            (s) => s.name === soc && s.board === board,
-          );
-
-          if (!socInfo) {
-            expect.fail(
-              `No supportedSocs entry found for soc="${soc}" board="${board}"`,
-            );
-          }
-
-          const expectedWorkspaceFiles = expectedWorkspaceFilesBase.map(
-            (file) =>
-              replaceTemplateVariables(file, {
-                soc: soc.toLowerCase(),
-                board: board.toLowerCase(),
-                package: socInfo.package.toLowerCase(),
-              }),
-          );
-
-          cfsWorkspace = {
-            location:
-              "tests/unit-tests/plugins/msdk-single-core-library-generate/data",
-            workspacePluginId: pluginInfo?.pluginId,
-            workspacePluginVersion: pluginInfo?.pluginVersion,
-            workspaceName: `${soc.toLowerCase()}-${board.toLowerCase()}-workspace-gen`,
-            copyrightDate: new Date().getFullYear().toString(),
-            dataModelVersion: socInfo.dataModelVersion,
-            package: socInfo.package.toLowerCase(),
-            timestamp: new Date().toISOString(),
-            board: board,
-            soc: soc,
-            projects: [
-              {
-                name: "m4",
-                path: "./m4",
-              },
-            ],
-          };
-
-          await genericPlugin.generateWorkspace(cfsWorkspace);
-
-          await workspaceValidationService.validateWorkspaceFiles(
-            cfsWorkspace,
-            expectedWorkspaceFiles,
-          );
-
-          await workspaceValidationService.validateDirectoryStructure(
-            cfsWorkspace,
-            "m4",
-          );
-        });
-      });
-    });
-  });
+// This plugin emits no .cfsconfig and registers no code-generation templates, so
+// there is no code-gen block; the generated workspace is built as-is (no
+// projectPluginId / expectedCodeGenFiles).
+runWorkspacePluginSuite(pluginInfo, {
+  suiteTitle: "MSDK Single Core Library Generate Tests",
+  dataDir: "tests/unit-tests/plugins/msdk-single-core-library-generate/data",
+  core: "m4",
+  projects: [{ name: "m4", path: "./m4" }],
+  buildWorkspacePrefix: "library_generate",
+  buildable: true,
+  expectedWorkspaceFiles: [
+    "m4/src/gpiolib.c",
+    "m4/README.md",
+    ".cfs/.cfsdependencies",
+    ".cfs/.cfsworkspace",
+    "m4/.vscode/settings.json",
+    "m4/src/gpiolib.h",
+    "m4/project.mk",
+    "m4/Makefile",
+    "m4/.vscode/c_cpp_properties.json",
+    "m4/m4.jdebug",
+    "m4/.vscode/cfs.tasks.json",
+    "{{soc}}-{{board}}-workspace-gen.code-workspace",
+  ],
 });

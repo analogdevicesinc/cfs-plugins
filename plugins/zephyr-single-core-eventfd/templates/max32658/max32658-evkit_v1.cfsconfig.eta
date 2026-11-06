@@ -26,6 +26,12 @@
       "Control": "ENABLE",
       "Value": "TRUE",
       "Enabled": true
+    },
+    {
+      "Name": "TRNG",
+      "Control": "ENABLE",
+      "Value": "TRUE",
+      "Enabled": true
     }
   ],
   "Projects": [
@@ -33,7 +39,7 @@
       "CoreId": "CM33",
       "ProjectId": "CM33",
       "PluginId": "com.analog.project.zephyr.plugin",
-      "PluginVersion": "^1.2.0",
+      "PluginVersion": "^1.4.0",
       "FirmwarePlatform": "zephyr",
       "ExternallyManaged": false,
       "PlatformConfig": {
@@ -153,6 +159,11 @@
           "Name": "FLC",
           "Signals": [],
           "Config": {}
+        },
+        {
+          "Name": "TRNG",
+          "Signals": [],
+          "Config": {}
         }
       ]
     }
@@ -160,18 +171,16 @@
   "ClockFrequencies": {
     "PCLK": 25000000,
     "CLK_4KHZ": 4096,
-    "ERTCO_CLK": 32768,
-    "32KOUT": 32768,
+    "INRO_DIV_4": 32768,
+    "INRO": 131072,
     "Cortex-M4": 50000000,
     "FLC": 50000000,
     "WUT": 32768,
     "RTC": 4096,
     "IPO": 50000000,
-    "ERTCO_OSC": 32768,
-    "ERTCO_OUT": 32768,
     "SYS_OSC": 50000000,
     "SYS_CLK": 50000000,
-    "ERTCO": 32768,
     "CLK_32KHZ": 32768,
+    "TRNG": 25000000,
     "UART0": 25000000
   }

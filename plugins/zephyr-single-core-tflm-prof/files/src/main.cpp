@@ -1,5 +1,7 @@
 /* Copyright 2023 The TensorFlow Authors. All Rights Reserved.
 
+Portions Copyright (c) 2026 Analog Devices, Inc.
+
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -93,6 +95,12 @@ int main() {
                                        MODEL_ARENA_SIZE);
 
   TF_LITE_ENSURE_STATUS(interpreter.AllocateTensors());
+
+  #ifndef CONFIG_ZPL
+  size_t used = interpreter.arena_used_bytes();
+  MicroPrintf("TFLM arena usage: \n- Used=%u bytes\n- Total=%u bytes\n- Free=%u bytes\n",
+            (unsigned int)used, (unsigned int)MODEL_ARENA_SIZE, (unsigned int)(MODEL_ARENA_SIZE - used));
+  #endif
 
   unsigned char *input_data = get_next_dataset_input();
   while(input_data != NULL) {

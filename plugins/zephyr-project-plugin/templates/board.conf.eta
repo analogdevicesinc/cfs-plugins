@@ -140,8 +140,6 @@ CONFIG_DFG_STREAM_COUNT=<%= Math.max(16, numStreams) %>
 CONFIG_CPP=y
 CONFIG_STD_CPP17=y
 CONFIG_TENSORFLOW_LITE_MICRO=y
-CONFIG_MAIN_STACK_SIZE=2048
-CONFIG_REQUIRES_FLOAT_PRINTF=y
 CONFIG_TENSORFLOW_LITE_MICRO_CMSIS_NN_KERNELS=y
 
 <% } %>
@@ -202,6 +200,12 @@ CONFIG_INSTRUMENTATION_MODE_CALLGRAPH_BUFFER_OVERWRITE=n
 CONFIG_INSTRUMENTATION_DYNAMIC_TRIGGER=n
 
 CONFIG_INSTRUMENTATION_RECURSIVE_EXCLUDE_LIST="sys_clock_isr,z_impl_k_sem_give,z_impl_k_sem_take,z_impl_k_mutex_lock,z_impl_k_mutex_unlock,z_impl_k_sleep,instr_timestamp_ns"
+<% if (getZephelinInstrumentationTriggerFunction()) { %>
+CONFIG_INSTRUMENTATION_TRIGGER_FUNCTION="<%= getZephelinInstrumentationTriggerFunction() %>"
+<% } %>
+<% if (getZephelinInstrumentationStopperFunction()) { %>
+CONFIG_INSTRUMENTATION_STOPPER_FUNCTION="<%= getZephelinInstrumentationStopperFunction() %>"
+<% } %>
 <% } %>
 
 <% if (isZephelinProfilingMemoryUsageEnabled()) { %>

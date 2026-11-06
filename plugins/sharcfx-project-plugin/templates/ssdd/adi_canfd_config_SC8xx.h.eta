@@ -1,0 +1,923 @@
+<%
+/******************************************************************************
+
+Copyright (c) 2022-2026 Analog Devices.  All Rights Reserved.
+
+This software is proprietary.  By using this software you agree
+to the terms of the associated Analog Devices License Agreement.
+*******************************************************************************/
+%> 
+<% eval(this.render("templates/ssdd/ssdd_common.js")); %>
+<%~ include("@copyrightHeader", it) %> 
+/* This file is generated using the peripheral settings configured using System Planner.
+ * Please do not edit the values here directly.
+ */
+
+/** @addtogroup CANFD_Driver
+ *  @{
+ */
+
+/** @defgroup CANFD_Driver_Static_Configuration CANFD Driver Static Configuration
+ *  @{
+ */
+
+/*!
+* @file      adi_canfd_config_SC8xx.h
+*
+* @brief     CANFD driver static configuration header file
+*
+* @details
+*            CANFD driver static configuration header file
+*/
+
+#ifndef ADI_CANFD_CONFIG_SC8XX_H
+#define ADI_CANFD_CONFIG_SC8XX_H
+
+
+#if defined(__ADSPSHARCFX__)
+/*!Specifies if the SEC interrupts should be used for CANFD instances
+ * If set as 1, SEC interrupt path is enabled for all CANFD instances
+ * If set as 0, direct interrupt path is enabled for all CANFD instances*/
+<%
+  var _g_sec_int = [
+    getAssignedPeripheral("CANFD0") ? getPeriConfigValueBoolAsInt("CANFD0", "SEC_INT", "FALSE") : null,
+    getAssignedPeripheral("CANFD1") ? getPeriConfigValueBoolAsInt("CANFD1", "SEC_INT", "FALSE") : null,
+  ].filter(v => v !== null);
+%> 
+#define ADI_CANFD_CONFIG_SEC_INT	(<%= _g_sec_int.length ? _g_sec_int[0] : getPeriConfigValueBoolAsInt("CANFD0", "SEC_INT", "FALSE") %>u)
+<%
+  if (_g_sec_int.length > 1 && !_g_sec_int.every(v => v === _g_sec_int[0])) {
+%> 
+#error "ADI_CANFD_CONFIG_SEC_INT: all assigned CANFD instances must have the same SEC_INT setting"
+<% } %> 
+#endif
+
+
+/*! Number of CANFD instances that are enabled */
+#define ADI_CANFD_CFG_INSTANCES          <%= (getAssignedPeripheral("CANFD0") ? 1 : 0) + (getAssignedPeripheral("CANFD1") ? 1 : 0) %>UL
+
+/*! CANFD Timeout duration used to wait for CAND MB related timeout, value of 0xFFFFFFFFU disables the timeout */
+<%
+  var _g_mbtimeout = [
+    getAssignedPeripheral("CANFD0") ? getPeriConfigValueHex("CANFD0", "MBTIMEOUT", "0xffffffff") : null,
+    getAssignedPeripheral("CANFD1") ? getPeriConfigValueHex("CANFD1", "MBTIMEOUT", "0xffffffff") : null,
+  ].filter(v => v !== null);
+%> 
+#define ADI_CANFD_MBTIMEOUT            <%= _g_mbtimeout.length ? _g_mbtimeout[0] : getPeriConfigValueHex("CANFD0", "MBTIMEOUT", "0xffffffff") %>U 
+<%
+  if (_g_mbtimeout.length > 1 && !_g_mbtimeout.every(v => v === _g_mbtimeout[0])) {
+%> 
+#error "ADI_CANFD_MBTIMEOUT: all assigned CANFD instances must have the same MBTIMEOUT setting"
+<% } %> 
+
+/*********************************************** CANFD0 Instance static configuration ***********************************************/
+
+
+/*! Defines whether the user intends to use the MDMA for FIFO read access
+    0U - MDMA is not used
+    1U - MDMA is used
+*/
+#define ADI_CANFD0_CFG_MDMAUSE                <%= getPeriConfigValue("CANFD0", "MDMASTREAMID", "MDMA_NOT_USED") !== "MDMA_NOT_USED" ? 1 : 0 %>U
+
+/*! Defines which MDMA stream to use for CANFD FIFO access
+    0U - MDMA is not used
+	2U - MDMA stream 2 is used
+	6U - MDMA stream 6 is used
+    Other IDs are not allowed
+*/
+#define ADI_CANFD0_CFG_MDMASTREAMID           <%= getPeriConfigValueEnum("CANFD0", "MDMASTREAMID", "MDMA_NOT_USED", {"MDMA_NOT_USED":0,"MDMA_STREAM_2_USED":2,"MDMA_STREAM_6_USED":6}) %>U
+
+
+/*! Defines whether the extended range for CAN bit timing divider values is needed
+	0U - Normal range of divider value
+	1U - Extended range of divider values
+*/
+#define ADI_CANFD0_CFG_EXTENDEDRANGE         <%= getPeriConfigValueEnum("CANFD0", "EXTENDEDRANGE", "EXTENDED_RANGE_DIVIDER_VALUES", {"NORMAL_RANGE_DIVIDER_VALUE":0,"EXTENDED_RANGE_DIVIDER_VALUES":1}) %>U
+
+
+/*! Prescaler Division Factor
+    (ADI_CANFD0_CFG_PREDIV + 1) defines the ratio of CAN module clock to the
+    CAN protocol clock defining the time quantum of the CAN protocol
+
+    Valid values: 0-255  for Normal range
+    Valid values: 0-1023  for Extended range
+*/
+#define ADI_CANFD0_CFG_PREDIV				 <%= getPeriConfigValueInt("CANFD0", "PREDIV", "9") %>U
+
+
+/*! Resync Jump Width - Defines the maximum number of time quanta that a bit
+    time can be changed by one re-synchronization.
+
+    Valid values: 0-3  for Normal range
+    Valid values: 0-31  for Extended range
+*/
+#define ADI_CANFD0_CFG_JUMPWIDTH             <%= getPeriConfigValueInt("CANFD0", "JUMPWIDTH", "2") %>U
+
+
+/*! Phase Segment 1 � Defines the length of Phase Segment 1 in the bit time.
+
+    Valid values: 0-7  for Normal range
+    Valid values: 0-31  for Extended range
+*/
+#define ADI_CANFD0_CFG_PSEG1                 <%= getPeriConfigValueInt("CANFD0", "PSEG1", "3") %>U
+
+
+/*! Phase Segment 2 � Defines the length of Phase Segment 2 in the bit time.
+
+    Valid values: 0-7  for Normal range
+    Valid values: 0-31  for Extended range
+*/
+#define ADI_CANFD0_CFG_PSEG2                 <%= getPeriConfigValueInt("CANFD0", "PSEG2", "3") %>U
+
+
+/*! Propagation Segment � Defines the length of the Propagation Segment in the bit time.
+
+    Valid values: 0-7  for Normal range
+    Valid values: 0-63  for Extended range
+*/
+#define ADI_CANFD0_CFG_PROPSEG               <%= getPeriConfigValueInt("CANFD0", "PROPSEG", "10") %>U
+
+
+/*! Enable for FD mode of operation.
+    If this macro is set to 1U then ADI_CANFD0_CFG_USERXFIFO
+    must be set to 0U other wise there will be configuration
+    error
+	0U - FD operation is disabled
+	1U - FD operation is enabled
+*/
+#define ADI_CANFD0_CFG_ENABLE_FDMODE         <%= getPeriConfigValueBoolAsInt("CANFD0", "ENABLE_FDMODE", "FALSE") %>U
+
+
+/*! Enable ISO-11898 compliant FD mode of operation.
+    This macro has effect only if ADI_CANFD0_CFG_ENABLE_FDMODE
+    is 1U
+
+	0U - ISO non-compliant FD mode
+	1U - ISO compliant FD mode
+*/
+#define ADI_CANFD0_CFG_ISOCANFDEN            <%= getPeriConfigValueEnum("CANFD0", "ISOCANFDEN", "ISO_NON_COMPLIANT_FD", {"ISO_NON_COMPLIANT_FD":0,"ISO_COMPLIANT_FD_MODE":1}) %>U
+
+
+/*! Prescaler Division Factor
+    (ADI_CANFD0_CFG_PREDIV_FD + 1) defines the ratio of CAN module clock to the
+    CAN protocol clock defining the time quantum of the CAN protocol during
+    data phase of FD packet when bit rate switching is enabled
+
+    Valid values: 0-1023
+*/
+#define ADI_CANFD0_CFG_PREDIV_FD             <%= getPeriConfigValueInt("CANFD0", "PREDIV_FD", "9") %>U
+
+
+/*! Resync Jump Width - Defines the maximum number of time quanta that a bit
+    time can be changed by one re-synchronization during data phase of FD
+    packet when bit rate switching is enabled
+
+    Valid values: 0-7
+*/
+#define ADI_CANFD0_CFG_JUMPWIDTH_FD          <%= getPeriConfigValueInt("CANFD0", "JUMPWIDTH_FD", "2") %>U
+
+
+/*! Phase Segment 1 � Defines the length of Phase Segment 1 in the bit time
+    during data phase of FD packet when bit rate switching is enabled
+
+    Valid values: 0-7
+*/
+#define ADI_CANFD0_CFG_PSEG1_FD              <%= getPeriConfigValueInt("CANFD0", "PSEG1_FD", "3") %>U
+
+
+/*! Phase Segment 2 � Defines the length of Phase Segment 2 in the bit time.
+    during data phase of FD packet when bit rate switching is enabled
+
+    Valid values: 0-7
+*/
+#define ADI_CANFD0_CFG_PSEG2_FD              <%= getPeriConfigValueInt("CANFD0", "PSEG2_FD", "3") %>U
+
+
+/*! Propagation Segment � Defines the length of the Propagation Segment in
+    the bit time during data phase of FD packet when bit rate switching is
+    enabled
+
+    Valid values: 0-31
+*/
+#define ADI_CANFD0_CFG_PROPSEG_FD            <%= getPeriConfigValueInt("CANFD0", "PROPSEG_FD", "10") %>U
+
+
+/*! Enables the bit rate switching in the FD mode of operation
+
+	0U - Bit rate switching disabled
+	1U - Bit rate switching enabled
+*/
+#define ADI_CANFD0_CFG_ENABLEBRS             <%= getPeriConfigValueBoolAsInt("CANFD0", "ENABLEBRS", "FALSE") %>U
+
+
+/*! Enables Transceiver Delay Compensation Enable
+
+	0U - Delay Compensation disabled
+	1U - Delay Compensation Enable
+*/
+#define ADI_CANFD0_CFG_TRANS_DELAYCOMP_EN    <%= getPeriConfigValueBoolAsInt("CANFD0", "TRANS_DELAYCOMP_EN", "FALSE") %>U
+
+
+/*! Transceiver Delay Compensation Offset
+    This value contains the offset value to be added to the
+    measured transceiver�s loop delay in order to define the
+    position of the delayed comparison point when bit rate
+    switching is active. Its value smaller than the CAN
+    bit duration in the data bit rate for proper operation.
+    Note: It is not recommended to use ADI_CANFD0_CFG_TRANS_DELAYOFFSET
+    equal to zero
+
+    Valid values: 0-31
+*/
+#define ADI_CANFD0_CFG_TRANS_DELAYOFFSET     <%= getPeriConfigValueInt("CANFD0", "TRANS_DELAYOFFSET", "0") %>U
+
+
+/*! Enable Listen only mode
+    In Listen-Only Mode mode, transmission is disabled, all error
+    counters are frozen and the CANFD module operates in a Error
+    Passive mode. Only messages acknowledged by another CAN node
+     will be received
+
+	0U - Listen only mode disabled
+	1U - Listen only mode Enabled
+*/
+#define ADI_CANFD0_CFG_LISTENONLY            <%= getPeriConfigValueBoolAsInt("CANFD0", "LISTENONLY", "FALSE") %>U
+
+
+/*! Edge filter disable
+    When the Edge Filter is not disabled, two consecutive nominal time
+    quanta with dominant bus state are required to detect an edge that
+    causes synchronization. When synchronization occurs, the counting
+    of the sequence of eleven consecutive recessive bits is restarted.
+    The Edge Filter prevents the dominant pulses that are shorter than
+    a nominal bit time (present during the data phase of an FD Frame)
+    from being mistaken for an idle condition
+
+	0U - Edge filter mode not disabled
+	1U - Edge filter mode disabled
+*/
+#define ADI_CANFD0_CFG_EDGEFILTERDIS          <%= getPeriConfigValueEnum("CANFD0", "EDGEFILTERDIS", "EDGE_FILTER_MODE_NOT", {"EDGE_FILTER_MODE_NOT":0,"EDGE_FILTER_MODE_DISABLED":1}) %>U
+
+
+/*! Message Buffer Data Size for Block 0
+    Selects the data size for the Block 0 of message buffers
+    allocated in RAM
+
+	0U - Selects 8 bytes per message buffer.
+	1U - Selects 16 bytes per message buffer.
+	2U - Selects 32 bytes per message buffer.
+	3U - Selects 64 bytes per message buffer.
+*/
+#define ADI_CANFD0_CFG_BLOCK0_MBSIZE         <%= getPeriConfigValueEnum("CANFD0", "BLOCK0_MBSIZE", "SELECTS_8_BYTES_PER", {"SELECTS_8_BYTES_PER":0,"SELECTS_16_BYTES_PER":1,"SELECTS_32_BYTES_PER":2,"SELECTS_64_BYTES_PER":3}) %>U
+
+
+/*! Message Buffer Data Size for Block 1
+    Selects the data size for the Block 1 of message buffers
+    allocated in RAM
+
+	0U - Selects 8 bytes per message buffer.
+	1U - Selects 16 bytes per message buffer.
+	2U - Selects 32 bytes per message buffer.
+	3U - Selects 64 bytes per message buffer.
+*/
+#define ADI_CANFD0_CFG_BLOCK1_MBSIZE         <%= getPeriConfigValueEnum("CANFD0", "BLOCK1_MBSIZE", "SELECTS_8_BYTES_PER", {"SELECTS_8_BYTES_PER":0,"SELECTS_16_BYTES_PER":1,"SELECTS_32_BYTES_PER":2,"SELECTS_64_BYTES_PER":3}) %>U
+
+
+/*! Enable use of RX FIFO for message reception
+    FIFO mode works only for message reception.
+    If this macro is set to 1U then ADI_CANFD0_CFG_ENABLE_FDMODE
+    must be set to 0U other wise there will be configuration
+    error
+	0U - RX FIFO is disabled
+	1U - RX FIFO is enabled
+*/
+#define ADI_CANFD0_CFG_USERXFIFO             <%= getPeriConfigValueBoolAsInt("CANFD0", "USERXFIFO", "FALSE") %>U
+
+
+/*! Can Wake up from Low power mode by a recessive-to-dominant transition
+     on CAN RX line
+0U - Wakeup Disabled
+	1U - Wakeup Enabled
+*/
+#define ADI_CANFD0_CFG_WAKEUP_ENABLE         <%= getPeriConfigValueBoolAsInt("CANFD0", "WAKEUP_ENABLE", "FALSE") %>U
+
+
+/*! Controls whether the CANFD is allowed to receive frames
+    transmitted by itself. If set to 1 frames transmitted by the
+    CANFD are not stored in any MB, regardless of whether the MB is
+    programmed with an ID that matches the transmitted frame, and no
+    interrupt is generated due to the frame reception
+
+	0U - Self reception Enabled
+	1U - Self reception Disabled
+*/
+#define ADI_CANFD0_CFG_SELFRXDISABLE         <%= getPeriConfigValueBoolAsInt("CANFD0", "SELFRXDISABLE", "FALSE") %>U
+
+
+/*! Define whether the individual masking is desired or a single
+    global mask is preferred
+
+    0U - Individual Rx masks disabled
+    1U - Individual Rx masks enabled
+*/
+#define ADI_CANFD0_CFG_INDMASKENABLE         <%= getPeriConfigValueBoolAsInt("CANFD0", "INDMASKENABLE", "FALSE") %>U
+
+
+
+/*! Global Mask for MBs except MB14 and MB15 */
+#define ADI_CANFD0_CFG_GLOBAL_FILTERMASK <%= getPeriConfigValueHex("CANFD0", "GLOBAL_FILTERMASK", "0xffffffff") %>U
+
+/*! Global Mask for FIFO filters */
+#define ADI_CANFD0_CFG_GLOBALFIFO_FILTERMASK <%= getPeriConfigValueHex("CANFD0", "GLOBALFIFO_FILTERMASK", "0xffffffff") %>U
+
+
+/*  If individual Masking is  enabled, define Filter Masks for all the MBs */
+
+
+/** Individual Mask for MB */
+#define ADI_CANFD0_CFG_MB00_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB00_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB01_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB01_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB02_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB02_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB03_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB03_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB04_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB04_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB05_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB05_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB06_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB06_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB07_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB07_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB08_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB08_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB09_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB09_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB10_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB10_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB11_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB11_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB12_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB12_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB13_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB13_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB14_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB14_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB15_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB15_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB16_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB16_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB17_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB17_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB18_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB18_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB19_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB19_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB20_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB20_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB21_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB21_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB22_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB22_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB23_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB23_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB24_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB24_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB25_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB25_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB26_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB26_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB27_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB27_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB28_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB28_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB29_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB29_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB30_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB30_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB31_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB31_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB32_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB32_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB33_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB33_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB34_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB34_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB35_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB35_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB36_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB36_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB37_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB37_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB38_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB38_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB39_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB39_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB40_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB40_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB41_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB41_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB42_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB42_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB43_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB43_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB44_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB44_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB45_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB45_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB46_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB46_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB47_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB47_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB48_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB48_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB49_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB49_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB50_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB50_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB51_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB51_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB52_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB52_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB53_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB53_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB54_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB54_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB55_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB55_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB56_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB56_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB57_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB57_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB58_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB58_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB59_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB59_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB60_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB60_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB61_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB61_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB62_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB62_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD0_CFG_MB63_FILTERMASK   <%= getPeriConfigValueHex("CANFD0", "MB63_FILTERMASK", "0xffffffff") %>U
+
+
+
+/*! Identifies the format of the Rx FIFO ID Filter Table elements
+
+	0U - Format A � One full ID (standard and extended) per ID Filter
+         Table element.
+	1U - Format B � Two full standard IDs or two partial 14-bit (standard
+         and extended) IDs per ID Filter Table element.
+	2U - Format C � Four partial 8-bit standard IDs per ID Filter Table
+         element.
+	3U - Format D � All frames rejected
+*/
+#define ADI_CANFD0_CFG_IDFILTER_FORMAT       <%= getPeriConfigValueEnum("CANFD0", "IDFILTER_FORMAT", "FORMAT_B_TWO_FULL", {"FORMAT_ONE_FULL_ID":0,"FORMAT_B_TWO_FULL":1,"FORMAT_C_FOUR_PARTIAL":2,"FORMAT_D_ALL_FRAMES":3}) %>U
+
+
+/*! Defines the number of Rx FIFO filters
+    ADI_CANFD0_CFG_NUM_FIFOFILTERS must not be programmed with values that make
+    the number of message buffers occupied by Rx FIFO and ID Filter exceed
+    the number of mailboxes present. Each group of eight filters occupies
+    a memory space equivalent to two message buffers, which means that as
+    more filters are implemented fewer mailboxes are available.
+
+    Programmable range - 0-15
+
+    Encoding:
+    -------------------------------------------------------------
+      Value      Number of  FIFO      Message buffers occupied by
+                 Filter elements      Rx FIFO and filter table
+
+		0x0            8                     0�7
+		0x1            16                    0�9
+		0x2            24                    0�11
+		0x3            32                    0�13
+		0x4            40                    0�15
+		0x5            48                    0�17
+		0x6            56                    0�19
+		0x7            64                    0�21
+		0x8            72                    0�23
+		0x9            80                    0�25
+		0xA            88                    0�27
+		0xB            96                    0�29
+		0xC            104                   0�31
+		0xD            112                   0�33
+		0xE            120                   0�35
+		0xF            128                   0�37
+*/
+#define ADI_CANFD0_CFG_NUM_FIFOFILTERS       <%= getPeriConfigValueInt("CANFD0", "NUM_FIFOFILTERS", "1") %>U
+
+
+/*! Timer Sync enables a mechanism that resets the free-running timer
+    each time a message is received in message buffer
+
+    0U - Timer Sync disabled
+    1U - Timer Sync enabled
+*/
+#define ADI_CANFD0_CFG_TMRSYNC               <%= getPeriConfigValueBoolAsInt("CANFD0", "TMRSYNC", "TRUE") %>U
+
+
+/*! Defines the ordering mechanism for Message Buffer transmission
+
+    0U - Buffer with highest priority is transmitted first.
+    1U - Lowest number buffer is transmitted first.
+*/
+#define ADI_CANFD0_CFG_TXORDER               <%= getPeriConfigValueEnum("CANFD0", "TXORDER", "BUFFER_HIGHEST_PRIORITY_TRANSMITTED", {"BUFFER_HIGHEST_PRIORITY_TRANSMITTED":0,"LOWEST_NUMBER_BUFFER_TRANSMITTED":1}) %>U
+
+
+/*! Tx Arbitration Start Delay
+    Indicates how many CAN bits the Tx arbitration process start
+    point can be delayed from the first bit of CRC field on CAN bus.
+
+    Valid values: 0-31
+*/
+#define ADI_CANFD0_CFG_TXARB_DELAY           <%= getPeriConfigValueInt("CANFD0", "TXARB_DELAY", "1") %>U
+
+
+/*! Mailboxes Reception Priority. FIFO vs Message Buffer
+
+    0U - Matching starts from Rx FIFO and continues on mailboxes.
+    1U - Matching starts from mailboxes and continues on Rx FIFO.
+*/
+#define ADI_CANFD0_CFG_RECP_PRIORITY         <%= getPeriConfigValueEnum("CANFD0", "RECP_PRIORITY", "MATCHING_STARTS_FROM_MAILBOXES", {"MATCHING_STARTS_FROM_RX":0,"MATCHING_STARTS_FROM_MAILBOXES":1}) %>U
+
+
+/*! Remote Request Storing
+
+    0U - Remote Response Frame is generated.
+    1U - Remote Request Frame is stored
+*/
+#define ADI_CANFD0_CFG_REMOTEREQ_STORING     <%= getPeriConfigValueEnum("CANFD0", "REMOTEREQ_STORING", "REMOTE_RESPONSE_FRAME_GENERATED", {"REMOTE_RESPONSE_FRAME_GENERATED":0,"REMOTE_REQUEST_FRAME_STORED":1}) %>U
+
+
+
+
+
+
+/*********************************************** CANFD1 Instance static configuration ***********************************************/
+
+
+/*! Defines whether the user intends to use the MDMA for FIFO read access
+    0U - MDMA is not used
+    1U - MDMA is used
+*/
+#define ADI_CANFD1_CFG_MDMAUSE                <%= getPeriConfigValue("CANFD1", "MDMASTREAMID", "MDMA_NOT_USED") !== "MDMA_NOT_USED" ? 1 : 0 %>U
+
+/*! Defines which MDMA stream to use for CANFD FIFO access
+    0U - MDMA is not used
+	2U - MDMA stream 2 is used
+	6U - MDMA stream 6 is used
+    Other IDs are not allowed
+*/
+#define ADI_CANFD1_CFG_MDMASTREAMID           <%= getPeriConfigValueEnum("CANFD1", "MDMASTREAMID", "MDMA_NOT_USED", {"MDMA_NOT_USED":0,"MDMA_STREAM_2_USED":2,"MDMA_STREAM_6_USED":6}) %>U
+
+
+/*! Define whether the extended range for CAN bit timing divider values is needed
+	0U - Normal range of divider value
+	1U - Extended range of divider values
+*/
+#define ADI_CANFD1_CFG_EXTENDEDRANGE         <%= getPeriConfigValueEnum("CANFD1", "EXTENDEDRANGE", "EXTENDED_RANGE_DIVIDER_VALUES", {"NORMAL_RANGE_DIVIDER_VALUE":0,"EXTENDED_RANGE_DIVIDER_VALUES":1}) %>U
+
+
+/*! Prescaler Division Factor
+    (ADI_CANFD1_CFG_PREDIV + 1) defines the ratio of CAN module clock to the
+    CAN protocol clock defining the time quantum of the CAN protocol
+
+    Valid values: 0-255  for Normal range
+    Valid values: 0-1023  for Extended range
+*/
+#define ADI_CANFD1_CFG_PREDIV				<%= getPeriConfigValueInt("CANFD1", "PREDIV", "9") %>U
+
+
+/*! Resync Jump Width - Defines the maximum number of time quanta that a bit
+    time can be changed by one re-synchronization.
+
+    Valid values: 0-3  for Normal range
+    Valid values: 0-31  for Extended range
+*/
+#define ADI_CANFD1_CFG_JUMPWIDTH             <%= getPeriConfigValueInt("CANFD1", "JUMPWIDTH", "2") %>U
+
+
+/*! Phase Segment 1 � Defines the length of Phase Segment 1 in the bit time.
+
+    Valid values: 0-7  for Normal range
+    Valid values: 0-31  for Extended range
+*/
+#define ADI_CANFD1_CFG_PSEG1                 <%= getPeriConfigValueInt("CANFD1", "PSEG1", "3") %>U
+
+
+/*! Phase Segment 2 � Defines the length of Phase Segment 2 in the bit time.
+
+    Valid values: 0-7  for Normal range
+    Valid values: 0-31  for Extended range
+*/
+#define ADI_CANFD1_CFG_PSEG2                 <%= getPeriConfigValueInt("CANFD1", "PSEG2", "3") %>U
+
+
+/*! Propagation Segment � Defines the length of the Propagation Segment in the bit time.
+
+    Valid values: 0-7  for Normal range
+    Valid values: 0-63  for Extended range
+*/
+#define ADI_CANFD1_CFG_PROPSEG               <%= getPeriConfigValueInt("CANFD1", "PROPSEG", "10") %>U
+
+
+/*! Enable for FD mode of operation.
+    If this macro is set to 1U then ADI_CANFD1_CFG_USERXFIFO
+    must be set to 0U other wise there will be configuration
+    error
+	0U - FD operation is disabled
+	1U - FD operation is enabled
+*/
+#define ADI_CANFD1_CFG_ENABLE_FDMODE         <%= getPeriConfigValueBoolAsInt("CANFD1", "ENABLE_FDMODE", "FALSE") %>U
+
+
+/*! Enable ISO-11898 compliant FD mode of operation.
+    This macro has effect only if ADI_CANFD1_CFG_ENABLE_FDMODE
+    is 1U
+
+	0U - ISO non-compliant FD mode
+	1U - ISO compliant FD mode
+*/
+#define ADI_CANFD1_CFG_ISOCANFDEN            <%= getPeriConfigValueEnum("CANFD1", "ISOCANFDEN", "ISO_NON_COMPLIANT_FD", {"ISO_NON_COMPLIANT_FD":0,"ISO_COMPLIANT_FD_MODE":1}) %>U
+
+
+/*! Prescaler Division Factor
+    (ADI_CANFD1_CFG_PREDIV_FD + 1) defines the ratio of CAN module clock to the
+    CAN protocol clock defining the time quantum of the CAN protocol during
+    data phase of FD packet when bit rate switching is enabled
+
+    Valid values: 0-1023
+*/
+#define ADI_CANFD1_CFG_PREDIV_FD             <%= getPeriConfigValueInt("CANFD1", "PREDIV_FD", "9") %>U
+
+
+/*! Resync Jump Width - Defines the maximum number of time quanta that a bit
+    time can be changed by one re-synchronization during data phase of FD
+    packet when bit rate switching is enabled
+
+    Valid values: 0-7
+*/
+#define ADI_CANFD1_CFG_JUMPWIDTH_FD          <%= getPeriConfigValueInt("CANFD1", "JUMPWIDTH_FD", "2") %>U
+
+
+/*! Phase Segment 1 � Defines the length of Phase Segment 1 in the bit time
+    during data phase of FD packet when bit rate switching is enabled
+
+    Valid values: 0-7
+*/
+#define ADI_CANFD1_CFG_PSEG1_FD              <%= getPeriConfigValueInt("CANFD1", "PSEG1_FD", "3") %>U
+
+
+/*! Phase Segment 2 � Defines the length of Phase Segment 2 in the bit time.
+    during data phase of FD packet when bit rate switching is enabled
+
+    Valid values: 0-7
+*/
+#define ADI_CANFD1_CFG_PSEG2_FD              <%= getPeriConfigValueInt("CANFD1", "PSEG2_FD", "3") %>U
+
+
+/*! Propagation Segment � Defines the length of the Propagation Segment in
+    the bit time during data phase of FD packet when bit rate switching is
+    enabled
+
+    Valid values: 0-31
+*/
+#define ADI_CANFD1_CFG_PROPSEG_FD            <%= getPeriConfigValueInt("CANFD1", "PROPSEG_FD", "10") %>U
+
+
+/*! Enables the bit rate switching in the FD mode of operation
+
+	0U - Bit rate switching disabled
+	1U - Bit rate switching enabled
+*/
+#define ADI_CANFD1_CFG_ENABLEBRS             <%= getPeriConfigValueBoolAsInt("CANFD1", "ENABLEBRS", "FALSE") %>U
+
+
+/*! Enables Transceiver Delay Compensation Enable
+
+	0U - Delay Compensation disabled
+	1U - Delay Compensation Enable
+*/
+#define ADI_CANFD1_CFG_TRANS_DELAYCOMP_EN    <%= getPeriConfigValueBoolAsInt("CANFD1", "TRANS_DELAYCOMP_EN", "FALSE") %>U
+
+
+/*! Transceiver Delay Compensation Offset
+    This value contains the offset value to be added to the
+    measured transceiver�s loop delay in order to define the
+    position of the delayed comparison point when bit rate
+    switching is active. Its value smaller than the CAN
+    bit duration in the data bit rate for proper operation.
+    Note: It is not recommended to use ADI_CANFD1_CFG_TRANS_DELAYOFFSET
+    equal to zero
+
+    Valid values: 0-31
+*/
+#define ADI_CANFD1_CFG_TRANS_DELAYOFFSET     <%= getPeriConfigValueInt("CANFD1", "TRANS_DELAYOFFSET", "0") %>U
+
+
+/*! Enable Listen only mode
+    In Listen-Only Mode mode, transmission is disabled, all error
+    counters are frozen and the CANFD module operates in a Error
+    Passive mode. Only messages acknowledged by another CAN node
+     will be received
+
+	0U - Listen only mode disabled
+	1U - Listen only mode Enabled
+*/
+#define ADI_CANFD1_CFG_LISTENONLY            <%= getPeriConfigValueBoolAsInt("CANFD1", "LISTENONLY", "FALSE") %>U
+
+
+/*! Edge filter disable
+    When the Edge Filter is not disabled, two consecutive nominal time
+    quanta with dominant bus state are required to detect an edge that
+    causes synchronization. When synchronization occurs, the counting
+    of the sequence of eleven consecutive recessive bits is restarted.
+    The Edge Filter prevents the dominant pulses that are shorter than
+    a nominal bit time (present during the data phase of an FD Frame)
+    from being mistaken for an idle condition
+
+	0U - Edge filter mode not disabled
+	1U - Edge filter mode disabled
+*/
+#define ADI_CANFD1_CFG_EDGEFILTERDIS          <%= getPeriConfigValueEnum("CANFD1", "EDGEFILTERDIS", "EDGE_FILTER_MODE_NOT", {"EDGE_FILTER_MODE_NOT":0,"EDGE_FILTER_MODE_DISABLED":1}) %>U
+
+
+/*! Message Buffer Data Size for Block 0
+    Selects the data size for the Block 0 of message buffers
+    allocated in RAM
+
+	0U - Selects 8 bytes per message buffer.
+	1U - Selects 16 bytes per message buffer.
+	2U - Selects 32 bytes per message buffer.
+	3U - Selects 64 bytes per message buffer.
+*/
+#define ADI_CANFD1_CFG_BLOCK0_MBSIZE         <%= getPeriConfigValueEnum("CANFD1", "BLOCK0_MBSIZE", "SELECTS_8_BYTES_PER", {"SELECTS_8_BYTES_PER":0,"SELECTS_16_BYTES_PER":1,"SELECTS_32_BYTES_PER":2,"SELECTS_64_BYTES_PER":3}) %>U
+
+
+/*! Message Buffer Data Size for Block 1
+    Selects the data size for the Block 1 of message buffers
+    allocated in RAM
+
+	0U - Selects 8 bytes per message buffer.
+	1U - Selects 16 bytes per message buffer.
+	2U - Selects 32 bytes per message buffer.
+	3U - Selects 64 bytes per message buffer.
+*/
+#define ADI_CANFD1_CFG_BLOCK1_MBSIZE         <%= getPeriConfigValueEnum("CANFD1", "BLOCK1_MBSIZE", "SELECTS_8_BYTES_PER", {"SELECTS_8_BYTES_PER":0,"SELECTS_16_BYTES_PER":1,"SELECTS_32_BYTES_PER":2,"SELECTS_64_BYTES_PER":3}) %>U
+
+
+/*! Enable use of RX FIFO for message reception
+    FIFO mode works only for message reception.
+    If this macro is set to 1U then ADI_CANFD1_CFG_ENABLE_FDMODE
+    must be set to 0U other wise there will be configuration
+    error
+	0U - RX FIFO is disabled
+	1U - RX FIFO is enabled
+*/
+#define ADI_CANFD1_CFG_USERXFIFO             <%= getPeriConfigValueBoolAsInt("CANFD1", "USERXFIFO", "FALSE") %>U
+
+/*! Can Wake up from Low power mode by a recessive-to-dominant transition
+     on CAN RX line
+	0U - Wakeup Disabled
+	1U - Wakeup Enabled
+*/
+#define ADI_CANFD1_CFG_WAKEUP_ENABLE         <%= getPeriConfigValueBoolAsInt("CANFD1", "WAKEUP_ENABLE", "FALSE") %>U
+
+
+/*! Controls whether the CANFD is allowed to receive frames
+    transmitted by itself. If set to 1 frames transmitted by the
+    CANFD are not stored in any MB, regardless of whether the MB is
+    programmed with an ID that matches the transmitted frame, and no
+    interrupt is generated due to the frame reception
+
+	0U - Self reception Enabled
+	1U - Self reception Disabled
+*/
+#define ADI_CANFD1_CFG_SELFRXDISABLE         <%= getPeriConfigValueBoolAsInt("CANFD1", "SELFRXDISABLE", "FALSE") %>U
+
+
+/*! Define whether the individual masking is desired or a single
+    global mask is preferred
+
+    0U - Individual Rx masks disabled
+    1U - Individual Rx masks enabled
+*/
+#define ADI_CANFD1_CFG_INDMASKENABLE         <%= getPeriConfigValueBoolAsInt("CANFD1", "INDMASKENABLE", "FALSE") %>U
+
+
+
+
+/*! Global Mask for MBs except MB14 and MB15 */
+#define ADI_CANFD1_CFG_GLOBAL_FILTERMASK <%= getPeriConfigValueHex("CANFD1", "GLOBAL_FILTERMASK", "0xffffffff") %>U
+
+/*! Global Mask for FIFO filters */
+#define ADI_CANFD1_CFG_GLOBALFIFO_FILTERMASK <%= getPeriConfigValueHex("CANFD1", "GLOBALFIFO_FILTERMASK", "0xffffffff") %>U
+
+
+/* If individual Masking is  enabled, define Filter Masks for all the MBs */
+
+
+
+/* Individual Mask for MB */
+#define ADI_CANFD1_CFG_MB00_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB00_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB01_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB01_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB02_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB02_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB03_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB03_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB04_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB04_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB05_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB05_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB06_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB06_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB07_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB07_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB08_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB08_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB09_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB09_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB10_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB10_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB11_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB11_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB12_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB12_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB13_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB13_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB14_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB14_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB15_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB15_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB16_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB16_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB17_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB17_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB18_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB18_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB19_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB19_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB20_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB20_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB21_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB21_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB22_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB22_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB23_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB23_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB24_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB24_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB25_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB25_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB26_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB26_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB27_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB27_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB28_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB28_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB29_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB29_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB30_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB30_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB31_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB31_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB32_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB32_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB33_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB33_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB34_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB34_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB35_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB35_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB36_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB36_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB37_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB37_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB38_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB38_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB39_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB39_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB40_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB40_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB41_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB41_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB42_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB42_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB43_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB43_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB44_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB44_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB45_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB45_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB46_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB46_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB47_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB47_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB48_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB48_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB49_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB49_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB50_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB50_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB51_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB51_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB52_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB52_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB53_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB53_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB54_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB54_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB55_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB55_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB56_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB56_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB57_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB57_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB58_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB58_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB59_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB59_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB60_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB60_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB61_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB61_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB62_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB62_FILTERMASK", "0xffffffff") %>U
+#define ADI_CANFD1_CFG_MB63_FILTERMASK   <%= getPeriConfigValueHex("CANFD1", "MB63_FILTERMASK", "0xffffffff") %>U
+
+
+
+/*! Identifies the format of the Rx FIFO ID Filter Table elements
+
+	0U - Format A � One full ID (standard and extended) per ID Filter
+         Table element.
+	1U - Format B � Two full standard IDs or two partial 14-bit (standard
+         and extended) IDs per ID Filter Table element.
+	2U - Format C � Four partial 8-bit standard IDs per ID Filter Table
+         element.
+	3U - Format D � All frames rejected
+*/
+#define ADI_CANFD1_CFG_IDFILTER_FORMAT       <%= getPeriConfigValueEnum("CANFD1", "IDFILTER_FORMAT", "FORMAT_B_TWO_FULL", {"FORMAT_ONE_FULL_ID":0,"FORMAT_B_TWO_FULL":1,"FORMAT_C_FOUR_PARTIAL":2,"FORMAT_D_ALL_FRAMES":3}) %>U
+
+
+/*! Defines the number of Rx FIFO filters
+    ADI_CANFD1_CFG_NUM_FIFOFILTERS must not be programmed with values that make
+    the number of message buffers occupied by Rx FIFO and ID Filter exceed
+    the number of mailboxes present. Each group of eight filters occupies
+    a memory space equivalent to two message buffers, which means that as
+    more filters are implemented fewer mailboxes are available.
+
+    Programmable range - 0-15
+
+    Encoding:
+    -------------------------------------------------------------
+      Value      Number of  FIFO      Message buffers occupied by
+                 Filter elements      Rx FIFO and filter table
+
+		0x0            8                     0�7
+		0x1            16                    0�9
+		0x2            24                    0�11
+		0x3            32                    0�13
+		0x4            40                    0�15
+		0x5            48                    0�17
+		0x6            56                    0�19
+		0x7            64                    0�21
+		0x8            72                    0�23
+		0x9            80                    0�25
+		0xA            88                    0�27
+		0xB            96                    0�29
+		0xC            104                   0�31
+		0xD            112                   0�33
+		0xE            120                   0�35
+		0xF            128                   0�37
+*/
+#define ADI_CANFD1_CFG_NUM_FIFOFILTERS       <%= getPeriConfigValueInt("CANFD1", "NUM_FIFOFILTERS", "1") %>U
+
+
+/*! Timer Sync enables a mechanism that resets the free-running timer
+    each time a message is received in message buffer
+
+    0U - Timer Sync disabled
+    1U - Timer Sync enabled
+*/
+#define ADI_CANFD1_CFG_TMRSYNC               <%= getPeriConfigValueBoolAsInt("CANFD1", "TMRSYNC", "TRUE") %>U
+
+
+/*! Defines the ordering mechanism for Message Buffer transmission
+
+    0U - Buffer with highest priority is transmitted first.
+    1U - Lowest number buffer is transmitted first.
+*/
+#define ADI_CANFD1_CFG_TXORDER               <%= getPeriConfigValueEnum("CANFD1", "TXORDER", "BUFFER_HIGHEST_PRIORITY_TRANSMITTED", {"BUFFER_HIGHEST_PRIORITY_TRANSMITTED":0,"LOWEST_NUMBER_BUFFER_TRANSMITTED":1}) %>U
+
+
+/*! Tx Arbitration Start Delay
+    Indicates how many CAN bits the Tx arbitration process start
+    point can be delayed from the first bit of CRC field on CAN bus.
+
+    Valid values: 0-31
+*/
+#define ADI_CANFD1_CFG_TXARB_DELAY           <%= getPeriConfigValueInt("CANFD1", "TXARB_DELAY", "1") %>U
+
+
+/*! Mailboxes Reception Priority. FIFO vs Message Buffer
+
+    0U - Matching starts from Rx FIFO and continues on mailboxes.
+    1U - Matching starts from mailboxes and continues on Rx FIFO.
+*/
+#define ADI_CANFD1_CFG_RECP_PRIORITY         <%= getPeriConfigValueEnum("CANFD1", "RECP_PRIORITY", "MATCHING_STARTS_FROM_MAILBOXES", {"MATCHING_STARTS_FROM_RX":0,"MATCHING_STARTS_FROM_MAILBOXES":1}) %>U
+
+
+/*! Remote Request Storing
+
+    0U - Remote Response Frame is generated.
+    1U - Remote Request Frame is stored
+*/
+#define ADI_CANFD1_CFG_REMOTEREQ_STORING     <%= getPeriConfigValueEnum("CANFD1", "REMOTEREQ_STORING", "REMOTE_RESPONSE_FRAME_GENERATED", {"REMOTE_RESPONSE_FRAME_GENERATED":0,"REMOTE_REQUEST_FRAME_STORED":1}) %>U
+
+
+#endif /* ADI_CANFD_CONFIG_SC8XX_H */
+
+/** @}*/
+/** @}*/

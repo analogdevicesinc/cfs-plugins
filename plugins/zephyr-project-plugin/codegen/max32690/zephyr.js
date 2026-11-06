@@ -53,6 +53,8 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
       ]
     },
     { zephyr : "dma0", datamodel : "DMA", enable : "ENABLE" },
+    { zephyr : "flc0", datamodel : "FLC0" },
+    { zephyr : "flc1", datamodel : "FLC1" },
     { zephyr : "i2c0", datamodel : "I2C0", enable : "I2C0_ENABLE",
       pins: [
         { signal: "SCL", pin: "F6", name: "i2c0a_scl_p0_31" },
@@ -239,7 +241,7 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
         }
       ]
     },
-    { zephyr: "spixf", datamodel: "SPIXF", enable: "ENABLE", zephyrVersionMin: "4.3.0",
+    { zephyr: "spixf", datamodel: "SPIXF", enable: "ENABLE", zephyrVersionMin: "4.3.0", cores: ["CM4"],
       pins: [
         { signal: "SS0", pin: "H1", name: "spixf_ss0_p0_6"},
         { signal: "SDIO1", pin: "H2", name: "spixf_sdio1_p0_5"},
@@ -373,7 +375,7 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
         { name: "data-bits", type: "int", control: "CHAR_SIZE", cfg_default: "5" }
       ]
     },
-    { zephyr: "usbhs", datamodel: "USBHS", enable: "ENABLE"},
+    { zephyr: "usbhs", datamodel: "USBHS", enable: "ENABLE", cores: ["CM4"]},
     { zephyr: "wdt0", datamodel: "WDT0", enable: "ENABLE", clock_mux: "MUX", clock_default: "PCLK" },
     { zephyr: "wdt1", datamodel: "LPWDT0", enable: "ENABLE", clock_mux: "MUX", clock_default: "IBRO" },
     { zephyr: "wut0", datamodel: "WUT0", zephyrVersionMin: "4.3.0" },
@@ -421,6 +423,8 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
       ]
     },
     { zephyr : "dma0", datamodel : "DMA", enable : "ENABLE" },
+    { zephyr : "flc0", datamodel : "FLC0" },
+    { zephyr : "flc1", datamodel : "FLC1" },
     { zephyr : "i2c0", datamodel : "I2C0", enable : "I2C0_ENABLE",
       pins : [
         { name: "i2c0a_scl_p0_31", signal: "SCL", pin: "G6" },
@@ -607,7 +611,7 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
         }
       ]
     },
-    { zephyr : "spixf", datamodel : "SPIXF", enable : "ENABLE", zephyrVersionMin : "4.3.0",
+    { zephyr : "spixf", datamodel : "SPIXF", enable : "ENABLE", zephyrVersionMin : "4.3.0", cores: ["CM4"],
       pins : [
         { signal: "SCK", pin: "D1", name: "spixf_sck_p0_3"},
         { signal: "SDIO0", pin: "D2", name: "spixf_sdio0_p0_1"},
@@ -741,7 +745,7 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
         { name: "data-bits", type: "int", control: "CHAR_SIZE", cfg_default: "5" }
       ]
     },
-    { zephyr: "usbhs", datamodel: "USBHS", enable: "ENABLE"},
+    { zephyr: "usbhs", datamodel: "USBHS", enable: "ENABLE", cores: ["CM4"]},
     { zephyr : "wdt0", datamodel : "WDT0", enable : "ENABLE", clock_mux : "MUX", clock_default : "PCLK" },
     { zephyr : "wdt1", datamodel : "LPWDT0", enable : "ENABLE", clock_mux : "MUX", clock_default : "IBRO" },
     { zephyr : "wut0", datamodel : "WUT0", zephyrVersionMin : "4.3.0" },
@@ -778,6 +782,8 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
       ]
     },
     { zephyr : "dma0", datamodel : "DMA", enable : "ENABLE" },
+    { zephyr : "flc0", datamodel : "FLC0" },
+    { zephyr : "flc1", datamodel : "FLC1" },
     { zephyr : "i2c0", datamodel : "I2C0", enable : "I2C0_ENABLE",
       pins : [
         { name: "i2c0a_scl_p2_8", signal: "SCL", pin: "2" },
@@ -864,7 +870,7 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
         { name: "prescaler", type: "int", control: "CLKDIV_A", cfg_default: "1" }
       ]
     },
-    { zephyr : "timer3", datamodel : "TMR3", enable : "TMR3_ENABLE", clock_mux : "TMR3a_MUX", clock_default : "PCLK",
+    { zephyr : "timer3", datamodel : "TMR3", enable : "TMR3_ENABLE", clock_mux : "TMR3a_MUX", clock_default : "PCLK", cores: ["CM4"],
       pins : [
         { name: "tmr3a_ioa_p1_13", signal: "IOA", pin: "23"},
         { name: "tmr3a_iob_p1_14", signal: "IOB", pin: "32"}
@@ -953,7 +959,7 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
         { name: "data-bits", type: "int", control: "CHAR_SIZE", cfg_default: "5" }
       ]
     },
-    { zephyr: "usbhs", datamodel: "USBHS", enable: "ENABLE"},
+    { zephyr: "usbhs", datamodel: "USBHS", enable: "ENABLE", cores: ["CM4"]},
     { zephyr : "wdt0", datamodel : "WDT0", enable : "ENABLE", clock_mux : "MUX", clock_default : "PCLK" },
     { zephyr : "wdt1", datamodel : "LPWDT0", enable : "ENABLE", clock_mux : "MUX", clock_default : "IBRO" },
     { zephyr: "wut0", datamodel: "WUT0", zephyrVersionMin: "4.3.0" },
@@ -962,39 +968,15 @@ if (it.cfsconfig.Package.toUpperCase() === "WLP") {
 
 }
 
-// Filter peripheralData based on zephyrVersionMin/zephyrVersionMax and packages fields.
-// Entries outside the supported range or package are removed and later added to unsupported_in_dts.
-const { supported, unsupported } = filterByZephyrVersion(peripheralData);
+// Filter peripheralData based on the current core.
+// Entries with a `cores` array are only included if the current core matches.
+const currentCoreId = getProject()?.CoreId;
+if (currentCoreId) {
+    peripheralData = peripheralData.filter(p => !p.cores || p.cores.includes(currentCoreId));
+}
 
-// Replace peripheralData with only the supported peripherals so the template
-// does not generate code for peripherals filtered out by version constraints.
-peripheralData = supported;
-
-unsupported_in_dts = [
-    { datamodel: "BLE", diag: "The Bluetooth Low Energy peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE" },
-    { datamodel: "CTB", diag: "The Cryptographic Toolbox peripheral is not currently supported in devicetree.", ctrl: "CTB_ENABLE", value: "TRUE" },
-    { datamodel: "EMCC", diag: "The External Memory Cache Controller is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE" },
-    { datamodel: "HYP", diag: "The SPIXR/HPB peripherals are not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE" },
-    { datamodel: "I2S0", diag: "The Inter-IC Sound Interface peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE" },
-    { datamodel: "LPCMP", diag: "The Low-Power Comparator peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE" },
-    { datamodel: "PT0", diag: "The Pulse Train Engine PT0 is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE" },
-    { datamodel: "PT1", diag: "The Pulse Train Engine PT1 is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE" },
-    { datamodel: "PT2", diag: "The Pulse Train Engine PT2 is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE" },
-    { datamodel: "PT3", diag: "The Pulse Train Engine PT3 is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE" },
-    { datamodel: "PT4", diag: "The Pulse Train Engine PT4 is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE" },
-    { datamodel: "PT5", diag: "The Pulse Train Engine PT5 is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE" },
-    { datamodel: "PT6", diag: "The Pulse Train Engine PT6 is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE" },
-    { datamodel: "PT7", diag: "The Pulse Train Engine PT7 is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE" },
-    { datamodel: "PT8", diag: "The Pulse Train Engine PT8 is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE" },
-    { datamodel: "PT9", diag: "The Pulse Train Engine PT9 is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE" },
-    { datamodel: "PT10", diag: "The Pulse Train Engine PT10 is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE" },
-    { datamodel: "PT11", diag: "The Pulse Train Engine PT11 is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE" },
-    { datamodel: "PT12", diag: "The Pulse Train Engine PT12 is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE" },
-    { datamodel: "PT13", diag: "The Pulse Train Engine PT13 is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE" },
-    { datamodel: "PT14", diag: "The Pulse Train Engine PT14 is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE" },
-    { datamodel: "PT15", diag: "The Pulse Train Engine PT15 is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE" },
-    { datamodel: "PUF", diag: "The ChipDNA PUF peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE" },
-    { datamodel: "SEMA", diag: "The Semaphore peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE" },
+// Manually added entries: sub-feature and clock-specific warnings.
+const manuallyAddedUnsupportedList = [
     { datamodel: "USBHS", diag: "The USB peripheral CLKEXT clock source is not currently supported in devicetree.", ctrl: "USB_MUX", value: "USBCLKEXT" },
     { datamodel: "USBHS", diag: "The USB peripheral ERFO clock source is not currently supported in devicetree.", ctrl: "USB_MUX", value: "ERFO" },
     { datamodel: "RTC", clocknode: "SQWOUT", diag: "Enabling SQWOUT from the RTC is not currently supported in devicetree.", ctrl: "SQWOUT", value: "1HZ" },
@@ -1003,11 +985,15 @@ unsupported_in_dts = [
     { datamodel: "RTC", clocknode: "SQWOUT", diag: "Enabling SQWOUT from the RTC is not currently supported in devicetree.", ctrl: "SQWOUT", value: "32KHZ" },
     { clocknode: "ERTCO Mux", diag: "Bypass of the ERTCO is not currently supported in devicetree.", ctrl: "MUX", value: "ERTCO_CLK" },
     { clocknode: "ERFO Mux", diag: "Bypass of the ERFO is not currently supported in devicetree.", ctrl: "MUX", value: "ERFO_CLK" },
-    { clocknode: "LPM Mux", diag: "Setting the LPM Mux is not currently supported in devicetree.", ctrl: "MUX", value: "SYS_CLK_DIV_2_ISO" }
-]
+    { clocknode: "LPM Mux", diag: "Setting the LPM Mux is not currently supported in devicetree.", ctrl: "MUX", value: "SYS_CLK_DIV_2_ISO" },
+];
 
-// Add filtered-out peripherals to unsupported_in_dts
-unsupported_in_dts.push(...buildUnsupportedVersionEntries(unsupported));
+// Auto-generated: peripherals not in peripheralData + version-filtered peripherals.
+const { supported, unsupported } = buildUnsupportedZephyrEntries(peripheralData, manuallyAddedUnsupportedList);
+
+// Update peripheralData and unsupported_in_dts
+unsupported_in_dts = unsupported;
+peripheralData = supported;
 
 function mapClockName(clock) {
     if (clock === "CLKEXT") {

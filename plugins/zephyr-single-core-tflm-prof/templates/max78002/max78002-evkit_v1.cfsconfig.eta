@@ -3,12 +3,12 @@
       "CoreId": "CM4",
       "ProjectId": "CM4",
       "PluginId": "com.analog.project.zephyr.plugin",
-      "PluginVersion": "^1.1.0",
+      "PluginVersion": "^1.4.0",
       "FirmwarePlatform": "zephyr",
       "ExternallyManaged": false,
       "PlatformConfig": {
         "ProjectName": "m4",
-        "ZephyrVersion": "4.3.0",
+        "ZephyrVersion": "4.4.2",
         "ZephyrBoardName": "max78002evkit/max78002/m4"
       },
       "Partitions": [
@@ -67,14 +67,14 @@
             {
               "Name": "RX",
               "Config": {
-                "PWR": "VDDIO",
+                "PWR": "VDDIOH",
                 "PS": "WEAK_PU"
               }
             },
             {
               "Name": "TX",
               "Config": {
-                "PWR": "VDDIO"
+                "PWR": "VDDIOH"
               }
             }
           ],
@@ -152,7 +152,7 @@
       "Profiling": {
         "Zephelin": {
           "Enabled": true,
-          "Format": "Text",
+          "Format": "TEXT",
           "Interface": "UART",
           "AIEnabled": true,
           "Port": "UART0",

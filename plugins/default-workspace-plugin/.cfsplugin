@@ -2,7 +2,7 @@
   "pluginName": "Default Workspace Plugin",
   "pluginId": "com.analog.workspace.default.plugin",
   "pluginDescription": "Create a workspace by copying files and processing Eta templates.",
-  "pluginVersion": "1.1.0",
+  "pluginVersion": "1.2.0",
   "schemaVersion": "1.2.0",
   "pluginApiVersion": 1,
   "author": "Analog Devices, Inc.",
@@ -50,6 +50,10 @@
         {
           "src": "files/gdb_toolbox/gdb/fault-analyzer-arm.gdb",
           "dst": ".cfs/gdb_toolbox/gdb/fault-analyzer-arm.gdb"
+        },
+        {
+          "src": "files/gdb_toolbox/gdb/fault-analyzer-xtensa.gdb",
+          "dst": ".cfs/gdb_toolbox/gdb/fault-analyzer-xtensa.gdb"
         },
         {
           "src": "files/gdb_toolbox/gdb/heap-analyzer.gdb",

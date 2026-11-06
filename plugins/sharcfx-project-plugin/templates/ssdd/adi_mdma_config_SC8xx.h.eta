@@ -1,0 +1,152 @@
+<%
+/*********************************************************************************
+
+Copyright(c) 2022-2026 Analog Devices, Inc. All Rights Reserved.
+
+This software is proprietary.  By using this software you agree
+to the terms of the associated Analog Devices License Agreement.
+
+*********************************************************************************/
+%> 
+<% eval(this.render("templates/ssdd/ssdd_common.js")); %>
+<%~ include("@copyrightHeader", it) %> 
+/* This file is generated using the peripheral settings configured using System Planner.
+ * Please do not edit the values here directly.
+ */
+
+/*!
+ * @ingroup  MDMA_Manager
+ * @defgroup MDMA_Config MDMA Service Static Configuration
+ * @{
+ */
+
+/*!
+ * @file    adi_mdma_config_SC8xx.h
+ * @brief   MDMA Service configuration macros for ADSP-SC8xx processor family
+ * @version $Revision$
+ * @date    $Date$
+ * @details This file contains the static configuration macros for the MDMA service.
+ *
+ */
+
+#ifndef ADI_MDMA_CONFIG_SC8XX_H
+#define ADI_MDMA_CONFIG_SC8XX_H
+
+/** @ingroup MDMA_Config
+ *  When this macro is set to 1 (default), the API adi_mdma_Copy1D() uses the most optimum MSIZE value automatically based on the DMA start address
+ *	and count value. The MSIZE value supplied by the user is ignored. Note that bandwidth limit/measure/monitor APIs can't be used with this macro enabled.
+ *  So, the static configuration macro ADI_MDMA_CFG_ENABLE_BANDWIDTH_FUNCTIONS should be set to 0 with this macro enabled.
+ */
+<%
+  var _g_msize_auto = [
+    getAssignedPeripheral("EMDMA0") ? getPeriConfigValueBoolAsInt("EMDMA0", "MSIZE_AUTO", "TRUE") : null,
+    getAssignedPeripheral("EMDMA1") ? getPeriConfigValueBoolAsInt("EMDMA1", "MSIZE_AUTO", "TRUE") : null,
+  ].filter(v => v !== null);
+%> 
+#define ADI_MDMA_CFG_MSIZE_AUTO							(<%= _g_msize_auto.length ? _g_msize_auto[0] : getPeriConfigValueBoolAsInt("EMDMA0", "MSIZE_AUTO", "TRUE") %>u)
+<%
+  if (_g_msize_auto.length > 1 && !_g_msize_auto.every(v => v === _g_msize_auto[0])) {
+%> 
+#error "ADI_MDMA_CFG_MSIZE_AUTO: all assigned EMDMA instances must have the same MSIZE_AUTO setting"
+<% } %> 
+
+/** @ingroup MDMA_Config
+ *	By default, when using the API adi_mdma_CopyList(), the DMA done interrupt in list mode is generated after the end of the last work unit in the descriptor
+ *	list irrespective of the bCallbackWhenDone descriptor parameter. However, the configuration macro ADI_MDMA_CFG_LIST_MULTIPLE_CALLBACKS_ENABLE
+ *	can be set to 1 (set to zero by default) to allow generation of interrupt for more than one descriptors as per the configuration of bCallbackWhenDone parameter.
+ *	Note that enabling this macro might result in a race condition for smaller work units and consequently one or more DMA interrupts might be missed.
+ *  It is user's responsibility to take care of such conditions in the application.
+ */
+<%
+  var _g_list_multiple_callbacks_enable = [
+    getAssignedPeripheral("EMDMA0") ? getPeriConfigValueBoolAsInt("EMDMA0", "LIST_MULTIPLE_CALLBACKS_ENABLE", "FALSE") : null,
+    getAssignedPeripheral("EMDMA1") ? getPeriConfigValueBoolAsInt("EMDMA1", "LIST_MULTIPLE_CALLBACKS_ENABLE", "FALSE") : null,
+  ].filter(v => v !== null);
+%> 
+#define ADI_MDMA_CFG_LIST_MULTIPLE_CALLBACKS_ENABLE		(<%= _g_list_multiple_callbacks_enable.length ? _g_list_multiple_callbacks_enable[0] : getPeriConfigValueBoolAsInt("EMDMA0", "LIST_MULTIPLE_CALLBACKS_ENABLE", "FALSE") %>u)
+<%
+  if (_g_list_multiple_callbacks_enable.length > 1 && !_g_list_multiple_callbacks_enable.every(v => v === _g_list_multiple_callbacks_enable[0])) {
+%> 
+#error "ADI_MDMA_CFG_LIST_MULTIPLE_CALLBACKS_ENABLE: all assigned EMDMA instances must have the same LIST_MULTIPLE_CALLBACKS_ENABLE setting"
+<% } %> 
+
+/** @ingroup MDMA_Config
+ *	This macro should be set to use the APIs adi_mdma_BWLimit()/adi_mdma_BWMonitor()/adi_mdma_BWMeasure().
+ *	This macro should be cleared (default) when ADI_MDMA_CFG_MSIZE_AUTO is set.
+ */
+<%
+  var _g_enable_bandwidth_functions = [
+    getAssignedPeripheral("EMDMA0") ? getPeriConfigValueBoolAsInt("EMDMA0", "ENABLE_BANDWIDTH_FUNCTIONS", "FALSE") : null,
+    getAssignedPeripheral("EMDMA1") ? getPeriConfigValueBoolAsInt("EMDMA1", "ENABLE_BANDWIDTH_FUNCTIONS", "FALSE") : null,
+  ].filter(v => v !== null);
+%> 
+#define ADI_MDMA_CFG_ENABLE_BANDWIDTH_FUNCTIONS			(<%= _g_enable_bandwidth_functions.length ? _g_enable_bandwidth_functions[0] : getPeriConfigValueBoolAsInt("EMDMA0", "ENABLE_BANDWIDTH_FUNCTIONS", "FALSE") %>u)
+<%
+  if (_g_enable_bandwidth_functions.length > 1 && !_g_enable_bandwidth_functions.every(v => v === _g_enable_bandwidth_functions[0])) {
+%> 
+#error "ADI_MDMA_CFG_ENABLE_BANDWIDTH_FUNCTIONS: all assigned EMDMA instances must have the same ENABLE_BANDWIDTH_FUNCTIONS setting"
+<% } %> 
+
+#if defined(__ADSPSHARCFX__)
+/** @ingroup MDMA_Config
+ *	This macro should be set if cache management is required to be done inside MDMA service.
+ *	This macro should be cleared if cache management is not required to be done inside MDMA service.
+ */
+<%
+  var _g_cache_management = [
+    getAssignedPeripheral("EMDMA0") ? getPeriConfigValueBoolAsInt("EMDMA0", "CACHE_MANAGEMENT", "TRUE") : null,
+    getAssignedPeripheral("EMDMA1") ? getPeriConfigValueBoolAsInt("EMDMA1", "CACHE_MANAGEMENT", "TRUE") : null,
+  ].filter(v => v !== null);
+%> 
+#define ADI_MDMA_CACHE_MANAGEMENT						(<%= _g_cache_management.length ? _g_cache_management[0] : getPeriConfigValueBoolAsInt("EMDMA0", "CACHE_MANAGEMENT", "TRUE") %>u)
+<%
+  if (_g_cache_management.length > 1 && !_g_cache_management.every(v => v === _g_cache_management[0])) {
+%> 
+#error "ADI_MDMA_CACHE_MANAGEMENT: all assigned EMDMA instances must have the same CACHE_MANAGEMENT setting"
+<% } %> 
+#elif  defined(__ADSPCORTEXM33__)
+/** @ingroup MDMA_Config
+ *	This macro should be Disabled (=0u) as M33 does not have cache support.
+ *	Please do not change this macro.
+ */
+#define ADI_MDMA_CACHE_MANAGEMENT						(0u)
+#elif  defined(__ADSPCORTEXA55__)
+/** @ingroup MDMA_Config
+ *	This macro should be set if cache management is required to be done inside MDMA service.
+ *	This macro should be cleared if cache management is not required to be done inside MDMA service.
+ */
+<%
+  var _g_cache_management = [
+    getAssignedPeripheral("EMDMA0") ? getPeriConfigValueBoolAsInt("EMDMA0", "CACHE_MANAGEMENT", "TRUE") : null,
+    getAssignedPeripheral("EMDMA1") ? getPeriConfigValueBoolAsInt("EMDMA1", "CACHE_MANAGEMENT", "TRUE") : null,
+  ].filter(v => v !== null);
+%> 
+#define ADI_MDMA_CACHE_MANAGEMENT						(<%= _g_cache_management.length ? _g_cache_management[0] : getPeriConfigValueBoolAsInt("EMDMA0", "CACHE_MANAGEMENT", "TRUE") %>u)
+<%
+  if (_g_cache_management.length > 1 && !_g_cache_management.every(v => v === _g_cache_management[0])) {
+%> 
+#error "ADI_MDMA_CACHE_MANAGEMENT: all assigned EMDMA instances must have the same CACHE_MANAGEMENT setting"
+<% } %> 
+#endif
+
+#if defined(__ADSPSHARCFX__) && defined(__ADSPSC835_FAMILY__)
+/**
+ * Specifies the direct/in-direct interrupt configuration for the MDMA device
+ * (0) - Direct interrupt path is enabled
+ * (1) - SEC/In-direct interrupt path is enabled */
+<%
+  var _g_sec_int = [
+    getAssignedPeripheral("EMDMA0") ? getPeriConfigValueBoolAsInt("EMDMA0", "SEC_INT", "FALSE") : null,
+    getAssignedPeripheral("EMDMA1") ? getPeriConfigValueBoolAsInt("EMDMA1", "SEC_INT", "FALSE") : null,
+  ].filter(v => v !== null);
+%> 
+#define ADI_MDMA_CONFIG_SEC_INT							    (<%= _g_sec_int.length ? _g_sec_int[0] : getPeriConfigValueBoolAsInt("EMDMA0", "SEC_INT", "FALSE") %>u)
+<%
+  if (_g_sec_int.length > 1 && !_g_sec_int.every(v => v === _g_sec_int[0])) {
+%> 
+#error "ADI_MDMA_CONFIG_SEC_INT: all assigned EMDMA instances must have the same SEC_INT setting"
+<% } %> 
+#endif
+#endif /* ADI_MDMA_CONFIG_SC8XX_H */
+
+/*@}*/

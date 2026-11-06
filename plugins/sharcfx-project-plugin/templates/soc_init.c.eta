@@ -1,6 +1,6 @@
 <%
 /**
- * Copyright (c) 2024-2025 Analog Devices, Inc.
+ * Copyright (c) 2024-2026 Analog Devices, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,89 @@
 
 %>
 <%~ include("@copyrightHeader", it) %>
+<% const isFxCore = it.coreId.toLowerCase().includes("fx"); %>
 
 #include <sys/platform.h>
 #include <stdint.h>
+<% if (isFxCore) { %>
+#include <sru.h>
+<% } %>
 
 /* Prototypes for functions in this file.
 */
+<% if (isFxCore) { %>
+int32_t adi_SRU_Init(void);
+<% } %>
 int32_t adi_initpinmux(void);
 
+<% if (isFxCore) { %>
+/*
+ * Initialize the Signal Routing Unit
+ */
+int32_t adi_SRU_Init(void) {
+<%   const connections = it.cfsconfig.Sru?.Connections ?? {}; %>
+<%   const userDescriptions = it.cfsconfig.Sru?.UserDescriptions ?? {}; %>
+<%   const signalAliases = it.cfsconfig.Sru?.SignalAliases ?? {}; %>
+<%   const signalInversions = it.cfsconfig.Sru?.SignalInversions ?? {}; %>
+<%   if (Object.keys(connections).length > 0 || Object.keys(signalInversions).length > 0) { %>
+<%     const signalKey = (signal) => signal.replace(/_/g, ""); %>
+<%     const peripheralBySignal = new Map(); %>
+<%     for (const peripheral of it.datamodel.Peripherals ?? []) { %>
+<%       for (const sruInput of peripheral.SRU?.Inputs ?? []) { %>
+<%         peripheralBySignal.set(signalKey(sruInput.Name), { peripheralName: peripheral.Name, signal: sruInput }); %>
+<%       } %>
+<%     } %>
+<%     /* Appends the signal's alias as an inline comment, when one is configured. */ %>
+<%     const withAlias = (signal) => signalAliases[signal] ? signal + " /* " + signalAliases[signal] + " */" : signal; %>
+<%     /* Only DAI0/DAI1 pin buffer and MISC signals have an _INV_ counterpart; the data model marks them with Config.INVERT. */ %>
+<%     const invertedSignalName = (signal) => signal.replace(/^(DAI\d+)_/, "$1_INV_"); %>
+<%     const groups = new Map(); %>
+<%     const handledInversions = new Set(); %>
+<%     for (const [input, output] of Object.entries(connections)) { %>
+<%       /* Falls back to "Unknown" for stale data-model or manually edited cfsconfig signals. */ %>
+<%       const peripheral = peripheralBySignal.get(signalKey(input))?.peripheralName ?? "Unknown"; %>
+<%       if (!groups.has(peripheral)) { groups.set(peripheral, []); } %>
+<%       const invertible = peripheralBySignal.get(signalKey(input))?.signal.Config?.INVERT; %>
+<%       const hasInversion = invertible && Object.prototype.hasOwnProperty.call(signalInversions, input); %>
+<%       if (hasInversion) { handledInversions.add(input); } %>
+<%       groups.get(peripheral).push({ input, output, inversion: hasInversion ? signalInversions[input] : undefined }); %>
+<%     } %>
+<%     /* Signals with an inversion setting but no routing still need their SRU(HIGH/LOW, ...) call emitted. */ %>
+<%     for (const [input, inversion] of Object.entries(signalInversions)) { %>
+<%       if (!handledInversions.has(input)) { %>
+<%         const invertible = peripheralBySignal.get(signalKey(input))?.signal.Config?.INVERT; %>
+<%         if (invertible) { %>
+<%           const peripheral = peripheralBySignal.get(signalKey(input))?.peripheralName ?? "Unknown"; %>
+<%           if (!groups.has(peripheral)) { groups.set(peripheral, []); } %>
+<%           groups.get(peripheral).push({ input, inversion }); %>
+<%         } %>
+<%       } %>
+<%     } %>
+<%     for (const [peripheral, entries] of groups) { %>
+  /* SRU connections for <%= peripheral %> */
+<%       for (const entry of entries) { %>
+<%         if (entry.output !== undefined) { %>
+<%           const userDesc = userDescriptions[entry.input]; %>
+<%           if (userDesc) { %>
+  SRU(<%= withAlias(entry.output) %>, <%= withAlias(entry.input) %>); /* <%= userDesc %> */
+<%           } else { %>
+  SRU(<%= withAlias(entry.output) %>, <%= withAlias(entry.input) %>);
+<%           } %>
+<%         } %>
+<%         if (entry.inversion !== undefined) { %>
+  SRU(<%= entry.inversion ? "HIGH" : "LOW" %>, <%= invertedSignalName(entry.input) %>); /* <%= entry.inversion ? "Inverted" : "Not inverted" %> */
+<%         } %>
+<%       } %>
+
+<%     } %>
+<%   } else { %>
+  /* SRU configuration in default state. */
+
+<%   } %>
+  return 0;
+}
+
+<% } %>
 int32_t adi_initpinmux(void) {
 <% if (it.cfsconfig.Pins.length > 0) { %>
 <%   for (const pin of it.cfsconfig.Pins) { %>

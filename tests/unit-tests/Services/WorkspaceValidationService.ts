@@ -13,6 +13,7 @@
  *
  */
 
+import { readFile } from "node:fs/promises";
 import { expect } from "chai";
 import fg from "fast-glob";
 import type { CfsWorkspace } from "cfs-types";
@@ -125,5 +126,43 @@ export class WorkspaceValidationService {
       unexpectedDirs.size,
       `Unexpected top-level directories found: [${[...unexpectedDirs].join(", ")}]. Only "${expectedCoreDir}/" expected for SOC "${workspace.soc}"`,
     ).to.equal(0);
+  }
+
+  /**
+   * Validates the generated fault-analyzer gdb_toolbox config by parsing it and
+   * asserting the declared architectures and the exact architecture-aware
+   * source command. Guards against a typo in the `{arch}` placeholder or a
+   * regression back to an architecture-specific command.
+   *
+   * @param workspace - The workspace that was generated
+   * @param expectedArch - The architectures the config is expected to declare
+   */
+  public async validateFaultAnalyzerConfig(
+    workspace: CfsWorkspace,
+    expectedArch: string[],
+  ): Promise<void> {
+    const configPath = joinPath(
+      workspace.location,
+      workspace.workspaceName,
+      ".cfs",
+      "gdb_toolbox",
+      "configs",
+      "fault-analyzer.json",
+    );
+
+    const config = JSON.parse(await readFile(configPath, "utf-8")) as {
+      arch: string[];
+      commands: { command: string }[];
+    };
+
+    expect(
+      config.arch,
+      `fault-analyzer.json should declare arch [${expectedArch.join(", ")}]`,
+    ).to.deep.equal(expectedArch);
+
+    expect(
+      config.commands[0]?.command,
+      "fault-analyzer.json should source the architecture-aware gdb script",
+    ).to.equal("source {defaultScriptsDirectory}/fault-analyzer-{arch}.gdb");
   }
 }

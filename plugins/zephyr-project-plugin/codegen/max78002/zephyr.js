@@ -34,7 +34,7 @@ peripheralData = [
         { name: "idle-count", type: "int", control: "IDLE_CNT", cfg_default: "0" }
       ]},
     { zephyr: "dma0", datamodel: "DMA", enable: "ENABLE"},
-    { zephyr: "flc0", datamodel: "FLC0"},
+    { zephyr: "flc0", datamodel: "FLC0", cores: ["CM4"]},
     { zephyr: "i2c0", datamodel: "I2C0", enable: "I2C0_ENABLE",
       pins: [
           { signal: "SDA", pin: "D8", name: "i2c0_sda_p0_11"},
@@ -167,7 +167,7 @@ peripheralData = [
       config: [
           { name: "prescaler", type: "int", control: "CLKDIV_A", cfg_default: "1"}
       ]},
-    { zephyr: "timer3", datamodel: "TMR3", enable: "TMR3_ENABLE", clock_mux : "TMR3a_MUX", clock_default : "PCLK",
+    { zephyr: "timer3", datamodel: "TMR3", enable: "TMR3_ENABLE", clock_mux : "TMR3a_MUX", clock_default : "PCLK", cores: ["CM4"],
       pins: [
           { signal: "IOA", pin: "K8", name: "tmr3a_ioa_p1_6"},
           { signal: "IOB", pin: "L8", name: "tmr3a_iob_p1_7"},
@@ -241,33 +241,17 @@ peripheralData = [
     { zephyr: "wut0", datamodel: "WUT", zephyrVersionMin: "4.3.0"}
 ];
 
-// Filter peripheralData based on zephyrVersionMin/zephyrVersionMax.
-// Entries outside the supported range are removed and later added to unsupported_in_dts.
-const { supported, unsupported } = filterByZephyrVersion(peripheralData);
+// Filter peripheralData based on the current core.
+// Entries with a `cores` array are only included if the current core matches.
+const currentCoreId = getProject()?.CoreId;
+if (currentCoreId) {
+    peripheralData = peripheralData.filter(p => !p.cores || p.cores.includes(currentCoreId));
+}
 
-// Replace peripheralData with only the supported peripherals so the template
-// does not generate code for peripherals filtered out by version constraints.
-peripheralData = supported;
-
-unsupported_in_dts = [
-  {datamodel: "AES", diag: "The Advanced Encryption Standard is not currently supported in devicetree.", ctrl: "AES_ENABLE", value: "TRUE"},
-  {datamodel: "CNN", diag: "The Convolutional Neural Network peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
+// Manually added entries: sub-feature and clock-specific warnings.
+const manuallyAddedUnsupportedList = [
   {datamodel: "CNN", clocknode: "CNN Mux", diag: "The Convolutional Neural Network peripheral is not currently supported in devicetree.", ctrl: "MUX", value: "SYS_CLK"},
   {datamodel: "CNN", clocknode: "CNN PRESCALER", diag: "The Convolutional Neural Network peripheral is not currently supported in devicetree.", ctrl: "DIV", value: "2"},
-  {datamodel: "CRC", diag: "The Cyclic Redundancy Check peripheral is not currently supported in devicetree.", ctrl: "CRC_ENABLE", value: "TRUE"},
-  {datamodel: "CSI2", diag: "The Camera Interface peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-  {datamodel: "I2S0", diag: "The Inter-IC Sound Interface peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-  {datamodel: "LPCMP", diag: "The Low-Power Comparator peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-  {datamodel: "PCIF", diag: "The Parallel Camera Interface peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-  {datamodel: "PT0", diag: "The Pulse Train Engine 0 peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-  {datamodel: "PT1", diag: "The Pulse Train Engine 1 peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-  {datamodel: "PT2", diag: "The Pulse Train Engine 2 peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-  {datamodel: "PT3", diag: "The Pulse Train Engine 3 peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-  {datamodel: "PTG", diag: "The Pulse Train Engines peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-  {datamodel: "SDHC", diag: "The Secure Digital Host Controller peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-  {datamodel: "SEMA", diag: "The Semaphore peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-  {datamodel: "SIMO", diag: "The Single Inductor Multiple Output Power Supply peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
-  {datamodel: "USBHS", clocknode: "High-Speed USB", diag: "The High-Speed USB peripheral is not currently supported in devicetree.", ctrl: "ENABLE", value: "TRUE"},
   {datamodel: "USBHS", clocknode: "High-Speed USB DIV", diag: "The High-Speed USB peripheral is not currently supported in devicetree.", ctrl: "DIV", value: "10"},
   {datamodel: "RTC", clocknode: "SQWOUT", diag: "Enabling SQWOUT from the RTC is not currently supported in devicetree.", ctrl: "SQWOUT", value: "1HZ"},
   {datamodel: "RTC", clocknode: "SQWOUT", diag: "Enabling SQWOUT from the RTC is not currently supported in devicetree.", ctrl: "SQWOUT", value: "512HZ"},
@@ -275,11 +259,15 @@ unsupported_in_dts = [
   {datamodel: "RTC", clocknode: "SQWOUT", diag: "Enabling SQWOUT from the RTC is not currently supported in devicetree.", ctrl: "SQWOUT", value: "32KHZ"},
   {clocknode: "ERTCO Mux", diag: "Bypass of the ERTCO is not currently supported in devicetree.", ctrl: "MUX", value: "ERTCO_CLK"},
   {clocknode: "ERFO Mux", diag: "Bypass of the ERFO is not currently supported in devicetree.", ctrl: "MUX", value: "ERFO_CLK"},
-  {clocknode: "LPM Mux", diag: "Setting the LPM Mux is not currently supported in devicetree.", ctrl: "MUX", value: "SYS_CLK_DIV_2_ISO"}
+  {clocknode: "LPM Mux", diag: "Setting the LPM Mux is not currently supported in devicetree.", ctrl: "MUX", value: "SYS_CLK_DIV_2_ISO"},
 ];
 
-// Add filtered-out peripherals to unsupported_in_dts
-unsupported_in_dts.push(...buildUnsupportedVersionEntries(unsupported));
+// Auto-generated: peripherals not in peripheralData + version-filtered peripherals.
+const { supported, unsupported } = buildUnsupportedZephyrEntries(peripheralData, manuallyAddedUnsupportedList);
+
+// Update peripheralData and unsupported_in_dts
+unsupported_in_dts = unsupported;
+peripheralData = supported;
 
 function mapClockName(clock) {
     if (clock === "P0.3") {

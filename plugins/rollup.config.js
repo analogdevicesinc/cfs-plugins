@@ -18,6 +18,29 @@ const getTopLevelDir = (globPath) => {
     : normalizedPath.slice(0, firstSlashIdx);
 };
 
+const sharedAssets = [
+  {
+    src: ["common/sharcfx/scripts/**"],
+    appliesTo: (dir) => dir.startsWith("sharcfx-")
+  },
+  {
+    src: ["common/gdb_toolbox/**"],
+    appliesTo: () => true
+  },
+  {
+    src: [
+      "common/sharcfx-qemu/scripts/**",
+      "common/sharcfx-qemu/templates/**"
+    ],
+    appliesTo: (dir) => dir.startsWith("sharcfx-")
+  }
+];
+
+const getSharedAssetTargets = (dir) =>
+  sharedAssets
+    .filter(({ appliesTo }) => appliesTo(dir))
+    .map(({ src }) => ({ src, dest: `dist/${dir}/files/` }));
+
 const config = async () => {
   const files = await fg.glob("./**/*.ts", {
     ignore: ["./**/dist/**", "./**/*.test.ts"],
@@ -48,10 +71,7 @@ const config = async () => {
           src: [`${dir}/**`, `!${dir}/**/*.ts`],
           dest: `dist/${dir}`
         },
-        {
-          src: ["common/gdb_toolbox/**"],
-          dest: `dist/${dir}/files/` // Copy gdb_toolbox into files
-        }
+        ...getSharedAssetTargets(dir)
       ];
 
       const copyPlugin = isDirectory
@@ -124,10 +144,7 @@ const config = async () => {
           copy({
             targets: [
               { src: [`${dir}/**`], dest: `dist/${dir}` },
-              {
-                src: ["common/gdb_toolbox/**"],
-                dest: `dist/${dir}/files`
-              }
+              ...getSharedAssetTargets(dir)
             ],
             dot: true,
             flatten: false,

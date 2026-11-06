@@ -2,7 +2,7 @@
   "pluginName": "MSDK Single Core Coremark",
   "pluginDescription": "Determines the Coremark rating for the MAX32xxx and MAX78xxx series microcontrollers.",
   "pluginId": "com.analog.singlecore.msdk.coremark",
-  "pluginVersion": "1.0.0",
+  "pluginVersion": "1.1.0",
   "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "MSDK",

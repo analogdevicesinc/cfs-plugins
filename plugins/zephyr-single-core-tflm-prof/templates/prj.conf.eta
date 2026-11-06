@@ -25,6 +25,9 @@
 
 CONFIG_GPIO=y
 
+# set numbers of event up to 256
+CONFIG_ZPL_TFLM_PROFILER_MAX_EVENTS=256
+
 # Build for debug by default, leaving optimization enabled due to library size
 CONFIG_DEBUG=y
 
@@ -33,7 +36,7 @@ CONFIG_THREAD_NAME=y
 CONFIG_DEBUG_THREAD_INFO=y
 CONFIG_THREAD_ANALYZER=y
 
-<% if (["MAX32690", "MAX32657", "MAX32658"].includes(it.projectInflectionPoint(it.soc))) { %>
+<% if (["MAX32690", "MAX32657", "MAX78002"].includes(it.projectInflectionPoint(it.soc))) { %>
 # Enable Zephyr core dump support
 CONFIG_DEBUG_COREDUMP=y
 CONFIG_DEBUG_COREDUMP_BACKEND_FLASH_PARTITION=y
@@ -44,7 +47,7 @@ CONFIG_LOG=y
 
 CONFIG_HEAP_MEM_POOL_SIZE=8192
 CONFIG_MAIN_STACK_SIZE=16384
-
+CONFIG_REQUIRES_FLOAT_PRINTF=y
 
 # Enable flash support
 CONFIG_FLASH=y

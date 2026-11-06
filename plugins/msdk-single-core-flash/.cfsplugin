@@ -2,7 +2,7 @@
   "pluginName": "MSDK Single Core Flash",
   "pluginDescription": "Demonstrates the usage of the Flash Controller (FLC) for general purpose storage.",
   "pluginId": "com.analog.singlecore.msdk.flash",
-  "pluginVersion": "1.0.0",
+  "pluginVersion": "1.1.0",
   "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "MSDK",

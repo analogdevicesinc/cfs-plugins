@@ -1,9 +1,0 @@
-<%~ include("@copyrightHeader", it) %>
-
-cmake_minimum_required(VERSION 3.20.0)
-
-# Set the project name
-project(<%= it.name %>)
-
-# Define the executable target and add source files
-add_executable(app src/main.c)

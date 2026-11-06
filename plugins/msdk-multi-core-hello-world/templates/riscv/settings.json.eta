@@ -11,6 +11,7 @@
   "cfs.debugPath": "${workspaceFolder}/../m4/build/buildrv/",
   "cfs.configureWorkspace": "Yes",
   "cfs.project.firmwarePlatform": "MSDK",
+  "cfs.project.toolchain.id": "xpack.riscv.none.elf.toolchain",
   "cfs.openocd.target": "target/<%= it.openocdInflectionPoint(it.soc).toLowerCase() %>_riscv.cfg",
   "cfs.openocd.interface": "interface/ftdi/olimex-arm-usb-ocd-h.cfg",
   "cfs.cmsis.svdFile": "${command:cfs.tool.path.msdk}/Libraries/CMSIS/Device/Maxim/<%= it.msdkInflectionPoint(it.soc) %>/Include/<%= it.msdkInflectionPoint(it.soc).toLowerCase() %>.svd"

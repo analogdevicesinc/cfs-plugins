@@ -13,7 +13,7 @@
       "CoreId": "FX",
       "ProjectId": "FX",
       "PluginId": "com.analog.project.sharcfx.plugin",
-      "PluginVersion": "^1.1.0",
+      "PluginVersion": "^1.3.0",
       "ExternallyManaged": false,
       "Partitions": [
         {
@@ -141,7 +141,7 @@
       "CoreId": "CM33",
       "ProjectId": "CM33",
       "PluginId": "com.analog.project.sharcfx.plugin",
-      "PluginVersion": "^1.1.0",
+      "PluginVersion": "^1.3.0",
       "ExternallyManaged": true,
       "Partitions": [],
       "Peripherals": [],

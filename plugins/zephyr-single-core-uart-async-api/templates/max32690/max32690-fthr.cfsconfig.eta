@@ -66,7 +66,7 @@
       "CoreId": "CM4",
       "ProjectId": "CM4",
       "PluginId": "com.analog.project.zephyr.plugin",
-      "PluginVersion": "^1.1.0",
+      "PluginVersion": "^1.4.0",
       "FirmwarePlatform": "zephyr",
       "ExternallyManaged": false,
       "Partitions": [
@@ -226,11 +226,16 @@
           "Name": "FLC0",
           "Signals": [],
           "Config": {}
+        },
+        {
+          "Name": "FLC1",
+          "Signals": [],
+          "Config": {}
         }
       ],
       "PlatformConfig": {
         "ProjectName": "m4",
-        "ZephyrVersion": "4.3.0",
+        "ZephyrVersion": "4.4.2",
         "ZephyrBoardName": "max32690fthr/max32690/m4",
         "EnableCoreDump": true
       }

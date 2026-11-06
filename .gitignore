@@ -2,6 +2,9 @@
 *-error.log
 node_modules
 
+# Local test env (machine-specific); .env.example is the committed template
+.env
+
 # Yarn
 .yarn/*
 !.yarn/cache
@@ -16,6 +19,7 @@ tsconfig.tsbuildinfo
 plugins/dist
 tests/unit-tests/**/data
 !tests/unit-tests/mock_cfs/Data
+data-models/
 .rollup.cache
 plugins/.rollup.cache
 .DS_Store

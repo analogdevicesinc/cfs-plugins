@@ -145,7 +145,7 @@
 <% } %>
 <%~ include("../adc_sd10_config.c.eta", { ...it, instance: "ADC", clock: "PeripheralClock", enable: "ENABLE" }) %>
 <%~ include("../owm_config.c.eta", { ...it, instance: "OWM", enable: "ENABLE" }) %>
-<%~ include("../spi_config.c.eta", { ...it, instance: "SPI0", enable: "ENABLE" }) %>
+<%~ include("../spi_config.c.eta", { ...it, instance: "SPI0", clock: "SystemCoreClock", enable: "ENABLE" }) %>
 <%~ include("../spi_config.c.eta", { ...it, instance: "SPI1", clock: "PeripheralClock", enable: "SPI1_ENABLE" }) %>
 <%~ include("../spi_config.c.eta", { ...it, instance: "SPI2", clock: "PeripheralClock", enable: "SPI2_ENABLE" }) %>
 <%~ include("../uart_config.c.eta", { ...it, instance: "UART0", enable: "UART0_ENABLE", mux: "UART0_MUX", clock_default: "PCLK" }) %>

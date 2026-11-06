@@ -35,3 +35,10 @@
 };
 
 <% } %>
+<% if (isSystemClockSet("EXT_CLK2", "P0_12_FREQ") && compareZephyrVersion("4.4.0") >= 0) { %>
+&clk_extclk2 {
+	clock-frequency = <<%= getClockSetting("EXT_CLK2", "P0_12_FREQ") %>>;
+	status = "okay";
+};
+
+<% } %>

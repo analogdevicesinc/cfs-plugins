@@ -4,6 +4,13 @@
 # Build type (default to Debug)
 DEBUG ?= 1
 
+V ?= 0
+ifeq ($(V),1)
+Q =
+else
+Q = @
+endif
+
 # Compiler and linker settings
 CC = arm-none-eabi-gcc
 CPP = arm-none-eabi-cpp
@@ -16,6 +23,7 @@ CXXFLAGS = -ffunction-sections -fdata-sections -mcpu=cortex-m33 -mthumb -mfpu=fp
 		   -Wall -c -DCORE2 -DOTHERCORE -D<%= it.processorMacro(it.soc) %> -D__SILICON_REVISION__=0x0
 LDFLAGS = -Wl,--gc-sections -mcpu=cortex-m33 -mthumb -specs=rdimon.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard \
 		  -Wl,--no-warn-rwx-segments
+DEPFLAGS = -MMD -MP
 
 #=============================================================================
 # SOURCE DIRECTORIES CONFIGURATION
@@ -25,17 +33,24 @@ LDFLAGS = -Wl,--gc-sections -mcpu=cortex-m33 -mthumb -specs=rdimon.specs -mfpu=f
 WS_DIRS = src src/system
 
 # External source directories (absolute paths)
-# FIXME: This Makefile needs to know where to find the files 
-EXTERNAL_SRC_DIRS = $(SDK_PATH)/SDK/SHARC-FX/ARM/packs/AnalogDevices/ADSP-SC83x_DFP/2.0.0/Source
+ADSP_SC83X_DFP_ROOT ?= $(patsubst %/Source/.,%,$(wildcard $(SDK_PATH)/packs/AnalogDevices/ADSP-SC83x_DFP/*/Source/.))
+ifneq ($(if $(MAKECMDGOALS),$(filter-out clean clean-all help,$(MAKECMDGOALS)),all),)
+ifneq ($(words $(ADSP_SC83X_DFP_ROOT)),1)
+$(error Expected exactly one ADSP-SC83x_DFP pack under $(SDK_PATH)/packs/AnalogDevices; set ADSP_SC83X_DFP_ROOT explicitly)
+endif
+ifeq ($(and $(wildcard $(ADSP_SC83X_DFP_ROOT)/Source/.),$(wildcard $(ADSP_SC83X_DFP_ROOT)/Include/.)),)
+$(error ADSP-SC83x_DFP pack must contain Source and Include directories: $(ADSP_SC83X_DFP_ROOT))
+endif
+endif
+EXTERNAL_SRC_DIRS = $(ADSP_SC83X_DFP_ROOT)/Source
 
 # External include directories (absolute paths)
 EXTERNAL_INCLUDE_DIRS = 
 
 # Fixed include directories (absolute paths that don't contain source files)
-# FIXME: This Makefile needs to know where to find the files 
 FIXED_INCLUDES = \
-	-I"$(SDK_PATH)/SDK/MAX/Libraries/CMSIS/5.9.0/Core/Include" \
-	-I"$(SDK_PATH)/SDK/SHARC-FX/ARM/packs/AnalogDevices/ADSP-SC83x_DFP/2.0.0/Include"
+	-I"$(SDK_PATH)/packs/ARM/CMSIS/5.9.0/CMSIS/Core/Include" \
+	-I"$(ADSP_SC83X_DFP_ROOT)/Include"
 #=============================================================================
 # BUILD CONFIGURATION
 #=============================================================================
@@ -59,12 +74,18 @@ OBJ_DIR = $(BUILD_DIR)/obj
 # Project name
 PROJECT ?= m33
 
+# Include project-specific source selections, including SSDD drivers.
+CONFIGMK ?= $(abspath ./config.mk)
+-include $(CONFIGMK)
+
 #=============================================================================
 # DYNAMIC SOURCE DISCOVERY
 #=============================================================================
 
 # Function to normalize path for variable names (replace / and : with _)
 normalize_path = $(subst :,_,$(subst /,_,$(subst \,_,$(1))))
+DFP_SOURCE_DIR = $(subst \,/,$(firstword $(EXTERNAL_SRC_DIRS)))
+display_path = $(if $(and $(SSDD_BASE),$(filter $(subst \,/,$(SSDD_BASE))/%,$(subst \,/,$(1)))),SSDD/$(patsubst $(subst \,/,$(SSDD_BASE))/%,%,$(subst \,/,$(1))),$(if $(and $(DFP_SOURCE_DIR),$(filter $(DFP_SOURCE_DIR)/%,$(subst \,/,$(1)))),DFP/$(patsubst $(DFP_SOURCE_DIR)/%,%,$(subst \,/,$(1))),$(subst \,/,$(1))))
 
 # Discover workspace source files
 define discover_ws_sources
@@ -81,8 +102,8 @@ $(foreach dir,$(EXTERNAL_SRC_DIRS),$(wildcard $(dir)/*.c $(dir)/*.cc $(dir)/*.cp
 endef
 
 # Get all external source files
-EXT_C_SRCS = $(filter %.c,$(call discover_ext_sources))
-EXT_CXX_SRCS = $(filter %.cc %.cpp,$(call discover_ext_sources))
+EXT_C_SRCS = $(filter %.c,$(call discover_ext_sources)) $(SSDD_C_SRCS)
+EXT_CXX_SRCS = $(filter %.cc %.cpp,$(call discover_ext_sources)) $(SSDD_CXX_SRCS)
 
 # Combined source files
 C_SRCS = $(WS_C_SRCS) $(EXT_C_SRCS)
@@ -108,9 +129,6 @@ INCLUDES = $(BASE_INCLUDES) $(EXTERNAL_INCLUDES) $(FIXED_INCLUDES)
 #=============================================================================
 .DEFAULT_GOAL := all
 
-.PHONY: all
-all: $(TARGET)
-
 #=============================================================================
 # OBJECT FILE GENERATION
 #=============================================================================
@@ -128,9 +146,37 @@ EXT_CXX_OBJS = $(foreach src,$(EXT_CXX_SRCS),$(OBJ_DIR)/ext/$(call normalize_pat
 
 # All object files
 ALL_OBJS = $(WS_C_OBJS) $(WS_CXX_OBJS) $(EXT_C_OBJS) $(EXT_CXX_OBJS)
+DEP_FILES = $(ALL_OBJS:.o=.d)
+CONFIGMK_DEPS = $(wildcard $(CONFIGMK))
 
-# Target executable
-TARGET = $(BUILD_DIR)/$(PROJECT).elf
+#=============================================================================
+# ARTIFACT CONFIGURATION
+#=============================================================================
+
+# Artifact type (overridable via make ARTIFACT_TYPE=...)
+# Valid values: executable, static_library, binary, hex
+ARTIFACT_TYPE ?= executable
+
+.PHONY: check_debug
+
+ifneq ($(ARTIFACT_TYPE),executable)
+check_debug:
+	$(error Launch is unavailable because the current artifact type is '$(ARTIFACT_TYPE)'. Select 'executable' to launch.)
+else
+check_debug: all
+endif
+
+# Tools
+AR = arm-none-eabi-ar
+ARFLAGS = rc
+OBJCOPY = arm-none-eabi-objcopy
+
+# Output file paths
+ELF = $(BUILD_DIR)/$(PROJECT).elf
+LIB = $(BUILD_DIR)/lib$(PROJECT).a
+BIN = $(BUILD_DIR)/$(PROJECT).bin
+HEX = $(BUILD_DIR)/$(PROJECT).hex
+LINK_INPUT_FILE = $(BUILD_DIR)/input-file.txt
 
 # Linker script handling
 LD_SCRIPT_IN = ADSP-SC83x.ld
@@ -148,43 +194,45 @@ LD_SCRIPT = $(BUILD_DIR)/$(PROJECT).ld
 #=============================================================================
 
 # Workspace C files
-$(OBJ_DIR)/%.o: %.c
-	@echo "Invoking: CodeFusion GCC ARM Embedded C Compiler"
+$(OBJ_DIR)/%.o: %.c $(CONFIGMK_DEPS)
+	@echo "CC $(call display_path,$<)"
 	@mkdir -p $(dir $@)
-	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+	$(Q)$(CC) $(CFLAGS) $(DEPFLAGS) $(INCLUDES) -c $< -o $@
 
 # Workspace C++ files
-$(OBJ_DIR)/%.o: %.cc
-	@echo "Invoking: CodeFusion GCC ARM Embedded C++ Compiler"
+$(OBJ_DIR)/%.o: %.cc $(CONFIGMK_DEPS)
+	@echo "CXX $(call display_path,$<)"
 	@mkdir -p $(dir $@)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+	$(Q)$(CXX) $(CXXFLAGS) $(DEPFLAGS) $(INCLUDES) -c $< -o $@
 
-$(OBJ_DIR)/%.o: %.cpp
-	@echo "Invoking: CodeFusion GCC ARM Embedded C++ Compiler"
+$(OBJ_DIR)/%.o: %.cpp $(CONFIGMK_DEPS)
+	@echo "CXX $(call display_path,$<)"
 	@mkdir -p $(dir $@)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -c $< -o $@
+	$(Q)$(CXX) $(CXXFLAGS) $(DEPFLAGS) $(INCLUDES) -c $< -o $@
 
 
 
 # External C files - more explicit rule with proper prerequisites
 define ext_c_rule
-$(OBJ_DIR)/ext/$(call normalize_path,$(dir $(1)))$(notdir $(patsubst %.c,%.o,$(1))): $(1)
-	@echo "Invoking: CodeFusion GCC ARM Embedded C Compiler"
+$(OBJ_DIR)/ext/$(call normalize_path,$(dir $(1)))$(notdir $(patsubst %.c,%.o,$(1))): $(1) $(CONFIGMK_DEPS)
+	@echo "CC $$(call display_path,$$<)"
 	@mkdir -p $$(dir $$@)
-	$$(CC) $$(CFLAGS) $$(INCLUDES) -c $$< -o $$@
+	$$(Q)$$(CC) $$(CFLAGS) $$(DEPFLAGS) $$(INCLUDES) -c $$< -o $$@
 endef
 
 # External C++ files - more explicit rule with proper prerequisites
 define ext_cxx_rule
-	$(OBJ_DIR)/ext/$(call normalize_path,$(dir $(1)))$(notdir $(patsubst $(suffix $(1)),%.o,$(1))): $(1)
-	@echo "Invoking: CodeFusion GCC ARM Embedded C++ Compiler"
+	$(OBJ_DIR)/ext/$(call normalize_path,$(dir $(1)))$(notdir $(patsubst $(suffix $(1)),%.o,$(1))): $(1) $(CONFIGMK_DEPS)
+	@echo "CXX $$(call display_path,$$<)"
 	@mkdir -p $$(dir $$@)
-	$$(CXX) $$(CXXFLAGS) $$(INCLUDES) -c $$< -o $$@
+	$$(Q)$$(CXX) $$(CXXFLAGS) $$(DEPFLAGS) $$(INCLUDES) -c $$< -o $$@
 endef
 
 # Generate rules for each external source file
 $(foreach src,$(EXT_C_SRCS),$(eval $(call ext_c_rule,$(src))))
 $(foreach src,$(EXT_CXX_SRCS),$(eval $(call ext_cxx_rule,$(src)))) 
+
+-include $(DEP_FILES)
 
 
 #=============================================================================
@@ -192,11 +240,10 @@ $(foreach src,$(EXT_CXX_SRCS),$(eval $(call ext_cxx_rule,$(src))))
 #=============================================================================
 
 # Preprocess linker script
-$(LD_SCRIPT): $(LD_SCRIPT_IN)
+$(LD_SCRIPT): $(LD_SCRIPT_IN) | $(BUILD_DIR)
 	@echo ""
-	@echo "Preprocessing linker script: $(notdir $@)"
-	@mkdir -p $(BUILD_DIR)
-	$(CPP) -E -P -DCORE2 -DOTHERCORE -DDEBUG -D<%= it.processorMacro(it.soc) %> -D__SILICON_REVISION__=0x0 \
+	@echo "CPP $(call display_path,$<)"
+	$(Q)$(CPP) -E -P -DCORE2 -DOTHERCORE -DDEBUG -D<%= it.processorMacro(it.soc) %> -D__SILICON_REVISION__=0x0 \
 	$(INCLUDES) $< -o $@
 
 # Include the makefile for model source files, if present. This is done after
@@ -207,16 +254,47 @@ sinclude aimodels.mk
 # BUILD TARGETS
 #=============================================================================
 
-# Default target
-.PHONY: all
+# Default target — dispatches based on ARTIFACT_TYPE
+.PHONY: all link
+
+ifeq ($(ARTIFACT_TYPE),static_library)
+all: $(LIB)
+else ifeq ($(ARTIFACT_TYPE),binary)
+all: $(BIN)
+else ifeq ($(ARTIFACT_TYPE),hex)
+all: $(HEX)
+else ifeq ($(ARTIFACT_TYPE),executable)
 all: link
+else
+$(error Unsupported ARTIFACT_TYPE "$(ARTIFACT_TYPE)"; expected executable, static_library, binary, or hex)
+endif
 
-# Linking step
-link: $(TARGET)
+# Executable (ELF)
+link: $(ELF)
 
-$(TARGET): $(ALL_OBJS) $(LD_SCRIPT)
-	@echo "Invoking: CodeFusion GCC ARM Embedded C Linker"
-	$(LD) $(ALL_OBJS) $(LDFLAGS)  -T$(LD_SCRIPT) -o $(BUILD_DIR)/$(PROJECT) -lm
+$(BUILD_DIR):
+	@mkdir -p $@
+
+$(ELF): $(ALL_OBJS) $(LD_SCRIPT) $(CONFIGMK_DEPS) | $(BUILD_DIR)
+	@echo "LD $@"
+	$(file >$(LINK_INPUT_FILE),)$(foreach obj,$(ALL_OBJS),$(file >>$(LINK_INPUT_FILE),$(obj)))
+	$(Q)$(LD) @$(LINK_INPUT_FILE) $(LDFLAGS) -T$(LD_SCRIPT) -o $(ELF) -lm
+
+# Static library (.a)
+$(LIB): $(ALL_OBJS) $(CONFIGMK_DEPS) | $(BUILD_DIR)
+	@echo "AR $@"
+	@rm -f $(LIB)
+	$(Q)$(AR) $(ARFLAGS) $(LIB) $(ALL_OBJS)
+
+# Binary (.bin) — links executable then converts
+$(BIN): $(ELF)
+	@echo "OBJCOPY $@"
+	$(Q)$(OBJCOPY) -O binary $(ELF) $(BIN)
+
+# Intel HEX (.hex) — links executable then converts
+$(HEX): $(ELF)
+	@echo "OBJCOPY $@"
+	$(Q)$(OBJCOPY) -O ihex $(ELF) $(HEX)
 
 # Build type targets
 .PHONY: debug release
@@ -238,7 +316,8 @@ info:
 	@echo "=================================="
 	@echo "Project: $(PROJECT)"
 	@echo "Build Type: $(BUILD_TYPE)"
-	@echo "Target: $(TARGET)"
+	@echo "Artifact Type: $(ARTIFACT_TYPE)"
+	@echo "Target: $(ELF)"
 	@echo "Build Dir: $(BUILD_DIR)"
 	@echo "Object Dir: $(OBJ_DIR)"
 	@echo "DEBUG flag: $(DEBUG)"
@@ -336,7 +415,8 @@ rebuild: clean all
 .PHONY: help
 help:
 	@echo "Available targets:"
-	@echo "  all (default) - Build the project"
+	@echo "  all (default) - Build the project (based on ARTIFACT_TYPE)"
+	@echo "  link          - Build executable (ELF)"
 	@echo "  debug         - Build in debug mode"
 	@echo "  release       - Build in release mode"
 	@echo "  clean         - Clean current build type"
@@ -347,9 +427,15 @@ help:
 	@echo "  show-external - Show external source directories and files"
 	@echo "  list-objs     - List all object files"
 	@echo "  help          - Show this help"
-	@echo
+	@echo ""
+	@echo "Artifact types (set via ARTIFACT_TYPE=...):"
+	@echo "  executable      - Executable (ELF) [default]"
+	@echo "  static_library  - Static library (.a)"
+	@echo "  binary          - Raw binary (.bin)"
+	@echo "  hex             - Intel HEX (.hex)"
+	@echo ""
 	@echo "Configuration:"
 	@echo "  RTE_DIR has been ported to: c:/source"
 	@echo "  To add more external source directories:"
 	@echo "    Edit EXTERNAL_SRC_DIRS and EXTERNAL_INCLUDE_DIRS at the top"
-	@echo "    Example: EXTERNAL_SRC_DIRS += c:/path/to/source/directory" 
+	@echo "    Example: EXTERNAL_SRC_DIRS += c:/path/to/source/directory"

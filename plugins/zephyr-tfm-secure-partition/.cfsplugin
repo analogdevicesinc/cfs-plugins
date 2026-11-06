@@ -2,7 +2,7 @@
   "pluginName": "TF-M Secure Partition",
   "pluginDescription": "Zephyr TF-M secure partition template.",
   "pluginId": "com.analog.zephyr.tfmsecurepartition",
-  "pluginVersion": "1.3.0",
+  "pluginVersion": "1.4.0",
   "schemaVersion": "1.2.0",
   "author": "Analog Devices, Inc.",
   "firmwarePlatform": "zephyr",
@@ -135,43 +135,5 @@
         }
       ]
     }
-  },
-  "properties": {
-    "workspace": [
-      {
-        "id": "MCUbootImgtoolPath",
-        "name": "MCUboot Imgtool Path",
-        "default": "${config:cfs.sdk.path}/SDK/zephyr/bootloader/mcuboot/scripts",
-        "placeholder": "",
-        "type": "string",
-        "required": true
-      },
-      {
-        "id": "MCUbootKeyType",
-        "name": "MCUboot Key Type",
-        "default": "rsa-3072",
-        "placeholder": "",
-        "type": "array",
-        "enum": [
-          {
-            "value": "rsa-2048",
-            "label": "RSA-2048"
-          },
-          {
-            "value": "rsa-3072",
-            "label": "RSA-3072"
-          },
-          {
-            "value": "ecdsa-p256",
-            "label": "ECDSA-P256"
-          },
-          {
-            "value": "ed25519",
-            "label": "ED25519"
-          }
-        ],
-        "required": true
-      }
-    ]
   }
 }

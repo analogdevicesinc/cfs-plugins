@@ -1,0 +1,171 @@
+<%
+/******************************************************************************
+
+Copyright (c) 2023-2026 Analog Devices.  All Rights Reserved.
+
+This software is proprietary.  By using this software you agree
+to the terms of the associated Analog Devices License Agreement.
+*******************************************************************************/
+%> 
+<% eval(this.render("templates/ssdd/ssdd_common.js")); %>
+<%~ include("@copyrightHeader", it) %> 
+/* This file is generated using the peripheral settings configured using System Planner.
+ * Please do not edit the values here directly.
+ */
+
+<% var _xspiPeripheral = getAssignedPeripheral('XSPI') ? 'XSPI' : 'XSPI0'; %> 
+
+/** @addtogroup XSPI_Driver
+ *  @{
+ */
+
+/** @defgroup XSPI_Driver_Static_Configuration xSPI Driver Static Configuration
+ *  @{
+ */
+
+/*!
+* @file      adi_xspi_config_SC8xx.h
+*
+* @brief     xSPI driver static configuration header file
+*
+* @details
+*            xSPI driver static configuration header file
+*/
+
+#ifndef ADI_XSPI_CONFIG_SC8XX_H
+#define ADI_XSPI_CONFIG_SC8XX_H
+
+/*! Specifies if the SEC interrupts should be used for xSPI
+ * If set as 1, SEC interrupt path is enabled for xSPI
+ * If set as 0, direct interrupt path is enabled for xSPI*/
+<%
+  var _g_sec_int = [
+    getAssignedPeripheral(_xspiPeripheral) ? getPeriConfigValueBoolAsInt(_xspiPeripheral, "SEC_INT", "FALSE") : null,
+  ].filter(v => v !== null);
+%> 
+#define ADI_XSPI_CONFIG_SEC_INT			(<%= _g_sec_int.length ? _g_sec_int[0] : getPeriConfigValueBoolAsInt(_xspiPeripheral, "SEC_INT", "FALSE") %>U)
+
+/*! Defines xSPI Profile
+	0U - Legacy SPI NOR Flash profile
+	1U - Hyperflash profile
+	2U - HyperRAM profile
+	3U - SPI Nand Flash profile
+*/
+#define ADI_XSPI_PROFILE                 (<%= getPeriConfigValueEnum(_xspiPeripheral, "PROFILE", "HYPERFLASH_PROFILE", {"LEGACY_SPI_NOR_FLASH":0,"HYPERFLASH_PROFILE":1,"HYPER_RAM_PROFILE":2,"SPI_NAND_FLASH_PROFILE":3}) %>U)
+
+/*! Defines CPOL value 
+	0U - Active-high SPI CLK
+	1U - Active-low SPI CLK
+*/
+#define ADI_XSPI_CPOL                   (<%= getPeriConfigValueEnum(_xspiPeripheral, "CPOL", "ACTIVE_HIGH", {"ACTIVE_HIGH":0,"ACTIVE_LOW":1}) %>U)
+
+/*! Defines default Baudrate divider value */
+#define ADI_XSPI_BAUD_DIV               (<%= getPeriConfigValueInt(_xspiPeripheral, "BAUD_DIV", "90") %>U)
+
+/*! Flash Slave select to use by default 
+	0U - XSPI_SSEL1 chip select signal used
+	1U - XSPI_SSEL2 chip select signal used
+	2U - XSPI_SSEL3 chip select signal used
+	3U - XSPI_SSEL4 chip select signal used
+*/
+#define ADI_XSPI_FLASH_CS  			     (<%= getPeriConfigValueEnum(_xspiPeripheral, "FLASH_CS", "XSPI_SSEL_1_CHIP", {"XSPI_SSEL_1_CHIP":0,"XSPI_SSEL_2_CHIP":1,"XSPI_SSEL_3_CHIP":2,"XSPI_SSEL_4_CHIP":3}) %>U)
+
+/*! Number of bytes per device page for flash program: page size = 2^(ADI_XSPI_PAGE_SIZE_PGM) */
+#define ADI_XSPI_PAGE_SIZE_PGM               (<%= getPeriConfigValueInt(_xspiPeripheral, "PAGE_SIZE_PGM", "9") %>U)
+
+/*! Number of bytes per device page for flash read: page size = 2^(ADI_XSPI_PAGE_SIZE_RD) */
+#define ADI_XSPI_PAGE_SIZE_RD               (<%= getPeriConfigValueInt(_xspiPeripheral, "PAGE_SIZE_RD", "15") %>U)
+
+/*! Defines data size per single memory address
+	0U - 1B per single memory address
+	1U - 2B per single memory address
+*/
+#define ADI_XSPI_DATA_PER_ADDR                   (<%= getPeriConfigValueEnum(_xspiPeripheral, "DATA_PER_ADDR", "2_B_PER_SINGLE", {"1_B_PER_SINGLE":0,"2_B_PER_SINGLE":1}) %>U)
+
+/*! Determines whether data is enabled or not
+	0U - Data swap is disabled
+	1U - Data swap is enabled
+*/
+#define ADI_XSPI_DATA_SWAP_EN                   (<%= getPeriConfigValueBoolAsInt(_xspiPeripheral, "DATA_SWAP_EN", "TRUE") %>U)
+
+
+/*! This value defines the address offset for Direct accesses. Any access to flash is offset by this address */
+#define ADI_XSPI_ADDRRESSMAP               (<%= getPeriConfigValueHex(_xspiPeripheral, "ADDRRESSMAP", "0x60000000") %>U)
+
+
+/*! Common DMA Settings: Word Size
+	0U - 1 byte
+	1U - 2 bytes
+	2U - 4 bytes
+	3U - 8 bytes
+*/
+#define ADI_XSPI_COMMON_DMA_WORD              (<%= getPeriConfigValueEnum(_xspiPeripheral, "COMMON_DMA_WORD", "8_BYTES", {"1_BYTE":0,"2_BYTES":1,"4_BYTES":2,"8_BYTES":3}) %>U)
+
+/*! Common DMA Settings: Error Response */
+#define ADI_XSPI_COMMON_DMA_ERR_RSP              (<%= getPeriConfigValueBoolAsInt(_xspiPeripheral, "COMMON_DMA_ERR_RSP", "FALSE") %>U)
+
+/*! Common DMA Settings: OTE- Outstanding Transaction Enable */
+#define ADI_XSPI_COMMON_DMA_OTE              (<%= getPeriConfigValueBoolAsInt(_xspiPeripheral, "COMMON_DMA_OTE", "TRUE") %>U)
+
+/*! Common DMA Settings: Burst selection - Maximum AXI burst size*/
+#define ADI_XSPI_COMMON_DMA_BURST_SEL              (<%= getPeriConfigValueHex(_xspiPeripheral, "COMMON_DMA_BURST_SEL", "0xff") %>U)
+
+
+/*! xSPI Timeout duration in ticks: Timeouts are used in driver for certain expected results to avoid indefinite wait */
+#define ADI_XSPI_TIMEOUT_TICKS           (<%= getPeriConfigValueHex(_xspiPeripheral, "TIMEOUT_TICKS", "0xffffffff") %>)
+
+
+/*! Decides whether Device discovery is enabled or disabled on xSPI controller reset
+	0u  -  Device Discovery is disabled
+	1u  -  Device Discovery is enabled
+*/
+#define ADI_XSPI_DEVICED_ONRESET         (<%= getPeriConfigValueBoolAsInt(_xspiPeripheral, "DEVICED_ONRESET", "FALSE") %>u)
+
+/*! Default xSPI PHY configuration Word 0 */
+#define ADI_XSPI_PHYCONFIG_DEFAULTWORD0              (<%= getPeriConfigValueHex(_xspiPeripheral, "PHYCONFIG_DEFAULTWORD0", "0x106") %>U)
+
+/*! Default xSPI PHY configuration Word 1 */
+#define ADI_XSPI_PHYCONFIG_DEFAULTWORD1              (<%= getPeriConfigValueHex(_xspiPeripheral, "PHYCONFIG_DEFAULTWORD1", "0x6080060") %>U)
+
+/*! Default xSPI PHY configuration Word 2 */
+#define ADI_XSPI_PHYCONFIG_DEFAULTWORD2              (<%= getPeriConfigValueHex(_xspiPeripheral, "PHYCONFIG_DEFAULTWORD2", "0xdb3f3f8") %>U)
+
+/*! Default xSPI PHY configuration Word 3 */
+#define ADI_XSPI_PHYCONFIG_DEFAULTWORD3              (<%= getPeriConfigValueHex(_xspiPeripheral, "PHYCONFIG_DEFAULTWORD3", "0x0") %>U)
+
+/*! xSPI Prefetch Buffer Start Address*/
+#define ADI_XSPI_PREFETCH_STARTADDRESS				 (<%= getPeriConfigValueHex(_xspiPeripheral, "PREFETCH_STARTADDRESS", "0x60000000") %>U)
+
+/*! xSPI Prefetch Buffer END Address*/
+#define ADI_XSPI_PREFETCH_ENDADDRESS				 (<%= getPeriConfigValueHex(_xspiPeripheral, "PREFETCH_ENDADDRESS", "0x7fffffff") %>U)
+
+/* PHY training configurations */
+
+/*! Valid Start Point of RXDLL */
+#define ADI_XSPI_TXDLL_START_POSITION		(<%= getPeriConfigValueInt(_xspiPeripheral, "TXDLL_START_POSITION", "5") %>u)
+
+/*! Valid Start Point of RXDLL */
+#define ADI_XSPI_RXDLL_START_POSITION		(<%= getPeriConfigValueInt(_xspiPeripheral, "RXDLL_START_POSITION", "5") %>u)
+
+/*! Stable Region Start point of TXDLL */
+#define ADI_XSPI_TXDLL_STABLE_REGION  		(<%= getPeriConfigValueInt(_xspiPeripheral, "TXDLL_STABLE_REGION", "10") %>u)
+
+/*! TXDLL Retry Stride value */
+#define ADI_XSPI_TXDLL_RETRY_STRIDE			 (<%= getPeriConfigValueInt(_xspiPeripheral, "TXDLL_RETRY_STRIDE", "5") %>u)
+
+/*! RXDLL passing range margin */
+#define ADI_XSPI_RXDLL_PASSING_RANGE		 (<%= getPeriConfigValueInt(_xspiPeripheral, "RXDLL_PASSING_RANGE", "10") %>u)
+
+/*! RXDLL passing range margin */
+#define ADI_XSPI_TXDLL_PASSING_RANGE		(<%= getPeriConfigValueInt(_xspiPeripheral, "TXDLL_PASSING_RANGE", "10") %>u)
+
+/*! RXDLL passing range margin */
+#define XSPI_TRAINING_DATA_SIZE     		(<%= getPeriConfigValueInt(_xspiPeripheral, "TRAINING_DATA_SIZE", "32") %>u)
+
+/*! Training loop optimization Enable/Disable */
+#define ADI_XSPI_LOOP_OPTIMIZE_EN			(<%= getPeriConfigValueBool(_xspiPeripheral, "LOOP_OPTIMIZE_EN", "TRUE") %>)
+
+#endif /* ADI_XSPI_CONFIG_SC8XX_H */
+
+/** @}*/
+/** @}*/

@@ -127,6 +127,14 @@ function getOffsetFromBase(address) {
   return offset.toString(16);
 }
 
+// True when a partition owned by this project supplies the given chosen name
+// (e.g. "settings-partition"), so an inherited board property must be kept, not deleted.
+function projectProvidesChosenPartition(chosenName) {
+  return getProjectPartitions().some(p =>
+    p.Config?.CHOSEN?.split(",").map(c => c.trim()).includes(chosenName)
+  );
+}
+
 // Get the start address for this partition, taking into account any secure offset.
 function getStartAddress(partition) {
   const region = getCoreRegion(partition.StartAddress);
@@ -361,6 +369,41 @@ function swdIsAssignedProperly() {
   return true;  
 }
 
+// Override for hasSocNodeLabel, which uses a fallback for if the device tree is not available for parsing.
+// The fall back only deals with specific things we are interested in.
+function _hasSocNodeLabel(label) {
+  if (it.boardDts) {
+    // We have the dts file, so check there.
+    return hasSocNodeLabel(label);
+  }
+  // The dts file is not available (perhaps not installed yet), so fall back to manual checks.
+  // The MAX parts with a RISC-V are the ones that might include the partitions we are looking for.
+  if (label === "m4_sram") {
+    // Look for the specific boards that are known to define this label.
+    if (getProject().PlatformConfig?.ZephyrBoardName?.startsWith("max32655evkit") ||
+        getProject().PlatformConfig?.ZephyrBoardName?.startsWith("max32655fthr") ||
+        getProject().PlatformConfig?.ZephyrBoardName?.startsWith("max32690evkit") ||
+        getProject().PlatformConfig?.ZephyrBoardName?.startsWith("max78002evkit")) {
+      // Prior to Zephyr 4.4.0, this partition label was not defined.
+      if (compareZephyrVersion("4.4.0") >= 0) {
+        // We think it is there.
+        return true;
+      }
+    }
+  }
+  if (label === "rv32_sram") {
+    // Look for the specific boards that are known to define this label.
+    if (getProject().PlatformConfig?.ZephyrBoardName?.startsWith("max32655evkit") ||
+        getProject().PlatformConfig?.ZephyrBoardName?.startsWith("max78002evkit")) {
+      // Prior to Zephyr 4.4.0, this partition label was not defined.
+      if (compareZephyrVersion("4.4.0") >= 0) {
+        // We think it is there.
+        return true;
+      }
+    }
+  }
+  return false;
+}
 %>
 <%~ include("@copyrightHeader", it) %>
 
@@ -371,7 +414,16 @@ function swdIsAssignedProperly() {
 <% if (getProjectPartitions().find(p => p.Config?.CHOSEN || getRegionProperty(getCoreRegion(p.StartAddress), 'Type') === "RAM")) { %>
 /* Memory Configuration
 */
+<%   if (_hasSocNodeLabel("m4_sram") || _hasSocNodeLabel("rv32_sram")) { %>
 
+/* Remove the SRAM nodes (and their labels) from the base devicetree so we can redefine them below. */
+<%   } %>
+<%   if (_hasSocNodeLabel("m4_sram")) { %>
+/delete-node/ &m4_sram;
+<%   } %>
+<%   if (_hasSocNodeLabel("rv32_sram")) { %>
+/delete-node/ &rv32_sram;
+<%   } %>
 / {
 <%   if (getProjectPartitions().find(p => p.Config?.CHOSEN)) { %>
 	chosen {
@@ -415,13 +467,30 @@ function swdIsAssignedProperly() {
 };
 
 <% } %>
+<% if ((it.cfsconfig.Projects.find(p => p.CoreId === "RV" && p.ExternallyManaged === true) && hasChosenProperty("zephyrcode-rv32-partition") && !projectProvidesChosenPartition("code-rv32-partition")) || (hasChosenProperty("zephyrsettings-partition") && !projectProvidesChosenPartition("settings-partition"))) { %>
+/ {
+	chosen {
+<%   if (it.cfsconfig.Projects.find(p => p.CoreId === "RV" && p.ExternallyManaged === true) && hasChosenProperty("zephyrcode-rv32-partition") && !projectProvidesChosenPartition("code-rv32-partition")) { %>
+		/delete-property/ zephyr,code-rv32-partition;
+<%   } %>
+<%   if (hasChosenProperty("zephyrsettings-partition") && !projectProvidesChosenPartition("settings-partition")) { %>
+		/delete-property/ zephyr,settings-partition;
+<%   } %>
+	};
+};
+<% } %>
+
 <% for (const region of it.datamodel.Cores.find(c => c.Id === it.coreId)?.Memory ?? []) { %>
 <%   if (getRegionProperty(region, 'Type') === "Flash" && getProjectPartitionsStartingInRegion(region).length > 0) { %>
 &<%= region.Name %> {
 	/* First remove partitions from base devicetree to avoid conflicts. */
 	/delete-node/ partitions;
 	partitions {
+<%     if (hasFlashPartitionRanges()) { %>
+		ranges;
+<%     } else { %>
 		compatible = "fixed-partitions";
+<%     } %>
 		#address-cells = <1>;
 		#size-cells = <1>;
 
@@ -434,6 +503,9 @@ function swdIsAssignedProperly() {
 <%       } %>
 <%       if (partition.Config?.LABEL?.length > 0) { %>
 			label = "<%= partition.Config?.LABEL %>";
+<%       } %>
+<%       if (hasFlashPartitionRanges()) { %>
+			compatible = "zephyr,mapped-partition";
 <%       } %>
 			reg = <0x<%= getOffsetFromBase(partition.StartAddress) %> <%= convertToUnitsMacro(partition.Size, "SIZE", 1024) %>>;
 		};
@@ -521,7 +593,7 @@ function swdIsAssignedProperly() {
 };
 
 <% } %>
-<% for (const peri of peripheralData) { %>
+<% for (const peri of peripheralData.filter(p => p.zephyr && getPeripheral(p.datamodel)?.Cores.includes(getProject().CoreId))) { %>
 <%   if (securityMatch(peri.datamodel)) { %>
 <%     if (peri.pins) { %>
 <%       for (const pin of peri.pins) { %>
@@ -554,7 +626,7 @@ function swdIsAssignedProperly() {
 	/* This peripheral is used for <%= getPeripheralDescription(peri.datamodel) %>.
 	*/
 <%       } %>
-<%       if (peri.pins && (!peri.pins_node || peri.pins_node() === "root")) { %>
+<%       if (peri.pins !== undefined && (!peri.pins_node || peri.pins_node() === "root")) { %>
 	pinctrl-0 = <<%= peri.pins.filter(p => getAssignedSignal(peri.datamodel, p.signal, p.pin)).map(p => '&' + p.name).join(' ') %>>;
 	pinctrl-names = "default";
 <%       } %>
@@ -631,6 +703,7 @@ function swdIsAssignedProperly() {
 #error SWDIO and SWDCLK must be assigned to P0.0 and P0.1 respectively, or else it might be impossible to upload a new version of the firmware.
 
 <% } %>
+<% if (!getProject().CoreId.startsWith("RV")) { %>
 /* Clock Configuration and Initialization
 */
 
@@ -640,6 +713,7 @@ function swdIsAssignedProperly() {
 	status = "okay";
 };
 
+<% } %>
 <% } %>
 <% // Dataflow Gaskets Section %>
 <% const projectStreams = it.cfsconfig.DFG?.Streams?.filter(s => isPrimaryProject() || isCurrentSubsystem(s.Source.Gasket) || s.Destinations.find(d => isCurrentSubsystem(d.Gasket))) ?? []; %>
